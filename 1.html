@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocational Skills in AC and Fin III</title>
+  <style>
+    :root {
+      --bg-dark: #0b121e;
+      --msg-user: #1f2a38;
+      --msg-bot: #16202f;
+      --accent: #00bcd4;
+      --text-color: #e0e6ed;
+      --pdf-link-bg: #1a273a;
+      --pdf-link-hover: #223349;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: var(--bg-dark);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-color);
+    }
+
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    
+    .profile-pic {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background-color: #ccc;
+      overflow: hidden;
+      margin-right: 12px;
+    }
+
+    .profile-pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .chat-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Chat area */
+    .chat-container {
+      flex: 1;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .from-user {
+      background-color: var(--msg-user);
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .from-bot {
+      background-color: var(--msg-bot);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .pdf-link {
+      display: inline-block;
+      background-color: var(--pdf-link-bg);
+      padding: 10px 14px;
+      margin-top: 8px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .pdf-link:hover {
+      background-color: var(--pdf-link-hover);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Scrollbar Styling (optional) */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2b3a4b;
+      border-radius: 4px;
+    }
+
+    /* Mobile tweak */
+    @media screen and (max-width: 480px) {
+      .chat-title {
+        font-size: 16px;
+      }
+
+      .message {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-wrapper">
+
+    
+
+    <!-- Chat messages -->
+    <div class="chat-container">
+      <!-- User question -->
+      <div class="message from-user">
+        Paper Pattern
+      </div>
+
+      <!-- Bot PDF answer -->
+      <div class="message from-bot">
+        Here’s the paper pattern for your exam:
+        <a href="https://mohitmali5489.github.io/BAFs/Exam_P.html" class="pdf-link" target="_blank">📄 Paper Pattern.html</a>
+      </div>
+    
+ <div class="message from-user">
+        Vocational Skills in AC and Fin III Question Bank
+      </div>
+
+      <!-- Bot PDF answer -->
+      <div class="message from-bot">
+        Here's a detailed Page with the answer:
+        <a href="https://mohitmali5489.github.io/BAFs/3.html" class="pdf-link" target="_blank">📄 Vocational Skills in AC and Fin III.html</a>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
