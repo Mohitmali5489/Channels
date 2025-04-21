@@ -2,262 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FY-BAF</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FY-BAF Confessions</title>
   <style>
+    :root {
+      --bg-dark: #1e1e2e;
+      --bg-light: #f4f4f4;
+      --text-dark: #ffffff;
+      --text-light: #1e1e2e;
+      --accent: #b84fff;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #1e1e2e;
-      color: white;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    .top-bar {
+    .dark-theme {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .light-theme {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 15px;
-      font-size: 14px;
-      background-color: #1e1e2e;
-    }
-
-    .header {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      padding: 5px 0;
-    }
-
-    .version {
-      text-align: center;
-      font-style: italic;
-      font-size: 12px;
-      margin-bottom: 15px;
-    }
-
-    .container {
-      padding: 0 20px;
-    }
-
-    .button-group {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .button-group button {
-      background-color: #2a2a3d;
-      color: white;
       padding: 10px 20px;
-      border: 1px solid white;
-      margin: 0 5px;
-      cursor: pointer;
-      border-radius: 8px;
+      background-color: inherit;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .input-bar {
-      display: flex;
-      background-color: #2a2a3d;
-      border-radius: 8px;
-      padding: 10px;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .input-bar input {
-      flex: 1;
-      background: none;
-      border: none;
-      color: white;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .input-bar button {
-      background: none;
-      border: none;
-      font-size: 18px;
-      color: white;
+    .menu-icon {
+      font-size: 24px;
       cursor: pointer;
     }
 
-    .remove-btn {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .remove-btn button {
-      background-color: #444;
-      color: white;
-      border: 1px solid white;
-      border-radius: 6px;
-      padding: 8px 12px;
-    }
-
-    h3 {
-      text-align: center;
-      margin: 20px 0 10px;
-    }
-
-    .confession {
-      border: 2px solid #b84fff;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      background-color: #2a2a3d;
-    }
-
-    .confession .name {
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-    }
-
-    .confession .name img {
-      width: 30px;
-      height: 30px;
+    .profile-pic {
+      width: 35px;
+      height: 35px;
       border-radius: 50%;
-      margin-right: 10px;
+      object-fit: cover;
+      cursor: pointer;
     }
 
-    .tick {
-      margin-left: 8px;
-      font-size: 16px;
-    }
-
-    .tick.blue {
-      color: #00f0ff;
-    }
-
-    .tick.yellow {
-      color: #ffd700;
-    }
-
-    .confession .content {
-      margin-top: 5px;
-      font-style: italic;
-    }
-
-    .encrypted {
-      text-align: center;
-      font-size: 12px;
-      color: #aaa;
-      margin-top: -10px;
-      margin-bottom: 20px;
-    }
-
-    .channel {
-      background-color: #333;
-      padding: 15px;
-      margin: 0 20px 20px;
-      border-radius: 10px;
-    }
-
-    .channel h4 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .channel p {
-      font-size: 13px;
-      color: #aaa;
-    }
-
-    #sidebar {
+    .sidebar {
       position: fixed;
       top: 0;
       left: -220px;
       width: 200px;
       height: 100%;
-      background-color: #2a2a3d;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
       padding: 20px;
       transition: 0.3s;
       z-index: 999;
     }
 
-    #sidebar button {
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
       width: 100%;
-      margin-top: 10px;
-      padding: 8px;
-      border: none;
       background-color: #444;
+      border: none;
       color: white;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    #profile-img-container img {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .confession {
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.05);
+      margin-bottom: 20px;
+    }
+
+    .confession .name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+    }
+
+    .confession .content {
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .input-bar {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .input-bar input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .input-bar button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--accent);
+      color: white;
       cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      padding: 10px;
+      color: #aaa;
+    }
+
+    .toggle-theme {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    @media (max-width: 600px) {
+      .input-bar {
+        flex-direction: column;
+      }
+
+      .input-bar button {
+        width: 100%;
+      }
     }
   </style>
 </head>
-<body>
-
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <h4>⚙️ Menu</h4>
-    <hr style="border: 0.5px solid #555;">
+<body class="dark-theme">
+  <div class="sidebar" id="sidebar">
+    <h4>Menu</h4>
     <button onclick="logout()">Logout</button>
   </div>
 
-  <!-- Top bar -->
-  <div class="top-bar">
-    <div onclick="toggleSidebar()" style="cursor: pointer;">☰</div>
-    <div id="profile-img-container"></div>
-  </div>
-
-  <div class="header">FY-BAF</div>
-  <div class="version">Version 1.5</div>
-
-  <div class="container">
-    <div class="button-group">
-      <button>Anonymous</button>
-      <button>Mr. Mohit Mali</button>
+  <header>
+    <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+    <div>
+      <img id="profileImg" class="profile-pic" src="" alt="Profile" onclick="goToProfile()">
     </div>
+  </header>
+
+  <main class="container">
+    <h1>FY-BAF Confessions</h1>
 
     <div class="input-bar">
-      <input type="text" placeholder="🌟 What's on your mind?" />
+      <input type="text" placeholder="🌟 What's on your mind?">
       <button>➤</button>
     </div>
 
-    <div class="remove-btn">
-      <button>Remove My Confession</button>
-    </div>
-
-    <h3>College Confessions</h3>
     <div id="confession-list"></div>
-    <div class="encrypted">All Confessions are End to End Encrypted 🔒</div>
+    <div class="footer">All confessions are end-to-end encrypted 🔒</div>
+  </main>
 
-    <div class="channel">
-      <h4>🎨 Vocational Skills in AC and Fin IV</h4>
-      <p>Paper Pattern and Question Bank</p>
-    </div>
-  </div>
+  <button class="toggle-theme" onclick="toggleTheme()">🌓</button>
 
-  <!-- Script Section -->
   <script>
+    const roll = getCookie("roll");
+    if (!roll || isNaN(roll)) {
+      window.location.href = "https://mohitmali5489.github.io/Channels/login.html";
+    }
+
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-    const roll = getCookie("roll");
-    if (!roll || isNaN(roll)) {
-      window.location.href = "https://mohitmali5489.github.io/Channels/login.html";
-    }
-
     function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.style.left = sidebar.style.left === "0px" ? "-220px" : "0px";
+      document.getElementById("sidebar").classList.toggle("open");
     }
 
     function logout() {
       document.cookie = "roll=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "login.html";
+    }
+
+    function goToProfile() {
+      window.location.href = "profile.html";
     }
 
     async function loadProfileImage() {
@@ -266,12 +222,10 @@
         const data = await res.json();
         const user = data.find(u => u.ROLL == roll);
         if (user && user.img) {
-          document.getElementById("profile-img-container").innerHTML = `
-            <img src="${user.img}" alt="Profile" onclick="window.location.href='profile.html'" />
-          `;
+          document.getElementById("profileImg").src = user.img;
         }
       } catch (err) {
-        console.error("Profile image load failed:", err);
+        console.error("Failed to load profile image", err);
       }
     }
 
@@ -279,17 +233,15 @@
       try {
         const response = await fetch("https://api.allorigins.win/raw?url=https://mohitmali5489.github.io/Chats/test.json");
         const data = await response.json();
-
-        const container = document.getElementById('confession-list');
-        container.innerHTML = '';
+        const container = document.getElementById("confession-list");
+        container.innerHTML = "";
 
         data.forEach(item => {
-          const conf = document.createElement('div');
-          conf.className = 'confession';
+          const conf = document.createElement("div");
+          conf.className = "confession";
           conf.innerHTML = `
             <div class="name">
-              <img src="${item.Pic}" alt="pic" />
-              ${item.Name}
+              <img src="${item.Pic}" alt="pic" width="30" height="30" style="border-radius:50%"> ${item.Name}
               <span class="tick ${item.Tick}">✔️</span>
             </div>
             <div class="content">"${item.Confess}"</div>
@@ -297,12 +249,22 @@
           container.appendChild(conf);
         });
       } catch (err) {
-        console.error('Error fetching confessions:', err);
-        document.getElementById('confession-list').innerHTML = '<p style="color: red; text-align: center;">Failed to load confessions.</p>';
+        console.error("Failed to load confessions", err);
       }
     }
 
-    // Load functions
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains("dark-theme")) {
+        body.classList.remove("dark-theme");
+        body.classList.add("light-theme");
+      } else {
+        body.classList.remove("light-theme");
+        body.classList.add("dark-theme");
+      }
+    }
+
+    // Initial loads
     loadProfileImage();
     loadConfessions();
   </script>
