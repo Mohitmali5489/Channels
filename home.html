@@ -375,20 +375,20 @@
 
 // PUT
   async function addConfessionToGitHub() {
-    const owner = 'Mohitmali5489'; // replace with your GitHub username
-    const repo = 'Chats';   // replace with your repository name
-    const path = 'test.json'; // file path in your repo
-    const token = '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'; // 🔥 do NOT expose in production
+    const owner = 'Mohitmali5489'; // ✅ Your GitHub username
+    const repo = 'Chats';      // ✅ Your repository name
+    const path = '/test.json'; // ✅ path inside repo (e.g., "data/test.json")
+    const token = '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'; // ⚠️ For testing only, never expose in public
 
     const newConfession = {
       Name: "New Name",
       Pic: "https://example.com/image.jpg",
-      Confess: "A new frontend confession!",
+      Confess: "A new confession from frontend!",
       Tick: "blue"
     };
 
     try {
-      // Step 1: Fetch the existing file
+      // 1. GET current content from GitHub
       const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -396,25 +396,33 @@
         }
       });
 
+      if (!getRes.ok) {
+        const error = await getRes.json();
+        console.error("❌ GET error:", error);
+        alert("Failed to fetch existing file: " + error.message);
+        return;
+      }
+
       const fileData = await getRes.json();
-      const contentDecoded = atob(fileData.content);
-      const json = JSON.parse(contentDecoded);
+      const decodedContent = atob(fileData.content);
+      const confessionList = JSON.parse(decodedContent);
 
-      // Step 2: Append the new confession
-      json.push(newConfession);
+      // 2. Add new confession
+      confessionList.push(newConfession);
 
-      // Step 3: Encode updated content
-      const updatedContent = btoa(JSON.stringify(json, null, 2));
+      // 3. Encode updated content
+      const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(confessionList, null, 2))));
 
-      // Step 4: Push updated file back to GitHub
+      // 4. PUT request to update the file
       const updateRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Accept': 'application/vnd.github+json'
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: 'Added a new confession from frontend',
+          message: 'Add new confession from browser',
           content: updatedContent,
           sha: fileData.sha,
           committer: {
@@ -424,20 +432,20 @@
         })
       });
 
-      if (updateRes.ok) {
-        alert("✅ Confession added successfully!");
-      } else {
+      if (!updateRes.ok) {
         const error = await updateRes.json();
-        alert("❌ Failed: " + error.message);
-        console.error(error);
+        console.error("❌ PUT error:", error);
+        alert("Failed to update file: " + error.message);
+        return;
       }
 
+      alert("✅ Confession added successfully!");
+
     } catch (err) {
-      console.error("Error:", err);
-      alert("❌ Something went wrong.");
+      console.error("❌ Unexpected error:", err);
+      alert("Something went wrong. Check console for details.");
     }
   }
-
     
     // INIT
     loadProfileImg();
