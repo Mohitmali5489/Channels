@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FY-BAF</title>
+  <title>SY-BAF</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -13,8 +13,9 @@
       --highlight: #b84fff;
       --light-bg: #f2f2f2;
       --light-text: #111;
-      --light-card: #fff;
+      --light-card: #ffffff;
     }
+
     [data-theme="light"] {
       --bg: var(--light-bg);
       --text: var(--light-text);
@@ -42,6 +43,14 @@
       position: sticky;
       top: 0;
       z-index: 10;
+    }
+
+    .top-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: 18px;
     }
 
     .menu-toggle {
@@ -91,6 +100,22 @@
 
     .sidebar nav a:hover {
       color: var(--highlight);
+    }
+
+    .theme-toggle {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .theme-toggle button {
+      background-color: var(--highlight);
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
     }
 
     .logout {
@@ -241,11 +266,17 @@
       <a href="about.html">ℹ️ About Us</a>
       <a href="help.html">❓ Help</a>
     </nav>
+
+    <div class="theme-toggle">
+      <button onclick="toggleTheme()">🌙/☀️ Toggle Theme</button>
+    </div>
+
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
   <div class="top-bar">
     <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="top-title">SY-BAF</div>
     <img src="" id="profilePic" class="profile-img" onclick="openProfile()" />
   </div>
 
@@ -340,6 +371,12 @@
         loading.textContent = 'Failed to load confessions.';
         reloadContainer.style.display = 'block';
       }
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute("data-theme");
+      body.setAttribute("data-theme", current === "dark" ? "light" : "dark");
     }
 
     // INIT
