@@ -23,7 +23,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 2,
@@ -49,7 +50,8 @@
     "DATE": "21/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 3,
@@ -75,7 +77,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 4,
@@ -101,7 +104,8 @@
     "DATE": "08/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 5,
@@ -127,7 +131,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 6,
@@ -153,7 +158,8 @@
     "DATE": "29/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 7,
@@ -179,7 +185,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 8,
@@ -205,7 +212,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 9,
@@ -231,7 +239,8 @@
     "DATE": "24/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 10,
@@ -257,7 +266,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 11,
@@ -283,7 +293,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/d8blzmpfnwe85z8b1xnp",
+    "status": ""
   },
   {
     "ROLL": 12,
@@ -309,7 +320,8 @@
     "DATE": "04/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 13,
@@ -335,7 +347,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 14,
@@ -361,7 +374,8 @@
     "DATE": "10/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/ryeroomvptgmk87zgupt",
+    "status": ""
   },
   {
     "ROLL": 15,
@@ -387,7 +401,8 @@
     "DATE": "04/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 16,
@@ -413,7 +428,8 @@
     "DATE": "12/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 17,
@@ -439,7 +455,8 @@
     "DATE": "15/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 18,
@@ -465,7 +482,8 @@
     "DATE": "29/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 19,
@@ -491,7 +509,8 @@
     "DATE": "07/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 20,
@@ -517,7 +536,8 @@
     "DATE": "24/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 21,
@@ -543,7 +563,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 22,
@@ -569,7 +590,8 @@
     "DATE": "28/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 23,
@@ -595,7 +617,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 24,
@@ -621,7 +644,8 @@
     "DATE": "04/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 25,
@@ -647,7 +671,8 @@
     "DATE": "08/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 26,
@@ -673,7 +698,8 @@
     "DATE": "08/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 27,
@@ -699,7 +725,8 @@
     "DATE": "29/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/oozawfzofyxvnxvzppth",
+    "status": ""
   },
   {
     "ROLL": 28,
@@ -725,7 +752,8 @@
     "DATE": "30/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 29,
@@ -751,7 +779,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 30,
@@ -777,7 +806,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 31,
@@ -803,7 +833,8 @@
     "DATE": "06/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 32,
@@ -829,7 +860,8 @@
     "DATE": "26/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 33,
@@ -855,7 +887,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 34,
@@ -881,7 +914,8 @@
     "DATE": "29/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 35,
@@ -907,7 +941,8 @@
     "DATE": "21/06/2024",
     "DOB": "",
     "MU": "https://msgcloudstorage.blob.core.windows.net/bkbnc875/06082024054651995_2195084_875.pdf",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 36,
@@ -933,7 +968,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 37,
@@ -959,7 +995,8 @@
     "DATE": "24/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 38,
@@ -985,7 +1022,8 @@
     "DATE": "22/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 39,
@@ -1011,7 +1049,8 @@
     "DATE": "03/10/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 40,
@@ -1037,7 +1076,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/ggb6g23pyae2yoq7zxci",
+    "status": ""
   },
   {
     "ROLL": 41,
@@ -1063,7 +1103,8 @@
     "DATE": "13/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 42,
@@ -1089,7 +1130,8 @@
     "DATE": "17/09/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 43,
@@ -1115,7 +1157,8 @@
     "DATE": "16/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 44,
@@ -1141,7 +1184,8 @@
     "DATE": "29/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 45,
@@ -1167,7 +1211,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 46,
@@ -1193,7 +1238,8 @@
     "DATE": "09/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 47,
@@ -1219,7 +1265,8 @@
     "DATE": "01/07/2024",
     "DOB": "09/11/2007",
     "MU": "https://msgcloudstorage.blob.core.windows.net/bkbnc875/06292024122725709_2340657_875.pdf",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 48,
@@ -1245,7 +1292,8 @@
     "DATE": "06/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 49,
@@ -1271,7 +1319,8 @@
     "DATE": "25/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 50,
@@ -1297,7 +1346,8 @@
     "DATE": "25/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 51,
@@ -1323,7 +1373,8 @@
     "DATE": "08/07/2024",
     "DOB": "19/03/2007",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 52,
@@ -1349,7 +1400,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/jwthd3wastmky6tyughg"
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/ngjxfvixyvu3rha3hau6",
+    "status": "https://res.cloudinary.com/df9z7kkb2/image/upload/zbvootydukypn9udhxwk"
   },
   {
     "ROLL": 53,
@@ -1375,7 +1427,8 @@
     "DATE": "30/06/2024",
     "DOB": "03/03/2006",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 54,
@@ -1401,7 +1454,8 @@
     "DATE": "10/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 55,
@@ -1427,7 +1481,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/zbvootydukypn9udhxwk"
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/zbvootydukypn9udhxwk",
+    "status": ""
   },
   {
     "ROLL": 56,
@@ -1453,7 +1508,8 @@
     "DATE": "28/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 57,
@@ -1479,7 +1535,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 58,
@@ -1505,7 +1562,8 @@
     "DATE": "07/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 59,
@@ -1531,7 +1589,8 @@
     "DATE": "11/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 60,
@@ -1557,7 +1616,8 @@
     "DATE": "17/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 61,
@@ -1583,7 +1643,8 @@
     "DATE": "08/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 62,
@@ -1609,7 +1670,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 63,
@@ -1635,7 +1697,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 64,
@@ -1661,7 +1724,8 @@
     "DATE": "20/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 65,
@@ -1687,7 +1751,8 @@
     "DATE": "06/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 66,
@@ -1713,7 +1778,8 @@
     "DATE": "22/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 67,
@@ -1739,7 +1805,8 @@
     "DATE": "04/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 68,
@@ -1765,7 +1832,8 @@
     "DATE": "27/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 69,
@@ -1791,7 +1859,8 @@
     "DATE": "25/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 70,
@@ -1817,7 +1886,8 @@
     "DATE": "22/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/b6cx7wgc7krmlnnezwgz",
+    "status": ""
   },
   {
     "ROLL": 71,
@@ -1843,7 +1913,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/o5m99mbeptnxl39v2erg"
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/o5m99mbeptnxl39v2erg",
+    "status": ""
   },
   {
     "ROLL": 72,
@@ -1869,7 +1940,8 @@
     "DATE": "17/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 73,
@@ -1895,7 +1967,8 @@
     "DATE": "16/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 74,
@@ -1921,7 +1994,8 @@
     "DATE": "08/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 75,
@@ -1947,7 +2021,8 @@
     "DATE": "07/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 76,
@@ -1973,7 +2048,8 @@
     "DATE": "12/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 77,
@@ -1999,7 +2075,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "https://msgcloudstorage.blob.core.windows.net/bkbnc875/06272024114514311_2322688_875.pdf",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 78,
@@ -2025,7 +2102,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 79,
@@ -2051,7 +2129,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 80,
@@ -2077,7 +2156,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 81,
@@ -2103,7 +2183,8 @@
     "DATE": "01/07/2024",
     "DOB": "26/01/2007",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 82,
@@ -2129,7 +2210,8 @@
     "DATE": "05/07/2024",
     "DOB": "15/02/2007",
     "MU": "https://msgcloudstorage.blob.core.windows.net/bkbnc875/07042024084518723_2365194_875.pdf",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/mopqphxwzy38plnwlbfq",
+    "status": ""
   },
   {
     "ROLL": 83,
@@ -2155,7 +2237,8 @@
     "DATE": "28/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 84,
@@ -2181,7 +2264,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 85,
@@ -2207,7 +2291,8 @@
     "DATE": "06/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 86,
@@ -2233,7 +2318,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 87,
@@ -2259,7 +2345,8 @@
     "DATE": "11/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 88,
@@ -2285,7 +2372,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 89,
@@ -2311,7 +2399,8 @@
     "DATE": "23/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 90,
@@ -2337,7 +2426,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 91,
@@ -2363,7 +2453,8 @@
     "DATE": "15/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 92,
@@ -2389,7 +2480,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 93,
@@ -2415,7 +2507,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 94,
@@ -2441,7 +2534,8 @@
     "DATE": "11/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 95,
@@ -2467,7 +2561,8 @@
     "DATE": "20/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 96,
@@ -2493,7 +2588,8 @@
     "DATE": "25/06/2024",
     "DOB": "",
     "MU": "",
-    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/jxmuhdcwndm6hvql291s"
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/jxmuhdcwndm6hvql291s",
+    "status": ""
   },
   {
     "ROLL": 97,
@@ -2519,7 +2615,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 98,
@@ -2545,7 +2642,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 99,
@@ -2571,7 +2669,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 100,
@@ -2597,7 +2696,8 @@
     "DATE": "27/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 101,
@@ -2623,7 +2723,8 @@
     "DATE": "04/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 102,
@@ -2649,7 +2750,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 103,
@@ -2675,7 +2777,8 @@
     "DATE": "14/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 104,
@@ -2701,7 +2804,8 @@
     "DATE": "04/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 105,
@@ -2727,7 +2831,8 @@
     "DATE": "20/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 106,
@@ -2753,7 +2858,8 @@
     "DATE": "06/08/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 107,
@@ -2779,7 +2885,8 @@
     "DATE": "24/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 108,
@@ -2805,7 +2912,8 @@
     "DATE": "05/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 109,
@@ -2831,7 +2939,8 @@
     "DATE": "06/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 110,
@@ -2857,7 +2966,8 @@
     "DATE": "18/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 111,
@@ -2883,7 +2993,8 @@
     "DATE": "24/06/2024",
     "DOB": "",
     "MU": "https://msgcloudstorage.blob.core.windows.net/bkbnc875/06222024023345404_2294245_875.JPG",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 112,
@@ -2909,7 +3020,8 @@
     "DATE": "02/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 113,
@@ -2935,7 +3047,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 114,
@@ -2961,7 +3074,8 @@
     "DATE": "13/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 115,
@@ -2987,7 +3101,8 @@
     "DATE": "28/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 116,
@@ -3013,7 +3128,8 @@
     "DATE": "26/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/f7aglzp5kgzr8lhafypm",
+    "status": ""
   },
   {
     "ROLL": 117,
@@ -3039,7 +3155,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/n3c12bwsxodiwokc1i9n"
+    "img": "https://res.cloudinary.com/df9z7kkb2/image/upload/n3c12bwsxodiwokc1i9n",
+    "status": ""
   },
   {
     "ROLL": 118,
@@ -3065,7 +3182,8 @@
     "DATE": "03/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 119,
@@ -3091,7 +3209,8 @@
     "DATE": "27/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 120,
@@ -3117,7 +3236,8 @@
     "DATE": "13/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 121,
@@ -3143,7 +3263,8 @@
     "DATE": "04/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 122,
@@ -3169,7 +3290,8 @@
     "DATE": "24/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 123,
@@ -3195,7 +3317,8 @@
     "DATE": "28/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 124,
@@ -3221,7 +3344,8 @@
     "DATE": "26/06/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 125,
@@ -3247,7 +3371,8 @@
     "DATE": "07/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 126,
@@ -3273,7 +3398,8 @@
     "DATE": "01/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 127,
@@ -3299,12 +3425,13 @@
     "DATE": "07/07/2024",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 128,
     "ID": 5489,
-    "NAME": "",
+    "NAME": "Neel",
     "MAIL": "",
     "TONGUE": "",
     "BLOOD": "",
@@ -3325,12 +3452,13 @@
     "DATE": "",
     "DOB": "",
     "MU": "",
-    "img": "https://i.ibb.co/Y4chzM6F/86689165-af12-49dd-b2e1-351fbbe5fcc6-Photoroom.png"
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 129,
     "ID": 5489,
-    "NAME": "",
+    "NAME": "Nitin",
     "MAIL": "",
     "TONGUE": "",
     "BLOOD": "",
@@ -3351,12 +3479,13 @@
     "DATE": "",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   },
   {
     "ROLL": 130,
     "ID": 5489,
-    "NAME": "",
+    "NAME": "Mukesh",
     "MAIL": "",
     "TONGUE": "",
     "BLOOD": "",
@@ -3377,6 +3506,7 @@
     "DATE": "",
     "DOB": "",
     "MU": "",
-    "img": ""
+    "img": "",
+    "status": ""
   }
 ]
