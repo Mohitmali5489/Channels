@@ -272,7 +272,7 @@
 
     <div class="input-bar">
       <input type="text" placeholder="🌟 What's on your mind?"/>
-      <button>➤</button>
+      <button onclick="addConfessionToGitHub()">➤</button>
     </div>
 
     <h3 style="text-align:center">College Confessions</h3>
@@ -373,6 +373,72 @@
       }
     }
 
+// PUT
+  async function addConfessionToGitHub() {
+    const owner = 'Mohitmali5489'; // replace with your GitHub username
+    const repo = 'Chats';   // replace with your repository name
+    const path = 'test.json'; // file path in your repo
+    const token = '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'; // 🔥 do NOT expose in production
+
+    const newConfession = {
+      Name: "New Name",
+      Pic: "https://example.com/image.jpg",
+      Confess: "A new frontend confession!",
+      Tick: "blue"
+    };
+
+    try {
+      // Step 1: Fetch the existing file
+      const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json'
+        }
+      });
+
+      const fileData = await getRes.json();
+      const contentDecoded = atob(fileData.content);
+      const json = JSON.parse(contentDecoded);
+
+      // Step 2: Append the new confession
+      json.push(newConfession);
+
+      // Step 3: Encode updated content
+      const updatedContent = btoa(JSON.stringify(json, null, 2));
+
+      // Step 4: Push updated file back to GitHub
+      const updateRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json'
+        },
+        body: JSON.stringify({
+          message: 'Added a new confession from frontend',
+          content: updatedContent,
+          sha: fileData.sha,
+          committer: {
+            name: "Frontend User",
+            email: "frontend@example.com"
+          }
+        })
+      });
+
+      if (updateRes.ok) {
+        alert("✅ Confession added successfully!");
+      } else {
+        const error = await updateRes.json();
+        alert("❌ Failed: " + error.message);
+        console.error(error);
+      }
+
+    } catch (err) {
+      console.error("Error:", err);
+      alert("❌ Something went wrong.");
+    }
+  }
+
+    
     // INIT
     loadProfileImg();
     loadConfessions();
