@@ -5,25 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SY-BAF</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     :root {
-      --bg: #f2f2f2;
-      --text: #111;
-      --card: #fff;
-      --highlight: #b84fff;
-      --border: #000;
-    }
-
-    [data-theme="dark"] {
       --bg: #1e1e2e;
       --text: white;
       --card: #2a2a3d;
+      --highlight: #b84fff;
       --border: white;
+
+      --light-bg: #f2f2f2;
+      --light-text: #111;
+      --light-card: #fff;
+      --light-border: black;
+    }
+
+    [data-theme="light"] {
+      --bg: var(--light-bg);
+      --text: var(--light-text);
+      --card: var(--light-card);
+      --border: var(--light-border);
     }
 
     * {
       box-sizing: border-box;
-      transition: background-color 0.3s, color 0.3s, border 0.3s;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     body {
@@ -39,17 +45,17 @@
       align-items: center;
       padding: 10px 20px;
       background-color: var(--card);
-      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 10;
+      border-bottom: 2px solid var(--border);
     }
 
     .top-bar h2 {
       margin: 0;
-      flex: 1;
-      text-align: center;
       font-size: 20px;
+      text-align: center;
+      flex-grow: 1;
     }
 
     .menu-toggle {
@@ -68,77 +74,60 @@
     .sidebar {
       position: fixed;
       top: 0;
-      left: -250px;
-      width: 250px;
+      left: -270px;
+      width: 270px;
       height: 100%;
       background-color: var(--card);
-      padding: 20px;
       box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-      transition: left 0.3s;
+      transition: left 0.3s ease;
       z-index: 20;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 2px solid var(--border);
     }
 
     .sidebar.active {
       left: 0;
     }
 
-    .sidebar a {
-      display: block;
-      margin: 10px 0;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 600;
+    .sidebar h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
     }
 
-    .theme-toggle {
-      margin-top: 20px;
-      padding: 10px;
-      width: 100%;
-      background-color: var(--highlight);
-      color: #fff;
+    .sidebar button, .sidebar a {
+      background: none;
       border: none;
-      cursor: pointer;
+      color: var(--text);
+      text-align: left;
+      padding: 10px;
       border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .sidebar button:hover, .sidebar a:hover {
+      background-color: var(--highlight);
+      color: white;
     }
 
     .logout {
-      margin-top: 10px;
       background-color: red;
-      border: none;
       color: white;
-      padding: 10px 20px;
       border-radius: 6px;
-      width: 100%;
-      cursor: pointer;
+      margin-top: auto;
+      padding: 10px;
     }
 
     .container {
       padding: 20px;
       max-width: 800px;
       margin: auto;
-    }
-
-    .story-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 10px;
-      padding: 10px 0;
-      margin-bottom: 20px;
-    }
-
-    .story {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 2px solid var(--highlight);
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .story img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
     }
 
     .button-group {
@@ -161,7 +150,7 @@
     .input-bar {
       display: flex;
       background-color: var(--card);
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       border-radius: 8px;
       padding: 10px;
       margin-bottom: 15px;
@@ -185,7 +174,7 @@
     }
 
     .confession {
-      border: 2px solid var(--border);
+      border: 2px solid var(--highlight);
       background-color: var(--card);
       padding: 15px;
       border-radius: 12px;
@@ -241,6 +230,27 @@
       margin-top: 30px;
     }
 
+    /* Stories */
+    .story-bar {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 20px;
+      background-color: var(--card);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .story {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid var(--highlight);
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+    }
+
     @media (max-width: 600px) {
       .input-bar input {
         font-size: 12px;
@@ -249,14 +259,15 @@
   </style>
 </head>
 <body>
+
   <div class="sidebar" id="sidebar">
-    <div class="close-sidebar" onclick="toggleSidebar()">✖</div>
-    <a href="#" onclick="window.location.reload()">🏠 Home</a>
-    <a href="timetable.html">📅 Time Table</a>
-    <a href="subjects.html">📘 Subjects</a>
-    <a href="about.html">ℹ️ About Us</a>
-    <a href="help.html">❓ Help</a>
-    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    <h3>Menu</h3>
+    <a href="#" onclick="location.reload()"><i class="fas fa-home"></i> Home</a>
+    <a href="timetable.html"><i class="fas fa-calendar"></i> Time Table</a>
+    <a href="subjects.html"><i class="fas fa-book"></i> Subjects</a>
+    <a href="about.html"><i class="fas fa-info-circle"></i> About Us</a>
+    <a href="help.html"><i class="fas fa-question-circle"></i> Help</a>
+    <button onclick="toggleTheme()"><i class="fas fa-adjust"></i> Toggle Theme</button>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
@@ -266,14 +277,14 @@
     <img src="" id="profilePic" class="profile-img" onclick="openProfile()" />
   </div>
 
-  <div class="container">
-    <div class="story-container" id="stories">
-      <!-- Sample Stories -->
-      <div class="story"><img src="https://placekitten.com/100/100" alt="story"/></div>
-      <div class="story"><img src="https://placebear.com/100/100" alt="story"/></div>
-      <div class="story"><img src="https://placebeard.it/100x100" alt="story"/></div>
-    </div>
+  <div class="story-bar" id="storyBar">
+    <div class="story" style="background-image: url('https://via.placeholder.com/60');"></div>
+    <div class="story" style="background-image: url('https://via.placeholder.com/60');"></div>
+    <div class="story" style="background-image: url('https://via.placeholder.com/60');"></div>
+    <!-- Add more stories -->
+  </div>
 
+  <div class="container">
     <div class="button-group">
       <button>Anonymous</button>
       <button>Mr. Mohit Mali</button>
@@ -292,9 +303,36 @@
   </div>
 
   <script>
+    const sidebar = document.getElementById('sidebar');
+
     function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('active');
+      sidebar.classList.toggle('active');
     }
+
+    let touchStartX = 0;
+
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchmove', e => {
+      if (touchStartX > 100 && e.touches[0].clientX - touchStartX > 100) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Remember theme
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    });
 
     function openProfile() {
       window.location.href = "https://mohitmali5489.github.io/Channels/profile.html";
@@ -351,17 +389,11 @@
         });
       } catch (err) {
         console.error('Error fetching confessions:', err);
-        document.getElementById('loading').innerHTML = 'Failed to load confessions. <button onclick="loadConfessions()">🔁 Reload</button>';
+        const loading = document.getElementById('loading');
+        loading.innerHTML = 'Failed to load confessions. <button onclick="loadConfessions()">Reload</button>';
       }
     }
 
-    function toggleTheme() {
-      const html = document.documentElement;
-      const current = html.getAttribute("data-theme");
-      html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
-    }
-
-    // INIT
     loadProfileImg();
     loadConfessions();
   </script>
