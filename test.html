@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Confession to GitHub</title>
     <script>
-       
+         const newConfession = {
+      Name: "New Name",
+      Pic: "https://example.com/image.jpg",
+      Confess: "A new confession from frontend!",
+      Tick: "blue"
+    };
                 const fileData = "WwogIHsKICAgICJQaWMiOiAiaHR0cHM6Ly9pLmliYi5jby9ZNGNoek02Ri84\nNjY4OTE2NS1hZjEyLTQ5ZGQtYjJlMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29t\nLnBuZyIsCiAgICAiTmFtZSI6ICJNb2hpdCBNYWxpIiwKICAgICJDb25mZXNz\nIjogIkFzIHRoZSBkZXZlbG9wZXIgYmVoaW5kIHRoaXMgcGxhdGZvcm0sIEkg\nd2FudCB0byBzaW5jZXJlbHkgdGhhbmsgeW91IGZvciB1c2luZyBpdCB0aHJv\ndWdob3V0IHRoZSBzZW1lc3RlciDwn5K78J+Tmi4gU2VlaW5nIGl0IGhlbHAg\neW91IGV2ZW4gaW4gYSBzbWFsbCB3YXkgaGFzIG1lYW50IGEgbG90LiBBcyB5\nb3UgZmluaXNoIHlvdXIgZmluYWwgZXhhbSB0b2RheSDwn46TLCB0aGUgc2Vy\ndmVyIHdpbGwgYmUgZ29pbmcgb2ZmbGluZSBmb3IgYSBiaXQg8J+boO+4j+KA\nlGJ1dCB3ZeKAmWxsIGJlIGJhY2ssIGJldHRlciBhbmQgcmVhZHkgZm9yIGEg\nbmV3IHNlbWVzdGVyLiBXaXNoaW5nIHlvdSByZXN0LCBzdWNjZXNzLCBhbmQg\nZXZlcnl0aGluZyBnb29kIGFoZWFkIOKcqC4iLAogICAgIlRpY2siOiAiZ29s\nZCIsCiAgICAiUm9sbCI6ICIyMiIKICB9LAogIHsKICAgICJQaWMiOiAiaHR0\ncHM6Ly9pLmliYi5jby9ZNGNoek02Ri84NjY4OTE2NS1hZjEyLTQ5ZGQtYjJl\nMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29tLnBuZyIsCiAgICAiTmFtZSI6ICJB\nbWFuIiwKICAgICJDb25mZXNzIjogImNvbnRlbnQiLAogICAgIlRpY2siOiAi\nYmx1ZSIsCiAgICAiUm9sbCI6ICIyNiIKICB9LAogIHsKICAgICJQaWMiOiAi\naHR0cHM6Ly9pLmliYi5jby9ZNGNoek02Ri84NjY4OTE2NS1hZjEyLTQ5ZGQt\nYjJlMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29tLnBuZyIsCiAgICAiTmFtZSI6\nICJBbm9ueW1vdXMiLAogICAgIkNvbmZlc3MiOiAidGhhbmsgeW91IG1vaGl0\nIGZvciBtYWtpbmcgdGhpcyBhcHAgYW5kIHlvdXIgZWZmb3J0cyBtdXN0IGJl\nIGFwcHJlY2lhdGVkIPCfmY/wn5iE8J+SlyIsCiAgICAiVGljayI6ICJibHVl\nIiwKICAgICJSb2xsIjogIjUzIgogIH0KXQo=\n";
                 const decodedContent = atob(fileData.content);
                 const confessionList = JSON.parse(decodedContent);
