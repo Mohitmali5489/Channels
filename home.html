@@ -15,6 +15,7 @@
       --light-text: #111;
       --light-card: #fff;
     }
+
     [data-theme="light"] {
       --bg: var(--light-bg);
       --text: var(--light-text);
@@ -230,7 +231,7 @@
     }
   </style>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
   <div class="sidebar" id="sidebar">
     <div class="close-sidebar" onclick="toggleSidebar()">✖</div>
@@ -240,6 +241,8 @@
       <a href="subjects.html">📚 Subjects</a>
       <a href="about.html">ℹ️ About Us</a>
       <a href="help.html">❓ Help</a>
+      <hr style="border: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+      <a href="#" onclick="toggleTheme()">🌓 Toggle Theme</a>
     </nav>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
@@ -341,6 +344,20 @@
         reloadContainer.style.display = 'block';
       }
     }
+
+    function toggleTheme() {
+      const currentTheme = document.body.getAttribute("data-theme") || "light";
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+      document.body.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+
+    (function () {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.body.setAttribute("data-theme", savedTheme);
+      }
+    })();
 
     // INIT
     loadProfileImg();
