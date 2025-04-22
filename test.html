@@ -1,202 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SY-BAF Confessions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <script src="https://cdn.skypack.dev/@octokit/core"></script>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-      color: #222;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Confession to GitHub</title>
+    <script>
+        async function addConfessionToGitHub() {
+            const owner = 'Mohitmali5489'; // ✅ Your GitHub username
+            const repo = 'Chats';      // ✅ Your repository name
+            const path = 'test.json'; // ✅ path inside repo (e.g., "data/test.json")
+            const token = 'YOUR_GITHUB_TOKEN'; // ⚠️ For testing only, never expose in public
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+            const newConfession = {
+                Name: "New Name",
+                Pic: "https://example.com/image.jpg",
+                Confess: "A new confession from frontend!",
+                Tick: "blue"
+            };
 
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+            try {
+                // 1. GET current content from GitHub
+                const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    }
+                });
 
-    .button-group button {
-      background-color: #fff;
-      color: #333;
-      border: 1px solid #333;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+                if (!getRes.ok) {
+                    const error = await getRes.json();
+                    console.error("❌ GET error:", error);
+                    alert("Failed to fetch existing file: " + error.message);
+                    return;
+                }
 
-    .button-group button.active {
-      background-color: #b84fff;
-      color: white;
-    }
+                const fileData = await getRes.json();
+                const decodedContent = atob(fileData.content);
+                const confessionList = JSON.parse(decodedContent);
 
-    .input-bar {
-      display: flex;
-      max-width: 600px;
-      margin: 0 auto 20px auto;
-    }
+                // 2. Add new confession
+                confessionList.push(newConfession);
 
-    .input-bar input {
-      flex: 1;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px 0 0 6px;
-      font-size: 14px;
-    }
+                // 3. Encode updated content
+                const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(confessionList, null, 2))));
 
-    .input-bar button {
-      padding: 12px;
-      background-color: #b84fff;
-      border: none;
-      color: white;
-      font-size: 18px;
-      border-radius: 0 6px 6px 0;
-      cursor: pointer;
-    }
+                // 4. PUT request to update the file
+                const updateRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Add new confession from browser',
+                        content: updatedContent,
+                        sha: fileData.sha,
+                        committer: {
+                            name: "Frontend User",
+                            email: "frontend@example.com"
+                        }
+                    })
+                });
 
-    .message {
-      text-align: center;
-      margin-top: 15px;
-      font-weight: bold;
-      color: red;
-    }
-  </style>
+                if (!updateRes.ok) {
+                    const error = await updateRes.json();
+                    console.error("❌ PUT error:", error);
+                    alert("Failed to update file: " + error.message);
+                    return;
+                }
+
+                alert("✅ Confession added successfully!");
+
+            } catch (err) {
+                console.error("❌ Unexpected error:", err);
+                alert("Something went wrong. Check console for details.");
+            }
+        }
+    </script>
 </head>
 <body>
-
-  <h1>SY-BAF College Confessions</h1>
-
-  <div class="button-group">
-    <button id="anonBtn" onclick="selectUser('anonymous')">Anonymous</button>
-    <button id="userBtn" onclick="selectUser('user')">Loading...</button>
-  </div>
-
-  <div class="input-bar">
-    <input type="text" id="confessInput" placeholder="🌟 What's on your mind?" />
-    <button onclick="submitConfession()">➤</button>
-  </div>
-
-  <div class="message" id="message"></div>
-
-  <script>
-    let selectedUser = 'anonymous';
-    let actualUserName = 'User';
-    let actualProfilePic = '';
-    const roll = getCookie("roll");
-
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-
-    function selectUser(type) {
-      selectedUser = type;
-      document.getElementById("anonBtn").classList.toggle("active", type === 'anonymous');
-      document.getElementById("userBtn").classList.toggle("active", type === 'user');
-    }
-
-    async function loadUsername() {
-      if (!roll) {
-        document.getElementById("userBtn").textContent = "Unknown User";
-        return;
-      }
-
-      try {
-        const res = await fetch("https://mohitmali5489.github.io/Channels/data.json");
-        const data = await res.json();
-        const user = data.find(u => u.ROLL == roll);
-        if (user) {
-          actualUserName = user.NAME;
-          actualProfilePic = user.img || '';
-          document.getElementById("userBtn").textContent = actualUserName;
-        } else {
-          document.getElementById("userBtn").textContent = "User Not Found";
-        }
-      } catch (err) {
-        document.getElementById("userBtn").textContent = "Error Loading";
-        console.error("Error:", err);
-      }
-    }
-
-    async function submitConfession() {
-      const input = document.getElementById("confessInput").value.trim();
-      const msgEl = document.getElementById("message");
-      msgEl.textContent = '';
-
-      if (!input) {
-        msgEl.textContent = "Please write a confession.";
-        return;
-      }
-
-      if (!roll || isNaN(roll)) {
-        msgEl.textContent = "User not logged in.";
-        return;
-      }
-
-      const confession = {
-        Pic: selectedUser === 'anonymous'
-          ? "https://i.ibb.co/23tWNzjt/anon.png"
-          : actualProfilePic || "https://via.placeholder.com/40",
-        Name: selectedUser === 'anonymous' ? "Anonymous" : actualUserName,
-        Confess: input,
-        Tick: "blue",
-        Roll: roll
-      };
-
-      try {
-        // Load current data from GitHub
-        const apiUrl = `https://api.github.com/repos/YOUR-USERNAME/YOUR-REPO/contents/confessions.json`;
-        const res = await fetch(apiUrl, {
-          headers: { Authorization: 'Bearer YOUR-TOKEN' }
-        });
-        const current = await res.json();
-        const existing = JSON.parse(atob(current.content));
-        existing.push(confession);
-
-        const { Octokit } = window.octokit;
-        const octokit = new Octokit({ auth: 'YOUR-TOKEN' });
-
-        await octokit.request('PUT /repos/YOUR-USERNAME/YOUR-REPO/contents/confessions.json', {
-          owner: 'YOUR-USERNAME',
-          repo: 'YOUR-REPO',
-          path: 'confessions.json',
-          message: 'New confession submitted',
-          committer: {
-            name: actualUserName,
-            email: 'you@example.com'
-          },
-          content: btoa(JSON.stringify(existing, null, 2)),
-          sha: current.sha,
-          headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-          }
-        });
-
-        msgEl.style.color = "green";
-        msgEl.textContent = "Confession submitted successfully!";
-        document.getElementById("confessInput").value = "";
-
-      } catch (err) {
-        console.error("Submit error:", err);
-        msgEl.textContent = "Failed to submit. " + (err?.response?.status || err.message);
-      }
-    }
-
-    // Initialize
-    loadUsername();
-    selectUser('anonymous');
-  </script>
+    <h1>Add Confession to GitHub</h1>
+    <button onclick="addConfessionToGitHub()">Add Confession</button>
 </body>
 </html>
