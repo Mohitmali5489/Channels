@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Confession to GitHub</title>
     <script>
+
+        async function addConfessionToGitHub() {
+             const owner = 'Mohitmali5489'; // ✅ Your GitHub username
+    const repo = 'Chats';      // ✅ Your repository name
+    const path = 'test.json'; // ✅ path inside repo (e.g., "data/test.json")
+    const token = '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'; // ⚠️ For testing only, never expose in public
+            
          const newConfession = {
       Name: "New Name",
       Pic: "https://example.com/image.jpg",
