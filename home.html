@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SY-BAF</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.skypack.dev/@octokit/core"></script>
   <style>
     :root {
       --bg: #f2f2f2;
@@ -267,13 +266,13 @@
 
   <div class="container">
     <div class="button-group">
-      <button onclick="setUser('anonymous')">Anonymous</button>
-      <button onclick="setUser('user')">Mr. Mohit Mali</button>
+      <button>Anonymous</button>
+      <button>Mr. Mohit Mali</button>
     </div>
 
     <div class="input-bar">
-      <input type="text" placeholder="🌟 What's on your mind?" id="confessInput"/>
-      <button id="submitConfession">➤</button>
+      <input type="text" placeholder="🌟 What's on your mind?"/>
+      <button>➤</button>
     </div>
 
     <h3 style="text-align:center">College Confessions</h3>
@@ -287,12 +286,6 @@
   </div>
 
   <script>
-    let selectedUser = "anonymous";
-
-    function setUser(user) {
-      selectedUser = user;
-    }
-
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('active');
     }
@@ -355,6 +348,10 @@
           let tickImg = '';
           if (item.Tick === 'blue') {
             tickImg = `<img src="https://i.ibb.co/kgJpMCHr/blue.png" class="tick-img" alt="blue tick" />`;
+          } else if (item.Tick === 'silver') {
+            tickImg = `<img src="https://i.ibb.co/gLJLF9Z2/silver.png" class="tick-img" alt="silver tick" />`;
+          } else if (item.Tick === 'gold') {
+            tickImg = `<img src="https://i.ibb.co/Q2C7MrM/gold.png" class="tick-img" alt="gold tick" />`;
           }
 
           conf.innerHTML = `
@@ -376,64 +373,7 @@
       }
     }
 
-    document.getElementById("submitConfession").addEventListener("click", async () => {
-      const input = document.getElementById("confessInput").value.trim();
-      const roll = getCookie("roll");
-      const profilePic = document.getElementById("profilePic").src;
-
-      if (!input || !roll) {
-        alert("Please enter a confession and ensure you're logged in.");
-        return;
-      }
-
-      const confession = {
-        Pic: selectedUser === 'anonymous' ? "https://i.ibb.co/23tWNzjt/anon.png" : profilePic,
-        Name: selectedUser === 'anonymous' ? "Anonymous" : "Aman",
-        Confess: input,
-        Tick: "blue",
-        Roll: roll
-      };
-
-      const owner = "mohitmali5489";
-      const repo = "Chats";
-      const path = "test.json";
-
-      try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
-        const fileData = await response.json();
-        const sha = fileData.sha;
-        const currentData = JSON.parse(atob(fileData.content));
-        currentData.push(confession);
-
-        const octokit = new Octokit.Octokit({
-          auth: "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"
-        });
-
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-          owner,
-          repo,
-          path,
-          message: `New confession by ${confession.Name}`,
-          committer: {
-            name: "SY-BAF Bot",
-            email: "bot@sybaf.com"
-          },
-          content: btoa(JSON.stringify(currentData, null, 2)),
-          sha,
-          headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-          }
-        });
-
-        alert("Confession submitted!");
-        document.getElementById("confessInput").value = "";
-        loadConfessions();
-      } catch (err) {
-        console.error("Submit error:", err);
-        alert("Something went wrong submitting your confession.");
-      }
-    });
-
+    // INIT
     loadProfileImg();
     loadConfessions();
   </script>
