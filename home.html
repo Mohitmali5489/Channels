@@ -7,28 +7,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
+      --bg: #f2f2f2;
+      --text: #111;
+      --card: #fff;
+      --highlight: #b84fff;
+      --profile-border: black;
+      --conf-border: black;
+    }
+    [data-theme="dark"] {
       --bg: #1e1e2e;
       --text: white;
       --card: #2a2a3d;
-      --highlight: #b84fff;
-      --border: white;
-
-      --light-bg: #f2f2f2;
-      --light-text: #111;
-      --light-card: #fff;
-      --light-border: black;
-    }
-
-    [data-theme="light"] {
-      --bg: var(--light-bg);
-      --text: var(--light-text);
-      --card: var(--light-card);
-      --border: var(--light-border);
+      --profile-border: white;
+      --conf-border: white;
     }
 
     * {
       box-sizing: border-box;
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     body {
@@ -49,12 +45,11 @@
       z-index: 10;
     }
 
-    .top-bar-title {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: bold;
-      font-size: 18px;
+    .top-bar h1 {
+      flex: 1;
+      text-align: center;
+      margin: 0;
+      font-size: 20px;
     }
 
     .menu-toggle {
@@ -66,7 +61,7 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 2px solid var(--border);
+      border: 2px solid var(--profile-border);
       cursor: pointer;
     }
 
@@ -99,14 +94,14 @@
       color: var(--text);
       text-decoration: none;
       padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(0,0,0,0.1);
     }
 
     .sidebar nav a:hover {
       color: var(--highlight);
     }
 
-    .logout {
+    .logout, .theme-toggle {
       margin-top: 20px;
       background-color: red;
       border: none;
@@ -115,6 +110,11 @@
       border-radius: 6px;
       width: 100%;
       cursor: pointer;
+    }
+
+    .theme-toggle {
+      background-color: var(--highlight);
+      margin-top: 10px;
     }
 
     .container {
@@ -166,7 +166,7 @@
     }
 
     .confession {
-      border: 2px solid var(--border);
+      border: 2px solid var(--conf-border);
       background-color: var(--card);
       padding: 15px;
       border-radius: 12px;
@@ -189,20 +189,20 @@
       align-items: center;
     }
 
-    .confession .name img {
+    .confession .name img:first-child {
       width: 30px;
       height: 30px;
       border-radius: 50%;
       margin-right: 10px;
-      border: 2px solid var(--border);
+      border: 2px solid var(--profile-border);
     }
 
-    .tick {
+    .tick-img {
+      height: 18px;
+      width: 18px;
       margin-left: 8px;
+      vertical-align: middle;
     }
-
-    .tick.blue { color: #00f0ff; }
-    .tick.yellow { color: #ffd700; }
 
     .content {
       margin-top: 5px;
@@ -253,15 +253,14 @@
       <a href="subjects.html">📚 Subjects</a>
       <a href="about.html">ℹ️ About Us</a>
       <a href="help.html">❓ Help</a>
-      <hr style="border: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
-      <a href="#" onclick="toggleTheme()">🌓 Toggle Theme</a>
     </nav>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
   <div class="top-bar">
     <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-    <div class="top-bar-title">SY-BAF</div>
+    <h1>SY-BAF</h1>
     <img src="" id="profilePic" class="profile-img" onclick="openProfile()" />
   </div>
 
@@ -298,6 +297,12 @@
     function logout() {
       document.cookie = "roll=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "https://mohitmali5489.github.io/Channels/login.html";
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme');
+      body.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
     }
 
     function getCookie(name) {
@@ -339,11 +344,21 @@
         data.forEach(item => {
           const conf = document.createElement('div');
           conf.className = 'confession';
+
+          let tickImg = '';
+          if (item.Tick === 'blue') {
+            tickImg = `<img src="https://i.ibb.co/kgJpMCHr/blue.png" class="tick-img" alt="blue tick" />`;
+          } else if (item.Tick === 'silver') {
+            tickImg = `<img src="https://i.ibb.co/gLJLF9Z2/silver.png" class="tick-img" alt="silver tick" />`;
+          } else if (item.Tick === 'gold') {
+            tickImg = `<img src="https://i.ibb.co/fdLzksLh/gold.png" class="tick-img" alt="gold tick" />`;
+          }
+
           conf.innerHTML = `
             <div class="name">
               <img src="${item.Pic}" alt="pic" />
               ${item.Name}
-              <span class="tick ${item.Tick}">✔️</span>
+              ${item.Name.toLowerCase() !== 'anonymous' ? tickImg : ''}
             </div>
             <div class="content">"${item.Confess}"</div>
           `;
@@ -357,18 +372,6 @@
         reloadContainer.style.display = 'block';
       }
     }
-
-    function toggleTheme() {
-      const currentTheme = document.body.getAttribute("data-theme") || "light";
-      const newTheme = currentTheme === "light" ? "dark" : "light";
-      document.body.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-    }
-
-    (function () {
-      const savedTheme = localStorage.getItem("theme");
-      document.body.setAttribute("data-theme", savedTheme || "light");
-    })();
 
     // INIT
     loadProfileImg();
