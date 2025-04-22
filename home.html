@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FY-BAF</title>
+  <title>SY-BAF</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -11,20 +11,24 @@
       --text: white;
       --card: #2a2a3d;
       --highlight: #b84fff;
+      --border: white;
+
       --light-bg: #f2f2f2;
       --light-text: #111;
       --light-card: #fff;
+      --light-border: black;
     }
 
     [data-theme="light"] {
       --bg: var(--light-bg);
       --text: var(--light-text);
       --card: var(--light-card);
+      --border: var(--light-border);
     }
 
     * {
       box-sizing: border-box;
-      transition: background-color 0.3s, color 0.3s;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
     }
 
     body {
@@ -45,6 +49,14 @@
       z-index: 10;
     }
 
+    .top-bar-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
     .menu-toggle {
       font-size: 24px;
       cursor: pointer;
@@ -54,7 +66,7 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 2px solid white;
+      border: 2px solid var(--border);
       cursor: pointer;
     }
 
@@ -154,7 +166,7 @@
     }
 
     .confession {
-      border: 2px solid white;
+      border: 2px solid var(--border);
       background-color: var(--card);
       padding: 15px;
       border-radius: 12px;
@@ -182,7 +194,7 @@
       height: 30px;
       border-radius: 50%;
       margin-right: 10px;
-      border: 2px solid white;
+      border: 2px solid var(--border);
     }
 
     .tick {
@@ -249,6 +261,7 @@
 
   <div class="top-bar">
     <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="top-bar-title">SY-BAF</div>
     <img src="" id="profilePic" class="profile-img" onclick="openProfile()" />
   </div>
 
@@ -354,9 +367,7 @@
 
     (function () {
       const savedTheme = localStorage.getItem("theme");
-      if (savedTheme) {
-        document.body.setAttribute("data-theme", savedTheme);
-      }
+      document.body.setAttribute("data-theme", savedTheme || "light");
     })();
 
     // INIT
