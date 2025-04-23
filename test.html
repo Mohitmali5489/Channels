@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Send Confession</title>
-  <script src="https://cdn.jsdelivr.net/npm/@octokit/rest@19.0.7/dist/octokit-rest.min.js"></script>
+  <!-- UMD version of Octokit that works in browser -->
+  <script src="https://cdn.jsdelivr.net/npm/@octokit/rest@18.12.0/dist/octokit-rest.min.js"></script>
 </head>
 <body>
   <h2>Send Confession</h2>
@@ -11,13 +12,13 @@
 
   <script>
     async function sendConfession() {
-      const octokit = new window.Octokit({
-        auth: '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' // 🔐 Replace with your GitHub token
+      const octokit = new Octokit({
+        auth: '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' // ✅ Replace with your actual GitHub token
       });
 
-      const owner = 'Mohitmali5489'; // GitHub username/org
-      const repo = 'Chats';   // GitHub repo name
-      const path = 'test.json';   // Path to the JSON file
+      const owner = 'Mohitmali5489'; // ✅ Replace with your GitHub username/org
+      const repo = 'Chats';      // ✅ Replace with your repo name
+      const path = 'test.json'; // ✅ Replace with your file path (must already exist)
 
       const newObject = {
         Pic: "https://i.ibb.co/Y4chzM6F/86689165-af12-49dd-b2e1-351fbbe5fcc6-Photoroom.png",
@@ -28,20 +29,17 @@
       };
 
       try {
-        const { data } = await octokit.repos.getContent({
-          owner,
-          repo,
-          path
-        });
-
+        // Step 1: Get current content and SHA
+        const { data } = await octokit.repos.getContent({ owner, repo, path });
         const sha = data.sha;
         const contentDecoded = atob(data.content.replace(/\n/g, ''));
         const contentJSON = JSON.parse(contentDecoded);
 
+        // Step 2: Update JSON and re-encode
         contentJSON.push(newObject);
-
         const updatedContent = btoa(JSON.stringify(contentJSON, null, 2));
 
+        // Step 3: Send PUT request
         await octokit.repos.createOrUpdateFileContents({
           owner,
           repo,
@@ -50,15 +48,15 @@
           content: updatedContent,
           sha,
           committer: {
-            name: "Monalisa Octocat",
-            email: "octocat@github.com"
+            name: "Confession Bot",
+            email: "bot@example.com"
           }
         });
 
-        alert("Confession added successfully!");
-      } catch (e) {
-        console.error(e);
-        alert("Error: " + e.message);
+        alert("🎉 Confession added successfully!");
+      } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Error: " + error.message);
       }
     }
   </script>
