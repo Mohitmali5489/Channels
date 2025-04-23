@@ -1,70 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Confession to GitHub</title>
-    <script>
-
-        async function addConfessionToGitHub() {
-             const owner = 'Mohitmali5489'; // ✅ Your GitHub username
-    const repo = 'Chats';      // ✅ Your repository name
-    const path = 'test.json'; // ✅ path inside repo (e.g., "data/test.json")
-    const token = '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'; // ⚠️ For testing only, never expose in public
-            
-         const newConfession = {
-      Name: "New Name",
-      Pic: "https://example.com/image.jpg",
-      Confess: "A new confession from frontend!",
-      Tick: "blue"
-    };
-                const fileData = "WwogIHsKICAgICJQaWMiOiAiaHR0cHM6Ly9pLmliYi5jby9ZNGNoek02Ri84\nNjY4OTE2NS1hZjEyLTQ5ZGQtYjJlMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29t\nLnBuZyIsCiAgICAiTmFtZSI6ICJNb2hpdCBNYWxpIiwKICAgICJDb25mZXNz\nIjogIkFzIHRoZSBkZXZlbG9wZXIgYmVoaW5kIHRoaXMgcGxhdGZvcm0sIEkg\nd2FudCB0byBzaW5jZXJlbHkgdGhhbmsgeW91IGZvciB1c2luZyBpdCB0aHJv\ndWdob3V0IHRoZSBzZW1lc3RlciDwn5K78J+Tmi4gU2VlaW5nIGl0IGhlbHAg\neW91IGV2ZW4gaW4gYSBzbWFsbCB3YXkgaGFzIG1lYW50IGEgbG90LiBBcyB5\nb3UgZmluaXNoIHlvdXIgZmluYWwgZXhhbSB0b2RheSDwn46TLCB0aGUgc2Vy\ndmVyIHdpbGwgYmUgZ29pbmcgb2ZmbGluZSBmb3IgYSBiaXQg8J+boO+4j+KA\nlGJ1dCB3ZeKAmWxsIGJlIGJhY2ssIGJldHRlciBhbmQgcmVhZHkgZm9yIGEg\nbmV3IHNlbWVzdGVyLiBXaXNoaW5nIHlvdSByZXN0LCBzdWNjZXNzLCBhbmQg\nZXZlcnl0aGluZyBnb29kIGFoZWFkIOKcqC4iLAogICAgIlRpY2siOiAiZ29s\nZCIsCiAgICAiUm9sbCI6ICIyMiIKICB9LAogIHsKICAgICJQaWMiOiAiaHR0\ncHM6Ly9pLmliYi5jby9ZNGNoek02Ri84NjY4OTE2NS1hZjEyLTQ5ZGQtYjJl\nMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29tLnBuZyIsCiAgICAiTmFtZSI6ICJB\nbWFuIiwKICAgICJDb25mZXNzIjogImNvbnRlbnQiLAogICAgIlRpY2siOiAi\nYmx1ZSIsCiAgICAiUm9sbCI6ICIyNiIKICB9LAogIHsKICAgICJQaWMiOiAi\naHR0cHM6Ly9pLmliYi5jby9ZNGNoek02Ri84NjY4OTE2NS1hZjEyLTQ5ZGQt\nYjJlMS0zNTFmYmJlNWZjYzYtUGhvdG9yb29tLnBuZyIsCiAgICAiTmFtZSI6\nICJBbm9ueW1vdXMiLAogICAgIkNvbmZlc3MiOiAidGhhbmsgeW91IG1vaGl0\nIGZvciBtYWtpbmcgdGhpcyBhcHAgYW5kIHlvdXIgZWZmb3J0cyBtdXN0IGJl\nIGFwcHJlY2lhdGVkIPCfmY/wn5iE8J+SlyIsCiAgICAiVGljayI6ICJibHVl\nIiwKICAgICJSb2xsIjogIjUzIgogIH0KXQo=\n";
-                const decodedContent = atob(fileData.content);
-                const confessionList = JSON.parse(decodedContent);
-
-                // 2. Add new confession
-                confessionList.push(newConfession);
-
-                // 3. Encode updated content
-                const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(confessionList, null, 2))));
-
-                // 4. PUT request to update the file
-                const updateRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Accept': 'application/vnd.github+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Add new confession from browser',
-                        content: updatedContent,
-                        sha: fileData.sha,
-                        committer: {
-                            name: "Frontend User",
-                            email: "frontend@example.com"
-                        }
-                    })
-                });
-
-                if (!updateRes.ok) {
-                    const error = await updateRes.json();
-                    console.error("❌ PUT error:", error);
-                    alert("Failed to update file: " + error.message);
-                    return;
-                }
-
-                alert("✅ Confession added successfully!");
-
-            } catch (err) {
-                console.error("❌ Unexpected error:", err);
-                alert("Something went wrong. Check console for details.");
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title>Send PUT Request to GitHub</title>
+  <script src="https://cdn.skypack.dev/@octokit/core"></script>
 </head>
 <body>
-    <h1>Add Confession to GitHub</h1>
-    <button onclick="addConfessionToGitHub()">Add Confession</button>
+  <h2>Send Confession</h2>
+  <button onclick="sendConfession()">Send</button>
+
+  <script>
+    async function sendConfession() {
+      const { Octokit } = window["@octokit/core"];
+
+      const octokit = new Octokit({
+        auth: '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' // 🔐 Replace with your GitHub token
+      });
+
+      // Create JSON object
+      const newObject = {
+        Pic: "https://i.ibb.co/Y4chzM6F/86689165-af12-49dd-b2e1-351fbbe5fcc6-Photoroom.png",
+        Name: "Anonymous",
+        Confess: "thank you mohit for making this app and your efforts must be appreciated 🙏😄💗",
+        Tick: "blue",
+        Roll: "53"
+      };
+
+      // Fetch the current file to get the SHA
+      const owner = 'Mohitmali5489'; // 🔁 Replace with your GitHub username/org
+      const repo = 'Chats';   // 🔁 Replace with your repo name
+      const path = 'test.json';   // 🔁 Replace with the path to your JSON file
+
+      let response;
+      try {
+        response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner,
+          repo,
+          path
+        });
+      } catch (e) {
+        alert('Error fetching file: ' + e.message);
+        return;
+      }
+
+      const sha = response.data.sha;
+
+      // Get existing content and append the new object
+      const contentDecoded = atob(response.data.content.replace(/\n/g, ''));
+      let contentJSON = JSON.parse(contentDecoded);
+      contentJSON.push(newObject);
+
+      // Re-encode the content
+      const updatedContent = btoa(JSON.stringify(contentJSON, null, 2));
+
+      // Send PUT request
+      try {
+        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+          owner,
+          repo,
+          path,
+          message: 'Add new confession',
+          committer: {
+            name: 'Monalisa Octocat',
+            email: 'octocat@github.com'
+          },
+          content: updatedContent,
+          sha: sha,
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        });
+
+        alert('Confession added successfully!');
+      } catch (e) {
+        alert('Error sending confession: ' + e.message);
+      }
+    }
+  </script>
 </body>
 </html>
