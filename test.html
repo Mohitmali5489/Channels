@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Send PUT Request to GitHub</title>
-  <script src="https://cdn.skypack.dev/@octokit/core"></script>
+  <!-- Octokit REST browser version -->
+  <script src="https://cdn.jsdelivr.net/npm/@octokit/rest/dist/octokit.umd.js"></script>
 </head>
 <body>
   <h2>Send Confession</h2>
@@ -11,13 +12,10 @@
 
   <script>
     async function sendConfession() {
-      const { Octokit } = window["@octokit/core"];
-
-      const octokit = new Octokit({
+      const octokit = new Octokit.Octokit({
         auth: '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' // 🔐 Replace with your GitHub token
       });
 
-      // Create JSON object
       const newObject = {
         Pic: "https://i.ibb.co/Y4chzM6F/86689165-af12-49dd-b2e1-351fbbe5fcc6-Photoroom.png",
         Name: "Anonymous",
@@ -26,54 +24,35 @@
         Roll: "53"
       };
 
-      // Fetch the current file to get the SHA
-      const owner = 'Mohitmali5489'; // 🔁 Replace with your GitHub username/org
-      const repo = 'Chats';   // 🔁 Replace with your repo name
-      const path = 'test.json';   // 🔁 Replace with the path to your JSON file
+      const owner = 'Mohitmali5489'; // 🔁 Replace with GitHub owner
+      const repo = 'Chats';   // 🔁 Replace with repository name
+      const path = 'test.json';   // 🔁 Replace with file path (e.g., data/confessions.json)
 
-      let response;
       try {
-        response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-          owner,
-          repo,
-          path
-        });
-      } catch (e) {
-        alert('Error fetching file: ' + e.message);
-        return;
-      }
+        const { data } = await octokit.repos.getContent({ owner, repo, path });
+        const sha = data.sha;
+        const contentDecoded = atob(data.content.replace(/\n/g, ''));
+        let contentJSON = JSON.parse(contentDecoded);
+        contentJSON.push(newObject);
+        const updatedContent = btoa(JSON.stringify(contentJSON, null, 2));
 
-      const sha = response.data.sha;
-
-      // Get existing content and append the new object
-      const contentDecoded = atob(response.data.content.replace(/\n/g, ''));
-      let contentJSON = JSON.parse(contentDecoded);
-      contentJSON.push(newObject);
-
-      // Re-encode the content
-      const updatedContent = btoa(JSON.stringify(contentJSON, null, 2));
-
-      // Send PUT request
-      try {
-        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+        await octokit.repos.createOrUpdateFileContents({
           owner,
           repo,
           path,
           message: 'Add new confession',
+          content: updatedContent,
+          sha,
           committer: {
             name: 'Monalisa Octocat',
             email: 'octocat@github.com'
-          },
-          content: updatedContent,
-          sha: sha,
-          headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
           }
         });
 
         alert('Confession added successfully!');
       } catch (e) {
-        alert('Error sending confession: ' + e.message);
+        console.error(e);
+        alert('Error: ' + e.message);
       }
     }
   </script>
