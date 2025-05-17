@@ -1,32 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Custom AI Bot</title>
+  <title>AI Chatbot</title>
   <style>
-    body { font-family: sans-serif; margin: 40px; }
-    #chatbox { width: 100%; max-width: 600px; }
+    body { font-family: Arial, sans-serif; padding: 30px; background: #f9f9f9; }
+    #chatbox { width: 100%; max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
     .message { margin: 10px 0; }
-    .bot { color: green; }
     .user { color: blue; }
+    .bot { color: green; }
+    #inputSection { display: flex; margin-top: 20px; }
+    #userInput { flex: 1; padding: 10px; font-size: 16px; }
+    button { padding: 10px 15px; font-size: 16px; }
   </style>
 </head>
 <body>
 
-  <h2>AI Bot</h2>
-  <div id="chatbox"></div>
-
-  <input id="userInput" placeholder="Ask something..." style="width: 60%;" />
-  <button onclick="sendMessage()">Send</button>
+  <div id="chatbox">
+    <h2>AI Chatbot</h2>
+    <div id="messages"></div>
+    <div id="inputSection">
+      <input id="userInput" placeholder="Type your question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
   <script>
-    const myKnowledge = {
+    const apiKey = "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";  // <-- Your real OpenAI API key
+
+    const customKnowledge = {
       "what are your hours": "We are open from 9am to 5pm, Monday to Friday.",
-      "how to contact support": "Email us at support@example.com.",
-      "reset password": "Click on 'Forgot password' on the login page."
+      "how to contact support": "You can email us at support@example.com.",
+      "reset password": "Click on 'Forgot Password' at the login page to reset your password.",
+      "location": "We are located in New York City, USA."
     };
 
+    function findInCustomKnowledge(input) {
+      const lowerInput = input.toLowerCase();
+      for (let key in customKnowledge) {
+        if (lowerInput.includes(key)) {
+          return customKnowledge[key];
+        }
+      }
+      return null;
+    }
+
     async function queryGPT(prompt) {
-      const apiKey = "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";  // <-- Replace with your API key
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -34,42 +52,42 @@
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-4",
-          messages: [{ role: "user", content: prompt }],
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }]
         })
       });
 
       const data = await response.json();
+
+      if (!data.choices || !data.choices[0]) {
+        console.error("OpenAI API error:", data);
+        return "Sorry, something went wrong while talking to the AI.";
+      }
+
       return data.choices[0].message.content.trim();
     }
 
-    function findInKnowledge(question) {
-      const lower = question.toLowerCase();
-      for (const key in myKnowledge) {
-        if (lower.includes(key)) {
-          return myKnowledge[key];
-        }
-      }
-      return null;
-    }
-
     async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const message = input.value;
-      input.value = "";
+      const inputBox = document.getElementById("userInput");
+      const userText = inputBox.value.trim();
+      if (!userText) return;
 
-      const chatbox = document.getElementById("chatbox");
-      chatbox.innerHTML += `<div class="message user"><strong>You:</strong> ${message}</div>`;
+      inputBox.value = "";
 
-      let answer = findInKnowledge(message);
+      const chat = document.getElementById("messages");
+      chat.innerHTML += `<div class="message user"><strong>You:</strong> ${userText}</div>`;
+
+      let answer = findInCustomKnowledge(userText);
 
       if (!answer) {
-        chatbox.innerHTML += `<div class="message bot"><em>Thinking...</em></div>`;
-        answer = await queryGPT(message);
-        chatbox.lastChild.innerHTML = `<strong>Bot:</strong> ${answer}`;
+        chat.innerHTML += `<div class="message bot"><em>Bot is thinking...</em></div>`;
+        answer = await queryGPT(userText);
+        chat.lastChild.innerHTML = `<div class="message bot"><strong>Bot:</strong> ${answer}</div>`;
       } else {
-        chatbox.innerHTML += `<div class="message bot"><strong>Bot:</strong> ${answer}</div>`;
+        chat.innerHTML += `<div class="message bot"><strong>Bot:</strong> ${answer}</div>`;
       }
+
+      chat.scrollTop = chat.scrollHeight;
     }
   </script>
 
