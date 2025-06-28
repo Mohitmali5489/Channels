@@ -2,25 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Realistic Notebook Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notebook Page</title>
   <style>
     :root {
-      --line-color: #c3d9ff;
-      --background: #fff;
-      --text-color: #000;
-      --margin-line: red;
-      --table-header: #d3e3ff;
-      --border-color: #888;
+      --bg-color: #ffffff;
+      --line-color: #e2e8f0;
+      --text-color: #1a202c;
+      --heading-color: #2d3748;
+      --table-header-bg: #edf2f7;
+      --border-color: #cbd5e0;
     }
 
     body.dark {
-      --line-color: #4a4a4a;
-      --background: #1e1e1e;
-      --text-color: #eaeaea;
-      --margin-line: #ff5f5f;
-      --table-header: #333;
-      --border-color: #999;
+      --bg-color: #1e1e1e;
+      --line-color: #2d2d2d;
+      --text-color: #e2e2e2;
+      --heading-color: #f9f9f9;
+      --table-header-bg: #2a2a2a;
+      --border-color: #4a4a4a;
     }
 
     * {
@@ -28,96 +28,90 @@
     }
 
     body {
-      font-family: 'Courier New', monospace;
-      background-color: var(--background);
-      color: var(--text-color);
       margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
+      font-family: 'Georgia', serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 0;
     }
 
     .notebook {
-      width: 100%;
       max-width: 850px;
-      padding: 40px 20px;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          var(--background) 0px,
-          var(--background) 27px,
-          var(--line-color) 28px,
-          var(--background) 29px
-        );
-      position: relative;
-      border-left: 5px solid purple;
-      line-height: 30px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      margin: auto;
+      padding: 20px;
+      background: repeating-linear-gradient(
+        to bottom,
+        var(--bg-color) 0px,
+        var(--bg-color) 27px,
+        var(--line-color) 28px,
+        var(--bg-color) 29px
+      );
     }
 
-    .notebook::before {
-      content: '';
-      position: absolute;
-      left: 30px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--margin-line);
+    h1, h2 {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: var(--heading-color);
+      margin: 20px 0 10px;
     }
 
-    .notebook h1, .notebook h2, .notebook p, .notebook ul, .notebook ol {
-      background-color: rgba(255, 255, 255, 0.8);
+    p, ul, ol {
+      background-color: transparent;
+      margin-bottom: 20px;
       padding-left: 10px;
-      margin: 0 0 20px 0;
-      position: relative;
-      z-index: 1;
     }
 
-    .notebook ul, .notebook ol {
-      padding-left: 40px;
+    ul, ol {
+      padding-left: 30px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 30px;
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: transparent;
     }
 
     th, td {
       border: 1px solid var(--border-color);
-      padding: 8px 10px;
-      text-align: left;
+      padding: 10px;
     }
 
     th {
-      background-color: var(--table-header);
+      background-color: var(--table-header-bg);
+      color: var(--heading-color);
       text-align: center;
     }
 
     @media (max-width: 600px) {
       .notebook {
-        padding: 20px 10px;
-        font-size: 14px;
-        line-height: 26px;
+        padding: 15px;
       }
 
-      th, td {
-        font-size: 13px;
-        padding: 6px 8px;
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      table, th, td {
+        font-size: 14px;
       }
     }
   </style>
+
   <script>
-    // Toggle dark mode based on URL parameter (?theme=dark)
     window.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('theme') === 'dark') {
+      const theme = new URLSearchParams(window.location.search).get('theme');
+      if (theme === 'dark') {
         document.body.classList.add('dark');
       }
     });
   </script>
 </head>
+
 <body>
   <div class="notebook">
     <h1 align="center">Financial Accounting - III</h1>
