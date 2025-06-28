@@ -1,82 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Realistic Notebook Page</title>
   <style>
- 
-  body {
-    background: #f5f0e6;
-    font-family: 'Courier New', monospace;
-    display: flex;
-    justify-content: center;
-    padding: 40px;
-  }
+    :root {
+      --line-color: #c3d9ff;
+      --background: #fff;
+      --text-color: #000;
+      --margin-line: red;
+      --table-header: #d3e3ff;
+      --border-color: #888;
+    }
 
-  .notebook {
-    width: 800px;
-    padding: 60px 40px;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        #fff 0px,
-        #fff 27px,
-        #c3d9ff 28px,
-        #fff 29px
-      );
-    border-left: 5px solid purple;
-    line-height: 30px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    position: relative;
-    box-sizing: border-box;
-  }
+    body.dark {
+      --line-color: #4a4a4a;
+      --background: #1e1e1e;
+      --text-color: #eaeaea;
+      --margin-line: #ff5f5f;
+      --table-header: #333;
+      --border-color: #999;
+    }
 
-  .notebook::before {
-    content: '';
-    position: absolute;
-    left: 32px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: red;
-    z-index: 0;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  .notebook h2, .notebook p {
-    background: rgba(255, 255, 255, 0.8);
-    padding-left: 10px;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 1;
-  }
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: var(--background);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    background: rgba(255, 255, 255, 0.9);
-    position: relative;
-    z-index: 1;
-  }
+    .notebook {
+      width: 100%;
+      max-width: 850px;
+      padding: 40px 20px;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          var(--background) 0px,
+          var(--background) 27px,
+          var(--line-color) 28px,
+          var(--background) 29px
+        );
+      position: relative;
+      border-left: 5px solid purple;
+      line-height: 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
 
-  th, td {
-    border: 1px solid #888;
-    padding: 8px 10px;
-    text-align: left;
-  }
+    .notebook::before {
+      content: '';
+      position: absolute;
+      left: 30px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--margin-line);
+    }
 
-  th {
-    background: #d3e3ff;
-    text-align: center;
+    .notebook h1, .notebook h2, .notebook p, .notebook ul, .notebook ol {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding-left: 10px;
+      margin: 0 0 20px 0;
+      position: relative;
+      z-index: 1;
+    }
 
+    .notebook ul, .notebook ol {
+      padding-left: 40px;
+    }
 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--table-header);
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .notebook {
+        padding: 20px 10px;
+        font-size: 14px;
+        line-height: 26px;
+      }
+
+      th, td {
+        font-size: 13px;
+        padding: 6px 8px;
+      }
+    }
   </style>
+  <script>
+    // Toggle dark mode based on URL parameter (?theme=dark)
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    });
+  </script>
 </head>
 <body>
   <div class="notebook">
-    <h1 align="center">Financial Accounting - III</h1><br>
-    <h2 align="center" >Ch: 1 Amalgamation of Firms</h2>
-     <h2>Meaning</h2>
+    <h1 align="center">Financial Accounting - III</h1>
+    <h2 align="center">Ch: 1 Amalgamation of Firms</h2>
+
+    <h2>Meaning</h2>
     <p>
       Amalgamation of firms means a closure of two or more business firms and starting a new firm.
     </p>
@@ -107,45 +154,39 @@
       <li><strong>Net Asset:</strong> Under this method the purchase consideration is calculated by deducting the amount of liabilities taken over by the new firm from the assets taken over.</li>
     </ol>
 
-  <h2>Format of Purchase Consideration</h2>
+    <h2>Format of Purchase Consideration</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Particulars</th>
+          <th>Amt</th>
+          <th>Amt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="3"><strong>(A) Assets taken over at agreed value:</strong></td>
+        </tr>
+        <tr><td>Goodwill</td><td>xxx</td><td></td></tr>
+        <tr><td>Land / Building</td><td>xxx</td><td></td></tr>
+        <tr><td>Furniture</td><td>xxx</td><td></td></tr>
+        <tr><td>Plant / Machinery</td><td>xxx</td><td></td></tr>
+        <tr><td>Stock</td><td>xxx</td><td></td></tr>
+        <tr><td>Debtors</td><td>xxx</td><td></td></tr>
+        <tr><td>Cash</td><td>xxx</td><td></td></tr>
+        <tr><td>Bank</td><td>xxx</td><td></td></tr>
+        <tr><td style="text-align: right;" colspan="3"><strong>(A) xxx</strong></td></tr>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Particulars</th>
-        <th>Amt</th>
-        <th>Amt</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td colspan="3"><strong>(A) Assets taken over at agreed value:</strong></td>
-      </tr>
-      <tr><td>Goodwill</td><td>xxx</td><td></td></tr>
-      <tr><td>Land / Building</td><td>xxx</td><td></td></tr>
-      <tr><td>Furniture</td><td>xxx</td><td></td></tr>
-      <tr><td>Plant / Machinery</td><td>xxx</td><td></td></tr>
-      <tr><td>Stock</td><td>xxx</td><td></td></tr>
-      <tr><td>Debtors</td><td>xxx</td><td></td></tr>
-      <tr><td>Cash</td><td>xxx</td><td></td></tr>
-      <tr><td>Bank</td><td>xxx</td><td></td></tr>
-      <tr><td style="text-align: right;" colspan="3"><strong>(A) xxx</strong></td></tr>
-
-      <tr>
-        <td colspan="3"><strong>(B) Liabilities taken over at agreed value:</strong></td>
-      </tr>
-      <tr><td>Creditors</td><td>xxx</td><td></td></tr>
-      <tr><td>Bank Overdraft</td><td>xxx</td><td></td></tr>
-      <tr><td>Bills Payable</td><td>xxx</td><td></td></tr>
-      <tr><td>Any other liability taken over</td><td>xxx</td><td></td></tr>
-      <tr><td style="text-align: right;" colspan="3"><strong>(B) xxx</strong></td></tr>
-    </tbody>
-  </table>
-  
-  
-  
+        <tr>
+          <td colspan="3"><strong>(B) Liabilities taken over at agreed value:</strong></td>
+        </tr>
+        <tr><td>Creditors</td><td>xxx</td><td></td></tr>
+        <tr><td>Bank Overdraft</td><td>xxx</td><td></td></tr>
+        <tr><td>Bills Payable</td><td>xxx</td><td></td></tr>
+        <tr><td>Any other liability taken over</td><td>xxx</td><td></td></tr>
+        <tr><td style="text-align: right;" colspan="3"><strong>(B) xxx</strong></td></tr>
+      </tbody>
+    </table>
   </div>
-  
-  
 </body>
 </html>
