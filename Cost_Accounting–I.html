@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notebook Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #fffaf2;
+      --line-color: #d0e2ff;
+      --text-color: #222;
+      --heading-color: #111;
+      --table-header-bg: #eef3f9;
+      --border-color: #ccc;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --line-color: #333;
+      --text-color: #e0e0e0;
+      --heading-color: #f2f2f2;
+      --table-header-bg: #2b2b2b;
+      --border-color: #555;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Patrick Hand', cursive;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 18px;
+      line-height: 34px; /* to match background lines */
+      padding: 0;
+    }
+
+    .notebook {
+      max-width: 850px;
+      margin: auto;
+      padding: 40px 20px;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          var(--bg-color) 0px,
+          var(--bg-color) 33px,
+          var(--line-color) 34px,
+          var(--bg-color) 35px
+        );
+    }
+
+    h1, h2 {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--heading-color);
+      margin: 0 0 10px;
+      line-height: 34px;
+    }
+
+    p, ul, ol, table {
+      margin: 0 0 20px;
+      padding-left: 10px;
+    }
+
+    ul, ol {
+      padding-left: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: transparent;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      line-height: 34px;
+    }
+
+    th {
+      background-color: var(--table-header-bg);
+      text-align: center;
+      color: var(--heading-color);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 16px;
+        line-height: 30px;
+      }
+
+      .notebook {
+        padding: 20px 12px;
+      }
+
+      th, td {
+        font-size: 14px;
+        padding: 6px 8px;
+      }
+    }
+    
+    img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px auto; /* center-align and give spacing */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+  </style>
+
+  <script>
+    // Dark mode via URL ?theme=dark
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+    });
+  </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+</head>
+
+<body>
+  <div class="notebook">
+    <h1 align="center">Cost Accounting – I</h1>
+    <h2 align="center">Module 2: Material Cost</h2>
+<b>Q2. M/s Reliance Industries Ltd Dhulia supplies you the following information:
+Consumption of Material per annum: 15,000 Kg
+Cost of placing an order: Rs. 48
+Cost of Raw Material: Rs. 2 per kg
+Storage cost is 8% of average inventory
+You are required to ascertain the economic order quantity and also state the number of orders
+to be placed in the year 
+</b>
+<p><b>Answer:</b></p>
+<p>Annual Consumption = 15,000 kg</p>
+<p>Ordering Cost = Rs. 48</p>
+<p>Cost per Unit = Rs. 2</p>
+<p>Carrying Cost = 8% of Rs. 2 = Rs. 0.16</p>
+
+<p>\( EOQ = \sqrt{\frac{2 \times 15000 \times 48}{0.16}} = \sqrt{\frac{1,440,000}{0.16}} = \sqrt{9,000,000} = \mathbf{3000 \text{ kg}} \)</p>
+<p>Number of Orders = \( \frac{15000}{3000} = \mathbf{5 \text{ orders}} \)</p>
+
+<br>
+
+<b>3. Calculate economic order quantity from the following:
+a) Quantity 60,000 units
+b) Ordering cost Rs. 1,200 per order
+c) Carrying cost 20%
+d) Price per unit Rs. 2,000.</b>
+<p><b>Answer:</b></p>
+<p>Annual Demand = 60,000 units</p>
+<p>Ordering Cost = Rs. 1,200</p>
+<p>Carrying Cost = 20% of Rs. 2000 = Rs. 400</p>
+
+<p>\( EOQ = \sqrt{\frac{2 \times 60000 \times 1200}{400}} = \sqrt{\frac{144000000}{400}} = \sqrt{360000} = \mathbf{600 \text{ units}} \)</p>
+
+<br>
+
+<b>Q4. Homework:</b>
+<p>Annual Requirement = 1,600 units</p>
+<p>Ordering Cost = Rs. 50</p>
+<p>Cost per Unit = Rs. 40</p>
+<p>Carrying Cost = 10% of Rs. 40 = Rs. 4</p>
+<p><b>Answer:</b></p>
+<p>\( EOQ = \sqrt{\frac{2 \times 1600 \times 50}{4}} = \sqrt{\frac{160000}{4}} = \sqrt{40000} = \mathbf{200 \text{ units}} \)</p>
+
+<br>
+
+<b>Q5. Homework:</b>
+<p>Annual Consumption = 4,000 kg</p>
+<p>Ordering Cost = Rs. 5</p>
+<p>Cost per Unit = Rs. 2</p>
+<p>Carrying Cost = 8% of Rs. 2 = Rs. 0.16</p>
+<p><b>Answer:</b></p>
+<p>\( EOQ = \sqrt{\frac{2 \times 4000 \times 5}{0.16}} = \sqrt{\frac{40000}{0.16}} = \sqrt{250000} = \mathbf{500 \text{ kg}} \)</p>
+<p>Number of Orders = \( \frac{4000}{500} = \mathbf{8 \text{ orders}} \)</p>
+
+<br>
+
+<b>Q6. Homework:</b>
+<p>Annual Requirement = 1,600 units</p>
+<p>Ordering Cost = Rs. 50</p>
+<p>Cost per Unit = Rs. 30</p>
+<p>ROI = 10% of Rs. 30 = Rs. 3</p>
+<p>Additional Cost = Rs. 1</p>
+<p>Total Carrying Cost = Rs. 4</p>
+<p><b>Answer:</b></p>
+<p>\( EOQ = \sqrt{\frac{2 \times 1600 \times 50}{4}} = \sqrt{\frac{160000}{4}} = \sqrt{40000} = \mathbf{200 \text{ units}} \)</p>
+
+    
+
+
+    
+    
+    
+    
+  </div>
+</body>
+</html>
