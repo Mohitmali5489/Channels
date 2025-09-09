@@ -1,293 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volleyball & Sports Notebook</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volleyball & Sports Notebook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #222;
+      --box-color: #fdfdfd;
+      --border-color: #2196f3;
+    }
 
-        :root {
-            --primary-color: #005A9C; /* A nice blue */
-            --secondary-color: #FF6F00; /* A vibrant orange */
-            --background-color: #f4f6f8;
-            --card-background: #ffffff;
-            --text-color: #333333;
-            --question-color: #1a1a1a;
-            --border-radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+    /* Theme classes */
+    body.dark-mode { --bg-color: #121212; --text-color: #e0e0e0; --box-color: #1e1e1e; --border-color: #64b5f6; }
+    body.sepia-mode { --bg-color: #f4ecd8; --text-color: #3e2f1c; --box-color: #fdf6e3; --border-color: #a98244; }
+    body.solarized-mode { --bg-color: #fdf6e3; --text-color: #657b83; --box-color: #eee8d5; --border-color: #268bd2; }
+    body.highcontrast-mode { --bg-color: #000; --text-color: #fff; --box-color: #1a1a1a; --border-color: #ffcc00; }
+    body.midnight-mode { --bg-color: #0d1b2a; --text-color: #e0e1dd; --box-color: #1b263b; --border-color: #00b4d8; }
+    body.forest-mode { --bg-color: #1c352d; --text-color: #d1e7dd; --box-color: #284f3b; --border-color: #81c784; }
+    body.lavender-mode { --bg-color: #f3f0ff; --text-color: #3c096c; --box-color: #e6e0f8; --border-color: #9d4edd; }
+    body.rose-mode { --bg-color: #fff0f3; --text-color: #800f2f; --box-color: #ffe0e9; --border-color: #d6336c; }
+    body.warmgray-mode { --bg-color: #f7f4f2; --text-color: #3a3a3a; --box-color: #eae7e1; --border-color: #6c757d; }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Georgia', serif;
+      padding: 20px 10px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    .pdf-page {
+      background-color: var(--box-color);
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    h2 {
+      text-align: center;
+      color: var(--border-color);
+      font-size: 20px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    
+    h3 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
 
-        header h1 {
-            color: var(--primary-color);
-            font-size: 2.5em;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
+    h1.question {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 30px;
+    }
 
-        header p {
-            color: #666;
-            font-size: 1.1em;
-        }
+    .answer {
+      background-color: var(--box-color);
+      padding: 15px;
+      border-left: 4px solid var(--border-color);
+      margin-top: 10px;
+    }
 
-        .qa-card {
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            padding: 20px 25px;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        
-        .qa-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        }
+    ol, ul {
+      padding-left: 20px;
+    }
 
-        .question {
-            color: var(--question-color);
-            font-size: 1.4em;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 12px;
-        }
+    li {
+      margin-bottom: 8px;
+    }
 
-        .answer h3 {
-            color: var(--primary-color);
-            font-size: 1.2em;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 5px;
-        }
+    p {
+      margin-bottom: 10px;
+    }
+    img {
+        width: 100%;
+        height: auto; /* Maintains aspect ratio */
+    }
 
-        .answer ul {
-            list-style-type: none;
-            padding-left: 5px;
-        }
+    .theme-select-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
 
-        .answer li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 10px;
-        }
+    .theme-select-container label {
+      font-weight: 500;
+    }
 
-        .answer li::before {
-            content: '▶';
-            position: absolute;
-            left: 0;
-            top: 0px;
-            font-size: 16px;
-            color: var(--secondary-color);
-        }
-        
-        .answer .nested-list {
-            list-style-type: none;
-            padding-left: 20px;
-            margin-top: 8px;
-        }
-        
-        .answer .nested-list li::before {
-             content: '▹';
-             color: var(--secondary-color);
-             font-size: 18px;
-        }
+    select.form-select {
+      width: auto;
+      min-width: 150px;
+    }
 
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #888;
-            font-size: 0.9em;
-        }
-    </style>
+    @media (max-width: 600px) {
+      .theme-select-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .pdf-page {
+        box-shadow: none;
+        padding: 20mm;
+      }
+
+      .answer {
+        border-left: 3px solid #000;
+      }
+
+      .theme-select-container {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="pdf-page">
 
-    <div class="container">
-        <header>
-            <h1>Sports Notebook</h1>
-            <p>Your quick guide to sports rules and fundamentals.</p>
-        </header>
-
-        <div class="qa-card">
-            <h2 class="question">Can you give me an overview of the sport volleyball?</h2>
-            <div class="answer">
-                <p>Volleyball is a popular team sport played globally, with a rich history and a strong competitive scene. Here's an overview:</p>
-                
-                <h3>History</h3>
-                <p>Volleyball was invented in 1895 by William G. Morgan, a physical education instructor from Holyoke, Massachusetts. The game was initially called "Mintonette" and was designed to be a combination of basketball, baseball, and tennis.</p>
-
-                <h3>Rules and Gameplay</h3>
-                <p>The objective of volleyball is to score points by sending the ball over the net and landing it in the opponent's court. A team consists of six players, and a match is typically best-of-five sets. Each set is played to 25 points, with a minimum lead of two points.</p>
-
-                <h3>Variations</h3>
-                <ul>
-                    <li><strong>Indoor volleyball:</strong> Played on an indoor court with six players on each team.</li>
-                    <li><strong>Beach volleyball:</strong> Played on sand with two players on each team.</li>
-                    <li><strong>Sitting volleyball:</strong> A variation of volleyball played while seated on the floor.</li>
-                </ul>
-
-                <h3>Competitions</h3>
-                <ul>
-                    <li><strong>Olympic Games:</strong> Volleyball has been included in the Olympic Games since 1964.</li>
-                    <li><strong>FIVB World Championship:</strong> A biennial tournament featuring national teams from around the world.</li>
-                    <li><strong>Volleyball Nations League:</strong> An annual tournament featuring top national teams.</li>
-                </ul>
-
-                <h3>Benefits and Popularity</h3>
-                <p>Volleyball is a popular sport globally, known for its fast-paced action, teamwork, and social benefits. It can be played recreationally or competitively, making it accessible to people of all ages and skill levels.</p>
-            </div>
-        </div>
-
-        <div class="qa-card">
-            <h2 class="question">What are the fundamentals of sports?</h2>
-            <div class="answer">
-                <p>The fundamentals of sports refer to the basic principles, skills, and concepts that are essential for participating in and enjoying various sports. Here are some key fundamentals:</p>
-
-                <h3>Physical Fundamentals</h3>
-                <ul>
-                    <li><strong>Fitness:</strong> Developing cardiovascular endurance, muscular strength and endurance, flexibility, and speed.</li>
-                    <li><strong>Coordination:</strong> Developing hand-eye coordination, footwork, and overall physical coordination.</li>
-                    <li><strong>Agility:</strong> Quickly changing direction, speed, and movement.</li>
-                </ul>
-
-                <h3>Technical Fundamentals</h3>
-                <ul>
-                    <li><strong>Skill development:</strong> Mastering specific skills, such as throwing, catching, hitting, or kicking.</li>
-                    <li><strong>Technique:</strong> Understanding and applying proper techniques for various sports, such as proper stance, grip, or movement.</li>
-                    <li><strong>Tactics:</strong> Understanding and applying strategies and game plans to outmaneuver opponents.</li>
-                </ul>
-
-                <h3>Mental Fundamentals</h3>
-                <ul>
-                    <li><strong>Focus and concentration:</strong> Maintaining attention and focus during competition.</li>
-                    <li><strong>Motivation:</strong> Developing and maintaining motivation to participate and improve.</li>
-                    <li><strong>Sportsmanship:</strong> Demonstrating respect, fairness, and good sportsmanship towards teammates, opponents, and officials.</li>
-                </ul>
-
-                <h3>Social Fundamentals</h3>
-                <ul>
-                    <li><strong>Teamwork:</strong> Collaborating with teammates to achieve common goals.</li>
-                    <li><strong>Communication:</strong> Effectively communicating with teammates, coaches, and officials.</li>
-                    <li><strong>Respect and inclusivity:</strong> Fostering a positive and inclusive team culture.</li>
-                </ul>
-
-                 <h3>Other Fundamentals</h3>
-                <ul>
-                    <li><strong>Safety and injury prevention:</strong> Understanding and applying safety protocols and injury prevention strategies.</li>
-                    <li><strong>Rules and regulations:</strong> Understanding and adhering to rules and regulations governing various sports.</li>
-                    <li><strong>Sports etiquette:</strong> Demonstrating respect and courtesy towards others in a sports setting.</li>
-                </ul>
-                <p>These fundamentals provide a foundation for participating in and enjoying sports, and can be applied to various sports and activities.</p>
-            </div>
-        </div>
-        
-        <div class="qa-card">
-            <h2 class="question">What are some common fouls in volleyball?</h2>
-            <div class="answer">
-                <p>Here are some common fouls in volleyball. Understanding these rules can help players and teams avoid committing fouls and improve their gameplay.</p>
-                
-                <h3>Serving Fouls</h3>
-                <ul>
-                    <li><strong>Foot fault:</strong> Stepping on or over the center line while serving.</li>
-                    <li><strong>Screening:</strong> Blocking the opponent's view of the server or the ball.</li>
-                    <li><strong>Serving out of rotation:</strong> Serving before the referee has signaled for the serve to start.</li>
-                </ul>
-
-                <h3>Playing the Ball Fouls</h3>
-                <ul>
-                    <li><strong>Lifting or carrying:</strong> Catching or holding the ball instead of hitting it cleanly.</li>
-                    <li><strong>Double hit:</strong> Hitting the ball twice in a row, or hitting the ball with both hands simultaneously.</li>
-                    <li><strong>Touching the net:</strong> Touching the net with any part of the body while playing the ball.</li>
-                </ul>
-
-                <h3>Player Position Fouls</h3>
-                <ul>
-                    <li><strong>Out of rotation:</strong> A player is not in their correct position at the time of the serve.</li>
-                    <li><strong>Overlapping:</strong> A player overlaps with another player in the front or back row.</li>
-                </ul>
-
-                <h3>Other Fouls</h3>
-                <ul>
-                    <li><strong>Reaching over the net:</strong> Reaching over the net and interfering with the opponent's play.</li>
-                    <li><strong>Obstruction:</strong> Blocking an opponent's movement or vision.</li>
-                    <li><strong>Unsportsmanlike conduct:</strong> Engaging in behavior that is considered unsportsmanlike, such as arguing with the referee or using abusive language.</li>
-                </ul>
-                
-                <h3>Consequences of Fouls</h3>
-                <ul>
-                    <li><strong>Point awarded:</strong> The opposing team is awarded a point when a foul is committed.</li>
-                    <li><strong>Side-out:</strong> The opposing team gains the right to serve when a foul is committed.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="qa-card">
-            <h2 class="question">What are the standard measurements for a volleyball court?</h2>
-            <div class="answer">
-                <p>These measurements are standardized by the FIVB (Fédération Internationale de Volleyball) and are used in most professional and international volleyball competitions.</p>
-                
-                <h3>Indoor Volleyball Court</h3>
-                <ul>
-                    <li><strong>Length:</strong> 18 meters (59 feet)</li>
-                    <li><strong>Width:</strong> 9 meters (29.5 feet)</li>
-                    <li>
-                        <strong>Net height:</strong>
-                        <ul class="nested-list">
-                            <li>Men's volleyball: $2.43$ meters ($7$ feet $11 \frac{5}{8}$ inches)</li>
-                            <li>Women's volleyball: $2.24$ meters ($7$ feet $4 \frac{1}{8}$ inches)</li>
-                        </ul>
-                    </li>
-                </ul>
-                
-                <h3>Beach Volleyball Court</h3>
-                <ul>
-                    <li><strong>Length:</strong> 16 meters (52 feet 6 inches)</li>
-                    <li><strong>Width:</strong> 8 meters (26 feet 3 inches)</li>
-                    <li>
-                        <strong>Net height:</strong>
-                        <ul class="nested-list">
-                           <li>Men's beach volleyball: $2.43$ meters ($7$ feet $11 \frac{5}{8}$ inches)</li>
-                           <li>Women's beach volleyball: $2.24$ meters ($7$ feet $4 \frac{1}{8}$ inches)</li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <h3>Other Court Features</h3>
-                 <ul>
-                    <li><strong>Attack line:</strong> A line 3 meters (9 feet 10 inches) from the net, marking the area where back-row players can attack the ball.</li>
-                    <li><strong>Center line:</strong> A line that divides the court into two halves.</li>
-                    <li><strong>Free zone:</strong> An area around the court that is free from obstacles and allows players to move freely.</li>
-                </ul>
-            </div>
-        </div>
-        
-        <footer>
-            <p>BAFs App &copy; 2025</p>
-        </footer>
-
+    <div class="theme-select-container">
+      <label for="themeSelect">Select Theme:</label>
+      <select id="themeSelect" class="form-select form-select-sm" onchange="changeTheme(this.value)">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="sepia">Sepia</option>
+        <option value="solarized">Solarized</option>
+        <option value="highcontrast">High Contrast</option>
+        <option value="midnight">Midnight Blue</option>
+        <option value="forest">Forest Green</option>
+        <option value="lavender">Lavender</option>
+        <option value="rose">Rose</option>
+        <option value="warmgray">Warm Gray</option>
+      </select>
     </div>
 
+    <h2>Sports Notebook</h2>
+    
+    <h1 class="question">Can you give me an overview of the sport volleyball?</h1>
+    <div class="answer">
+        <p>Volleyball is a popular team sport played globally, with a rich history and a strong competitive scene. Here's an overview:</p>
+        
+        <h3>History</h3>
+        <p>Volleyball was invented in 1895 by William G. Morgan, a physical education instructor from Holyoke, Massachusetts. The game was initially called "Mintonette" and was designed to be a combination of basketball, baseball, and tennis.</p>
+
+        <h3>Rules and Gameplay</h3>
+        <p>The objective of volleyball is to score points by sending the ball over the net and landing it in the opponent's court. A team consists of six players, and a match is typically best-of-five sets. Each set is played to 25 points, with a minimum lead of two points.</p>
+
+        <h3>Variations</h3>
+        <ul>
+            <li><strong>Indoor volleyball:</strong> Played on an indoor court with six players on each team.</li>
+            <li><strong>Beach volleyball:</strong> Played on sand with two players on each team.</li>
+            <li><strong>Sitting volleyball:</strong> A variation of volleyball played while seated on the floor.</li>
+        </ul>
+
+        <h3>Competitions</h3>
+        <ul>
+            <li><strong>Olympic Games:</strong> Volleyball has been included in the Olympic Games since 1964.</li>
+            <li><strong>FIVB World Championship:</strong> A biennial tournament featuring national teams from around the world.</li>
+            <li><strong>Volleyball Nations League:</strong> An annual tournament featuring top national teams.</li>
+        </ul>
+
+        <h3>Benefits and Popularity</h3>
+        <p>Volleyball is a popular sport globally, known for its fast-paced action, teamwork, and social benefits. It can be played recreationally or competitively, making it accessible to people of all ages and skill levels.</p>
+    </div>
+
+    <h1 class="question">What are the fundamentals of sports?</h1>
+    <div class="answer">
+        <p>The fundamentals of sports refer to the basic principles, skills, and concepts that are essential for participating in and enjoying various sports. Here are some key fundamentals:</p>
+
+        <h3>Physical Fundamentals</h3>
+        <ul>
+            <li><strong>Fitness:</strong> Developing cardiovascular endurance, muscular strength and endurance, flexibility, and speed.</li>
+            <li><strong>Coordination:</strong> Developing hand-eye coordination, footwork, and overall physical coordination.</li>
+            <li><strong>Agility:</strong> Quickly changing direction, speed, and movement.</li>
+        </ul>
+
+        <h3>Technical Fundamentals</h3>
+        <ul>
+            <li><strong>Skill development:</strong> Mastering specific skills, such as throwing, catching, hitting, or kicking.</li>
+            <li><strong>Technique:</strong> Understanding and applying proper techniques for various sports, such as proper stance, grip, or movement.</li>
+            <li><strong>Tactics:</strong> Understanding and applying strategies and game plans to outmaneuver opponents.</li>
+        </ul>
+
+        <h3>Mental Fundamentals</h3>
+        <ul>
+            <li><strong>Focus and concentration:</strong> Maintaining attention and focus during competition.</li>
+            <li><strong>Motivation:</strong> Developing and maintaining motivation to participate and improve.</li>
+            <li><strong>Sportsmanship:</strong> Demonstrating respect, fairness, and good sportsmanship towards teammates, opponents, and officials.</li>
+        </ul>
+
+        <h3>Social Fundamentals</h3>
+        <ul>
+            <li><strong>Teamwork:</strong> Collaborating with teammates to achieve common goals.</li>
+            <li><strong>Communication:</strong> Effectively communicating with teammates, coaches, and officials.</li>
+            <li><strong>Respect and inclusivity:</strong> Fostering a positive and inclusive team culture.</li>
+        </ul>
+
+        <h3>Other Fundamentals</h3>
+        <ul>
+            <li><strong>Safety and injury prevention:</strong> Understanding and applying safety protocols and injury prevention strategies.</li>
+            <li><strong>Rules and regulations:</strong> Understanding and adhering to rules and regulations governing various sports.</li>
+            <li><strong>Sports etiquette:</strong> Demonstrating respect and courtesy towards others in a sports setting.</li>
+        </ul>
+        <p>These fundamentals provide a foundation for participating in and enjoying sports, and can be applied to various sports and activities.</p>
+    </div>
+
+    <h1 class="question">What are some common fouls in volleyball?</h1>
+    <div class="answer">
+        <p>Here are some common fouls in volleyball. Understanding these rules can help players and teams avoid committing fouls and improve their gameplay.</p>
+        
+        <h3>Serving Fouls</h3>
+        <ul>
+            <li><strong>Foot fault:</strong> Stepping on or over the center line while serving.</li>
+            <li><strong>Screening:</strong> Blocking the opponent's view of the server or the ball.</li>
+            <li><strong>Serving out of rotation:</strong> Serving before the referee has signaled for the serve to start.</li>
+        </ul>
+
+        <h3>Playing the Ball Fouls</h3>
+        <ul>
+            <li><strong>Lifting or carrying:</strong> Catching or holding the ball instead of hitting it cleanly.</li>
+            <li><strong>Double hit:</strong> Hitting the ball twice in a row, or hitting the ball with both hands simultaneously.</li>
+            <li><strong>Touching the net:</strong> Touching the net with any part of the body while playing the ball.</li>
+        </ul>
+
+        <h3>Player Position Fouls</h3>
+        <ul>
+            <li><strong>Out of rotation:</strong> A player is not in their correct position at the time of the serve.</li>
+            <li><strong>Overlapping:</strong> A player overlaps with another player in the front or back row.</li>
+        </ul>
+
+        <h3>Other Fouls</h3>
+        <ul>
+            <li><strong>Reaching over the net:</strong> Reaching over the net and interfering with the opponent's play.</li>
+            <li><strong>Obstruction:</strong> Blocking an opponent's movement or vision.</li>
+            <li><strong>Unsportsmanlike conduct:</strong> Engaging in behavior that is considered unsportsmanlike, such as arguing with the referee or using abusive language.</li>
+        </ul>
+        
+        <h3>Consequences of Fouls</h3>
+        <ul>
+            <li><strong>Point awarded:</strong> The opposing team is awarded a point when a foul is committed.</li>
+            <li><strong>Side-out:</strong> The opposing team gains the right to serve when a foul is committed.</li>
+        </ul>
+    </div>
+
+    <h1 class="question">What are the standard measurements for a volleyball court?</h1>
+    <div class="answer">
+        <p>These measurements are standardized by the FIVB (Fédération Internationale de Volleyball) and are used in most professional and international volleyball competitions.</p>
+        
+        <h3>Indoor Volleyball Court</h3>
+        <ul>
+            <li><strong>Length:</strong> 18 meters (59 feet)</li>
+            <li><strong>Width:</strong> 9 meters (29.5 feet)</li>
+            <li>
+                <strong>Net height:</strong>
+                <ul>
+                    <li>Men's volleyball: $2.43$ meters ($7$ feet $11 \frac{5}{8}$ inches)</li>
+                    <li>Women's volleyball: $2.24$ meters ($7$ feet $4 \frac{1}{8}$ inches)</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <h3>Beach Volleyball Court</h3>
+        <ul>
+            <li><strong>Length:</strong> 16 meters (52 feet 6 inches)</li>
+            <li><strong>Width:</strong> 8 meters (26 feet 3 inches)</li>
+            <li>
+                <strong>Net height:</strong>
+                <ul>
+                    <li>Men's beach volleyball: $2.43$ meters ($7$ feet $11 \frac{5}{8}$ inches)</li>
+                    <li>Women's beach volleyball: $2.24$ meters ($7$ feet $4 \frac{1}{8}$ inches)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>Other Court Features</h3>
+        <ul>
+            <li><strong>Attack line:</strong> A line 3 meters (9 feet 10 inches) from the net, marking the area where back-row players can attack the ball.</li>
+            <li><strong>Center line:</strong> A line that divides the court into two halves.</li>
+            <li><strong>Free zone:</strong> An area around the court that is free from obstacles and allows players to move freely.</li>
+        </ul>
+    </div>
+
+  </div>
+  <script>
+    function changeTheme(value) {
+      document.body.className = "";
+      const themeMap = {
+        dark: "dark-mode",
+        sepia: "sepia-mode",
+        solarized: "solarized-mode",
+        highcontrast: "highcontrast-mode",
+        midnight: "midnight-mode",
+        forest: "forest-mode",
+        lavender: "lavender-mode",
+        rose: "rose-mode",
+        warmgray: "warmgray-mode"
+      };
+      if (themeMap[value]) {
+        document.body.classList.add(themeMap[value]);
+      }
+    }
+  </script>
 </body>
 </html>
