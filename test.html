@@ -6,16 +6,17 @@
   <title>Marathi Question Bank</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Lora:ital,wght@0;1,400&display=swap" rel="stylesheet">
   
   <style>
-    /* 🎨 --- Color & Theme Variables (BirlaOne Green Theme) --- 🎨 */
+    /* 🎨 --- Color & Theme Variables --- 🎨 */
     :root {
       --primary-accent: #4CAF50;
       --primary-gradient: linear-gradient(135deg, #66BB6A, #43A047);
       --font-sans: 'Inter', sans-serif;
       --font-serif: 'Lora', serif;
-      --border-radius: 12px;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
     }
     
     html[data-theme="light"] {
@@ -24,30 +25,45 @@
       --text-primary: #1c1c1e;
       --text-secondary: #636366;
       --border-color: #e5e5ea;
-      --shadow: 0 4px 25px rgba(0, 0, 0, 0.07);
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
       --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
     }
 
     html[data-theme="dark"] {
-      --bg-color: #1c1c1e;
-      --card-bg: #2c2c2e;
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
       --text-primary: #f2f2f7;
-      --text-secondary: #a0a0b0;
-      --border-color: #444446;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-      --header-bg: rgba(28, 28, 30, 0.8);
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+    }
+     
+    html[data-theme="sepia"] {
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
     }
 
     /* 🧱 --- Base & Layout Styles --- 🧱 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: var(--font-serif); /* Default to serif for reading */
+      font-family: var(--font-serif);
       background-color: var(--bg-color);
       color: var(--text-primary);
       line-height: 1.8;
       font-size: 17px;
-      transition: background-color 0.3s, color 0.3s;
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
     }
 
     /* 🔝 --- App Header --- 🔝 */
@@ -58,17 +74,57 @@
       align-items: center;
       padding: 12px 16px;
       background-color: var(--header-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 100;
+      transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    }
+    
+    .header-left, .header-right {
+        flex: 1;
+    }
+    .header-right {
+        display: flex;
+        justify-content: flex-end;
     }
     
     .header-title {
+        flex: 2;
+        text-align: center;
         font-size: 20px;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .back-button {
+      background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 5px;
+    }
+
+    .theme-selector select {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .theme-selector select:focus {
+        outline: 2px solid var(--primary-accent);
+        outline-offset: 2px;
     }
 
     /* 📖 --- Main Content Container --- 📖 */
@@ -81,10 +137,12 @@
     /* 📝 --- Note Card Styles --- 📝 */
     .note-card {
       background: var(--card-bg);
+      border: 1px solid var(--border-color);
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
       margin-bottom: 24px;
       overflow: hidden;
+      transition: all var(--transition-speed) ease;
     }
     
     .note-title {
@@ -111,6 +169,7 @@
       margin-bottom: 12px;
       border-bottom: 2px solid var(--primary-accent);
       padding-bottom: 6px;
+      transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
     }
     
     .note-body p {
@@ -124,31 +183,40 @@
         color: var(--text-primary);
     }
 
-    .note-body ol {
-      list-style: none;
-      padding-left: 0;
-    }
-    
-    .note-body ol > li {
-        margin-bottom: 28px;
-        padding-left: 10px;
-    }
+    .note-body ul, .note-body ol { list-style: none; padding-left: 0; }
+    .note-body ol > li { margin-bottom: 28px; padding-left: 10px; }
 
-    /* ✨ --- Style for English Translation --- ✨ */
     .translation {
       color: var(--text-secondary);
       font-size: 0.9em;
       font-style: italic;
       line-height: 1.7;
-      margin-top: -8px; /* Pull it slightly closer to the Marathi text */
+      margin-top: -8px;
+      transition: color var(--transition-speed) ease;
     }
-
   </style>
 </head>
 <body>
 
   <header class="app-header">
-    <h1 class="header-title">Marathi Question Bank</h1>
+    <div class="header-left">
+      <button class="back-button" onclick="history.back()" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      </button>
+    </div>
+    <h1 class="header-title">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      Marathi Question Bank
+    </h1>
+    <div class="header-right">
+      <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+      </div>
+    </div>
   </header>
 
   <main class="notebook-container">
@@ -156,37 +224,936 @@
     <article class="note-card">
       <h2 class="note-title">प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.</h2>
       <div class="note-body">
-          <h3>प्रस्तावना (Introduction)</h3>
-          <p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p>
-          
-          <h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3>
-          <ol>
-              <li>
-                  <p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती (To Express Thoughts and Personal Views)</strong></p>
-                  <p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p>
-                  <p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p>
-              </li>
-              <li>
-                  <p><strong>विचारांसाठी व्यासपीठ मिळवणे (To Get a Platform for Ideas)</strong></p>
-                  <p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p>
-                  <p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p>
-              </li>
-              <li>
-                  <p><strong>सामाजिक जागरूकता निर्माण करणे (To Create Social Awareness)</strong></p>
-                  <p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p>
-                  <p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p>
-              </li>
-          </ol>
+        <h3>प्रस्तावना (Introduction)</h3>
+        <p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p>
+        <h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3>
+        <ol>
+          <li>
+            <p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती (To Express Thoughts and Personal Views)</strong></p>
+            <p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p>
+            <p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p>
+          </li>
+          <li>
+            <p><strong>विचारांसाठी व्यासपीठ मिळवणे (To Get a Platform for Ideas)</strong></p>
+            <p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p>
+            <p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p>
+          </li>
+          <li>
+            <p><strong>सामाजिक जागरूकता निर्माण करणे (To Create Social Awareness)</strong></p>
+            <p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p>
+            <p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p>
+          </li>
+          <li>
+            <p><strong>ज्ञान आणि माहितीचे आदान-प्रदान (To Exchange Knowledge and Information)</strong></p>
+            <p>ब्लॉगच्या माध्यमातून लेखक आपल्या वाचनातून, अनुभवातून किंवा अभ्यासातून मिळवलेली माहिती आणि ज्ञान इतरांपर्यंत पोहोचवतो. यामुळे वाचकांच्या ज्ञानातही भर पडते.</p>
+            <p class="translation">Through a blog, a writer shares information and knowledge gained from their reading, experiences, or studies. This also helps in increasing the knowledge of the readers.</p>
+          </li>
+          <li>
+            <p><strong>व्यावसायिक विकास (For Professional Development)</strong></p>
+            <p>एखाद्या विशिष्ट विषयातील तज्ज्ञ व्यक्ती ब्लॉग लिहून आपले ज्ञान लोकांपर्यंत पोहोचवू शकते. यामुळे त्या क्षेत्रातील लोकांमध्ये त्यांची ओळख निर्माण होते आणि त्यांच्या व्यावसायिक विकासाला मदत मिळते.</p>
+            <p class="translation">An expert in a particular field can write a blog to share their knowledge with people. This helps in building their identity among people in that field and aids their professional development.</p>
+          </li>
+          <li>
+            <p><strong>आर्थिक कमाईचे साधन (As a Means of Earning Money)</strong></p>
+            <p>आजकाल अनेक लोक ब्लॉग लेखनाला व्यवसायाचे साधन म्हणून वापरतात. लोकप्रिय ब्लॉगवर जाहिराती (advertisements) किंवा इतर मार्गांनी पैसे कमावता येतात.</p>
+            <p class="translation">Nowadays, many people use blog writing as a profession. One can earn money through popular blogs by placing advertisements or through other means.</p>
+          </li>
+          <li>
+            <p><strong>वैयक्तिक अनुभवांची नोंद (To Record Personal Experiences)</strong></p>
+            <p>काहीजण ब्लॉगचा वापर आपली वैयक्तिक डायरी म्हणून करतात. ते आपल्या दैनंदिन जीवनातील घटना, प्रवास किंवा खास अनुभव यात नोंदवून ठेवतात.</p>
+            <p class="translation">Some people use a blog as their personal diary. They record daily life events, travel stories, or special experiences in it.</p>
+          </li>
+        </ol>
       </div>
-  </article>
+    </article>
+
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न २: अनुदिनी (ब्लॉग) लेखनाचे प्रकार स्पष्ट करा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>अनुदिनी (ब्लॉग) हे कोणत्याही विषयावर लिहिले जाऊ शकते. त्याच्या विषय आणि लेखनशैलीनुसार ब्लॉगचे वेगवेगळे प्रकार पडतात. प्रत्येक प्रकारच्या ब्लॉगचा उद्देश आणि वाचकवर्ग वेगळा असतो. ब्लॉग लेखनाचे काही प्रमुख प्रकार खालीलप्रमाणे आहेत:</p>
+            <h3>अनुदिनी लेखनाचे प्रकार (Types of Blog Writing)</h3>
+            <ol>
+                <li>
+                    <p><strong>वैयक्तिक अनुदिनी (Personal Blog)</strong></p>
+                    <p>हा ब्लॉगचा सर्वात प्रसिद्ध प्रकार आहे. यात लेखक आपल्या वैयक्तिक जीवनातील अनुभव, विचार, भावना किंवा दैनंदिन घडामोडींबद्दल लिहितो. हे एका ऑनलाइन डायरीसारखे असते.</p>
+                    <p class="translation">This is the most famous type of blog. The writer writes about their personal life experiences, thoughts, feelings, or daily events. It is like an online diary.</p>
+                </li>
+                <li>
+                    <p><strong>विषयाधारित अनुदिनी (Thematic Blog)</strong></p>
+                    <p>या प्रकारच्या ब्लॉगमध्ये लेखक फक्त एकाच विशिष्ट विषयावर सातत्याने लिहितो. उदाहरणार्थ, केवळ शिक्षण, पर्यावरण, फॅशन किंवा आरोग्य यांसारख्या एकाच विषयावर आधारित ब्लॉग.</p>
+                    <p class="translation">In this type of blog, the writer consistently writes on only one specific topic. For example, a blog based on a single subject like education, environment, fashion, or health.</p>
+                </li>
+                <li>
+                    <p><strong>माहितीपर / शैक्षणिक अनुदिनी (Informative / Educational Blog)</strong></p>
+                    <p>या ब्लॉगचा उद्देश वाचकांना माहिती किंवा मार्गदर्शन देणे हा असतो. यामध्ये करिअर, स्पर्धा परीक्षा, अभ्यासक्रम किंवा एखाद्या नवीन कौशल्याबद्दल माहिती दिली जाते.</p>
+                    <p class="translation">The purpose of this blog is to provide information or guidance to the readers. It contains information about careers, competitive exams, academic syllabus, or a new skill.</p>
+                </li>
+                <li>
+                    <p><strong>प्रवासवर्णन अनुदिनी (Travel Blog)</strong></p>
+                    <p>यामध्ये लेखक आपल्या प्रवासाचे अनुभव, वेगवेगळ्या ठिकाणांची माहिती, तेथील संस्कृती आणि छायाचित्रे (photos) वाचकांसोबत शेअर करतो. इतरांना प्रवासाचे नियोजन करण्यासाठी हा ब्लॉग उपयुक्त ठरतो.</p>
+                    <p class="translation">In a travel blog, the writer shares their travel experiences, information about different places, the local culture, and photographs with the readers. This blog is helpful for others to plan their travels.</p>
+                </li>
+                <li>
+                    <p><strong>सामाजिक अनुदिनी (Social Commentary Blog)</strong></p>
+                    <p>या ब्लॉगमध्ये लेखक समाजातील चालू घडामोडी, समस्या किंवा राजकीय विषयांवर आपले मत मांडतो. याचा उद्देश सामाजिक विषयांवर चर्चा घडवून आणणे हा असतो.</p>
+                    <p class="translation">In this blog, the writer expresses their opinion on current social events, problems, or political issues. The purpose is to initiate discussions on social topics.</p>
+                </li>
+                <li>
+                    <p><strong>पाकृती अनुदिनी (Food / Recipe Blog)</strong></p>
+                    <p>हा ब्लॉग खाद्यपदार्थांशी संबंधित असतो. यामध्ये जेवण बनवण्याच्या पद्धती (recipes), वेगवेगळ्या ठिकाणची खाद्यसंस्कृती किंवा हॉटेल परीक्षण (hotel reviews) याबद्दल लिहिले जाते.</p>
+                    <p class="translation">This blog is related to food. It includes content about cooking methods (recipes), food culture of different places, or hotel reviews.</p>
+                </li>
+                <li>
+                    <p><strong>आरोग्यविषयक अनुदिनी (Health and Wellness Blog)</strong></p>
+                    <p>यामध्ये आरोग्य, व्यायाम, योग्य आहार, आजार आणि मानसिक आरोग्य यांसारख्या विषयांवर माहिती आणि सल्ले दिले जातात.</p>
+                    <p class="translation">This blog provides information and advice on topics like health, exercise, proper diet, diseases, and mental wellness.</p>
+                </li>
+                <li>
+                    <p><strong>साहित्यिक / ललित अनुदिनी (Creative / Literary Blog)</strong></p>
+                    <p>या ब्लॉगवर लेखक आपले साहित्यिक लेखन जसे की कविता, कथा, लघुनिबंध इत्यादी प्रकाशित करतो. हे सर्जनशील (creative) लेखनासाठी एक व्यासपीठ आहे.</p>
+                    <p class="translation">On this blog, the writer publishes their literary work such as poems, stories, short essays, etc. It is a platform for creative writing.</p>
+                </li>
+                <li>
+                    <p><strong>आर्थिक / व्यावसायिक अनुदिनी (Finance / Business Blog)</strong></p>
+                    <p>या प्रकारच्या ब्लॉगमध्ये शेअर बाजार, गुंतवणूक (investment), व्यवसाय, स्टार्टअप्स आणि पैशांचे नियोजन यांसारख्या आर्थिक विषयांवर माहिती दिली जाते.</p>
+                    <p class="translation">This type of blog provides information on financial topics like the stock market, investment, business, startups, and money management.</p>
+                </li>
+                <li>
+                    <p><strong>तंत्रज्ञान विषयक अनुदिनी (Tech Blog)</strong></p>
+                    <p>यामध्ये नवीन मोबाईल, कॉम्प्युटर, गॅजेट्स, सॉफ्टवेअर आणि इंटरनेट जगातील नवीन घडामोडींविषयी माहिती आणि परीक्षण (reviews) दिलेले असते.</p>
+                    <p class="translation">It provides information and reviews about new mobiles, computers, gadgets, software, and the latest updates in the world of technology and the internet.</p>
+                </li>
+            </ol>
+            <h3>निष्कर्ष (Conclusion)</h3>
+            <p>वरील प्रकारांवरून लक्षात येते की, ब्लॉग लेखन हे एक व्यापक क्षेत्र असून, लेखक आपल्या आवडीनुसार आणि कौशल्यानुसार कोणत्याही विषयावर ब्लॉग लिहू शकतो.</p>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ३: अनुदिनी (ब्लॉग) लेखनाचे स्वरूप किंवा टप्पे लिहा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>एक चांगला आणि प्रभावी ब्लॉग लिहिण्यासाठी केवळ विषय असून चालत नाही, तर त्याची मांडणी एका विशिष्ट स्वरूपात किंवा टप्प्यांनुसार करणे महत्त्वाचे असते. यामुळे ब्लॉग वाचकांना वाचायला सोपा आणि आकर्षक वाटतो. ब्लॉग लेखनाचे स्वरूप किंवा प्रमुख टप्पे खालीलप्रमाणे आहेतः</p>
+            <h3>ब्लॉग लेखनाचे स्वरूप/टप्पे (Format/Steps of Blog Writing)</h3>
+            <ol>
+                <li>
+                    <p><strong>शीर्षक (Title)</strong></p>
+                    <p>शीर्षक हे ब्लॉगचे प्रवेशद्वार आहे. ते आकर्षक, लहान आणि विषयाला धरून असले पाहिजे. एक चांगले शीर्षक वाचूनच वाचकाला संपूर्ण ब्लॉग वाचण्याची इच्छा होते.</p>
+                    <p class="translation">The title is the gateway to your blog. It should be catchy, short, and relevant to the topic. A good title makes the reader want to read the entire blog post.</p>
+                </li>
+                <li>
+                    <p><strong>प्रस्तावना (Introduction)</strong></p>
+                    <p>हा लेखाचा सुरुवातीचा भाग असतो. यात विषयाची ओळख करून दिली जाते आणि पुढे लेखात काय वाचायला मिळणार आहे, याची उत्सुकता निर्माण केली जाते.</p>
+                    <p class="translation">This is the beginning of the post. It introduces the topic and creates curiosity about what the reader is going to learn in the rest of the article.</p>
+                </li>
+                <li>
+                    <p><strong>मुख्य मजकूर (Main Content / Body)</strong></p>
+                    <p>हा ब्लॉगचा सर्वात मोठा आणि महत्त्वाचा भाग आहे. यामध्ये विषयाबद्दलची सविस्तर माहिती, विश्लेषण, उदाहरणे आणि लेखकाचे मत मांडलेले असते.</p>
+                    <p class="translation">This is the largest and most important part of the blog. It contains detailed information about the topic, analysis, examples, and the author's opinion.</p>
+                </li>
+                <li>
+                    <p><strong>उपशीर्षक आणि मुद्दे (Subheadings and Points)</strong></p>
+                    <p>मोठा मजकूर सलग लिहिण्याऐवजी, तो उपशीर्षके (subheadings) आणि मुद्दे (points) वापरून लहान परिच्छेदांमध्ये विभागला जातो. यामुळे ब्लॉग वाचायला सोपा आणि सुटसुटीत वाटतो.</p>
+                    <p class="translation">Instead of writing one long text, the content is divided into smaller paragraphs using subheadings and bullet points. This makes the blog easy to read and well-organized.</p>
+                </li>
+                <li>
+                    <p><strong>भाषा व शैली (Language and Style)</strong></p>
+                    <p>ब्लॉगची भाषा सोपी, सरळ आणि वाचकांना सहज समजेल अशी असावी. लेखनशैली संवादात्मक (conversational) आणि आकर्षक असावी, जेणेकरून वाचकाचा रस टिकून राहतो.</p>
+                    <p class="translation">The language of the blog should be simple, direct, and easy for the readers to understand. The writing style should be conversational and engaging to maintain the reader's interest.</p>
+                </li>
+                <li>
+                    <p><strong>प्रतिमा आणि व्हिडिओ (Images and Videos)</strong></p>
+                    <p>विषयाला अधिक चांगल्या प्रकारे समजावण्यासाठी लेखात योग्य ठिकाणी फोटो, चार्ट किंवा व्हिडिओचा वापर केला जातो. यामुळे ब्लॉग अधिक आकर्षक दिसतो.</p>
+                    <p class="translation">To explain the topic better, relevant photos, charts, or videos are used in the article. This makes the blog look more attractive.</p>
+                </li>
+                <li>
+                    <p><strong>निष्कर्ष (Conclusion)</strong></p>
+                    <p>हा लेखाचा शेवटचा भाग असतो. यामध्ये संपूर्ण लेखाचा सारांश (summary) दिला जातो आणि लेखकाला काय सांगायचे आहे, ते थोडक्यात स्पष्ट केले जाते.</p>
+                    <p class="translation">This is the final part of the post. It provides a summary of the entire article and briefly clarifies the author's main message.</p>
+                </li>
+                <li>
+                    <p><strong>वाचकांसाठी प्रश्न किंवा प्रतिसाद (Call to Action / Comments)</strong></p>
+                    <p>लेखाच्या शेवटी, वाचकांना त्यांचे मत मांडण्यासाठी किंवा प्रश्न विचारण्यासाठी प्रोत्साहित केले जाते. यामुळे लेखक आणि वाचकांमध्ये संवाद निर्माण होतो.</p>
+                    <p class="translation">At the end of the post, readers are encouraged to share their opinions or ask questions. This creates a conversation between the writer and the readers.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ४: अनुदिनी (ब्लॉग) लेखनाचे फायदे सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>अनुदिनी (ब्लॉग) लेखन ही केवळ आपले विचार मांडण्याची जागा नाही, तर त्याचे लेखक आणि वाचक दोघांनाही अनेक फायदे होतात. नियमित ब्लॉग लेखनामुळे व्यक्तिमत्त्व विकासापासून ते व्यावसायिक संधींपर्यंत अनेक सकारात्मक बदल घडून येतात. ब्लॉग लेखनाचे काही प्रमुख फायदे खालीलप्रमाणे आहेतः</p>
+            <h3>ब्लॉग लेखनाचे फायदे (Advantages of Blog Writing)</h3>
+            <ol>
+                <li>
+                    <p><strong>लेखन कौशल्यात सुधारणा (Improvement in Writing Skills)</strong></p>
+                    <p>नियमितपणे ब्लॉग लिहिल्यामुळे आपले लेखन कौशल्य सुधारते. विचारांना शब्दांत कसे मांडायचे, व्याकरण आणि वाक्यरचना यांचा योग्य वापर कसा करायचा, याचा उत्तम सराव होतो.</p>
+                    <p class="translation">Writing a blog regularly improves your writing skills. You get excellent practice in how to put your thoughts into words and how to use grammar and sentence structure correctly.</p>
+                </li>
+                <li>
+                    <p><strong>ज्ञानात वाढ होते (Increase in Knowledge)</strong></p>
+                    <p>कोणत्याही विषयावर ब्लॉग लिहिण्यापूर्वी आपल्याला त्या विषयाचा अभ्यास व संशोधन करावे लागते. या प्रक्रियेमुळे आपल्या ज्ञानात भर पडते आणि नवीन गोष्टी शिकायला मिळतात.</p>
+                    <p class="translation">Before writing a blog on any topic, you need to study and research it. This process adds to your own knowledge and helps you learn new things.</p>
+                </li>
+                <li>
+                    <p><strong>आत्मविश्वास वाढतो (Boosts Confidence)</strong></p>
+                    <p>जेव्हा आपण आपले विचार आणि ज्ञान ब्लॉगद्वारे लोकांसमोर मांडतो आणि त्याला वाचकांकडून चांगला प्रतिसाद मिळतो, तेव्हा आपला आत्मविश्वास वाढतो.</p>
+                    <p class="translation">When you present your thoughts and knowledge to people through a blog and receive a positive response from readers, it boosts your self-confidence.</p>
+                </li>
+                <li>
+                    <p><strong>स्वतःची ओळख निर्माण होते (Builds Your Personal Brand)</strong></p>
+                    <p>एखाद्या विशिष्ट विषयावर सातत्याने लिहिल्यामुळे त्या विषयात तुमची ओळख एक 'तज्ज्ञ' म्हणून निर्माण होऊ शकते. यामुळे तुम्हाला व्यावसायिक आणि शैक्षणिक क्षेत्रात फायदा होतो.</p>
+                    <p class="translation">By consistently writing on a specific subject, you can build your identity as an 'expert' in that field. This can benefit you in your professional and academic life.</p>
+                </li>
+                <li>
+                    <p><strong>विचारांना व्यासपीठ मिळते (Provides a Platform for Thoughts)</strong></p>
+                    <p>ब्लॉग आपल्याला आपले विचार, मते आणि सर्जनशीलता (creativity) जगासमोर मांडण्यासाठी एक हक्काचे आणि स्वतंत्र व्यासपीठ (platform) उपलब्ध करून देतो.</p>
+                    <p class="translation">A blog provides you with a dedicated and independent platform to present your ideas, opinions, and creativity to the world.</p>
+                </li>
+                <li>
+                    <p><strong>इतरांशी संवाद साधता येतो (Opportunity to Connect with Others)</strong></p>
+                    <p>ब्लॉगवरील कमेंट्सच्या माध्यमातून आपल्याला समान आवड-निवड असलेल्या अनेक लोकांशी जोडले जाता येते. यामुळे विचारांची देवाणघेवाण होते आणि नवीन संबंध निर्माण होतात.</p>
+                    <p class="translation">Through the comments section on a blog, you can connect with many like-minded people. This allows for an exchange of ideas and helps in building new relationships.</p>
+                </li>
+                <li>
+                    <p><strong>आर्थिक कमाईची संधी (Opportunity for Financial Earning)</strong></p>
+                    <p>जर तुमचा ब्लॉग वाचकांमध्ये लोकप्रिय झाला, तर त्यावर जाहिराती (advertisements), संलग्न विपणन (affiliate marketing) किंवा स्वतःची उत्पादने विकून तुम्ही पैसे कमवू शकता.</p>
+                    <p class="translation">If your blog becomes popular among readers, you can earn money from it through advertisements, affiliate marketing, or by selling your own products.</p>
+                </li>
+                <li>
+                    <p><strong>इतरांना मदत आणि प्रेरणा (Helping and Inspiring Others)</strong></p>
+                    <p>तुम्ही तुमच्या ज्ञानाने, अनुभवाने किंवा सकारात्मक विचारांनी ब्लॉगच्या माध्यमातून इतरांना मदत करू शकता किंवा त्यांच्यासाठी प्रेरणास्रोत बनू शकता.</p>
+                    <p class="translation">Through your blog, you can help others with your knowledge and experience, or you can become a source of inspiration for them with your positive thoughts.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ५: विकिपीडियावर लेखन करताना पाळावयाची पथ्ये (नियम) सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>विकिपीडिया हा एक मुक्त ज्ञानकोश आहे, जिथे कोणीही लेखन किंवा संपादन करू शकते. मात्र, येथील माहिती अचूक, विश्वसनीय आणि निःपक्षपाती राहावी, यासाठी काही महत्त्वाचे नियम व तत्त्वे ठरवून देण्यात आली आहेत. विकिपीडियावर लेखन करताना या नियमांचे पालन करणे अत्यंत आवश्यक असते. यातील प्रमुख पथ्ये (नियम) खालीलप्रमाणे आहेतः</p>
+            <h3>विकिपीडिया लेखनाची प्रमुख पथ्ये/नियम (Key Principles/Rules of Wikipedia Writing)</h3>
+            <ol>
+                <li>
+                    <p><strong>तटस्थ दृष्टिकोन (Neutral Point of View - NPOV)</strong></p>
+                    <p>विकिपीडियावर लिहिताना कोणत्याही एका बाजूची किंवा विचारसरणीची बाजू घेऊ नये. लेखात विषयाशी संबंधित सर्व प्रमुख दृष्टिकोन निःपक्षपातीपणे आणि योग्य प्रकारे मांडले पाहिजेत. लेखकाने स्वतःची मते मांडू नयेत.</p>
+                    <p class="translation">While writing on Wikipedia, you should not favor any one side or ideology. An article must represent all significant viewpoints on the topic impartially and fairly. The writer should not include their personal opinions.</p>
+                </li>
+                <li>
+                    <p><strong>मूळ संशोधन नाही (No Original Research - NOR)</strong></p>
+                    <p>विकिपीडिया हे नवीन विचार, सिद्धांत किंवा संशोधन प्रसिद्ध करण्याचे ठिकाण नाही. येथे केवळ तीच माहिती लिहावी, जी यापूर्वी इतर विश्वसनीय माध्यमांमध्ये (उदा. पुस्तके, वृत्तपत्रे) प्रसिद्ध झालेली आहे.</p>
+                    <p class="translation">Wikipedia is not a place to publish new thoughts, theories, or original research. You should only write information that has already been published in other reliable sources (e.g., books, newspapers).</p>
+                </li>
+                <li>
+                    <p><strong>विश्वासार्हता आणि पडताळणी (Verifiability)</strong></p>
+                    <p>लेखात दिलेल्या प्रत्येक माहितीचा विश्वसनीय संदर्भ (reference/source) देणे बंधनकारक आहे. जेणेकरून वाचकांना ती माहिती खरी आहे की नाही, हे तपासता (verify) येईल. संदर्भाशिवाय दिलेली माहिती काढून टाकली जाऊ शकते.</p>
+                    <p class="translation">It is mandatory to provide a reliable reference or source for every piece of information in the article. This allows readers to verify whether the information is true. Information without a source can be removed.</p>
+                </li>
+                <li>
+                    <p><strong>उल्लेखनीयता (Notability)</strong></p>
+                    <p>विकिपीडियावर केवळ त्याच विषयांवर लेख बनवले जाऊ शकतात, जे उल्लेखनीय आहेत किंवा ज्यांची दखल यापूर्वी इतर स्वतंत्र आणि विश्वसनीय माध्यमांनी घेतली आहे. प्रत्येक विषयावर लेख बनवता येत नाही.</p>
+                    <p class="translation">Articles on Wikipedia can only be created on topics that are notable, meaning they have already been covered by independent and reliable sources. An article cannot be created on just any topic.</p>
+                </li>
+                <li>
+                    <p><strong>प्रताधिकार कायद्याचा आदर (Respect for Copyright)</strong></p>
+                    <p>इतर वेबसाइट, पुस्तके किंवा लेखांमधील मजकूर जसाच्या तसा कॉपी करून विकिपीडियावर टाकू नये. हे प्रताधिकार (copyright) कायद्याचे उल्लंघन आहे. माहिती नेहमी स्वतःच्या शब्दांत लिहावी.</p>
+                    <p class="translation">You must not copy-paste text directly from other websites, books, or articles onto Wikipedia. This is a copyright violation. You should always write the information in your own words.</p>
+                </li>
+                <li>
+                    <p><strong>सभ्यतेचे पालन करणे (Be Civil)</strong></p>
+                    <p>विकिपीडिया एक सहयोगी प्रकल्प आहे. येथे इतर संपादकांशी किंवा लेखकांशी चर्चा करताना नेहमी सभ्य आणि आदराने वागावे, जरी तुमचे त्यांच्याशी मतभेद असले तरी.</p>
+                    <p class="translation">Wikipedia is a collaborative project. You must always be civil and respectful when discussing with other editors or writers, even if you disagree with them.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ६: विकिपीडियावरील लेखनासाठी आवश्यक कौशल्यांचा/क्षमतांचा आढावा घ्या.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>विकिपीडियावर लेखन करणे हे केवळ माहिती देण्याचे काम नाही, तर त्यासाठी काही विशिष्ट कौशल्ये आणि क्षमता असणे आवश्यक असते. These help in maintaining the quality standards of Wikipedia.</p>
+            <h3>विकिपीडिया लेखनासाठी आवश्यक कौशल्ये (Skills Required for Wikipedia Writing)</h3>
+            <ol>
+                <li>
+                    <p><strong>संशोधन कौशल्य (Research Skills)</strong></p>
+                    <p>विकिपीडिया लेखनासाठी सत्य माहिती शोधणे आणि ती पडताळणे हे मूलभूत कौशल्य आहे. यासाठी शैक्षणिक ग्रंथ, संशोधन निबंध, आणि सरकारी अहवाल यांसारख्या विविध प्रामाणिक स्रोतांचा सखोल अभ्यास करणे आवश्यक असते.</p>
+                    <p class="translation">The ability to find and verify true information is the most fundamental skill for Wikipedia writing. This requires in-depth study of various authentic sources like academic books, research papers, and government reports.</p>
+                </li>
+                <li>
+                    <p><strong>तटस्थ लेखनशैली व वस्तुनिष्ठ दृष्टिकोन (Neutral and Objective Writing)</strong></p>
+                    <p>विकिपीडियाचे एक प्रमुख तत्त्व निष्पक्षता (NPOV) आहे. लेखकाने स्वतःच्या वैयक्तिक भावना किंवा राजकीय विचार न मांडता, केवळ सत्य घटना आणि माहिती सादर करणे अपेक्षित असते. यासाठी भावनाशून्य आणि तथ्यात्मक भाषाशैली अवगत असावी लागते.</p>
+                    <p class="translation">A key principle of Wikipedia is neutrality (NPOV). A writer is expected to present only true facts and information, without including personal feelings or political views. For this, one must have command over an emotionless and factual writing style.</p>
+                </li>
+                <li>
+                    <p><strong>स्रोत विश्लेषण क्षमता (Source Evaluation and Critical Thinking)</strong></p>
+                    <p>प्रत्येक सापडलेल्या संदर्भावर विश्वास न ठेवता, त्याची सत्यता आणि विश्वसनीयता तपासण्याचे कौशल्य लेखकाकडे असावे लागते. उदाहरणार्थ, देशाच्या GDP विषयी माहिती देताना World Bank किंवा IMF सारख्या स्रोतांचा वापर करावा.</p>
+                    <p class="translation">A writer must have the skill to evaluate the truthfulness and reliability of every source, rather than blindly trusting it. For example, when providing data on a country's GDP, one should use sources like the World Bank or IMF.</p>
+                </li>
+                <li>
+                    <p><strong>संगणकीय व डिजिटल साक्षरता (Digital Literacy)</strong></p>
+                    <p>विकिपीडिया हे एक ऑनलाइन माध्यम असल्यामुळे, लेखकाला वेब ब्राउझिंग, लिंकिंग, विकिपीडियाचे संपादन टूल्स (Editing Tools) वापरणे आणि संदर्भ जोडणे (Cite tool) या गोष्टींची चांगली समज असणे आवश्यक आहे.</p>
+                    <p class="translation">Since Wikipedia is an online platform, it is necessary for a writer to have a good understanding of web browsing, linking, using Wikipedia's Editing Tools, and the Cite tool.</p>
+                </li>
+                <li>
+                    <p><strong>संवाद आणि संघर्ष व्यवस्थापन कौशल्य (Collaboration and Dispute Handling Skills)</strong></p>
+                    <p>विकिपीडियावर अनेक संपादक एकाच लेखावर काम करत असल्यामुळे मतभेद होऊ शकतात. अशावेळी, सभ्य भाषेत चर्चा करणे, सूचना स्वीकारणे आणि सहमती साधणे महत्त्वाचे ठरते.</p>
+                    <p class="translation">Since many editors work on a single article on Wikipedia, disagreements can occur. In such situations, it is important to discuss politely, accept suggestions, and reach a consensus.</p>
+                </li>
+                <li>
+                    <p><strong>लेखन आणि रचना कौशल्य (Writing and Structuring Skills)</strong></p>
+                    <p>विकिपीडियावरील लेख हे ज्ञानकोशीय शैलीत (encyclopedic style) असतात. त्यामुळे लेखकाने मुद्देसूद, संरचित आणि ओघवत्या पद्धतीने लेखन करणे आवश्यक आहे. लेखात परिच्छेद आणि उपशीर्षकांची योग्य विभागणी असावी.</p>
+                    <p class="translation">Articles on Wikipedia are in an encyclopedic style. Therefore, it is necessary for the writer to write in a systematic, structured, and fluent manner. The article should have proper division of paragraphs and subheadings.</p>
+                </li>
+                <li>
+                    <p><strong>भाषेची अचूकता आणि व्याकरण (Language Proficiency and Grammar)</strong></p>
+                    <p>लेख लिहित असलेल्या भाषेच्या व्याकरणावर, विरामचिन्हांवर आणि शब्दप्रयोगावर लेखकाचे प्रभुत्व असणे आवश्यक आहे. विकिपीडियावरील लेखन शुद्ध, सुसंगत आणि सोप्या भाषेत असावे लागते.</p>
+                    <p class="translation">The writer must have a strong command of the grammar, punctuation, and vocabulary of the language in which they are writing. The writing on Wikipedia must be pure, consistent, and in simple language.</p>
+                </li>
+                <li>
+                    <p><strong>क्लिष्ट संकल्पनांचे सुलभीकरण (Simplification of Complex Concepts)</strong></p>
+                    <p>विकिपीडिया सर्व वयोगटातील वाचकांसाठी असल्याने, क्लिष्ट वैज्ञानिक किंवा तांत्रिक संकल्पना सोप्या शब्दांत आणि उदाहरणांसह समजावून सांगणे आवश्यक असते.</p>
+                    <p class="translation">Since Wikipedia is for readers of all ages, it is necessary to explain complex scientific or technical concepts in simple words and with examples.</p>
+                </li>
+                <li>
+                    <p><strong>सतत शिकण्याची वृत्ती (Willingness to Learn Continuously)</strong></p>
+                    <p>विकिपीडियाचे क्षेत्र सतत अद्ययावत होत असते. त्यामुळे लेखकाने नवीन धोरणे, संपादन नीती आणि तांत्रिक बदल शिकण्याची व आत्मसात करण्याची वृत्ती ठेवली पाहिजे.</p>
+                    <p class="translation">The field of Wikipedia is constantly being updated. Therefore, a writer must have an attitude of learning and adopting new policies, editing ethics, and technical changes.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ७: कल्याण शहरावर, त्याच्या इतिहासावर आणि संस्कृतीवर विकिपीडियासाठी एक माहितीपूर्ण लेख लिहा.</h2>
+        <div class="note-body">
+            <h3>कल्याण</h3>
+            <p>कल्याण हे भारताच्या महाराष्ट्र राज्यातील ठाणे जिल्ह्यातील एक प्रमुख शहर आहे. उल्हास नदीच्या काठावर वसलेले हे शहर, मुंबई महानगर प्रदेशाचा (MMR) एक अविभाज्य भाग आहे. या शहराला एक अत्यंत प्राचीन आणि समृद्ध ऐतिहासिक वारसा लाभला असून, आज ते मध्य रेल्वेवरील सर्वात महत्त्वाचे आणि वर्दळीचे जंक्शन म्हणून ओळखले जाते.</p>
+            <h3>इतिहास (History)</h3>
+            <p>कल्याणचा इतिहास दोन हजार वर्षांपेक्षा जास्त जुना आहे. प्राचीन काळापासून ते एक महत्त्वाचे बंदर आणि व्यापारी केंद्र म्हणून प्रसिद्ध होते.</p>
+            <ol>
+                <li>
+                    <p><strong>प्राचीन काळ (Ancient Period)</strong></p>
+                    <p>मौर्य साम्राज्याच्या काळात कल्याण हे एक व्यस्त बंदर होते. त्यानंतर सातवाहन, शिलाहार आणि यादवांच्या राजवटीतही या शहराचे महत्त्व कायम राहिले.</p>
+                </li>
+                <li>
+                    <p><strong>मध्ययुगीन आणि मराठा काळ (Medieval and Maratha Period)</strong></p>
+                    <p>मध्ययुगात या शहरावर मुघलांचे राज्य होते. छत्रपती शिवाजी महाराजांनी हे शहर जिंकून स्वराज्यात सामील केले आणि येथे मराठा आरमाराचा (नौदल) एक महत्त्वाचा तळ उभारला. त्यांनी शहराच्या संरक्षणासाठी प्रसिद्ध दुर्गाडी किल्ल्याची निर्मिती केली.</p>
+                </li>
+                <li>
+                    <p><strong>ब्रिटिश काळ (British Period)</strong></p>
+                    <p>ब्रिटिशांच्या काळात रेल्वे मार्गाची उभारणी झाल्यानंतर, कल्याण एक मोठे रेल्वे जंक्शन बनले. यामुळे शहराच्या आधुनिक विकासाला आणि व्यापाराला मोठी चालना मिळाली.</p>
+                </li>
+            </ol>
+            <h3>संस्कृती आणि जीवनशैली (Culture and Lifestyle)</h3>
+            <p>कल्याण शहराची संस्कृती ही पारंपरिक आणि आधुनिक जीवनशैलीचा संगम आहे. मुंबईच्या जवळ असल्यामुळे येथे एक बहुभाषिक आणि बहुसांस्कृतिक समाज एकत्र नांदतो.</p>
+            <p><strong>सण-उत्सव (Festivals):</strong> गणेशोत्सव, दिवाळी, होळी आणि नवरात्री यांसारखे सण येथे मोठ्या उत्साहात साजरे केले जातात. दुर्गाडी किल्ल्यावरील नवरात्रोत्सवाला विशेष महत्त्व आहे.</p>
+            <h3>पर्यटन आणि महत्त्वाची स्थळे (Tourism and Places of Interest)</h3>
+            <ol>
+                <li>
+                    <p><strong>दुर्गाडी किल्ला (Durgadi Fort)</strong></p>
+                    <p>छत्रपती शिवाजी महाराजांनी बांधलेला हा किल्ला कल्याण शहराचे ऐतिहासिक प्रतीक आहे. किल्ल्यावरील देवी दुर्गेचे मंदिर भाविकांचे श्रद्धास्थान आहे.</p>
+                </li>
+                <li>
+                    <p><strong>काळा तलाव (Kala Talao)</strong></p>
+                    <p>शहराच्या मध्यभागी असलेला हा एक ऐतिहासिक तलाव आहे, जो आज एक सुंदर पर्यटन स्थळ म्हणून विकसित झाला आहे.</p>
+                </li>
+                <li>
+                    <p><strong>बिर्ला मंदिर, शहाड (Birla Mandir, Shahad)</strong></p>
+                    <p>संगमरवरी दगडांनी बांधलेले हे विठ्ठल-रुक्मिणीचे मंदिर आपल्या शांत आणि सुंदर वातावरणासाठी ओळखले जाते.</p>
+                </li>
+            </ol>
+            <h3>वाहतूक (Transportation)</h3>
+            <p>कल्याण शहर वाहतुकीच्या दृष्टीने अत्यंत महत्त्वाचे आहे.</p>
+            <p><strong>रेल्वे (Railway):</strong> कल्याण जंक्शन हे मध्य रेल्वेवरील सर्वात व्यस्त स्थानकांपैकी एक आहे. येथून मुंबईची लोकल सेवा तसेच उत्तर आणि दक्षिण भारताकडे जाणाऱ्या अनेक लांब पल्ल्याच्या गाड्या सुटतात.</p>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ८: फेसबुकची प्रमुख वैशिष्ट्ये सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे केवळ एक संवाद माध्यम नसून, ते अनेक वैशिष्ट्यांनी परिपूर्ण आहे. ही वैशिष्ट्ये वापरकर्त्यांना (users) एकमेकांशी जोडले जाण्यास, आपले विचार मांडण्यास आणि समुदाय तयार करण्यास मदत करतात.</p>
+            <h3>फेसबुकची वैशिष्ट्ये (Features of Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>वैयक्तिक प्रोफाइल (Personal Profile)</strong></p>
+                    <p>फेसबुकवरील वैयक्तिक प्रोफाइल ही प्रत्येक वापरकर्त्याची एक डिजिटल ओळख असते. येथे वापरकर्ते आपले नाव, जन्मतारीख, छायाचित्र, शिक्षण आणि व्यवसाय यांसारखी सविस्तर माहिती देऊ शकतात.</p>
+                    <p class="translation">The personal profile on Facebook is the digital identity of every user. Here, users can provide detailed information such as their name, date of birth, photograph, education, and profession.</p>
+                </li>
+                <li>
+                    <p><strong>फ्रेंड लिस्ट आणि फॉलोअर्स (Friends & Followers)</strong></p>
+                    <p>वापरकर्ते 'फ्रेंड लिस्ट' आणि 'फॉलोअर्स' च्या स्वरूपात आपले नेटवर्क तयार करू शकतात. फ्रेंड लिस्टमध्ये एकमेकांच्या रिक्वेस्ट स्वीकारलेले लोक असतात, तर फॉलोअर्स हे मित्र नसतानाही सार्वजनिक पोस्ट वाचू शकतात.</p>
+                    <p class="translation">Users can build their network in the form of a 'Friend List' and 'Followers'. The friend list consists of people who have accepted each other's requests, while followers can read public posts even if they are not friends.</p>
+                </li>
+                <li>
+                    <p><strong>पोस्ट शेअरिंग (Post Sharing)</strong></p>
+                    <p>हे फेसबुकचे सर्वात प्रमुख वैशिष्ट्य आहे, ज्याद्वारे वापरकर्ते आपले विचार, फोटो, व्हिडिओ आणि लिंक्स इतरांसमोर मांडू शकतात. या पोस्ट्स वैयक्तिक, सामाजिक, राजकीय किंवा व्यावसायिक स्वरूपाच्या असू शकतात.</p>
+                    <p class="translation">This is the most prominent feature of Facebook, through which users can present their thoughts, photos, videos, and links to others. These posts can be of a personal, social, political, or professional nature.</p>
+                </li>
+                <li>
+                    <p><strong>स्टोरीज आणि रील्स (Stories and Reels)</strong></p>
+                    <p>ही दृश्यात्मक अभिव्यक्तीची (visual expression) प्रभावी साधने आहेत. 'स्टोरीज' म्हणजे २४ तासांपर्यंत उपलब्ध राहणारे फोटो किंवा व्हिडिओ, तर 'रील्स' या १५ ते ९० सेकंदांच्या लहान व्हिडिओ क्लिप्स असतात.</p>
+                    <p class="translation">These are effective tools for visual expression. 'Stories' are photos or videos that are available for up to 24 hours, while 'Reels' are short video clips of 15 to 90 seconds.</p>
+                </li>
+                <li>
+                    <p><strong>गट (Groups)</strong></p>
+                    <p>फेसबुक गट म्हणजे समान विचारसरणीच्या किंवा एका विशिष्ट उद्देशाने एकत्र आलेल्या व्यक्तींचा डिजिटल समुदाय होय. हे गट सार्वजनिक, खासगी किंवा बंद स्वरूपाचे असू शकतात.</p>
+                    <p class="translation">A Facebook group is a digital community of individuals with similar ideologies or who have come together for a specific purpose. These groups can be public, private, or closed.</p>
+                </li>
+                <li>
+                    <p><strong>पानं (Pages)</strong></p>
+                    <p>'पेजेस' ही संस्था, कलाकार, राजकारणी आणि व्यावसायिकांसाठी अधिकृत आणि सार्वजनिक ओळख निर्माण करण्याची सुविधा आहे. सामान्य वापरकर्ते ही पानं 'फॉलो' किंवा 'लाईक' करू शकतात.</p>
+                    <p class="translation">'Pages' is a feature for organizations, artists, politicians, and businesses to create an official and public identity. General users can 'follow' or 'like' these pages.</p>
+                </li>
+                <li>
+                    <p><strong>मेसेंजर (Messenger)</strong></p>
+                    <p>मेसेंजर ही फेसबुकची स्वतंत्र मेसेजिंग सेवा आहे, जी वापरकर्त्यांना एकमेकांशी वैयक्तिक किंवा गटसंवाद साधण्याची सुविधा देते. यात मजकूर संदेशासोबत फोटो, व्हॉइस मेसेज आणि व्हिडिओ कॉलची सोय असते.</p>
+                    <p class="translation">Messenger is Facebook's separate messaging service that allows users to have personal or group conversations with each other. Along with text messages, it has features for photos, voice messages, and video calls.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ९: फेसबुकवरील लेखनाद्वारे मराठी भाषेचा प्रचार व प्रसार कसा होतो, ते स्पष्ट करा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे आजच्या काळात केवळ सामाजिक संपर्काचे माध्यम राहिलेले नाही, तर ते मराठी भाषेच्या संवर्धनासाठी आणि जागतिक प्रसारासाठी एक अत्यंत प्रभावी व्यासपीठ बनले आहे. फेसबुकवरील लेखनामुळे मराठी भाषा नव्या पिढीपर्यंत पोहोचते आणि तिची ओळख अधिक दृढ होते.</p>
+            <h3>फेसबुकद्वारे मराठी भाषेचा प्रचार आणि प्रसार (Promotion and Spread of Marathi Language through Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>लेखनासाठी खुले व्यासपीठ (An Open Platform for Writing)</strong></p>
+                    <p>फेसबुकमुळे नवीन आणि प्रस्थापित लेखकांना आपले साहित्य, जसे की कथा, कविता, आणि लेख, कोणत्याही बंधनाशिवाय हजारो वाचकांपर्यंत पोहोचवण्यासाठी एक मुक्त व्यासपीठ मिळते.</p>
+                    <p class="translation">Facebook provides a free platform for new and established writers to share their literature, such as stories, poems, and articles, with thousands of readers without any restrictions.</p>
+                </li>
+                <li>
+                    <p><strong>नवीन वाचकवर्गाची निर्मिती (Creation of a New Readership)</strong></p>
+                    <p>फेसबुकमुळे अनेकजण सहजपणे मराठी साहित्य वाचू लागतात, ज्यामुळे भाषेच्या वाचकवर्गात वाढ होते. यामुळे लोकांची भाषिक अभिरुची विकसित होण्यास मदत मिळते.</p>
+                    <p class="translation">Due to Facebook, many people start reading Marathi literature easily, which leads to an increase in the language's readership. This helps in developing the linguistic taste of the people.</p>
+                </li>
+                <li>
+                    <p><strong>बोलीभाषांचे जतन (Preservation of Dialects)</strong></p>
+                    <p>फेसबुकवर अनेकजण कोकणी, खानदेशी, वऱ्हाडी आणि मालवणी यांसारख्या बोलीभाषांमध्ये लेखन करतात. यामुळे मराठीच्या या विविध बोलीभाषांचे डिजिटल स्वरूपात जतन होते.</p>
+                    <p class="translation">Many people write in dialects such as Konkani, Khandeshi, Varhadi, and Malvani on Facebook. This helps in the digital preservation of these various dialects of Marathi.</p>
+                </li>
+                <li>
+                    <p><strong>साहित्याचे डिजिटलीकरण (Digitization of Literature)</strong></p>
+                    <p>फेसबुकवर पु. ल. देशपांडे, कुसुमाग्रज यांसारख्या महान साहित्यिकांचे लेखन सतत शेअर केले जाते. यामुळे मराठीतील अभिजात साहित्य नव्या पिढीपर्यंत डिजिटल माध्यमातून पोहोचते.</p>
+                    <p class="translation">The works of great literary figures like P. L. Deshpande and Kusumagraj are continuously shared on Facebook. This helps classic Marathi literature reach the new generation through a digital medium.</p>
+                </li>
+                <li>
+                    <p><strong>युवा लेखकांना प्रोत्साहन (Encouragement for Young Writers)</strong></p>
+                    <p>फेसबुकवर लेखन करणाऱ्या तरुण लेखकांना वाचकांकडून थेट प्रतिसाद आणि प्रोत्साहन मिळते. यामुळे त्यांचा आत्मविश्वास वाढतो आणि त्यांना मराठीत करिअर करण्यासाठी प्रेरणा मिळते.</p>
+                    <p class="translation">Young writers who write on Facebook receive direct feedback and encouragement from readers. This boosts their confidence and inspires them to pursue a career in Marathi.</p>
+                </li>
+                <li>
+                    <p><strong>भाषा शुद्धीकरणाची चळवळ (A Movement for Language Purity)</strong></p>
+                    <p>काही भाषाप्रेमी फेसबुकवर 'शुद्धलेखन चळवळ' चालवतात. ते पोस्टमधील अशुद्ध शब्द दाखवून शुद्ध पर्याय सुचवतात. यामुळे फेसबुक भाषाशुद्धीची एक कार्यशाळा बनली आहे.</p>
+                    <p class="translation">Some language enthusiasts run a 'language purity movement' on Facebook. They point out incorrect words in posts and suggest the correct alternatives. This turns Facebook into a workshop for language purification.</p>
+                </li>
+                <li>
+                    <p><strong>जागतिक स्तरावर प्रसार (Promotion at a Global Level)</strong></p>
+                    <p>परदेशात राहणारे मराठी भाषिक फेसबुकच्या माध्यमातून आपल्या मातृभाषेत संवाद साधतात आणि लेखन करतात. यामुळे मराठी भाषा केवळ महाराष्ट्रापुरती मर्यादित न राहता जागतिक स्तरावर पोहोचली आहे.</p>
+                    <p class="translation">Marathi speakers living abroad communicate and write in their mother tongue through Facebook. Because of this, the Marathi language is no longer limited to Maharashtra but has reached a global level.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १०: एक समाजमाध्यम म्हणून फेसबुकची वैशिष्ट्ये सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे एक अत्यंत सामर्थ्यशाली डिजिटल साधन आहे, ज्यामध्ये संवाद, मनोरंजन आणि माहितीची देवाणघेवाण मर्यादित नाही, तर वैयक्तिक ओळख, सर्जनशील अभिव्यक्ती आणि सामाजिक बांधिलकी यांनाही प्रोत्साहन देणारी अनेक वैशिष्ट्ये आहेत.</p>
+            <h3>फेसबुकची वैशिष्ट्ये (Features of Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>वैयक्तिक प्रोफाइल (Personal Profile)</strong></p>
+                    <p>फेसबुकवरील वैयक्तिक प्रोफाइल ही प्रत्येक वापरकर्त्याची डिजिटल ओळख असते. येथे युजर स्वतःविषयी सविस्तर माहिती देतो, ज्यात नाव, जन्मतारीख, छायाचित्र, शिक्षण आणि व्यवसाय यांचा समावेश असतो. हे इतरांना युजरची सामाजिक आणि वैचारिक ओळख करून देण्यासाठी उपयुक्त ठरते.</p>
+                    <p class="translation">The personal profile on Facebook is the digital identity of every user. Here, the user gives detailed information about themselves, which includes name, date of birth, photograph, education, and profession. This proves useful for introducing the user's social and ideological identity to others.</p>
+                </li>
+                <li>
+                    <p><strong>फ्रेंड लिस्ट आणि फॉलोअर्स (Friends & Followers)</strong></p>
+                    <p>फेसबुकवर युजर 'फ्रेंड लिस्ट' आणि 'फॉलोअर्स' च्या स्वरूपात आपले नेटवर्क तयार करू शकतो. फ्रेंड लिस्टमध्ये एकमेकांच्या रिक्वेस्ट स्वीकारून संपर्क साधलेले लोक असतात, तर फॉलोअर्स हे मित्र नसतानाही सार्वजनिक व्यक्तींचे पोस्ट्स वाचू शकतात.</p>
+                    <p class="translation">On Facebook, a user can build their network in the form of a 'Friend List' and 'Followers'. The friend list consists of people who are in contact after accepting each other's requests, while followers can read the posts of a public figure even without being friends.</p>
+                </li>
+                <li>
+                    <p><strong>पोस्ट शेअरिंग (Post Sharing)</strong></p>
+                    <p>पोस्ट शेअरिंग हे फेसबुकचे सर्वात प्रमुख वैशिष्ट्य मानले जाते. यामध्ये युजर आपले विचार, फोटो, व्हिडिओ, लिंक्स किंवा भावना लोकांसमोर मांडू शकतो. या पोस्ट वैयक्तिक, सामाजिक, राजकीय किंवा शैक्षणिक स्वरूपाच्या असू शकतात.</p>
+                    <p class="translation">Post sharing is considered the most prominent feature of Facebook. In this, a user can present their thoughts, photos, videos, links, or feelings to people. These posts can be of a personal, social, political, or educational nature.</p>
+                </li>
+                <li>
+                    <p><strong>गट (Groups)</strong></p>
+                    <p>फेसबुक गट म्हणजे एका विशिष्ट उद्देशाने तयार केलेला एक डिजिटल समुदाय, जिथे समान विचारसरणीचे लोक एकत्र येतात. यामध्ये सदस्य चर्चा करतात, प्रश्न विचारतात आणि विविध उपक्रम राबवतात.</p>
+                    <p class="translation">A Facebook group is a digital community created for a specific purpose, where people of similar ideologies come together. In this, members discuss, ask questions, and conduct various activities.</p>
+                </li>
+                <li>
+                    <p><strong>पानं (Pages)</strong></p>
+                    <p>'पेजेस' ही संस्था, कलाकार, राजकारणी आणि व्यावसायिकांसाठी अधिकृत आणि सार्वजनिक ओळख निर्माण करणारी सुविधा आहे. सामान्य युजर्स ही पानं फॉलो करू शकतात आणि त्यावरील माहिती पाहू शकतात.</p>
+                    <p class="translation">'Pages' is a facility for organizations, artists, politicians, and businesses to create an official and public identity. General users can follow these pages and see the information on them.</p>
+                </li>
+                <li>
+                    <p><strong>मेसेंजर (Messenger)</strong></p>
+                    <p>मेसेंजर ही फेसबुकची स्वतंत्र मेसेजिंग सेवा आहे, जी युजर्सना एकमेकांशी वैयक्तिक किंवा गटसंवाद साधण्याची सुविधा देते. यात मजकूर संदेशांबरोबरच फोटो, व्हॉइस मेसेज आणि व्हिडिओ कॉल पाठवता येतात.</p>
+                    <p class="translation">Messenger is Facebook's independent messaging service, which provides users the facility to have personal or group conversations with each other. Along with text messages, photos, voice messages, and video calls can be sent.</p>
+                </li>
+                <li>
+                    <p><strong>इव्हेंट्स (Events)</strong></p>
+                    <p>हे वैशिष्ट्य एखाद्या कार्यक्रमाचे नियोजन, प्रसार आणि उपस्थिती व्यवस्थापनासाठी वापरले जाते. यामध्ये कार्यक्रमाचे नाव, वेळ, ठिकाण आणि माहिती देता येते.</p>
+                    <p class="translation">This feature is used for the planning, promotion, and attendance management of an event. In this, the event's name, time, location, and information can be given.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न ११: समाज जागृती घडविण्यासाठी फेसबुक कशा प्रकारे कार्य करते, ते सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे केवळ मनोरंजनाचे माध्यम नसून, सामाजिक बदलांसाठी आणि जनजागृतीसाठी एक अत्यंत प्रभावी व्यासपीठ आहे. याच्या माध्यमातून सामान्य नागरिक, समाजसेवक आणि विविध संस्था महत्त्वाचे सामाजिक संदेश लोकांपर्यंत पोहोचवतात आणि सकारात्मक बदल घडवून आणतात.</p>
+            <h3>फेसबुकद्वारे समाज जागृतीचे कार्य (The Function of Social Awareness through Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>सामाजिक विषयांवर चर्चेसाठी मंच (A Platform for Discussion on Social Issues)</strong></p>
+                    <p>फेसबुक लोकांना महागाई, भ्रष्टाचार, लिंगसमानता, पर्यावरण आणि महिला सक्षमीकरण यांसारख्या विषयांवर आपले विचार मांडण्यासाठी, इतरांचे विचार वाचण्यासाठी आणि चर्चेत भाग घेण्यासाठी एक व्यापक मंच उपलब्ध करून देते. यामुळे समाजात विचारमंथन घडते.</p>
+                    <p class="translation">Facebook provides a broad platform for people to express their views on topics like inflation, corruption, gender equality, the environment, and women's empowerment, as well as to read others' opinions and participate in discussions. This leads to intellectual discourse in society.</p>
+                </li>
+                <li>
+                    <p><strong>सामाजिक चळवळी आणि मोहिमा (Social Movements and Campaigns)</strong></p>
+                    <p>फेसबुकचा वापर सामाजिक, आरोग्य, पर्यावरणीय आणि मानवाधिकार विषयक जनजागृतीसाठी मोठ्या प्रमाणावर केला जातो. विविध सामाजिक संस्था आणि कार्यकर्ते फेसबुकवरून लोकांपर्यंत महत्त्वाचे संदेश पोहोचवतात आणि चळवळी सुरू करतात.</p>
+                    <p class="translation">Facebook is used extensively to create awareness about social, health, environmental, and human rights issues. Various social organizations and activists deliver important messages to the people and initiate movements through Facebook.</p>
+                </li>
+                <li>
+                    <p><strong>स्वयंसेवी कार्यासाठी स्वयंसेवक जोडणे (Connecting Volunteers for Social Work)</strong></p>
+                    <p>समाजसेवक आणि स्वयंसेवी संस्था (NGOs) फेसबुकचा वापर जनजागृती, मदतकार्य आणि स्वयंसेवक जोडण्यासाठी प्रभावीपणे करतात. पूरग्रस्तांसाठी मदत, रक्तदान शिबिरे किंवा गरीब विद्यार्थ्यांसाठी पुस्तक संकलन यांसारख्या उपक्रमांना फेसबुकवरून मोठा प्रतिसाद मिळतो.</p>
+                    <p class="translation">Social workers and Non-Governmental Organizations (NGOs) effectively use Facebook for creating awareness, carrying out relief work, and recruiting volunteers. Initiatives like aid for flood victims, blood donation camps, or book collection drives for underprivileged students receive a massive response through Facebook.</p>
+                </li>
+                <li>
+                    <p><strong>विचार मांडण्याचे स्वातंत्र्य (Freedom of Expression)</strong></p>
+                    <p>फेसबुक प्रत्येक व्यक्तीला आपले विचार, अनुभव किंवा सामाजिक भाष्य खुलेपणाने मांडण्याची संधी देते. उदाहरणार्थ, एखादा पर्यावरण कार्यकर्ता "प्लास्टिकचा वापर कमी करा" यावर माहितीपूर्ण पोस्ट लिहून हजारो लोकांपर्यंत पोहोचू शकतो आणि जनजागृती करू शकतो.</p>
+                    <p class="translation">Facebook gives every individual the freedom to openly express their thoughts, experiences, or social commentary. For example, an environmental activist can write an informative post on "Reduce the use of plastic" and reach thousands of people, thereby creating awareness.</p>
+                </li>
+                <li>
+                    <p><strong>प्रशासनाचे लक्ष वेधणे (Drawing the Attention of the Administration)</strong></p>
+                    <p>फेसबुकवरील लेखन अनेकदा शासन, स्थानिक संस्था किंवा पोलीस प्रशासनाचे लक्ष वेधून घेते. "आमच्या गावात पिण्याच्या पाण्याची समस्या आहे" अशा पोस्टमुळे स्थानिक समस्या सार्वजनिक होतात आणि प्रशासनावर कार्यवाही करण्यासाठी दबाव निर्माण होतो.</p>
+                    <p class="translation">Writing on Facebook often draws the attention of the government, local bodies, or the police administration. Posts like, "There is a drinking water problem in our village," make local issues public and create pressure on the administration to take action.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १२: एक समाज माध्यम म्हणून फेसबुकचे फायदे सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे एक प्रभावी समाज माध्यम आहे, ज्याचे फायदे केवळ संवादापुरते मर्यादित नाहीत. ते जगाशी जोडणारे, व्यक्तिमत्त्व विकसित करणारे, आणि व्यवसाय वृद्धीला चालना देणारे एक व्यासपीठ आहे.</p>
+            <h3>फेसबुकचे फायदे (Advantages of Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>जगाच्या कुठल्याही कोपऱ्यातील लोकांशी संपर्क (Global Connectivity and Communication)</strong></p>
+                    <p>फेसबुकचे सर्वात मोठे वैशिष्ट्य म्हणजे जगभरात कुठेही असलेल्या मित्र, नातेवाईक किंवा सहकाऱ्यांशी सहज संवाद साधता येतो. यामुळे भौगोलिक अंतराचा अडथळा दूर होतो आणि नातेसंबंध टिकवता येतात.</p>
+                    <p class="translation">Facebook's most significant feature is the ability to easily communicate with friends, relatives, or colleagues located anywhere in the world. This removes the barrier of geographical distance and helps in maintaining relationships.</p>
+                </li>
+                <li>
+                    <p><strong>विचार मांडण्याचे स्वातंत्र्य (Freedom of Expression)</strong></p>
+                    <p>फेसबुक हे व्यक्तिस्वातंत्र्याचे एक प्रभावी माध्यम आहे. येथे वापरकर्त्यांना आपले विचार, भावना, अनुभव किंवा सामाजिक भाष्य खुलेपणाने मांडण्याची संधी मिळते आणि त्यावर इतरांच्या प्रतिक्रियाही मिळतात.</p>
+                    <p class="translation">Facebook is an effective medium for freedom of expression. Here, users get the opportunity to openly express their thoughts, feelings, experiences, or social commentary and also receive feedback from others.</p>
+                </li>
+                <li>
+                    <p><strong>व्यावसायिक जाहिरातींचे प्रभावी माध्यम (Effective Platform for Business Advertising)</strong></p>
+                    <p>फेसबुक हे डिजिटल जाहिरातींसाठी एक प्रभावी आणि स्वस्त माध्यम मानले जाते. लहान उद्योग, स्टार्टअप्स आणि दुकानदार आपल्या उत्पादनांची जाहिरात विशिष्ट ग्राहकांपर्यंत पोहोचवू शकतात.</p>
+                    <p class="translation">Facebook is considered an effective and affordable medium for digital advertising. Small businesses, startups, and shopkeepers can deliver advertisements for their products to a specific target audience.</p>
+                </li>
+                <li>
+                    <p><strong>विविध प्रकारचे गट आणि चर्चा मंच (Diverse Groups and Discussion Forums)</strong></p>
+                    <p>फेसबुकवर समान आवड असलेली लोक एकत्र येऊन विविध विषयांवर आधारित गट तयार करू शकतात. या गटांमध्ये शैक्षणिक, साहित्यिक किंवा तांत्रिक अशा अनेक विषयांवर चर्चा, माहितीची आणि अनुभवांची देवाणघेवाण केली जाते.</p>
+                    <p class="translation">On Facebook, people with common interests can come together to form groups based on various topics. In these groups, discussions and exchanges of information and experiences on many subjects like educational, literary, or technical take place.</p>
+                </li>
+                <li>
+                    <p><strong>माहिती मिळवण्याचा स्रोत (A Source of Information)</strong></p>
+                    <p>फेसबुक हे ताज्या घडामोडी, बातम्या, शैक्षणिक सूचना, आणि सरकारी योजना यांसारखी उपयुक्त माहिती मिळवण्याचे एक प्रभावी माध्यम बनले आहे, ज्यामुळे वापरकर्त्यांना वेळेवर अपडेट्स मिळतात.</p>
+                    <p class="translation">Facebook has become an effective medium for obtaining useful information such as current events, news, educational notices, and government schemes, which allows users to get timely updates.</p>
+                </li>
+                <li>
+                    <p><strong>नवोदित लेखक व कलाकारांना संधी (Opportunities for New Writers and Artists)</strong></p>
+                    <p>फेसबुक नवोदित लेखक, कवी आणि कलाकारांना स्वतःची ओळख निर्माण करण्याचे आणि वाचक-प्रेक्षकांशी थेट संपर्क साधण्याचे एक उत्तम व्यासपीठ उपलब्ध करून देते.</p>
+                    <p class="translation">Facebook provides an excellent platform for new writers, poets, and artists to create their own identity and connect directly with readers and audiences.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १३: फेसबुक वापरताना कोणती काळजी घेणे गरजेचे आहे, ते सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे एक प्रभावी माध्यम असले तरी, त्याचा वापर जबाबदारीने करणे आवश्यक आहे. माहिती पसरवणे, असभ्य भाषा वापरणे किंवा वैयक्तिक गोपनीयतेचा भंग केल्यास सोशल मीडियाचा अनुभव नकारात्मक होऊ शकतो. त्यामुळे फेसबुकचा वापर करताना जागरूकता, संयम आणि शहाणपणा अनिवार्य आहे.</p>
+            <h3>फेसबुक वापरताना घ्यावयाची काळजी (Precautions to be Taken While Using Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>खोट्या बातम्या पसरवू नयेत (Avoid Spreading Fake News)</strong></p>
+                    <p>फेसबुकवर कोणतीही माहिती शेअर करण्याआधी ती विश्वसनीय स्रोतांमधून तपासूनच प्रसारित केली पाहिजे. कारण खोट्या बातम्यांमुळे समाजात भीती, गैरसमज किंवा द्वेष पसरण्याचा धोका असतो.</p>
+                    <p class="translation">Before sharing any information on Facebook, it should be broadcast only after verifying it from reliable sources. This is because fake news carries the risk of spreading fear, misunderstanding, or hatred in society.</p>
+                </li>
+                <li>
+                    <p><strong>वैयक्तिक माहिती गोपनीय ठेवावी (Protect Personal Information)</strong></p>
+                    <p>फेसबुकवर अत्यंत वैयक्तिक माहिती, जसे की आधार क्रमांक, बँक खात्याचा तपशील किंवा पासवर्ड शेअर करू नये. यामुळे सायबर फसवणूक किंवा खाजगी माहितीचा गैरवापर होण्याचा धोका वाढतो.</p>
+                    <p class="translation">Highly personal information such as Aadhaar number, bank account details, or passwords should not be shared on Facebook. This increases the risk of cyber fraud or misuse of private information.</p>
+                </li>
+                <li>
+                    <p><strong>आक्षेपार्ह किंवा द्वेषयुक्त भाषा टाळावी (Avoid Offensive or Hateful Language)</strong></p>
+                    <p>फेसबुकवर लिहिताना धार्मिक, जातीय किंवा लैंगिक भावना दुखावणारी संतापजनक आणि द्वेषयुक्त भाषा वापरणे टाळावे. असे लेखन कायदेशीर कारवाईस पात्र ठरू शकते.</p>
+                    <p class="translation">While writing on Facebook, one should avoid using inflammatory and hateful language that hurts religious, caste-based, or gender sentiments. Such writing can be subject to legal action.</p>
+                </li>
+                <li>
+                    <p><strong>सायबर सुरक्षिततेचे नियम पाळावेत (Follow Cyber Security Measures)</strong></p>
+                    <p>फेसबुक सुरक्षितपणे वापरण्यासाठी मजबूत पासवर्ड ठेवणे, टू-फॅक्टर ऑथेंटिकेशन (2FA) सुरू करणे, आणि संशयास्पद लिंकवर क्लिक न करणे, हे सायबर सुरक्षा उपाय आवश्यक आहेत.</p>
+                    <p class="translation">To use Facebook safely, cybersecurity measures such as keeping a strong password, enabling two-factor authentication (2FA), and not clicking on suspicious links are necessary.</p>
+                </li>
+                <li>
+                    <p><strong>कमेंट करताना नम्रता ठेवावी (Be Respectful in Comments)</strong></p>
+                    <p>सार्वजनिक पोस्टवर कमेंट करताना आपली भाषा आणि दृष्टिकोन नम्र असावा. एखाद्या मुद्यावर असहमत असले तरी, ते मत सुसंवादाच्या आणि शिष्टाचाराच्या पद्धतीने मांडणे आवश्यक आहे.</p>
+                    <p class="translation">While commenting on public posts, one's language and perspective should be polite. Even if you disagree on an issue, it is necessary to present that opinion in a manner of dialogue and courtesy.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १४: फेसबुक वापरायच्या मर्यादा सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे एक प्रभावी माध्यम असले तरी, त्याचा वापर विवेकपूर्ण आणि मर्यादित स्वरूपात करणे आवश्यक आहे. त्यातील गोपनीयता धोके, व्यसनाधीनता आणि मानसिक परिणामांसारख्या मर्यादा लक्षात घेऊनच वापर केल्यास फेसबुकचे खरे फायदे मिळू शकतात.</p>
+            <h3>फेसबुक वापरण्याच्या मर्यादा (Limitations of Using Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>गोपनीयतेचा अभाव (Lack of Privacy)</strong></p>
+                    <p>फेसबुकवर आपल्या वैयक्तिक माहितीचा, फोटोचा किंवा लोकेशनचा चुकीचा वापर होण्याची शक्यता असते. अनेकजण नकळतपणे आपली खाजगी माहिती सार्वजनिक करतात, ज्यामुळे ओळख चोरीसारखे (Identity Theft) गंभीर धोके निर्माण होतात.</p>
+                    <p class="translation">On Facebook, there is a possibility that one's personal information, photos, or location can be misused. Many people unknowingly make their private information public, which creates serious risks like identity theft.</p>
+                </li>
+                <li>
+                    <p><strong>खोट्या बातम्या आणि अफवांचा प्रसार (Spread of Fake News and Rumors)</strong></p>
+                    <p>फेसबुकवर खोट्या बातम्या, अफवा किंवा दिशाभूल करणारे लेख सहजपणे व्हायरल होतात. यामुळे समाजात भीती, संभ्रम किंवा चुकीचे निर्णय घेतले जाण्याची शक्यता वाढते.</p>
+                    <p class="translation">On Facebook, fake news, rumors, or misleading articles can easily go viral. This increases the possibility of fear, confusion, or wrong decisions being made in society.</p>
+                </li>
+                <li>
+                    <p><strong>व्यसनाधीनता (Addiction)</strong></p>
+                    <p>सतत फेसबुक तपासणे, लाईक्स आणि कमेंट्सच्या प्रतिक्षेत राहणे, ही अनेकांसाठी एक सवय बनते. यामुळे अभ्यास, काम आणि झोपेवर परिणाम होतो, तसेच वेळेचा अपव्यय होतो.</p>
+                    <p class="translation">Constantly checking Facebook and waiting for likes and comments becomes a habit for many. This affects studies, work, and sleep, and also leads to a waste of time.</p>
+                </li>
+                <li>
+                    <p><strong>सामाजिक नात्यांमध्ये अंतर (Distance in Social Relationships)</strong></p>
+                    <p>आभासी जगात (virtual world) जास्त वेळ घालवल्यामुळे प्रत्यक्ष नात्यांमधील संवाद कमी होतो. लोक एकाच घरात असूनही एकमेकांशी बोलण्याऐवजी फेसबुकवर गुंतलेले दिसतात, ज्यामुळे नात्यात तणाव निर्माण होऊ शकतो.</p>
+                    <p class="translation">Spending too much time in the virtual world reduces communication in real-life relationships. People in the same house are often seen engrossed in Facebook instead of talking to each other, which can create tension in relationships.</p>
+                </li>
+                <li>
+                    <p><strong>सायबर गुन्हेगारीला चालना (Promotion of Cybercrime)</strong></p>
+                    <p>फेसबुकचा वापर सायबर गुन्हेगारांकडून फसवणूक, ब्लॅकमेलिंग, ट्रोलिंग आणि हॅकिंगसाठी केला जातो. विशेषतः महिलांविरोधात अशा गुन्ह्यांचे प्रमाण वाढले आहे.</p>
+                    <p class="translation">Facebook is used by cybercriminals for fraud, blackmailing, trolling, and hacking. The rate of such crimes, especially against women, has increased.</p>
+                </li>
+                <li>
+                    <p><strong>आत्मविश्वास कमी होणे (Decrease in Self-Confidence)</strong></p>
+                    <p>फेसबुकवर इतरांच्या आयुष्यातील चांगल्या क्षणांच्या पोस्ट पाहून काहीजण स्वतःची तुलना करू लागतात. यामुळे असमाधान, न्यूनगंड आणि आत्मविश्वासाची कमतरता निर्माण होऊ शकते.</p>
+                    <p class="translation">Seeing posts of others' happy moments in life on Facebook can lead some people to start comparing themselves. This can create dissatisfaction, an inferiority complex, and a lack of self-confidence.</p>
+                </li>
+                <li>
+                    <p><strong>खोट्या जीवनशैलीचे प्रदर्शन (Display of Fake Lifestyles)</strong></p>
+                    <p>अनेकजण आपले जीवन प्रत्यक्षात आहे त्यापेक्षा अधिक आकर्षक आणि यशस्वी दाखवतात. या बनावट प्रतिमेमुळे इतरांवर, विशेषतः तरुणांवर चुकीचा प्रभाव पडतो.</p>
+                    <p class="translation">Many people portray their lives as more glamorous and successful than they actually are. This fake image creates a wrong impression on others, especially the youth.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १५: फेसबुकवरील लेखनाचे स्वरूप स्पष्ट करा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>फेसबुक हे एक असे डिजिटल माध्यम आहे, जिथे व्यक्ती आपल्या विचारांना, भावनांना आणि अनुभवांना सहजपणे जगासमोर मांडू शकतो. येथील लेखन हे केवळ व्याकरणाच्या चौकटीत मर्यादित नसून, ते प्रत्येक व्यक्तीच्या व्यक्तिमत्त्वाचे, सामाजिक जाणिवांचे आणि सर्जनशीलतेचे प्रतिबिंब असते.</p>
+            <h3>फेसबुकवरील लेखनाचे स्वरूप (The Nature of Writing on Facebook)</h3>
+            <ol>
+                <li>
+                    <p><strong>वैयक्तिक अनुभवात्मक लेखन (Personal and Reflective Writing)</strong></p>
+                    <p>फेसबुकवरील बहुसंख्य लेखन हे वैयक्तिक अनुभवांवर आधारित असते. यामध्ये व्यक्ती आपल्या आयुष्यातील प्रसंग, प्रवास, आनंद, दुःख आणि आठवणी इतरांसोबत शेअर करतो. हे लेखन वाचकांमध्ये भावनिक संबंध निर्माण करते.</p>
+                    <p class="translation">The majority of writing on Facebook is based on personal experiences. In this, individuals share events from their lives, travels, joys, sorrows, and memories with others. This type of writing creates an emotional connection with the readers.</p>
+                </li>
+                <li>
+                    <p><strong>प्रेरणादायी आणि आत्मचिंतनपर लेखन (Inspirational and Motivational Writing)</strong></p>
+                    <p>या प्रकारच्या लेखनात प्रेरणादायी विचार, यशोगाथा, जीवनातील संघर्ष आणि सकारात्मक ऊर्जा शेअर केली जाते. असे लेखन वाचकांना नवा दृष्टिकोन देते आणि त्यांचा आत्मविश्वास वाढवते.</p>
+                    <p class="translation">This type of writing involves sharing inspirational thoughts, success stories, life struggles, and positive energy. Such writing gives readers a new perspective and boosts their self-confidence.</p>
+                </li>
+                <li>
+                    <p><strong>सामाजिक आणि राजकीय भाष्य (Social and Political Commentary)</strong></p>
+                    <p>फेसबुक हे सामाजिक प्रश्न आणि राजकीय घडामोडींवर वैचारिक भूमिका मांडण्याचे एक महत्त्वाचे माध्यम आहे. असे लेखन वाचकांना विचार करण्यास प्रवृत्त करते आणि अनेकदा सामाजिक चर्चा घडवून आणते.</p>
+                    <p class="translation">Facebook is an important medium for presenting ideological stances on social issues and political events. Such writing prompts readers to think and often initiates social discussions.</p>
+                </li>
+                <li>
+                    <p><strong>साहित्यिक लेखन (Creative and Literary Writing)</strong></p>
+                    <p>फेसबुक हे अनेक नवोदित आणि प्रस्थापित साहित्यिकांसाठी कविता, लघुकथा, चारोळी किंवा लघुनिबंध शेअर करण्याचे एक सर्जनशील व्यासपीठ आहे. यातून नव्या साहित्यिक चळवळींना चालना मिळते.</p>
+                    <p class="translation">For many new and established writers, Facebook is a creative platform to share poetry, short stories, couplets, or short essays. This gives momentum to new literary movements.</p>
+                </li>
+                <li>
+                    <p><strong>माहितीपर लेखन (Informative Articles)</strong></p>
+                    <p>फेसबुकवर आरोग्य, शिक्षण, तंत्रज्ञान, सरकारी योजना आणि करियर मार्गदर्शन यांसारख्या विषयांवर माहितीपर लेखन मोठ्या प्रमाणावर केले जाते. हे लेखन सामान्य वाचकांपर्यंत अचूक माहिती पोहोचवण्याचे काम करते.</p>
+                    <p class="translation">Informative writing on topics such as health, education, technology, government schemes, and career guidance is widely done on Facebook. This writing serves to deliver accurate information to the general reader.</p>
+                </li>
+                <li>
+                    <p><strong>जाहिरात आणि व्यावसायिक लेखन (Promotional and Business Writing)</strong></p>
+                    <p>अनेक छोटे उद्योजक, व्यावसायिक आणि कलाकार आपल्या उत्पादनांची किंवा सेवांची प्रसिद्धी करण्यासाठी जाहिरात लेखनाचा वापर करतात. यामध्ये उत्पादनांची माहिती, ऑफर्स आणि ग्राहकांच्या प्रतिक्रियांचा समावेश असतो.</p>
+                    <p class="translation">Many small entrepreneurs, professionals, and artists use promotional writing to publicize their products or services. This includes product information, offers, and customer testimonials.</p>
+                </li>
+                <li>
+                    <p><strong>विनोदी आणि व्यंगात्मक लेखन (Humorous and Satirical Writing)</strong></p>
+                    <p>फेसबुकवर विनोदी लेखन खूप लोकप्रिय आहे. यामध्ये समाजातील विसंगतींवर विनोदी भाष्य, विनोदचित्रे (memes) आणि मजेशीर निरीक्षणांचा समावेश असतो, जे वाचकांचे मनोरंजन करते.</p>
+                    <p class="translation">Humorous writing is very popular on Facebook. It includes comical commentary on social inconsistencies, memes, and funny observations that entertain the readers.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १६: इंस्टाग्रामवरील लेखनाची उद्दिष्ट्ये सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>इन्स्टाग्राम हे केवळ छायाचित्रे आणि व्हिडिओ शेअर करण्याचे माध्यम नसून, ते आजच्या काळात लेखनाद्वारे अभिव्यक्त होण्याचे एक प्रभावी माध्यम बनले आहे. येथील लेखन हे दृश्याला पूरक म्हणून वापरले जाते आणि ते केवळ सौंदर्य वाढवत नाही, तर विशिष्ट उद्दिष्टे साध्य करते.</p>
+            <h3>इन्स्टाग्रामवरील लेखनाची उद्दिष्ट्ये (Objectives of Writing on Instagram)</h3>
+            <ol>
+                <li>
+                    <p><strong>स्वतःची अभिव्यक्ती आणि आत्मप्रगटीकरण (Self-Expression and Identity)</strong></p>
+                    <p>इंस्टाग्रामवरील लेखनाचा एक प्रमुख उद्देश म्हणजे व्यक्तीच्या अंतर्मनातील विचार, भावना आणि अनुभव व्यक्त करणे. हे लेखन व्यक्तिमत्त्वाची ओळख घडवते आणि लोकांना आत्मप्रगटीकरणासाठी एक माध्यम देते.</p>
+                    <p class="translation">A primary objective of writing on Instagram is to express an individual's inner thoughts, feelings, and experiences. This writing helps in shaping one's personality and provides a medium for self-expression.</p>
+                </li>
+                <li>
+                    <p><strong>समाजप्रबोधन व जागरूकता निर्माण (Social Awareness and Advocacy)</strong></p>
+                    <p>या लेखनाचा उपयोग समाजातील विविध प्रश्नांवर प्रबोधन करण्यासाठी आणि जनजागृतीसाठी होतो. पर्यावरण, महिला सक्षमीकरण आणि मानसिक आरोग्य यांसारख्या विषयांवर लोक लेखन करून समाजात सजगता निर्माण करतात.</p>
+                    <p class="translation">This writing is used to enlighten and create awareness about various issues in society. People write on topics like the environment, women's empowerment, and mental health to create consciousness in society.</p>
+                </li>
+                <li>
+                    <p><strong>व्यावसायिक आणि ब्रँड प्रमोशन (Marketing and Brand Promotion)</strong></p>
+                    <p>इन्स्टाग्राम हे डिजिटल मार्केटिंगसाठी महत्त्वाचे व्यासपीठ आहे. येथील लेखन जाहिरातपर, ग्राहक-आकर्षक आणि विक्रीस चालना देणारे असते. उत्पादनाच्या वैशिष्ट्यांबरोबर भावनिक किंवा उपयुक्त कथा जोडून हे लेखन केले जाते.</p>
+                    <p class="translation">Instagram is an important platform for digital marketing. The writing here is promotional, customer-centric, and aimed at driving sales. This writing is done by adding an emotional or useful narrative to the product's features.</p>
+                </li>
+                <li>
+                    <p><strong>प्रेरणा आणि सकारात्मकता निर्माण करणे (To Motivate and Create Positivity)</strong></p>
+                    <p>अनेक लेखक प्रेरणादायी विचार, जीवनविषयक तत्त्वज्ञान आणि मनोबल वाढवणारे संदेश शेअर करतात. अशा पोस्ट्स वाचून वाचकांमध्ये ऊर्जा, उमेद आणि आत्मविश्वास निर्माण करणे, हे एक महत्त्वाचे उद्दिष्ट आहे.</p>
+                    <p class="translation">Many writers share inspirational thoughts, life philosophies, and morale-boosting messages. A key objective is to generate energy, hope, and self-confidence in readers through such posts.</p>
+                </li>
+                <li>
+                    <p><strong>कला आणि सर्जनशीलता सादर करणे (Showcasing Art and Creativity)</strong></p>
+                    <p>इन्स्टाग्रामचा उपयोग कविता, चारोळी, कथा, रेखाचित्रे आणि फोटोग्राफी अशा अनेक कलात्मक अभिव्यक्तींसाठी होतो. लेखन या कलाकृतींना अर्थ देण्याचे, संदेश पोहोचवण्याचे आणि सौंदर्य वाढवण्याचे कार्य करते.</p>
+                    <p class="translation">Instagram is used for many artistic expressions like poetry, couplets, stories, drawings, and photography. Writing serves the function of giving meaning, conveying a message, and enhancing the beauty of these artworks.</p>
+                </li>
+                <li>
+                    <p><strong>समुदाय निर्माण व संवाद साधणे (Building a Community and Engaging)</strong></p>
+                    <p>लेखनाद्वारे लेखक आपल्या विचारसरणीशी जुळणारा एक समुदाय तयार करतो. प्रश्न विचारणे किंवा मत मागवणे यांसारख्या गोष्टींमधून वाचकांशी संवाद सुरू करण्याची आणि त्यांच्याशी बंध निर्माण करण्याची संधी मिळते.</p>
+                    <p class="translation">Through writing, a writer creates a community that aligns with their ideology. Through actions like asking questions or seeking opinions, one gets the opportunity to start a conversation and build a bond with the readers.</p>
+                </li>
+                <li>
+                    <p><strong>शैक्षणिक आणि माहितीपर उद्दिष्ट (Educational and Informational Purpose)</strong></p>
+                    <p>शैक्षणिक माहिती, अभ्यासक्रमाचे सादरीकरण, आरोग्य सल्ला आणि शास्त्रीय माहिती देण्यासाठी इन्स्टाग्रामवरील लेखनाचा मोठ्या प्रमाणावर वापर होतो. हे लेखन सोप्या आणि आकर्षक पद्धतीने केले जाते.</p>
+                    <p class="translation">Writing on Instagram is extensively used to provide educational information, present syllabi, offer health advice, and share scientific facts. This writing is done in a simple and attractive manner.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १७: इंस्टाग्रामवरील लेखनाचे प्रकार सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>इन्स्टाग्राम हे केवळ फोटो आणि व्हिडिओ शेअर करण्याचे अॅप नाही, तर ते आजच्या युगातील एक प्रभावी अभिव्यक्तीचे माध्यम बनले आहे. यामध्ये लेखनाचे विविध प्रकार आहेत, जे लेखकाच्या हेतू, विषय आणि शैलीनुसार बदलतात.</p>
+            <h3>इन्स्टाग्रामवरील लेखनाचे प्रकार (Types of Writing on Instagram)</h3>
+            <ol>
+                <li>
+                    <p><strong>वैयक्तिक अनुभवावर आधारित लेखन (Personal Experience Writing)</strong></p>
+                    <p>हा लेखनप्रकार स्वतःच्या जीवनातील घटना, आठवणी, भावनिक प्रसंग किंवा प्रवासातील अनुभवांवर आधारित असतो. असे लेखन प्रामाणिकपणे लिहिले गेल्यास ते वाचकाच्या हृदयाला थेट भिडते.</p>
+                    <p class="translation">This type of writing is based on one's own life events, memories, emotional moments, or travel experiences. If such writing is done with honesty, it directly touches the reader's heart.</p>
+                </li>
+                <li>
+                    <p><strong>प्रेरणादायी लेखन (Inspirational/Motivational Writing)</strong></p>
+                    <p>या प्रकारातील लेखन लोकांना आत्मविश्वास, धैर्य आणि सकारात्मक दृष्टिकोन देण्याचे काम करते. यात यशस्वी व्यक्तींची उदाहरणे किंवा संघर्षातून मिळालेल्या शिकवणी मांडलेल्या असतात.</p>
+                    <p class="translation">This form of writing works to give people self-confidence, courage, and a positive perspective. It often presents examples of successful individuals or lessons learned from struggles.</p>
+                </li>
+                <li>
+                    <p><strong>सामाजिक आणि वैचारिक लेखन (Social and Opinion-Based Writing)</strong></p>
+                    <p>हा लेखनप्रकार समाजातील असमानता, अन्याय, पर्यावरण किंवा शिक्षण अशा ज्वलंत विषयांवर भाष्य करतो. याचा उद्देश जनजागृती करणे आणि सामाजिक बदल घडवणे हा असतो.</p>
+                    <p class="translation">This type of writing comments on pressing topics such as social inequality, injustice, the environment, or education. Its purpose is to create awareness and bring about social change.</p>
+                </li>
+                <li>
+                    <p><strong>साहित्यिक लेखन (Literary Writing - कविता, कथा, चारोळी)</strong></p>
+                    <p>हा प्रकार सर्जनशीलतेचा अविष्कार असतो. यात लेखक कवितांच्या ओळीतून भावना मांडतो, चारोळीतून विचार प्रकट करतो किंवा लघुकथा सादर करतो. अशा लेखनात सौंदर्य आणि भाषिक शैलीला महत्त्व असते.</p>
+                    <p class="translation">This type is an expression of creativity. In this, the writer expresses emotions through lines of poetry, conveys thoughts through couplets, or presents short stories. In such writing, beauty and linguistic style are important.</p>
+                </li>
+                <li>
+                    <p><strong>माहितीपर लेखन (Informative or Educational Writing)</strong></p>
+                    <p>या प्रकारात आरोग्य, शिक्षण, इतिहास, तंत्रज्ञान किंवा दिनविशेष अशा क्षेत्रांशी संबंधित ज्ञान किंवा माहिती सादर केली जाते. यातून वाचकांच्या ज्ञानात भर पडते.</p>
+                    <p class="translation">In this type, knowledge or information related to fields such as health, education, history, technology, or special days is presented. This adds to the reader's knowledge.</p>
+                </li>
+                <li>
+                    <p><strong>जाहिरात व प्रचार लेखन (Advertising and Promotional Writing)</strong></p>
+                    <p>हा लेखनप्रकार उत्पादन, सेवा किंवा ब्रँडचे प्रमोशन करण्यासाठी वापरला जातो. येथील लेखन आकर्षक, ग्राहकांशी बोलणारे आणि त्यांना प्रतिक्रिया देण्यासाठी उद्युक्त करणारे असते.</p>
+                    <p class="translation">This writing style is used to promote a product, service, or brand. The writing here is attractive, speaks to the customer, and encourages them to take action.</p>
+                </li>
+                <li>
+                    <p><strong>विनोदी व उपहासात्मक लेखन (Humorous and Satirical Writing)</strong></p>
+                    <p>या लेखनातून हास्यविनोद आणि सामाजिक व्यंग यांच्या माध्यमातून वाचकांचे मनोरंजन केले जाते. हे लेखन हलकेफुलके असले तरी, अनेकदा गंभीर विचारांवर उपहासात्मक भाष्य करते.</p>
+                    <p class="translation">This writing entertains readers through humor, wit, and social satire. Although this writing is light-hearted, it often makes satirical comments on serious issues.</p>
+                </li>
+                <li>
+                    <p><strong>संवाद साधणारे लेखन (Interactive Writing)</strong></p>
+                    <p>या प्रकारात लेखक प्रश्न विचारून, मत मागवून किंवा एखादे चॅलेंज देऊन वाचकांना चर्चेत सहभागी करून घेतो. यामुळे वाचकांचा प्रतिसाद वाढतो.</p>
+                    <p class="translation">In this type, the writer involves the readers in a discussion by asking questions, seeking opinions, or giving a challenge. This increases audience engagement.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १८: एक्स (ट्विटर) वरील लेखनाची वैशिष्ट्ये सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>'एक्स' (पूर्वीचे ट्विटर) हे एक मायक्रोब्लॉगिंग प्लॅटफॉर्म आहे, जेथे वापरकर्ते अत्यंत कमी शब्दांत आपले विचार व्यक्त करतात. या प्लॅटफॉर्मवरील लेखनाची शैली, उद्दिष्ट आणि स्वरूप हे इतर समाज माध्यमांपेक्षा वेगळे आहे.</p>
+            <h3>एक्स (ट्विटर) वरील लेखनाची वैशिष्ट्ये (Features of Writing on X (Twitter))</h3>
+            <ol>
+                <li>
+                    <p><strong>संक्षिप्त आणि मुद्देसूद स्वरूप (Concise and To-the-Point Nature)</strong></p>
+                    <p>'एक्स' वरील लेखन हे २८० अक्षरांमध्ये मर्यादित असल्यामुळे ते अत्यंत संक्षिप्त, वेगवान आणि मुद्देसूद असते. लेखकाला आपले विचार कमीत कमी शब्दांत प्रभावीपणे मांडावे लागतात.</p>
+                    <p class="translation">As writing on 'X' is limited to 280 characters, it is extremely concise, fast-paced, and to-the-point. The writer has to effectively present their thoughts in the fewest possible words.</p>
+                </li>
+                <li>
+                    <p><strong>तात्काळ आणि थेट शैली (Immediate and Direct Style)</strong></p>
+                    <p>येथील लेखनशैली थेट, बोधक, व्यंगात्मक किंवा उत्स्फूर्त असते. खटकेबाज भाषेचा वापर करून काही सेकंदात वाचकाचे लक्ष वेधण्याचा प्रयत्न केला जातो.</p>
+                    <p class="translation">The writing style here is direct, informative, satirical, or spontaneous. An attempt is made to grab the reader's attention in a few seconds by using witty language.</p>
+                </li>
+                <li>
+                    <p><strong>हॅशटॅगचा प्रभावी वापर (Effective Use of Hashtags)</strong></p>
+                    <p>'एक्स' वरील लेखनात हॅशटॅग (#) अत्यंत महत्त्वाचे असतात. हॅशटॅगमुळे लेखन विषयानुसार वर्गीकृत होते आणि ते अधिक लोकांपर्यंत पोहोचण्यास मदत होते.</p>
+                    <p class="translation">Hashtags (#) are very important in writing on 'X'. Hashtags categorize the post according to the topic and help it reach a wider audience.</p>
+                </li>
+                <li>
+                    <p><strong>ट्रेंडिंग विषयांवर आधारित लेखन (Writing Based on Trending Topics)</strong></p>
+                    <p>'एक्स' वरील अनेक पोस्ट्स त्या क्षणी ट्रेंडिंग असलेल्या विषयांवर आधारित असतात. लेखक चालू घडामोडींवर आणि सामाजिक मुद्यांवर आपल्या दृष्टिकोनातून तात्काळ भाष्य करतात.</p>
+                    <p class="translation">Many posts on 'X' are based on topics that are trending at that moment. Writers promptly comment on current events and social issues from their perspective.</p>
+                </li>
+                <li>
+                    <p><strong>प्रतिक्रियात्मक आणि संवादात्मक स्वरूप (Responsive and Interactive Nature)</strong></p>
+                    <p>'एक्स' हे समकालीन घटनांवर तात्काळ प्रतिक्रिया देण्याचे माध्यम आहे. लेखक एखाद्या बातमीवर किंवा दुसऱ्या वापरकर्त्याच्या पोस्टवर लगेच उत्तर देतो, ज्यामुळे थेट संवाद घडतो.</p>
+                    <p class="translation">'X' is a medium for immediate reaction to contemporary events. A writer instantly replies to a piece of news or another user's post, which leads to direct conversation.</p>
+                </li>
+                <li>
+                    <p><strong>मायक्रो-साहित्य (Micro-literature)</strong></p>
+                    <p>या प्लॅटफॉर्मवर चारोळी, हायकू, एकोळी कविता आणि विचारवाक्य यांसारख्या साहित्यिक लेखनाचे स्वरूप मोठ्या प्रमाणात आढळते.</p>
+                    <p class="translation">Literary forms such as four-line couplets (charoli), haikus, one-line poems, and quotes are found in abundance on this platform.</p>
+                </li>
+                <li>
+                    <p><strong>संक्षिप्ततेतील सर्जनशीलता (Creativity within Brevity)</strong></p>
+                    <p>२८० अक्षरांची मर्यादा लेखकाला कमी शब्दांत अधिक प्रभावी आणि कल्पक लेखन करण्यास प्रवृत्त करते. हीच अडचण सर्जनशीलतेसाठी एक आव्हान ठरते.</p>
+                    <p class="translation">The 280-character limit prompts the writer to be more effective and creative in fewer words. This very constraint becomes a challenge for creativity.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न १९: समाजगटांवरील लेखनाचे स्वरूप आणि वैशिष्ट्ये सांगा.</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>आजच्या डिजिटल युगात 'समाज गट' (Community Groups), जसे की WhatsApp ग्रुप किंवा Facebook कम्युनिटी, हे विचारांची देवाणघेवाण, चर्चा आणि सामाजिक उपक्रमांसाठी एक महत्त्वाचे माध्यम बनले आहेत. या गटांमधील लेखनाचे स्वरूप हे प्रभावी, स्पष्ट, उद्दिष्टपूर्ण आणि संवादात्मक असणे आवश्यक असते.</p>
+            <h3>समाजगटांवरील लेखनाचे स्वरूप आणि वैशिष्ट्ये (Nature and Features of Writing in Community Groups)</h3>
+            <ol>
+                <li>
+                    <p><strong>स्पष्ट, सोपे आणि संवादात्मक स्वरूप (Clear, Simple, and Interactive Nature)</strong></p>
+                    <p>समाज गटातील लेखन हे नेहमीच वाचायला सोपे, संवाद साधणारे आणि स्पष्ट असावे लागते. हे लेखन अनेकदा सूचना, माहिती, विचार, अनुभव किंवा मदतीची विनंती या स्वरूपात असते.</p>
+                    <p class="translation">Writing in community groups must always be easy to read, interactive, and clear. This writing is often in the form of notices, information, thoughts, experiences, or requests for help.</p>
+                </li>
+                <li>
+                    <p><strong>उद्दिष्टपूर्ण लेखन (Purpose-Driven Writing)</strong></p>
+                    <p>या गटांमधील लेखनाचा एक विशिष्ट हेतू असतो, जसे की माहितीची देवाणघेवाण करणे, समस्यांवर एकत्र विचार करणे, सामाजिक उपक्रमांचे आयोजन करणे किंवा समूह भावना निर्माण करणे.</p>
+                    <p class="translation">Writing in these groups has a specific purpose, such as exchanging information, collectively thinking about problems, organizing social activities, or building a sense of community.</p>
+                </li>
+                <li>
+                    <p><strong>नम्र आणि सहकार्यशील शैली (Polite and Collaborative Style)</strong></p>
+                    <p>समाज गटांतील लेखनाची शैली नम्र, सहकार्यशील आणि आपुलकीची असावी. येथे असभ्य भाषा, आरोप किंवा टोमणे यांचा वापर टाळून चर्चेचा एक सकारात्मक स्तर टिकवला जातो.</p>
+                    <p class="translation">The writing style in community groups should be polite, collaborative, and cordial. A positive level of discussion is maintained by avoiding indecent language, accusations, or sarcasm.</p>
+                </li>
+                <li>
+                    <p><strong>चर्चात्मक आणि विचारप्रवर्तक (Discussion-Oriented and Thought-Provoking)</strong></p>
+                    <p>समाज गट हे विचारमंथनासाठी असतात. येथील लेखन अनेकदा एखादे चर्चासत्र सुरू करण्यासाठी किंवा चालू असलेल्या चर्चेत आपले मत मांडण्यासाठी वापरले जाते, जेणेकरून सामूहिक विचारांना चालना मिळते.</p>
+                    <p class="translation">Community groups are meant for brainstorming. The writing here is often used to initiate a discussion or to present one's opinion in an ongoing debate, thereby promoting collective thinking.</p>
+                </li>
+                <li>
+                    <p><strong>जबाबदारीपूर्ण आणि सत्यावर आधारित (Responsible and Fact-Based)</strong></p>
+                    <p>या गटांमधील लेखन हे सत्यावर आधारित, विचारपूर्वक केलेले आणि मर्यादित शब्दांत असावे. येथे अफवा, गैरसमज आणि कटुता पसरवणारे लेखन टाळले पाहिजे.</p>
+                    <p class="translation">The writing in these groups should be based on facts, well-thought-out, and concise. One should avoid writing that spreads rumors, misunderstandings, and bitterness.</p>
+                </li>
+                <li>
+                    <p><strong>कृतीला प्रोत्साहन देणारे (Encouraging Action - Call to Action)</strong></p>
+                    <p>गटातील सदस्यांकडून सहभाग मिळवण्यासाठी लेखनामध्ये अनेकदा कृतीची स्पष्ट मागणी असते. उदाहरणार्थ, 'सर्वांनी बैठकीला उपस्थित राहावे' किंवा 'आपले मत नोंदवावे'.</p>
+                    <p class="translation">To get participation from group members, the writing often includes a clear call to action. For example, 'Everyone should attend the meeting' or 'Please register your opinion'.</p>
+                </li>
+                <li>
+                    <p><strong>समस्या-केंद्रित आणि उपाय-योजनात्मक (Problem-Focused and Solution-Oriented)</strong></p>
+                    <p>एखादी स्थानिक समस्या आणि तिचा सामूहिकपणे शोधलेला उपाय मांडण्यासाठी विश्लेषणात्मक लेखनाचा प्रभावीपणे वापर केला जातो.</p>
+                    <p class="translation">Analytical writing is effectively used to present a local problem and a collectively sought solution for it.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
+      
+    <article class="note-card">
+        <h2 class="note-title">प्रश्न २०: आभासी कट्टे म्हणजे काय, ते सांगून आभासी कट्ट्यांवरील लेखनाचे स्वरूप स्पष्ट करा?</h2>
+        <div class="note-body">
+            <h3>प्रस्तावना (Introduction)</h3>
+            <p>'कट्टा' ही आपल्या समाजात गप्पा, सृजनशीलता आणि वैचारिक देवाणघेवाणीचा केंद्रबिंदू म्हणून ओळखली जाणारी संकल्पना आहे. आजच्या डिजिटल युगात या कट्ट्यांनी 'आभासी' स्वरूप धारण केले आहे, जिथे लेखनाची एक विशिष्ट आणि अनौपचारिक पद्धत विकसित झाली आहे.</p>
+            <h3>आभासी कट्टाः संकल्पना (Virtual Adda: The Concept)</h3>
+            <p>'आभासी कट्टा' म्हणजे समान विचारसरणीच्या किंवा आवडीच्या लोकांचे एकत्र येण्याचे एक डिजिटल ठिकाण. पूर्वी जे कट्टे शाळा, मंदिरे किंवा चौकात असायचे, आजच्या युगात त्यांचे रूपांतर 'आभासी कट्ट्यांमध्ये' झाले आहे. फेसबुक ग्रुप्स, व्हॉट्सअॅप फोरम्स, झूम मिटींग्स किंवा ब्लॉग कम्युनिटीज ही आभासी कट्ट्यांची प्रमुख उदाहरणे आहेत.</p>
+            <p class="translation">A 'Virtual Adda' is a digital place for people with similar ideologies or interests to come together. The 'kattas' that were previously found in schools, temples, or squares have transformed into 'virtual addas' in the modern era. Facebook Groups, WhatsApp Forums, Zoom meetings, or blog communities are prime examples of virtual addas.</p>
+            <h3>आभासी कट्ट्यांवरील लेखनाचे स्वरूप (The Nature of Writing on Virtual Addas)</h3>
+            <ol>
+                <li>
+                    <p><strong>अनौपचारिक पण विचारशील स्वरूप (Informal yet Thoughtful Nature)</strong></p>
+                    <p>या कट्ट्यांवरील लेखन हे प्रामुख्याने गप्पा, चर्चा, अनुभव-सामायिकरण, साहित्य-वाचन आणि प्रश्नोत्तरांवर आधारित असते. जरी हे लेखन अनौपचारिक असले, तरी ते विचारशील असते आणि त्यातून विचारांची देवाणघेवाण घडते.</p>
+                    <p class="translation">The writing on these 'addas' is primarily based on chats, discussions, experience-sharing, literature-reading, and Q&A. Although this writing is informal, it is thoughtful and facilitates the exchange of ideas.</p>
+                </li>
+                <li>
+                    <p><strong>आपुलकीची आणि संवादात्मक शैली (Affectionate and Interactive Style)</strong></p>
+                    <p>येथील लेखनशैलीमध्ये आपुलकी, संवादशीलता, थेटपणा आणि भावनिक ओलावा असतो. यात व्यक्तिगत टोन, मित्रत्वाची भाषा आणि स्वतःच्या भावनांचा समावेश असल्याने वाचक सहजपणे जोडला जातो.</p>
+                    <p class="translation">The writing style here contains affection, interactivity, directness, and an emotional touch. As it includes a personal tone, friendly language, and one's own feelings, the reader connects easily.</p>
+                </li>
+                <li>
+                    <p><strong>सर्जनशील आणि अनुभव-केंद्रित (Creative and Experience-Centric)</strong></p>
+                    <p>आभासी कट्ट्यांवर अनेकदा सर्जनशील लेखनाला वाव दिला जातो. यामध्ये चारोळ्या, कविता, लघुकथा, विनोदी किस्से किंवा निरीक्षणात्मक लेख यांचा समावेश असतो. सदस्य आपले वैयक्तिक अनुभव आणि आठवणी शेअर करतात.</p>
+                    <p class="translation">Creative writing is often encouraged on virtual addas. This includes four-line poems, poetry, short stories, humorous anecdotes, or observational articles. Members share their personal experiences and memories.</p>
+                </li>
+                <li>
+                    <p><strong>सहभागवर्धक आणि समूहात्मक (Participative and Collaborative)</strong></p>
+                    <p>येथील लेखन हे सदस्यांना सहभागी होण्यासाठी प्रोत्साहित करते. अनेकदा आठवड्याचा विषय देऊन त्यावर सर्वांना लिहिण्यास सांगितले जाते. हे 'गट लेखनाचा' आणि 'सामूहिक अभिव्यक्तीचा' एक उत्तम प्रकार आहे.</p>
+                    <p class="translation">The writing here encourages members to participate. Often, a topic of the week is given, and everyone is asked to write on it. This is an excellent form of 'group writing' and 'collective expression'.</p>
+                </li>
+            </ol>
+        </div>
+    </article>
 
   </main>
   
   <script>
-    // Basic script to toggle dark mode if needed in the future
     function changeTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('notebookTheme', theme); // Save theme preference
     }
+
+    // Load saved theme on page load for persistence
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('notebookTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+    });
   </script>
 </body>
 </html>
