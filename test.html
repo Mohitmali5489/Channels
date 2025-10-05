@@ -1,77 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="mr" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>Sports Notebook</title>
+  <title>Marathi Question Bank</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   
   <style>
-    /* 🎨 --- Color & Theme Variables --- 🎨 */
+    /* 🎨 --- Color & Theme Variables (BirlaOne Green Theme) --- 🎨 */
     :root {
-      --primary-accent: #b84fff;
-      --primary-gradient: linear-gradient(135deg, #b84fff, #8f00ff);
-      --font-family: 'Inter', sans-serif;
+      --primary-accent: #4CAF50;
+      --primary-gradient: linear-gradient(135deg, #66BB6A, #43A047);
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Lora', serif;
       --border-radius: 12px;
     }
     
     html[data-theme="light"] {
-      --bg-gradient: linear-gradient(180deg, #f5f5f7, #e9e9ed);
+      --bg-color: #f7f7f9;
       --card-bg: #ffffff;
-      --text-primary: #121212;
-      --text-secondary: #5f5f5f;
-      --border-color: #e0e0e0;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      --header-bg: rgba(255, 255, 255, 0.7);
-      --input-bg: #f1f1f1;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 4px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
     }
 
     html[data-theme="dark"] {
-      --bg-gradient: linear-gradient(180deg, #2a2a3d, #1e1e2e);
-      --card-bg: #2a2a3d;
-      --text-primary: #f0f0f0;
+      --bg-color: #1c1c1e;
+      --card-bg: #2c2c2e;
+      --text-primary: #f2f2f7;
       --text-secondary: #a0a0b0;
-      --border-color: #4a4a6a;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      --header-bg: rgba(30, 30, 46, 0.7);
-      --input-bg: #40405f;
-    }
-    
-    /* Add other theme variations here if needed */
-    html[data-theme="sepia"] {
-      --bg-gradient: linear-gradient(180deg, #f4ecd8, #e9deca);
-      --card-bg: #fbf5e9;
-      --text-primary: #5b4636;
-      --text-secondary: #7d6b59;
-      --border-color: #dcd0b9;
-      --primary-accent: #a98244;
-      --header-bg: rgba(244, 236, 216, 0.7);
-      --input-bg: #e9deca;
+      --border-color: #444446;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --header-bg: rgba(28, 28, 30, 0.8);
     }
 
     /* 🧱 --- Base & Layout Styles --- 🧱 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: var(--font-family);
-      background: var(--bg-gradient);
+      font-family: var(--font-serif); /* Default to serif for reading */
+      background-color: var(--bg-color);
       color: var(--text-primary);
-      line-height: 1.7;
-      font-size: 16px;
-      transition: background 0.3s, color 0.3s;
+      line-height: 1.8;
+      font-size: 17px;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     /* 🔝 --- App Header --- 🔝 */
     .app-header {
+      font-family: var(--font-sans);
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: var(--header-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background-color: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -80,37 +68,7 @@
     
     .header-title {
         font-size: 20px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .back-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-primary);
-    }
-    
-    .theme-selector select {
-      background-color: var(--input-bg);
-      color: var(--text-primary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 14px;
-      -webkit-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      padding-right: 28px;
-    }
-    
-    .theme-selector select:focus {
-        outline: 2px solid var(--primary-accent);
-        outline-offset: 2px;
+        font-weight: 500;
     }
 
     /* 📖 --- Main Content Container --- 📖 */
@@ -125,162 +83,107 @@
       background: var(--card-bg);
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      border: 1px solid var(--border-color);
       margin-bottom: 24px;
       overflow: hidden;
-      transition: transform 0.2s ease-in-out;
-    }
-    
-    .note-card:hover {
-        transform: translateY(-4px);
     }
     
     .note-title {
-      font-size: 20px;
-      font-weight: 600;
-      padding: 16px 20px;
+      font-family: var(--font-sans);
+      font-size: 22px;
+      font-weight: 700;
+      padding: 18px 22px;
       background: var(--primary-gradient);
       color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     
     .note-body {
-      padding: 20px;
-      font-size: 1rem;
-      color: var(--text-secondary);
+      padding: 12px 22px 22px 22px;
+      color: var(--text-primary);
     }
 
     .note-body h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-family: var(--font-sans);
+      font-size: 1.2rem;
+      font-weight: 700;
       color: var(--text-primary);
-      margin-top: 20px;
-      margin-bottom: 8px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--primary-accent);
+      padding-bottom: 6px;
     }
     
-    .note-body p, .note-body ul, .note-body ol {
+    .note-body p {
       margin-bottom: 16px;
+      text-align: justify;
     }
     
     .note-body strong {
+        font-family: var(--font-sans);
+        font-weight: 700;
         color: var(--text-primary);
-        font-weight: 600;
     }
 
-    .note-body ul, .note-body ol {
-      padding-left: 20px;
+    .note-body ol {
+      list-style: none;
+      padding-left: 0;
     }
     
-    .note-body li {
-        margin-bottom: 8px;
-    }
-    
-    .note-body ul ul {
-        margin-top: 8px;
+    .note-body ol > li {
+        margin-bottom: 28px;
+        padding-left: 10px;
     }
 
-    @media print {
-      body { background: white !important; }
-      .app-header { display: none; }
-      .notebook-container { padding: 0; max-width: 100%; }
-      .note-card { box-shadow: none; border: 1px solid #ccc; }
-      .note-title { background: #eee !important; color: #000 !important; }
+    /* ✨ --- Style for English Translation --- ✨ */
+    .translation {
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      font-style: italic;
+      line-height: 1.7;
+      margin-top: -8px; /* Pull it slightly closer to the Marathi text */
     }
+
   </style>
 </head>
 <body>
 
   <header class="app-header">
-    <button class="back-button" onclick="history.back()" aria-label="Go back">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-    </button>
-    <h1 class="header-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        Sports Notebook
-    </h1>
-    <div class="theme-selector">
-      <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
-        <option value="light">Default</option>
-        <option value="dark">Dark</option>
-        <option value="sepia">Sepia</option>
-      </select>
-    </div>
+    <h1 class="header-title">Marathi Question Bank</h1>
   </header>
 
   <main class="notebook-container">
+
     <article class="note-card">
-      <h2 class="note-title">Can you give me an overview of the sport volleyball?</h2>
+      <h2 class="note-title">प्रश्न १: अनुदिनी (ब्लॉग) लेखनाची उद्दिष्टे लिहा.</h2>
       <div class="note-body">
-          <p>Volleyball is a popular team sport played globally, with a rich history and a strong competitive scene. Here's an overview:</p>
+          <h3>प्रस्तावना (Introduction)</h3>
+          <p>अनुदिनी, ज्याला इंग्रजीमध्ये 'ब्लॉग' (Blog) असेही म्हणतात, हे इंटरनेटवर आपले विचार, अनुभव आणि माहिती लोकांपर्यंत पोहोचवण्याचे एक प्रभावी माध्यम आहे. हे एक प्रकारचे ऑनलाइन डायरी किंवा लेख लिहिण्याचे व्यासपीठ आहे. अनुदिनी लेखनाची अनेक उद्दिष्टे आहेत, जी खालीलप्रमाणे:</p>
           
-          <h3>History</h3>
-          <p>Volleyball was invented in 1895 by <strong>William G. Morgan</strong>, a physical education instructor from Holyoke, Massachusetts. The game was initially called "Mintonette" and was designed to be a combination of basketball, baseball, and tennis.</p>
-
-          <h3>Rules and Gameplay</h3>
-          <p>The objective of volleyball is to score points by sending the ball over the net and landing it in the opponent's court. A team consists of six players, and a match is typically best-of-five sets. Each set is played to 25 points, with a minimum lead of two points.</p>
-
-          <h3>Variations</h3>
-          <ul>
-              <li><strong>Indoor volleyball:</strong> Played on an indoor court with six players on each team.</li>
-              <li><strong>Beach volleyball:</strong> Played on sand with two players on each team.</li>
-              <li><strong>Sitting volleyball:</strong> A variation of volleyball played while seated on the floor.</li>
-          </ul>
-
-          <h3>Benefits and Popularity</h3>
-          <p>Volleyball is a popular sport globally, known for its fast-paced action, teamwork, and social benefits. It can be played recreationally or competitively, making it accessible to people of all ages and skill levels.</p>
+          <h3>अनुदिनी लेखनाची उद्दिष्टे (Objectives of Blog Writing)</h3>
+          <ol>
+              <li>
+                  <p><strong>वैचारिक आणि वैयक्तिक अभिव्यक्ती (To Express Thoughts and Personal Views)</strong></p>
+                  <p>ब्लॉग हे आपले वैयक्तिक विचार, मते, भावना आणि अनुभव लोकांसमोर मांडण्याचे एक उत्तम साधन आहे. आपण कोणत्याही सामाजिक, राजकीय किंवा शैक्षणिक विषयावर आपले मत लिहू शकतो.</p>
+                  <p class="translation">A blog is an excellent tool to present your personal thoughts, opinions, feelings, and experiences to the public. You can write your views on any social, political, or educational topic.</p>
+              </li>
+              <li>
+                  <p><strong>विचारांसाठी व्यासपीठ मिळवणे (To Get a Platform for Ideas)</strong></p>
+                  <p>अनेकदा वृत्तपत्र किंवा टीव्हीसारख्या पारंपरिक माध्यमांमध्ये प्रत्येकाला आपले विचार मांडण्याची संधी मिळत नाही. ब्लॉग आपल्याला स्वतःचे व्यासपीठ (platform) उपलब्ध करून देतो, जिथे आपण आपले विचार लोकांपर्यंत पोहोचवू शकतो.</p>
+                  <p class="translation">Often, not everyone gets an opportunity to express their views in traditional media like newspapers or TV. A blog provides you with your own platform where you can make your ideas reach the people.</p>
+              </li>
+              <li>
+                  <p><strong>सामाजिक जागरूकता निर्माण करणे (To Create Social Awareness)</strong></p>
+                  <p>समाजातील महत्त्वाच्या समस्यांवर लोकांचे लक्ष वेधण्यासाठी आणि त्यांच्यात जागरूकता निर्माण करण्यासाठी ब्लॉगचा प्रभावीपणे वापर करता येतो. उदाहरणार्थ, पर्यावरण संरक्षण, स्वच्छता मोहीम यांसारख्या विषयांवर लिहून लोकांचे मत तयार करता येते.</p>
+                  <p class="translation">A blog can be effectively used to draw people's attention towards important social issues and create awareness among them. For instance, one can write on topics like environmental protection or cleanliness campaigns to shape public opinion.</p>
+              </li>
+          </ol>
       </div>
-    </article>
-
-    <article class="note-card">
-      <h2 class="note-title">What are the fundamentals of sports?</h2>
-      <div class="note-body">
-          <p>The fundamentals of sports refer to the basic principles, skills, and concepts that are essential for participating in and enjoying various sports. Here are some key fundamentals:</p>
-
-          <h3>Physical Fundamentals</h3>
-          <ul>
-              <li><strong>Fitness:</strong> Developing cardiovascular endurance, muscular strength and endurance, flexibility, and speed.</li>
-              <li><strong>Coordination:</strong> Developing hand-eye coordination, footwork, and overall physical coordination.</li>
-              <li><strong>Agility:</strong> Quickly changing direction, speed, and movement.</li>
-          </ul>
-
-          <h3>Mental Fundamentals</h3>
-          <ul>
-              <li><strong>Focus and concentration:</strong> Maintaining attention and focus during competition.</li>
-              <li><strong>Motivation:</strong> Developing and maintaining motivation to participate and improve.</li>
-              <li><strong>Sportsmanship:</strong> Demonstrating respect, fairness, and good sportsmanship towards teammates, opponents, and officials.</li>
-          </ul>
-      </div>
-    </article>
-    
-    <article class="note-card">
-        <h2 class="note-title">What are the standard measurements for a volleyball court?</h2>
-        <div class="note-body">
-            <p>These measurements are standardized by the FIVB (Fédération Internationale de Volleyball) and are used in most professional and international volleyball competitions.</p>
-            
-            <h3>Indoor Volleyball Court</h3>
-            <ul>
-                <li><strong>Length:</strong> 18 meters (59 feet)</li>
-                <li><strong>Width:</strong> 9 meters (29.5 feet)</li>
-                <li>
-                    <strong>Net height:</strong>
-                    <ul>
-                        <li>Men's volleyball: $2.43$ meters ($7$ feet $11 \frac{5}{8}$ inches)</li>
-                        <li>Women's volleyball: $2.24$ meters ($7$ feet $4 \frac{1}{8}$ inches)</li>
-                    </ul>
-                </li>
-            </ul>
-            
-            <h3>Beach Volleyball Court</h3>
-            <ul>
-                <li><strong>Length:</strong> 16 meters (52 feet 6 inches)</li>
-                <li><strong>Width:</strong> 8 meters (26 feet 3 inches)</li>
-                <li><strong>Net height:</strong> Same as indoor volleyball.</li>
-            </ul>
-        </div>
-      </article>
+  </article>
 
   </main>
   
   <script>
+    // Basic script to toggle dark mode if needed in the future
     function changeTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
     }
