@@ -3,96 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>Service Sector Q&A</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Paper Pattern - Service Sector - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
   
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
   <style>
-    /* 🎨 --- Color & Theme Variables --- 🎨 */
     :root {
-      --primary-accent: #b84fff;
-      --primary-gradient: linear-gradient(135deg, #b84fff, #8f00ff);
-      --font-family: 'Inter', sans-serif;
-      --border-radius: 12px;
+      --primary-accent: #6a11cb;
+      --primary-gradient: linear-gradient(90deg, #6a11cb, #2575fc);
+      --font-sans: 'Inter', sans-serif;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
     }
     
     html[data-theme="light"] {
-      --bg-gradient: linear-gradient(180deg, #f5f5f7, #e9e9ed);
+      --bg-color: #f7f7f9;
       --card-bg: #ffffff;
-      --text-primary: #121212;
-      --text-secondary: #5f5f5f;
-      --border-color: #e0e0e0;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      --header-bg: rgba(255, 255, 255, 0.7);
-      --input-bg: #f1f1f1;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
     }
 
     html[data-theme="dark"] {
-      --bg-gradient: linear-gradient(180deg, #2a2a3d, #1e1e2e);
-      --card-bg: #2a2a3d;
-      --text-primary: #f0f0f0;
-      --text-secondary: #a0a0b0;
-      --border-color: #4a4a6a;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      --header-bg: rgba(30, 30, 46, 0.7);
-      --input-bg: #40405f;
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-primary: #f2f2f7;
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+      --primary-accent: #9066f0;
+      --primary-gradient: linear-gradient(90deg, #9066f0, #4f95ff);
     }
-    
+      
     html[data-theme="sepia"] {
-      --bg-gradient: linear-gradient(180deg, #f4ecd8, #e9deca);
-      --card-bg: #fbf5e9;
-      --text-primary: #5b4636;
-      --text-secondary: #7d6b59;
-      --border-color: #dcd0b9;
-      --primary-accent: #a98244;
-      --header-bg: rgba(244, 236, 216, 0.7);
-      --input-bg: #e9deca;
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
     }
 
-    /* 🧱 --- Base & Layout Styles --- 🧱 */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Base & Layout Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     body {
-      font-family: var(--font-family);
-      background: var(--bg-gradient);
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
       color: var(--text-primary);
-      line-height: 1.7;
-      font-size: 16px;
-      transition: background 0.3s, color 0.3s;
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
     }
 
-    /* 🔝 --- App Header --- 🔝 */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: var(--header-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    
-    .header-title {
-        font-size: 20px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .back-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-primary);
-      display: flex; /* Helps align the SVG inside */
-      align-items: center;
-    }
+    /* Header */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+    .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
+    .header-left, .header-right { flex: 1; }
+    .header-right { display: flex; justify-content: flex-end; }
+    .back-button { background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 5px; }
     
     .theme-selector select {
       background-color: var(--input-bg);
@@ -101,660 +86,154 @@
       border-radius: 8px;
       padding: 6px 10px;
       font-size: 14px;
-      -webkit-appearance: none;
-      appearance: none;
+      -webkit-appearance: none; appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 8px center;
       padding-right: 28px;
+      transition: all var(--transition-speed) ease;
     }
     
-    .theme-selector select:focus {
-        outline: 2px solid var(--primary-accent);
-        outline-offset: 2px;
-    }
-
-    /* 📖 --- Main Content Container --- 📖 */
-    .notebook-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 24px 16px;
-    }
-
-    /* 📝 --- Note Card Styles --- 📝 */
-    .note-card {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border-color);
-      margin-bottom: 24px;
-      overflow: hidden;
-      transition: transform 0.2s ease-in-out;
-    }
+    /* Content Styles */
+    .container { padding: 24px 16px; max-width: 800px; margin: 0 auto; }
+    .pattern-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; }
+    .pattern-title { font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center;}
+    .pattern-body { padding: 22px; }
     
-    .note-card:hover {
-        transform: translateY(-4px);
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+        text-align: center;
     }
-    
-    .note-title {
-      font-size: 20px;
-      font-weight: 600;
-      padding: 16px 20px;
-      background: var(--primary-gradient);
-      color: white;
+    .summary-item {
+        background-color: rgba(128, 128, 128, 0.05);
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
     }
-    
-    .note-body {
-      padding: 20px;
-      font-size: 1rem;
-      color: var(--text-secondary);
+    .summary-item .label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
     }
-
-    .note-body h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-top: 20px;
-      margin-bottom: 8px;
-    }
-    
-    .note-body p, .note-body ul, .note-body ol, .note-body table {
-      margin-bottom: 16px;
-    }
-    
-    .note-body strong {
+    .summary-item .value {
+        font-size: 18px;
+        font-weight: 600;
         color: var(--text-primary);
+    }
+
+    .question-block {
+        margin-bottom: 20px;
+        border-bottom: 1px dashed var(--border-color);
+        padding-bottom: 20px;
+    }
+    .question-block:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .question-header h3 {
+        font-size: 1.3rem;
         font-weight: 600;
     }
-
-    .note-body ul, .note-body ol {
-      padding-left: 20px;
-    }
-    
-    .note-body li {
-        margin-bottom: 8px;
-    }
-    
-    .note-body ul ul {
-        margin-top: 8px;
+    .question-header .total-marks {
+        font-size: 1rem;
+        font-weight: 700;
+        background-color: var(--primary-accent);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
     }
 
-    /* 📊 --- Table Styles --- 📊 */
-    .note-body table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
+    .question-details p {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 15px;
+        font-size: 16px;
+        border-top: 1px solid var(--border-color);
     }
-    .note-body th, .note-body td {
-      border: 1px solid var(--border-color);
-      padding: 10px 12px;
-      text-align: left;
+    .question-details p:first-child {
+        border-top: none;
     }
-    .note-body th {
-      background-color: var(--input-bg);
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    @media print {
-      body { background: white !important; }
-      .app-header { display: none; }
-      .notebook-container { padding: 0; max-width: 100%; }
-      .note-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
-      .note-title { background: #eee !important; color: #000 !important; }
+    .question-details span:last-child {
+        font-weight: 600;
     }
   </style>
 </head>
 <body>
-
-  <header class="app-header">
-    <a href="https://mohitmali5489.github.io/Chats/Basics_of_Service_Sector.html" class="back-button" aria-label="Go back">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-    </a>
-    <h1 class="header-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        Service Sector Q&A
-    </h1>
-    <div class="theme-selector">
-      <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
-        <option value="light">Default</option>
-        <option value="dark">Dark</option>
-        <option value="sepia">Sepia</option>
-      </select>
+  
+  <header class="top-bar">
+    <div class="header-left">
+      <a href="https://birlaone.github.io/BirlaOne/index.html" class="back-button" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      </a>
+    </div>
+    <h1 class="title">BirlaOne</h1>
+    <div class="header-right">
+      <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+      </div>
     </div>
   </header>
 
-  <main class="notebook-container">
-    
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: Features of Service</h2>
-        <div class="note-body">
-            <p>Services are defined by five core characteristics that distinguish them from physical goods and shape how they are marketed and consumed.</p>
-            <ul>
-                <li><strong>Intangibility:</strong> Services are experiences that cannot be seen or touched before purchase, creating uncertainty. Marketers use tangible cues like a professional environment to signal quality.</li>
-                <li><strong>Inseparability:</strong> Services are often produced and consumed simultaneously, making the service provider a critical part of the service itself.</li>
-                <li><strong>Variability (Heterogeneity):</strong> The quality of a service can vary greatly depending on who provides it and when. Firms use standardization and training to manage this inconsistency.</li>
-                <li><strong>Perishability:</strong> Services cannot be stored for later use. An unsold airline seat or empty hotel room represents lost revenue that can never be recovered.</li>
-                <li><strong>Lack of Ownership:</strong> Customers purchase the right to a service or experience, not ownership of a physical object. Marketing focuses on the benefits and value created.</li>
-            </ul>
-        </div>
-    </article>
+  <main class="container">
+    <article class="pattern-card">
+        <h2 class="pattern-title">Basics of Service Sector Paper Pattern</h2>
+        <div class="pattern-body">
+            <div class="summary-grid">
+                 <div class="summary-item">
+                    <div class="label">Duration</div>
+                    <div class="value">2 Hours</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Total Marks</div>
+                    <div class="value">60 Marks</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Instructions</div>
+                    <div class="value">Attempt Any 4 out of 6</div>
+                </div>
+            </div>
 
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: Classification/Types of Service</h2>
-        <div class="note-body">
-            <p>Services can be categorized using several frameworks to better inform a firm's marketing and operational strategy.</p>
-            <h3>Based on the Nature of the Service Act</h3>
-            <ul>
-                <li><strong>People Processing:</strong> Tangible actions on a person's body (e.g., healthcare, haircuts).</li>
-                <li><strong>Possession Processing:</strong> Tangible actions on a physical possession (e.g., car repair, laundry).</li>
-                <li><strong>Mental Stimulus Processing:</strong> Intangible actions on a person's mind (e.g., education, entertainment).</li>
-                <li><strong>Information Processing:</strong> Intangible actions on a person's intangible assets (e.g., banking, legal services).</li>
-            </ul>
-            <h3>Based on Delivery Mode</h3>
-            <ul>
-                <li><strong>People-Based:</strong> Service quality depends on the provider's skill (e.g., consultants, plumbers).</li>
-                <li><strong>Equipment-Based:</strong> Service is delivered primarily by technology (e.g., ATMs, vending machines).</li>
-            </ul>
-             <h3>Based on Customer Involvement</h3>
-            <ul>
-                <li><strong>High-Involvement:</strong> Requires active customer collaboration (e.g., personal training).</li>
-                <li><strong>Low-Involvement:</strong> Requires minimal customer interaction (e.g., self-service kiosks).</li>
-            </ul>
-            <h3>Based on Business Orientation</h3>
-            <ul>
-                <li><strong>Profit-Oriented:</strong> The main objective is financial gain (e.g., private hospitals, airlines).</li>
-                <li><strong>Non-Profit-Oriented:</strong> The primary goal is social welfare (e.g., public libraries, charities).</li>
-            </ul>
-        </div>
-    </article>
-    
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: Customers expectations in Services</h2>
-        <div class="note-body">
-            <p>Modern customers expect a sophisticated, holistic experience that goes beyond basic service. Businesses must meet these heightened expectations to remain competitive.</p>
-            <ul>
-                <li><strong>Connected and Consistent Journeys:</strong> Customers expect a seamless experience across all channels (online, in-store, mobile) and dislike repeating information.</li>
-                <li><strong>Deep Personalization:</strong> Customers want to be treated as unique individuals and expect companies to use their data to provide tailored recommendations.</li>
-                <li><strong>Speed, Efficiency, and Convenience:</strong> Fast response times, quick issue resolution, and multiple support options (omnichannel) are critical.</li>
-                <li><strong>Trust, Transparency, and Data Protection:</strong> Customers are protective of their personal data and expect companies to be transparent about its use.</li>
-                <li><strong>Empathy and Being Heard:</strong> Customers need to feel that their concerns are understood and valued. An empathetic approach can turn a negative situation into a positive one.</li>
-                <li><strong>Proactive Service:</strong> Leading companies anticipate potential issues and offer solutions before the customer is even aware of a problem.</li>
-            </ul>
-        </div>
-    </article>
-    
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: Factors influencing consumer expectations</h2>
-        <div class="note-body">
-            <p>Consumer expectations are shaped by a mix of personal history, company communications, and external influences.</p>
-            <ul>
-                <li><strong>Past Experience:</strong> A customer's previous interactions with the same brand or other best-in-class companies set the standard.</li>
-                <li><strong>Marketing and Communication:</strong> A company's explicit promises (advertising) and implicit cues (high pricing suggesting high quality) directly shape expectations.</li>
-                <li><strong>Word-of-Mouth and Social Proof:</strong> Recommendations from friends, family, online reviews, and social media are highly influential.</li>
-                <li><strong>Personal Needs and Situational Factors:</strong> A customer's unique needs and temporary circumstances can intensify expectations (e.g., a person in a hurry expects speed).</li>
-                <li><strong>Perceived Service Alternatives:</strong> If a customer is aware of many high-quality alternatives, their expectations for any single provider will be higher.</li>
-            </ul>
-        </div>
-    </article>
+            <div class="question-block">
+                <div class="question-header">
+                    <h3>Q.1 - Q.6</h3>
+                    <span class="total-marks">15 M each</span>
+                </div>
+                <div class="question-details">
+                    <p><span>(a)</span> <span>7 or 8 Marks</span></p>
+                    <p><span>(b)</span> <span>7 or 8 Marks</span></p>
+                </div>
+            </div>
 
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: marketing mix of services</h2>
-        <div class="note-body">
-            <p>The unique nature of services required expanding the traditional 4Ps of marketing to a 7P framework to better manage the service experience.</p>
-            <ul>
-                <li><strong>Product:</strong> The core service offering, defined by the intangible benefits it provides.</li>
-                <li><strong>Price:</strong> The amount a customer pays, which also serves as a key indicator of service quality.</li>
-                <li><strong>Place:</strong> The location and channels through which the service is delivered and made accessible.</li>
-                <li><strong>Promotion:</strong> Communication strategies used to inform and persuade customers, often focusing on benefits and testimonials.</li>
-                <li><strong>People:</strong> All human actors involved in the service delivery—employees and customers—whose behavior is critical to the experience.</li>
-                <li><strong>Process:</strong> The procedures, mechanisms, and flow of activities by which the service is delivered.</li>
-                <li><strong>Physical Evidence:</strong> The tangible cues and environment where the service is delivered, which customers use to evaluate quality (e.g., facility design, website).</li>
-            </ul>
         </div>
     </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: features of marketing research</h2>
-        <div class="note-body">
-            <p>Marketing research is the systematic process of gathering and analyzing data to support strategic marketing decisions by reducing uncertainty.</p>
-            <ul>
-                <li><strong>Systematic and Continuous Process:</strong> It follows a structured sequence of steps and is an ongoing activity.</li>
-                <li><strong>Objective and Unbiased:</strong> Research must be conducted without personal bias to ensure findings are credible.</li>
-                <li><strong>Wide and Comprehensive Scope:</strong> It covers all aspects of the marketing mix, including product development, consumer behavior, and competitive analysis.</li>
-                <li><strong>Data-Driven and Analytical:</strong> It uses both quantitative and qualitative methods to transform raw data into actionable insights.</li>
-                <li><strong>An Aid to Decision-Making:</strong> Its ultimate purpose is to provide relevant information to help managers make better decisions.</li>
-                <li><strong>Balances Value and Cost:</strong> Involves a careful cost-benefit analysis to ensure the value of the information justifies the expense.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 1: steps in new Service development cycle</h2>
-        <div class="note-body">
-            <p>New service development is a structured, human-centered process focused on designing both the customer experience and the internal processes that support it, typically following four iterative phases.</p>
-            <ul>
-                <li><strong>Phase 1: Align:</strong> This strategic phase focuses on defining the project's purpose and ensuring all stakeholders share a common understanding of the goals.</li>
-                <li><strong>Phase 2: Research:</strong> This phase involves conducting deep, empathetic research to understand the needs and behaviors of both customers and employees using methods like interviews and surveys.</li>
-                <li><strong>Phase 3: Ideate:</strong> Based on the research, this creative phase involves brainstorming a wide range of potential solutions through collaborative workshops.</li>
-                <li><strong>Phase 4: Prototype:</strong> The most promising ideas are turned into low-fidelity, testable versions (e.g., storyboards, role-playing) to learn quickly from real users before full-scale development.</li>
-                <li><strong>Implementation and Iteration:</strong> After a successful prototype, the service is launched. The cycle is iterative, meaning feedback is continuously gathered to refine and improve the service over time.</li>
-            </ul>
-        </div>
-    </article>
-    
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: different between organized and unorganized retailing</h2>
-        <div class="note-body">
-            <p>The Indian retail sector is a mix of organized and unorganized formats, distinguished by their structure, scale, legal status, and operational methods. Organized retail refers to modern, large-scale chains like supermarkets, while unorganized retail includes traditional, small, independent businesses like local kirana shops.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th>
-                        <th>Organized Retailing</th>
-                        <th>Unorganized Retailing</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Definition</strong></td>
-                        <td>Modern, large-scale formats (supermarkets, hypermarkets) with systematic management.</td>
-                        <td>Traditional, small, independently owned businesses (kirana stores, street vendors).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Legal Status</strong></td>
-                        <td>Registered with the government; complies with tax and labor laws.</td>
-                        <td>Not registered; operates outside formal government regulations.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Scale & Investment</strong></td>
-                        <td>Large-scale operations with high capital investment and multiple outlets.</td>
-                        <td>Small-scale, single-location businesses with low capital investment.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Employment</strong></td>
-                        <td>Formal employment with fixed salaries, benefits, and job security.</td>
-                        <td>Informal employment with daily wages, no fixed hours, and no benefits.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Customer Experience</strong></td>
-                        <td>Standardized, enhanced experience with modern amenities (A/C, parking).</td>
-                        <td>Familiar and convenient for local communities with personalized relationships.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Product Assortment</strong></td>
-                        <td>Wide variety of branded products.</td>
-                        <td>Limited variety, primarily unbranded or local products.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: Trends in retailing</h2>
-        <div class="note-body">
-            <p>The Indian retail sector is undergoing a rapid transformation driven by technology, evolving consumer behavior, and real estate development.</p>
-            <ul>
-                <li><strong>Robust Physical Expansion:</strong> Physical retail is growing, with a significant year-on-year increase in retail space absorption in top cities.</li>
-                <li><strong>Dominance of Key Categories:</strong> Fashion & Apparel and Food & Beverage continue to lead retail leasing, with Jewellery emerging as a strong third category.</li>
-                <li><strong>Shift Towards Experiential Retail:</strong> Consumers are seeking immersive experiences, leading to a boom in Family Entertainment Centers.</li>
-                <li><strong>Integration of Online and Offline (Omnichannel):</strong> Digitally native brands are opening physical stores to enhance customer engagement.</li>
-                <li><strong>Emergence of New Commerce Models:</strong> Quick Commerce (delivery in under 30 minutes) and Trend-First Commerce are rapidly growing segments.</li>
-                <li><strong>Demographic and Geographic Shifts:</strong> Gen Z is a major e-retail shopper group, and over 60% of e-commerce transactions now originate from Tier-II and III cities.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: major causes responsible for the growth of organized retailing in india</h2>
-        <div class="note-body">
-            <p>The expansion of organized retail in India is driven by a combination of powerful socio-economic, demographic, and policy factors.</p>
-            <ul>
-                <li><strong>Rising Consumerism and Changing Lifestyles:</strong> Urbanization and global exposure have created more aspirational consumers who seek the convenience of organized retail.</li>
-                <li><strong>Increased Disposable Income:</strong> Economic growth has expanded the middle class, giving more people the purchasing power for branded goods.</li>
-                <li><strong>Increase in Working Women:</strong> Working women often prefer the one-stop convenience of modern retail formats like supermarkets.</li>
-                <li><strong>Favorable Demographics:</strong> India's large, young population is more receptive to modern retail concepts.</li>
-                <li><strong>Entry of Corporate and Foreign Players:</strong> Major corporations have brought massive investment, technology, and global best practices to the sector.</li>
-                <li><strong>Infrastructure and Real Estate Development:</strong> The construction of highways and modern shopping malls has provided space for large-format stores.</li>
-                <li><strong>Economic Reforms and Liberalization:</strong> The opening of the economy allowed Foreign Direct Investment (FDI), fostering a competitive environment.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: Distinction between store and non store format</h2>
-        <div class="note-body">
-            <p>Retailing is broadly divided into store and non-store formats based on whether transactions occur at a physical location. Store retailing involves brick-and-mortar shops, offering a sensory experience. Non-store retailing uses remote channels like e-commerce, offering convenience and broader reach.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aspect</th>
-                        <th>Store Retailing</th>
-                        <th>Non-Store Retailing</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Definition</strong></td>
-                        <td>Selling from a physical, brick-and-mortar location.</td>
-                        <td>Selling without a physical storefront, via remote channels.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Customer Experience</strong></td>
-                        <td>Sensory engagement (touch, feel), personal interaction, immediate gratification.</td>
-                        <td>Convenience of shopping from anywhere at any time (24/7).</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Key Advantage</strong></td>
-                        <td>Immediate product availability and personalized customer service.</td>
-                        <td>Broader market reach and lower operational costs.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Key Challenge</strong></td>
-                        <td>High overhead costs (rent, staff) and limited geographical reach.</td>
-                        <td>Lack of physical product interaction, shipping delays, and security concerns.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Examples</strong></td>
-                        <td>Department stores, supermarkets, specialty stores.</td>
-                        <td>E-commerce websites (Amazon), direct selling (Amway), vending machines.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: Types of Store formats</h2>
-        <div class="note-body">
-            <p>Retail stores are classified based on their product assortment, size, pricing, and service level.</p>
-            <ul>
-                <li><strong>Department Stores:</strong> Large stores offering a wide variety of product categories in different departments (e.g., clothing, home goods).</li>
-                <li><strong>Supermarkets:</strong> Large, self-service stores primarily selling groceries and household items on a high-volume, low-margin model.</li>
-                <li><strong>Convenience Stores:</strong> Small stores in high-traffic locations offering a limited selection of everyday items at higher prices.</li>
-                <li><strong>Specialty Stores:</strong> Focus on a narrow product category but offer a deep assortment within it (e.g., electronics stores, bookstores).</li>
-                <li><strong>Discount Stores:</strong> Offer a wide range of products at prices lower than traditional retailers.</li>
-                <li><strong>Category Killers:</strong> Large specialty stores that dominate a product category with deep selection and aggressive pricing.</li>
-                <li><strong>Warehouse Stores / Clubs:</strong> Large, no-frills stores selling merchandise in bulk at discounted prices, often requiring a membership fee.</li>
-                <li><strong>Chain Stores:</strong> A series of retail outlets owned by the same company, benefiting from centralized management.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: Guideline of effective store planning</h2>
-        <div class="note-body">
-            <p>Effective store planning involves the strategic design of the physical space to enhance the customer experience and maximize sales.</p>
-            <ul>
-                <li><strong>Understand Customer Behavior:</strong> Use tools like heat mapping to analyze customer traffic flow and optimize product placement.</li>
-                <li><strong>Optimize Store Layout:</strong> Design an intuitive layout that guides customers logically through the merchandise.</li>
-                <li><strong>Create an Inviting Ambience:</strong> Use proper lighting, ensure cleanliness, and reflect the brand's identity.</li>
-                <li><strong>Implement Effective Visual Merchandising:</strong> Use clear signage and create compelling displays that tell product stories.</li>
-                <li><strong>Incorporate Technology:</strong> Integrate technology like QR codes for product information or self-checkout kiosks.</li>
-                <li><strong>Provide Amenities and Focus on Service:</strong> Offer amenities like seating and ensure high-quality service from well-trained staff.</li>
-                <li><strong>Continuously Analyze and Adapt:</strong> Regularly gather customer feedback and analyze sales data to adapt the store environment.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 2: Challenges of retailing in india</h2>
-        <div class="note-body">
-            <p>The Indian retail sector faces several deep-seated structural and administrative challenges that hinder its growth.</p>
-            <ul>
-                <li><strong>Inadequate Power Supply:</strong> The single most significant obstacle, causing frequent outages and loss of annual sales.</li>
-                <li><strong>Poor Access to Finance:</strong> A major hurdle, forcing most retailers to rely on retained earnings for investment.</li>
-                <li><strong>Corruption:</strong> A pervasive issue, with government inspections often resulting in requests for bribes.</li>
-                <li><strong>Land-Related Problems:</strong> Challenges in securing suitable land, dealing with costly registration, and obtaining permits.</li>
-                <li><strong>High Tax Rates:</strong> The tax burden is a major concern, particularly for larger, organized players.</li>
-                <li><strong>Low Level of Competition:</strong> Competitive pressure is low by international standards, reducing the incentive for firms to innovate.</li>
-            </ul>
-        </div>
-    </article>
-    
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: important of BPO in india</h2>
-        <div class="note-body">
-            <p>The BPO sector is a vital part of India's service economy, driving economic growth, creating jobs, and establishing the country as a global outsourcing leader.</p>
-            <ul>
-                <li><strong>Major Economic Contributor:</strong> The BPO industry significantly contributes to India's GDP and revenue.</li>
-                <li><strong>Global Market Dominance:</strong> India is the world's outsourcing capital, handling a majority of the world's BPO work.</li>
-                <li><strong>Massive Employment Generation:</strong> As one of the largest private-sector employers, the BPO industry has provided jobs for millions of people.</li>
-                <li><strong>Strategic Advantages for Global Businesses:</strong> India offers key benefits like cost savings, a large pool of skilled, English-speaking professionals, and a time zone advantage.</li>
-                <li><strong>Evolution to a Value-Added Partner:</strong> The industry has moved beyond cost-cutting to a value-addition model, leveraging advanced technology to provide strategic insights.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: Advantages and disadvantages of KPO</h2>
-        <div class="note-body">
-            <p>Knowledge Process Outsourcing (KPO) involves outsourcing complex, knowledge-intensive activities. It offers significant benefits but also comes with inherent risks.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Advantages of KPO</th>
-                        <th>Disadvantages of KPO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Access to Specialized Skills:</strong> Allows companies to tap into a global pool of highly qualified experts.</td>
-                        <td><strong>Data Security Risks:</strong> Sharing sensitive data increases the risk of breaches and misuse.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Significant Cost Savings:</strong> Achieves cost reductions by leveraging a skilled workforce in countries with lower labor costs.</td>
-                        <td><strong>Loss of Managerial Control:</strong> Ceding direct control can make it challenging to maintain quality and alignment.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Focus on Core Business Functions:</strong> Frees up internal teams to concentrate on core competencies like strategy and innovation.</td>
-                        <td><strong>Communication and Cultural Barriers:</strong> Differences can lead to misunderstandings and project delays.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Enhanced Efficiency and Flexibility:</strong> Provides access to specialized processes and the ability to scale teams quickly.</td>
-                        <td><strong>Quality Control Issues:</strong> The output may not meet company standards if the provider lacks a deep understanding of the business.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Access to Latest Technology:</strong> Clients can leverage the latest tools without making the capital investment themselves.</td>
-                        <td><strong>Dependency and Hidden Costs:</strong> Over-reliance on a single vendor can be risky, and there may be unforeseen costs.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: Scope of LPO</h2>
-        <div class="note-body">
-            <p>Legal Process Outsourcing (LPO) is a specialized sector where legal work is outsourced to providers in lower-cost countries like India, which has become a global hub.</p>
-            <ul>
-                <li><strong>Market Size and Growth:</strong> The Indian LPO market is substantial and growing rapidly, with projections for significant expansion.</li>
-                <li><strong>Scope of Services:</strong> LPOs in India typically handle work related to foreign laws, including contract drafting, legal research, e-discovery, and compliance assistance.</li>
-                <li><strong>Career Opportunities:</strong> LPO offers an alternative career path for law graduates with a corporate environment and better work-life balance.</li>
-                <li><strong>Limitations and Challenges:</strong> The work is often perceived as "commodified," which can limit professional development in core legal skills. This can lead to lawyers losing touch with domestic law.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: Features of ATM</h2>
-        <div class="note-body">
-            <p>An Automated Teller Machine (ATM) is a self-service banking device that allows customers to perform financial transactions without a human teller, offering 24/7 convenience.</p>
-            <ul>
-                <li><strong>Core Functions:</strong> ATMs perform essential banking operations like cash withdrawal, deposits, balance inquiries, and funds transfers.</li>
-                <li><strong>Hardware Components:</strong> Key parts include a card reader, keypad, display screen, cash dispenser, deposit slot, receipt printer, CPU, and a secure vault.</li>
-                <li><strong>User-Centric and Security Features:</strong> ATMs offer 24/7 accessibility and use a Personal Identification Number (PIN) for security. Many have multilingual interfaces and some are incorporating biometrics.</li>
-            </ul>
-            <h3>Types of ATMs</h3>
-            <ul>
-                <li><strong>On-Premise ATMs:</strong> Located at bank branches, these are typically more advanced, multi-functional machines.</li>
-                <li><strong>Off-Premise (White-Label) ATMs:</strong> Standalone machines in convenient locations, often owned by independent companies and offering limited functions for a fee.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: Features of logistics</h2>
-        <div class="note-body">
-            <p>Logistics management is the part of supply chain management that plans and controls the efficient movement and storage of goods, services, and information from origin to consumption.</p>
-            <ul>
-                <li><strong>Transportation Management:</strong> Involves selecting the best transport mode, planning efficient routes, and tracking shipments.</li>
-                <li><strong>Inventory Management:</strong> Focuses on maintaining optimal stock levels to meet customer demand without high holding costs.</li>
-                <li><strong>Warehousing and Materials Handling:</strong> Manages the physical storage of goods, including receiving, storing, picking, and packing.</li>
-                <li><strong>Order Processing and Fulfillment:</strong> Covers the entire cycle from receiving a customer's order to its successful delivery.</li>
-                <li><strong>Information and Control Systems:</strong> Relies on technology like TMS and WMS for real-time visibility and data-driven decision-making.</li>
-                <li><strong>Packaging:</strong> Protects the product during transit and facilitates efficient handling and storage.</li>
-                <li><strong>Demand Forecasting:</strong> Uses data and trends to anticipate customer needs, allowing for better inventory and transportation strategies.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 3: Importance of logistics in india</h2>
-        <div class="note-body">
-            <p>The logistics sector is a vital pillar of the Indian economy, connecting industries and facilitating the flow of goods and services, which is crucial for national competitiveness.</p>
-            <ul>
-                <li><strong>Significant Contribution to GDP:</strong> The sector contributes an estimated 13-14% to India's GDP and is a critical enabler for key industries.</li>
-                <li><strong>Major Employment Generator:</strong> It is one of the country's largest employment sectors, providing jobs for over 22 million people.</li>
-                <li><strong>Enhancing National Competitiveness:</strong> Efficient logistics reduce operational costs, making Indian goods more competitive.</li>
-                <li><strong>Improving Global Standing:</strong> India has improved its ranking in the World Bank’s Logistics Performance Index, reflecting modernization efforts.</li>
-                <li><strong>Focus of Government Initiatives:</strong> The government has launched transformative initiatives like the PM Gati Shakti and the National Logistics Policy.</li>
-                <li><strong>Facilitating Economic Integration:</strong> A well-developed logistics network enhances connectivity between regions and markets, fostering interstate trade.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Features of E-Commerce</h2>
-        <div class="note-body">
-            <p>E-commerce refers to the buying and selling of goods and services over the internet. Its core features distinguish it from traditional commerce.</p>
-            <ul>
-                <li><strong>24/7 Accessibility:</strong> Online stores are always open, allowing consumers to shop at any time, from anywhere.</li>
-                <li><strong>Global Reach:</strong> E-commerce transcends geographical boundaries, enabling businesses to reach a worldwide customer base.</li>
-                <li><strong>Process Automation:</strong> Key processes like payment processing and inventory updates are automated, improving efficiency.</li>
-                <li><strong>Digital Payment Systems:</strong> E-commerce relies on secure electronic payment methods like credit cards and digital wallets.</li>
-                <li><strong>Data-Driven Personalization:</strong> Platforms collect and analyze customer data to offer personalized product recommendations.</li>
-                <li><strong>Reliance on Digital Marketing:</strong> Businesses use digital marketing strategies like SEO and social media to attract customers.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Advantages and disadvantages of E-Commerce</h2>
-        <div class="note-body">
-            <p>E-commerce offers significant benefits for both businesses and consumers but also presents a unique set of challenges.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aspect</th>
-                        <th>Advantages</th>
-                        <th>Disadvantages</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>For Businesses</strong></td>
-                        <td>Lower Operational Costs due to no need for a physical storefront.</td>
-                        <td>High IT Costs for website development, security, and maintenance.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>For Businesses</strong></td>
-                        <td>Global Reach to a worldwide customer base.</td>
-                        <td>Intense Competition in a crowded global marketplace.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>For Businesses</strong></td>
-                        <td>Scalability is easier and more cost-effective.</td>
-                        <td>Shipping and Logistics Complexity in managing fulfillment and returns.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>For Consumers</strong></td>
-                        <td>24/7 Convenience to shop anytime, from anywhere.</td>
-                        <td>Shipping Delays and lack of immediate gratification.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>For Consumers</strong></td>
-                        <td>Wider Product Selection than available in a single physical store.</td>
-                        <td>Inability to Inspect Products physically before buying.</td>
-                    </tr>
-                    <tr>
-                        <td><strong>For Consumers</strong></td>
-                        <td>Easy Price Comparison across multiple retailers.</td>
-                        <td>Security and Privacy Concerns about sharing personal and financial information.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Factors Responsible for the transition to E-Commerce in india</h2>
-        <div class="note-body">
-            <p>The rapid growth of e-commerce in India is driven by a convergence of technological, economic, and demographic factors.</p>
-            <ul>
-                <li><strong>Widespread Internet and Smartphone Penetration:</strong> The increase in internet users and availability of affordable smartphones have provided fundamental access.</li>
-                <li><strong>Affordable Data Prices:</strong> The dramatic reduction in mobile data costs has made being online economically feasible for millions.</li>
-                <li><strong>Rise of Digital Payments:</strong> Government initiatives like UPI have made online transactions easy, fast, and secure.</li>
-                <li><strong>Growing Incomes and Middle Class:</strong> A growing economy has increased purchasing power and created a large consumer base.</li>
-                <li><strong>Favorable Demographics:</strong> India's large, young population of tech-savvy consumers naturally prefers online shopping.</li>
-                <li><strong>Expansion into Tier-2 and Tier-3 Cities:</strong> E-commerce has bridged the access gap for consumers in smaller towns.</li>
-                <li><strong>Supportive Government Initiatives:</strong> Programs like 'Digital India' have improved digital and supply chain infrastructure.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Reason for success of E-Commerce in india</h2>
-        <div class="note-body">
-            <p>The success of e-commerce in India is due to its strategic adaptation to the unique characteristics of the Indian market.</p>
-            <ul>
-                <li><strong>Solving for Access and Aspiration:</strong> E-commerce provided millions in smaller towns with their first-ever access to a wide variety of brands.</li>
-                <li><strong>Adaptation to Local Payment Preferences (Cash on Delivery):</strong> COD was crucial in the early stages to build trust among consumers wary of online payments.</li>
-                <li><strong>Leveraging Cultural Affinity for Festivals and Discounts:</strong> E-commerce giants created massive online shopping festivals around major Indian festivals.</li>
-                <li><strong>The Mobile-First Approach:</strong> Companies developed user-friendly mobile apps, recognizing that most Indians accessed the internet on a smartphone.</li>
-                <li><strong>Strong Investor Confidence:</strong> Massive funding allowed leading companies to invest in technology, logistics, and aggressive customer acquisition.</li>
-                <li><strong>Improved Logistics and Last-Mile Delivery:</strong> Substantial investments in supply chain have enabled reliable delivery across the country.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Scope of E-Commerce</h2>
-        <div class="note-body">
-            <p>The scope of e-commerce in India is vast and rapidly expanding, marked by a massive market size, deepening penetration, and continuous diversification.</p>
-            <ul>
-                <li><strong>Enormous Market Size and Growth:</strong> The Indian e-commerce market is one of the world's largest and is projected to grow significantly.</li>
-                <li><strong>Deepening Geographic and Demographic Penetration:</strong> E-commerce is no longer confined to major cities, with most growth coming from Tier-2, Tier-3, and smaller towns.</li>
-                <li><strong>Diversification of Product and Service Categories:</strong> The market has expanded beyond electronics and apparel to include groceries, beauty, home furnishings, and more.</li>
-                <li><strong>Expansion of Business Models:</strong> The scope now includes various formats like B2B, Social Commerce, Subscription Commerce, and Quick Commerce.</li>
-                <li><strong>Fueling a Vibrant Start-up Ecosystem:</strong> The sector is a key driver of start-up investment, indicating a dynamic and innovative ecosystem.</li>
-            </ul>
-        </div>
-    </article>
-
-    <article class="note-card">
-        <h2 class="note-title">Unit 4: Importance of E-Commerce</h2>
-        <div class="note-body">
-            <p>E-commerce is a crucial engine for the Indian economy, driving growth, formalization, and digital transformation.</p>
-            <ul>
-                <li><strong>Major Driver of Economic Growth:</strong> The digital economy, with e-commerce at its core, is projected to reach $1 trillion by 2030.</li>
-                <li><strong>Empowerment of Small and Medium Enterprises (SMEs):</strong> E-commerce platforms give small businesses and artisans access to a national marketplace.</li>
-                <li><strong>Formalization of the Economy:</strong> By bringing transactions into the digital fold, e-commerce increases transparency and improves tax compliance.</li>
-                <li><strong>Creation of Jobs:</strong> The ecosystem is a massive job creator in technology, customer service, logistics, warehousing, and delivery.</li>
-                <li><strong>Boosting Ancillary Industries:</strong> The demands of e-commerce have spurred massive investment in related industries like logistics and digital payments.</li>
-                <li><strong>Enhancing Consumer Welfare:</strong> E-commerce provides consumers with wider choice, competitive pricing, and unparalleled convenience.</li>
-                <li><strong>Driving Digital Transformation:</strong> It accelerates the digital transformation of the nation by encouraging digital literacy and fostering fintech innovation.</li>
-            </ul>
-        </div>
-    </article>
-
   </main>
-  
-  <script>
+
+<script>
     function changeTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
     }
-  </script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+    });
+</script>
 </body>
 </html>
