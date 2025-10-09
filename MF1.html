@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>Paper Pattern - BirlaOne</title>
+  <title>Paper Pattern - New Subject - BirlaOne</title>
   <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,10 +18,8 @@
 
   <style>
     :root {
-      /* Color scheme from the provided Mutual Fund QB example */
       --primary-accent: #f89b29;
       --primary-gradient: linear-gradient(90deg, #f89b29, #ff5f6d);
-      
       --font-sans: 'Inter', sans-serif;
       --border-radius: 14px;
       --transition-speed: 0.3s;
@@ -98,19 +96,75 @@
     .container { padding: 24px 16px; max-width: 800px; margin: 0 auto; }
     .pattern-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; }
     .pattern-title { font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center;}
-    .pattern-body { padding: 40px 22px; text-align: center; }
-
-    .update-message {
-        font-size: 1.2rem;
-        font-weight: 500;
+    .pattern-body { padding: 22px; }
+    
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .summary-item {
+        background-color: rgba(128, 128, 128, 0.05);
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+    .summary-item .label {
+        font-size: 14px;
         color: var(--text-secondary);
+        margin-bottom: 4px;
     }
-    .update-message .icon {
-        font-size: 2.5rem;
-        display: block;
-        margin-bottom: 16px;
+    .summary-item .value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
     }
 
+    .question-block {
+        margin-bottom: 20px;
+        border-bottom: 1px dashed var(--border-color);
+        padding-bottom: 20px;
+    }
+    .question-block:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .question-header h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    .question-header .total-marks {
+        font-size: 1rem;
+        font-weight: 700;
+        background-color: var(--primary-accent);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+    }
+
+    .question-details p {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 15px;
+        font-size: 16px;
+        border-top: 1px solid var(--border-color);
+    }
+    .question-details p:first-child {
+        border-top: none;
+    }
+    .question-details span:last-child {
+        font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -135,12 +189,53 @@
 
   <main class="container">
     <article class="pattern-card">
-        <h2 class="pattern-title">Paper Pattern</h2>
+        <h2 class="pattern-title">New Subject Paper Pattern</h2>
         <div class="pattern-body">
-            <div class="update-message">
-                <span class="icon">⏳</span>
-                Will be updated soon...
+            <div class="summary-grid">
+                 <div class="summary-item">
+                    <div class="label">Total Marks</div>
+                    <div class="value">30 Marks</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">Instructions</div>
+                    <div class="value">Attempt Any 2 out of 3</div>
+                </div>
+                
             </div>
+
+            <div class="question-block">
+                <div class="question-header">
+                    <h3>Q.1 (Practical / Theory)</h3>
+                    <span class="total-marks">15 M</span>
+                </div>
+                <div class="question-details">
+                    <p><span>(a)</span> <span>8 Marks</span></p>
+                    <p><span>(b)</span> <span>7 Marks</span></p>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <div class="question-header">
+                    <h3>Q.2 (Practical / Theory)</h3>
+                    <span class="total-marks">15 M</span>
+                </div>
+                <div class="question-details">
+                    <p><span>(a)</span> <span>8 Marks</span></p>
+                    <p><span>(b)</span> <span>7 Marks</span></p>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <div class="question-header">
+                    <h3>Q.3 (Practical / Theory)</h3>
+                    <span class="total-marks">15 M</span>
+                </div>
+                <div class="question-details">
+                    <p><span>(a)</span> <span>8 Marks</span></p>
+                    <p><span>(b)</span> <span>7 Marks</span></p>
+                </div>
+            </div>
+
         </div>
     </article>
   </main>
