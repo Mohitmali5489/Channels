@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Paper Pattern - BirlaOne</title>
+  <link rel="icon" type="image/png" href="https://i.ibb.co/N6QNPW56/logo-1-modified.png" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
+  <style>
+    :root {
+      /* Color scheme from the provided Mutual Fund QB example */
+      --primary-accent: #f89b29;
+      --primary-gradient: linear-gradient(90deg, #f89b29, #ff5f6d);
+      
+      --font-sans: 'Inter', sans-serif;
+      --border-radius: 14px;
+      --transition-speed: 0.3s;
+    }
+    
+    html[data-theme="light"] {
+      --bg-color: #f7f7f9;
+      --card-bg: #ffffff;
+      --text-primary: #1c1c1e;
+      --text-secondary: #636366;
+      --border-color: #e5e5ea;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --input-bg: #f0f0f0;
+    }
+
+    html[data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-primary: #f2f2f7;
+      --text-secondary: #98989f;
+      --border-color: #38383a;
+      --shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      --header-bg: rgba(28, 28, 30, 0.75);
+      --input-bg: #2c2c2e;
+    }
+      
+    html[data-theme="sepia"] {
+        --bg-color: #f4ecd8;
+        --card-bg: #fbf5e9;
+        --text-primary: #5b4636;
+        --text-secondary: #7d6b59;
+        --border-color: #dcd0b9;
+        --primary-accent: #a98244;
+        --primary-gradient: linear-gradient(135deg, #c5a265, #a98244);
+        --shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        --header-bg: rgba(244, 236, 216, 0.8);
+        --input-bg: #e9deca;
+    }
+
+    /* Base & Layout Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    /* Header */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--header-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+    .top-bar .title { font-family: 'Pacifico', cursive; font-size: 26px; font-weight: 400; color: var(--text-primary); }
+    .header-left, .header-right { flex: 1; }
+    .header-right { display: flex; justify-content: flex-end; }
+    .back-button { background: none; border: none; cursor: pointer; color: var(--text-primary); padding: 5px; }
+    
+    .theme-selector select {
+      background-color: var(--input-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 14px;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    /* Content Styles */
+    .container { padding: 24px 16px; max-width: 800px; margin: 0 auto; }
+    .pattern-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; }
+    .pattern-title { font-size: 22px; font-weight: 700; padding: 18px 22px; background: var(--primary-gradient); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); text-align: center;}
+    .pattern-body { padding: 40px 22px; text-align: center; }
+
+    .update-message {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+    .update-message .icon {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <header class="top-bar">
+    <div class="header-left">
+      <a href="https://birlaone.github.io/BirlaOne/index.html" class="back-button" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      </a>
+    </div>
+    <h1 class="title">BirlaOne</h1>
+    <div class="header-right">
+      <div class="theme-selector">
+        <select id="themeSelect" onchange="changeTheme(this.value)" aria-label="Select theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="sepia">Sepia</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="pattern-card">
+        <h2 class="pattern-title">Paper Pattern</h2>
+        <div class="pattern-body">
+            <div class="update-message">
+                <span class="icon">⏳</span>
+                Will be updated soon...
+            </div>
+        </div>
+    </article>
+  </main>
+
+<script>
+    function changeTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeSelect').value = savedTheme;
+    });
+</script>
+</body>
+</html>
