@@ -2,43 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Green Campus Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
+        /* Make the entire page take up the full screen height without margins */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent the body itself from scrolling */
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* KEY FOR MOBILE: This container creates the app-like frame. 
-           On screens wider than 420px, it stays centered. 
-           On mobile screens narrower than 420px, it fits the full width. */
+        /* CHANGE 1: This is the core of the app layout.
+           - We use Flexbox to arrange the header, main, and nav vertically.
+           - height: 100% ensures it fills the entire screen. */
         .app-container {
-            max-width: 420px;
-            margin: auto;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 420px; /* Still good practice for tablets/desktops */
+            margin: auto;
             background-color: #f9fafb; /* bg-gray-50 */
         }
+        
+        /* CHANGE 2: This makes the main content area grow and scroll.
+           - flex-grow: 1 tells this element to take up all available vertical space.
+           - overflow-y: auto adds a scrollbar ONLY if the content is too long to fit. */
         .main-content { 
-            flex-grow: 1; 
+            flex-grow: 1;
+            overflow-y: auto;
         }
+
         .nav-item.active { 
-            color: #10B981;
+            color: #10B981; /* Green color for the active icon */
         }
     </style>
 </head>
 <body class="bg-gray-200">
 
-    <div class="app-container bg-white shadow-lg">
+    <div class="app-container shadow-lg">
 
-        <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
+        <header class="bg-white p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
@@ -51,7 +61,7 @@
             </div>
         </header>
 
-        <main class="main-content p-4 pb-24">
+        <main class="main-content p-4">
 
             <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
                 <div class="flex items-center mb-2">
@@ -63,7 +73,7 @@
                 <a href="events.html" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50">View Details</a>
             </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact 📈</h3>
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
                     <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
@@ -81,7 +91,7 @@
                 </div>
             </div>
             
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions 🏆</h3>
              <div class="space-y-2 mb-6">
                <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
                    <span class="font-bold text-yellow-500 mr-3">1.</span>
@@ -97,9 +107,20 @@
                </div>
             </div>
 
+            <h3 class="text-lg font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day💡</h3>
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg mb-4">
+                <div class="flex">
+                    <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
+                    <div>
+                        <p class="font-bold">Unplug Chargers!</p>
+                        <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
+                    </div>
+                </div>
+            </div>
+
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200" style="max-width: 420px; margin: auto;">
+        <nav class="bg-white border-t border-gray-200">
             <div class="flex justify-around">
                 <a href="dashboard.html" class="nav-item active flex-1 text-center py-3">
                     <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
