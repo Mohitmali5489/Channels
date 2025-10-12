@@ -1,144 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Green Campus Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Green Campus Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        /* MAIN APP CONTAINER */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-            background-color: #f9fafb;
-        }
+    /* REMOVE ALL WIDTH CONSTRAINTS */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
 
-        .main-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-bottom: 4rem; /* Prevent bottom nav overlap */
-        }
+    .main-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      padding-bottom: 5rem; /* Prevent bottom bar overlap */
+      width: 100%;
+    }
 
-        .nav-item.active {
-            color: #10B981;
-        }
-    </style>
+    .nav-item.active {
+      color: #10B981;
+    }
+
+    /* Ensure full-width containers */
+    header, main, nav {
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="app-container">
+  <div class="app-container">
 
-        <!-- HEADER -->
-        <header class="bg-white p-4 border-b border-gray-200 shadow-sm">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
-                    <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
-                </div>
-                <div class="text-right">
-                     <span class="text-2xl font-bold text-green-600">350</span>
-                    <p class="text-xs text-gray-500">EcoPoints</p>
-                </div>
-            </div>
-        </header>
+    <!-- HEADER -->
+    <header class="bg-white p-4 border-b border-gray-200 shadow-sm w-full">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
+          <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
+        </div>
+        <div class="text-right">
+          <span class="text-2xl font-bold text-green-600">350</span>
+          <p class="text-xs text-gray-500">EcoPoints</p>
+        </div>
+      </div>
+    </header>
 
-        <!-- MAIN CONTENT -->
-        <main class="main-content p-4">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
 
-            <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
-                <div class="flex items-center mb-2">
-                    <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
-                    <h3 class="font-bold">Upcoming Event</h3>
-                </div>
-                <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
-                <p class="text-sm opacity-90 mb-3">Join us this Saturday in Kalyan to make our local park greener!</p>
-                <a href="events.html" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50">View Details</a>
-            </div>
+      <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg w-full">
+        <div class="flex items-center mb-2">
+          <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
+          <h3 class="font-bold">Upcoming Event</h3>
+        </div>
+        <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
+        <p class="text-sm opacity-90 mb-3">Join us this Saturday in Kalyan to make our local park greener!</p>
+        <a href="events.html" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50">View Details</a>
+      </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact 📈</h3>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                    <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
-                    <div>
-                        <p class="font-bold text-lg">12 kg</p>
-                        <p class="text-xs text-gray-500">CO2 Saved</p>
-                    </div>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                    <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mr-3"></i>
-                    <div>
-                        <p class="font-bold text-lg">45</p>
-                        <p class="text-xs text-gray-500">Items Recycled</p>
-                    </div>
-                </div>
-            </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact 📈</h3>
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
+          <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
+          <div>
+            <p class="font-bold text-lg">12 kg</p>
+            <p class="text-xs text-gray-500">CO2 Saved</p>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
+          <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mr-3"></i>
+          <div>
+            <p class="font-bold text-lg">45</p>
+            <p class="text-xs text-gray-500">Items Recycled</p>
+          </div>
+        </div>
+      </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions 🏆</h3>
-            <div class="space-y-2 mb-6">
-                <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                    <span class="font-bold text-yellow-500 mr-3">1.</span>
-                    <img src="https://placehold.co/40x40/EAB308/FFFFFF?text=JD" class="w-8 h-8 rounded-full mr-3" alt="Jane Doe">
-                    <p class="font-semibold text-gray-700">Jane Doe</p>
-                    <p class="ml-auto font-bold text-gray-600">520 Pts</p>
-                </div>
-                <div class="flex items-center bg-white p-3 rounded-lg shadow-sm border-2 border-green-500">
-                    <span class="font-bold text-gray-500 mr-3">2.</span>
-                    <img src="https://placehold.co/40x40/A3E635/FFFFFF?text=AG" class="w-8 h-8 rounded-full mr-3" alt="Alex Green">
-                    <p class="font-semibold text-green-700">You (Alex Green)</p>
-                    <p class="ml-auto font-bold text-green-700">350 Pts</p>
-                </div>
-            </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions 🏆</h3>
+      <div class="space-y-2 mb-6">
+        <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
+          <span class="font-bold text-yellow-500 mr-3">1.</span>
+          <img src="https://placehold.co/40x40/EAB308/FFFFFF?text=JD" class="w-8 h-8 rounded-full mr-3" alt="Jane Doe">
+          <p class="font-semibold text-gray-700">Jane Doe</p>
+          <p class="ml-auto font-bold text-gray-600">520 Pts</p>
+        </div>
+        <div class="flex items-center bg-white p-3 rounded-lg shadow-sm border-2 border-green-500">
+          <span class="font-bold text-gray-500 mr-3">2.</span>
+          <img src="https://placehold.co/40x40/A3E635/FFFFFF?text=AG" class="w-8 h-8 rounded-full mr-3" alt="Alex Green">
+          <p class="font-semibold text-green-700">You (Alex Green)</p>
+          <p class="ml-auto font-bold text-green-700">350 Pts</p>
+        </div>
+      </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Eco Tip of the Day 💡</h3>
-            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
-                <p class="text-blue-700 font-semibold mb-1">🔌 Unplug Chargers!</p>
-                <p class="text-sm text-blue-600">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
-            </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-2">Eco Tip of the Day 💡</h3>
+      <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+        <p class="text-blue-700 font-semibold mb-1">🔌 Unplug Chargers!</p>
+        <p class="text-sm text-blue-600">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
+      </div>
 
-        </main>
+    </main>
 
-        <!-- BOTTOM NAV -->
-        <nav class="bg-white border-t border-gray-200 shadow-inner fixed bottom-0 left-0 w-full">
-            <div class="flex justify-around">
-                <a href="dashboard.html" class="nav-item active flex-1 text-center py-3">
-                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
-                    <span class="block text-xs mt-1">Dashboard</span>
-                </a>
-                <a href="events.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
-                    <span class="block text-xs mt-1">Events</span>
-                </a>
-                <a href="rewards.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
-                    <span class="block text-xs mt-1">Rewards</span>
-                </a>
-                <a href="history.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
-                    <span class="block text-xs mt-1">History</span>
-                </a>
-            </div>
-        </nav>
+    <!-- NAV -->
+    <nav class="bg-white border-t border-gray-200 shadow-inner fixed bottom-0 left-0 w-full">
+      <div class="flex justify-around">
+        <a href="dashboard.html" class="nav-item active flex-1 text-center py-3">
+          <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
+          <span class="block text-xs mt-1">Dashboard</span>
+        </a>
+        <a href="events.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+          <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
+          <span class="block text-xs mt-1">Events</span>
+        </a>
+        <a href="rewards.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+          <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
+          <span class="block text-xs mt-1">Rewards</span>
+        </a>
+        <a href="history.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+          <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
+          <span class="block text-xs mt-1">History</span>
+        </a>
+      </div>
+    </nav>
 
-    </div>
+  </div>
 
-    <script>
-        lucide.createIcons();
-    </script>
+  <script>
+    lucide.createIcons();
+  </script>
 
 </body>
 </html>
