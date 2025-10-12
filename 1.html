@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Campus Challenge</title>
+
+    <title>Green Campus Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,25 +14,27 @@
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+        
+        /* KEY FOR MOBILE: This container creates the app-like frame. 
+           On screens wider than 420px, it stays centered. 
+           On mobile screens narrower than 420px, it fits the full width. */
         .app-container {
             max-width: 420px;
             margin: auto;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-color: #f9fafb; /* bg-gray-50 */
         }
-        .main-content { flex-grow: 1; }
-        .nav-item.active { color: #10B981; }
-        .nav-item.active svg { color: #10B981; }
-        .page { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .page.active { display: block; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .main-content { 
+            flex-grow: 1; 
+        }
+        .nav-item.active { 
+            color: #10B981;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-200">
 
     <div class="app-container bg-white shadow-lg">
 
@@ -38,270 +42,87 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
-                    <p class="text-sm text-gray-500">Hi, Alex Green!</p>
+                    <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
                 </div>
                 <div class="text-right">
-                     <span id="user-points-header" class="text-2xl font-bold text-green-600">350</span>
+                     <span class="text-2xl font-bold text-green-600">350</span>
                     <p class="text-xs text-gray-500">EcoPoints</p>
                 </div>
             </div>
         </header>
 
-        <main class="main-content p-4 pb-24 bg-gray-50">
+        <main class="main-content p-4 pb-24">
 
-            <div id="dashboard" class="page active">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Dashboard</h2>
-                
-                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
-                    <div class="flex items-center mb-2">
-                        <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
-                        <h3 class="font-bold">Upcoming Event</h3>
-                    </div>
-                    <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
-                    <p class="text-sm opacity-90 mb-3">Join us this Saturday to make our local park greener. Earn bonus points!</p>
-                    <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View Details</button>
+            <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
+                <div class="flex items-center mb-2">
+                    <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
+                    <h3 class="font-bold">Upcoming Event</h3>
                 </div>
+                <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
+                <p class="text-sm opacity-90 mb-3">Join us this Saturday in Kalyan to make our local park greener!</p>
+                <a href="events.html" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50">View Details</a>
+            </div>
 
-                <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact</h3>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                        <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
-                        <div>
-                            <p class="font-bold text-lg">12 kg</p>
-                            <p class="text-xs text-gray-500">CO2 Saved</p>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                        <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mr-3"></i>
-                        <div>
-                            <p class="font-bold text-lg">45</p>
-                            <p class="text-xs text-gray-500">Items Recycled</p>
-                        </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact</h3>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
+                    <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
+                    <div>
+                        <p class="font-bold text-lg">12 kg</p>
+                        <p class="text-xs text-gray-500">CO2 Saved</p>
                     </div>
                 </div>
-                
-                <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions</h3>
-                 <div class="space-y-2 mb-6">
-                   <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                       <span class="font-bold text-yellow-500 mr-3">1.</span>
-                       <img src="https://placehold.co/40x40/EAB308/FFFFFF?text=JD" class="w-8 h-8 rounded-full mr-3" alt="Jane Doe">
-                       <p class="font-semibold text-gray-700">Jane Doe</p>
-                       <p class="ml-auto font-bold text-gray-600">520 Pts</p>
-                   </div>
-                    <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                       <span class="font-bold text-gray-400 mr-3">2.</span>
-                       <img src="https://placehold.co/40x40/A3E635/FFFFFF?text=AG" class="w-8 h-8 rounded-full mr-3" alt="Alex Green">
-                       <p class="font-semibold text-gray-700">You (Alex Green)</p>
-                       <p class="ml-auto font-bold text-gray-600">350 Pts</p>
-                   </div>
-                </div>
-
-                <h3 class="text-lg font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day</h3>
-                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg mb-6" role="alert">
-                    <div class="flex">
-                        <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
-                        <div>
-                            <p class="font-bold">Unplug chargers!</p>
-                            <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
-                        </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
+                    <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mr-3"></i>
+                    <div>
+                        <p class="font-bold text-lg">45</p>
+                        <p class="text-xs text-gray-500">Items Recycled</p>
                     </div>
                 </div>
             </div>
-
-            <div id="events" class="page">
-                 <h2 class="text-xl font-bold text-gray-800 mb-4">Upcoming Events</h2>
-                 <div id="event-list" class="space-y-4">
-                     </div>
-            </div>
-
-            <div id="rewards" class="page">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Redeem Rewards</h2>
-                <div id="reward-list" class="space-y-4">
-                    </div>
-                <div id="redeem-message" class="mt-6 text-center"></div>
-            </div>
-
-            <div id="history" class="page">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Your Activity History</h2>
-                <div id="history-list" class="space-y-3">
-                    </div>
+            
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions</h3>
+             <div class="space-y-2 mb-6">
+               <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
+                   <span class="font-bold text-yellow-500 mr-3">1.</span>
+                   <img src="https://placehold.co/40x40/EAB308/FFFFFF?text=JD" class="w-8 h-8 rounded-full mr-3" alt="Jane Doe">
+                   <p class="font-semibold text-gray-700">Jane Doe</p>
+                   <p class="ml-auto font-bold text-gray-600">520 Pts</p>
+               </div>
+                <div class="flex items-center bg-white p-3 rounded-lg shadow-sm border-2 border-green-500">
+                   <span class="font-bold text-gray-500 mr-3">2.</span>
+                   <img src="https://placehold.co/40x40/A3E635/FFFFFF?text=AG" class="w-8 h-8 rounded-full mr-3" alt="Alex Green">
+                   <p class="font-semibold text-green-700">You (Alex Green)</p>
+                   <p class="ml-auto font-bold text-green-700">350 Pts</p>
+               </div>
             </div>
 
         </main>
 
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200" style="max-width: 420px; margin: auto;">
             <div class="flex justify-around">
-                <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
-                </button>
-                <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
-                </button>
-                <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
-                </button>
-                <button onclick="showPage('history')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i><span class="text-xs">History</span>
-                </button>
+                <a href="dashboard.html" class="nav-item active flex-1 text-center py-3">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Dashboard</span>
+                </a>
+                <a href="events.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Events</span>
+                </a>
+                <a href="rewards.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Rewards</span>
+                </a>
+                <a href="history.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">History</span>
+                </a>
             </div>
         </nav>
     </div>
 
     <script>
         lucide.createIcons();
-
-        // --- Demo Data and State ---
-        let state = {
-            currentUserPoints: 350,
-            history: [
-                { type: 'reward', description: 'Redeemed Canteen Coupon', points: -25, date: '2025-10-11', icon: 'shopping-cart' },
-                { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-10', icon: 'award' },
-                { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-04', icon: 'calendar-check' },
-                { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-02', icon: 'award' },
-            ],
-            events: [
-                { id: 1, title: 'Community Park Cleanup', date: 'Oct 11, 2025', description: 'Help clean up Kalyan Central Park. Gloves and bags provided.', points: 75, rsvp: true },
-                { id: 2, title: 'Workshop: Composting Basics', date: 'Oct 18, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
-                { id: 3, title: 'Green Docu-Night', date: 'Oct 25, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
-            ],
-            rewards: [
-                { id: 1, name: 'Canteen Coupon', cost: 25, icon: 'pizza' },
-                { id: 2, name: 'Stationery Discount', cost: 30, icon: 'notebook-pen' },
-                { id: 3, name: 'Branded Food Coupon', cost: 50, icon: 'shopping-cart' },
-                { id: 4, name: 'Green Club T-Shirt', cost: 150, icon: 'shirt' },
-            ]
-        };
-
-        // --- DOM Elements ---
-        const pages = document.querySelectorAll('.page');
-        const navItems = document.querySelectorAll('.nav-item');
-        const userPointsHeader = document.getElementById('user-points-header');
-        const eventList = document.getElementById('event-list');
-        const rewardList = document.getElementById('reward-list');
-        const historyList = document.getElementById('history-list');
-
-
-        // --- Render Functions ---
-        const renderPoints = () => {
-            userPointsHeader.textContent = state.currentUserPoints;
-        };
-        
-        const renderHistory = () => {
-            historyList.innerHTML = '';
-            if (state.history.length === 0) {
-                historyList.innerHTML = `<p class="text-center text-gray-500">No activity yet.</p>`;
-                return;
-            }
-            state.history.forEach(item => {
-                const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
-                const sign = item.points >= 0 ? '+' : '';
-                
-                historyList.innerHTML += `
-                    <div class="bg-white p-3 rounded-xl shadow-sm flex items-center">
-                        <div class="p-2 bg-gray-100 rounded-lg mr-4">
-                            <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="font-semibold text-gray-800">${item.description}</p>
-                            <p class="text-xs text-gray-500">${item.date}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold ${pointClass}">${sign}${item.points}</p>
-                            <p class="text-xs text-gray-500">EcoPoints</p>
-                        </div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        };
-
-        const renderEvents = () => {
-            eventList.innerHTML = '';
-            state.events.forEach(e => {
-                const rsvpButton = e.rsvp
-                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Attending</button>`
-                    : `<button onclick="updateEventRSVP(${e.id})" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>`;
-                
-                eventList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-md">
-                         <div class="flex items-start">
-                             <div class="p-3 bg-purple-100 rounded-lg mr-4">
-                                 <i data-lucide="calendar" class="w-6 h-6 text-purple-600"></i>
-                             </div>
-                             <div class="flex-grow">
-                                 <p class="text-xs font-semibold text-purple-600">${e.date}</p>
-                                 <h3 class="font-bold text-gray-800">${e.title}</h3>
-                                 <p class="text-sm text-gray-500 mb-3">${e.description}</p>
-                                 <p class="text-sm font-bold text-green-600 mb-3">+${e.points} EcoPoints for attending</p>
-                                 ${rsvpButton}
-                             </div>
-                         </div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        };
-
-        const renderRewards = () => {
-            rewardList.innerHTML = '';
-            state.rewards.forEach(r => {
-                rewardList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-md flex items-center">
-                        <div class="p-3 bg-orange-100 rounded-lg mr-4">
-                             <i data-lucide="${r.icon}" class="w-8 h-8 text-orange-500"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <h3 class="font-bold text-gray-800">${r.name}</h3>
-                            <p class="text-sm text-gray-500">Redeem for ${r.cost} points</p>
-                        </div>
-                        <button onclick="redeemReward(${r.cost}, '${r.name}')" class="bg-blue-600 text-white text-sm font-bold py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
-                            ${r.cost} Pts
-                        </button>
-                    </div>`;
-            });
-            lucide.createIcons();
-        };
-
-        // --- Logic and State Management ---
-        const showPage = (pageId) => {
-            pages.forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            navItems.forEach(item => {
-                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
-            });
-        };
-
-        const updateEventRSVP = (id) => {
-            const event = state.events.find(e => e.id === id);
-            if(event) {
-                event.rsvp = true;
-                renderEvents();
-            }
-        };
-
-        const redeemReward = (cost, name) => {
-            const redeemMsgEl = document.getElementById('redeem-message');
-            if (state.currentUserPoints >= cost) {
-                state.currentUserPoints -= cost;
-                renderPoints();
-                redeemMsgEl.textContent = `Successfully redeemed ${name}!`;
-                redeemMsgEl.className = 'mt-6 text-center text-green-600 font-semibold';
-            } else {
-                redeemMsgEl.textContent = 'Not enough points for this reward.';
-                redeemMsgEl.className = 'mt-6 text-center text-red-600 font-semibold';
-            }
-            setTimeout(() => { redeemMsgEl.textContent = ''; }, 4000);
-        };
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            renderPoints();
-            renderEvents();
-            renderRewards();
-            renderHistory();
-            showPage('dashboard');
-            lucide.createIcons(); // Re-run to catch any icons added in new sections
-        });
     </script>
 </body>
 </html>
