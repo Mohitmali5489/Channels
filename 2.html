@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Green Campus Events</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* The main container uses Flexbox to structure the layout like an app */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+            background-color: #f9fafb; /* bg-gray-50 */
+        }
+        
+        /* This main content area grows to fill available space and becomes scrollable */
+        .main-content { 
+            flex-grow: 1;
+            overflow-y: auto; /* Adds scrolling only when needed */
+        }
+
+        .nav-item.active { 
+            color: #10B981; /* Green color for the active icon */
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <div class="app-container shadow-lg">
+
+        <header class="bg-white p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
+                    <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
+                </div>
+                <div class="text-right">
+                     <span class="text-2xl font-bold text-green-600">350</span>
+                    <p class="text-xs text-gray-500">EcoPoints</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Upcoming Events 📅</h2>
+
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                            <i data-lucide="leaf" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-semibold text-purple-600">Sat, Oct 18, 2025 @ 9:00 AM</p>
+                            <h3 class="font-bold text-gray-800">Tree Plantation Drive</h3>
+                            <p class="text-sm text-gray-500 mb-3">Join us at Gandhinagar Park in Kalyan to plant new saplings.</p>
+                            <p class="text-sm font-bold text-green-600 mb-3">+50 EcoPoints for participating</p>
+                            <button class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                            <i data-lucide="recycle" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-semibold text-purple-600">Sat, Nov 1, 2025 @ 11:00 AM</p>
+                            <h3 class="font-bold text-gray-800">E-Waste Collection Day</h3>
+                            <p class="text-sm text-gray-500 mb-3">Bring your old electronics to the collection point at the college entrance.</p>
+                            <p class="text-sm font-bold text-green-600 mb-3">+25 EcoPoints per item</p>
+                            <button class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                            <i data-lucide="presentation" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-semibold text-purple-600">Sat, Nov 8, 2025 @ 2:00 PM</p>
+                            <h3 class="font-bold text-gray-800">Workshop: Composting Basics</h3>
+                            <p class="text-sm text-gray-500 mb-3">Learn how to turn food scraps into garden gold in the Biology Lab.</p>
+                            <p class="text-sm font-bold text-green-600 mb-3">+30 EcoPoints for attending</p>
+                            <button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full cursor-not-allowed" disabled>✓ Attending</button>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="bg-white p-4 rounded-xl shadow-md opacity-70">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-gray-200 rounded-lg mr-4">
+                            <i data-lucide="check-circle-2" class="w-6 h-6 text-gray-500"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-semibold text-gray-500">Sat, Oct 11, 2025 (Yesterday)</p>
+                            <h3 class="font-bold text-gray-600">Community Park Cleanup</h3>
+                            <p class="text-sm text-gray-500 mb-3">A successful cleanup at Kalyan Central Park. Thanks to all volunteers!</p>
+                             <button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full cursor-not-allowed" disabled>Event Completed</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <nav class="bg-white border-t border-gray-200">
+            <div class="flex justify-around">
+                <a href="dashboard.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Dashboard</span>
+                </a>
+                <a href="events.html" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Events</span>
+                </a>
+                <a href="rewards.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">Rewards</span>
+                </a>
+                <a href="history.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
+                    <span class="text-xs">History</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Renders all the icons on the page
+        lucide.createIcons();
+    </script>
+</body>
+</html>
