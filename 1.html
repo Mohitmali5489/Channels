@@ -8,35 +8,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* CRITICAL: Makes the page fill the entire screen height */
+        /* Make the entire page take up the full screen height without margins */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevents the whole page from bouncing */
+            overflow: hidden; /* Prevent the body itself from scrolling */
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* CRITICAL: This is the main app layout engine */
+        /* CHANGE 1: This is the core of the app layout.
+           - We use Flexbox to arrange the header, main, and nav vertically.
+           - height: 100% ensures it fills the entire screen. */
         .app-container {
-            display: flex; /* Activates Flexbox */
-            flex-direction: column; /* Stacks header, main, nav vertically */
-            height: 100%; /* Makes the container fill the screen */
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             width: 100%;
-            max-width: 420px;
+            max-width: 420px; /* Still good practice for tablets/desktops */
             margin: auto;
             background-color: #f9fafb; /* bg-gray-50 */
         }
         
-        /* CRITICAL: This makes the content area grow and scroll */
+        /* CHANGE 2: This makes the main content area grow and scroll.
+           - flex-grow: 1 tells this element to take up all available vertical space.
+           - overflow-y: auto adds a scrollbar ONLY if the content is too long to fit. */
         .main-content { 
-            flex-grow: 1; /* Tells this section to take all available space */
-            overflow-y: auto; /* Adds scrolling ONLY if content is too long */
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
         .nav-item.active { 
-            color: #10B981;
+            color: #10B981; /* Green color for the active icon */
         }
     </style>
 </head>
@@ -101,6 +105,17 @@
                    <p class="font-semibold text-green-700">You (Alex Green)</p>
                    <p class="ml-auto font-bold text-green-700">350 Pts</p>
                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day💡</h3>
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg mb-4">
+                <div class="flex">
+                    <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
+                    <div>
+                        <p class="font-bold">Unplug Chargers!</p>
+                        <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
+                    </div>
+                </div>
             </div>
 
         </main>
