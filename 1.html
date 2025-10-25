@@ -2,148 +2,711 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Green Campus Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Campus Challenge</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Make the entire page take up the full screen height without margins */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent the body itself from scrolling */
+        body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        
-        /* CHANGE 1: This is the core of the app layout.
-           - We use Flexbox to arrange the header, main, and nav vertically.
-           - height: 100% ensures it fills the entire screen. */
         .app-container {
+            max-width: 420px;
+            margin: auto;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            width: 100%;
-            max-width: 420px; /* Still good practice for tablets/desktops */
-            margin: auto;
-            background-color: #f9fafb; /* bg-gray-50 */
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* Add padding to main content to avoid overlap with bottom nav */
+        .main-content { 
+            flex-grow: 1; 
+            padding-bottom: 70px; /* Space for bottom nav */
         }
         
-        /* CHANGE 2: This makes the main content area grow and scroll.
-           - flex-grow: 1 tells this element to take up all available vertical space.
-           - overflow-y: auto adds a scrollbar ONLY if the content is too long to fit. */
-        .main-content { 
-            flex-grow: 1;
-            overflow-y: auto;
+        /* Page Transitions */
+        .page { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .page.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .nav-item.active { 
-            color: #10B981; /* Green color for the active icon */
+        /* Sidebar */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        #sidebar-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Sidebar Nav Active State */
+        .sidebar-nav-item.active {
+            background-color: #ECFDF5; /* green-50 */
+            color: #059669; /* green-700 */
+            font-weight: 600;
+        }
+        .sidebar-nav-item.active svg { color: #059669; }
+        
+        /* Bottom Nav Active State */
+        .nav-item.active { color: #10B981; }
+        .nav-item.active svg { color: #10B981; }
+
+        /* General UI Toggles (for Settings page) */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
         }
     </style>
 </head>
-<body class="bg-gray-200">
+<body class="bg-gray-100">
 
-    <div class="app-container shadow-lg">
+    <!-- Sidebar (Off-canvas Menu) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full flex flex-col">
+        
+        <!-- Profile Section -->
+        <div class="p-6 border-b">
+            <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500" alt="User Avatar">
+            <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800"></h2>
+            <p class="text-sm text-green-600 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
+        </div>
 
-        <header class="bg-white p-4 border-b border-gray-200">
+        <!-- NEW Sidebar Navigation -->
+        <nav class="flex-grow p-4 space-y-2">
+            <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="user" class="w-5 h-5 mr-3"></i>Profile
+            </button>
+            <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
+            </button>
+            
+            <!-- Divider -->
+            <div class="pt-2 border-t border-gray-200"></div>
+
+            <button onclick="showPage('about')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="info" class="w-5 h-5 mr-3"></i>About Us
+            </button>
+            <button onclick="showPage('help')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="help-circle" class="w-5 h-5 mr-3"></i>Help & Support
+            </button>
+            <button onclick="showPage('settings')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="settings" class="w-5 h-5 mr-3"></i>Settings
+            </button>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-6 border-t">
+            <p class="text-xs text-center text-gray-400">Green Campus v4.0</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container bg-white shadow-lg">
+
+        <!-- UPDATED Main Header -->
+        <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
-                    <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
-                </div>
-                <div class="text-right">
-                     <span class="text-2xl font-bold text-green-600">350</span>
-                    <p class="text-xs text-gray-500">EcoPoints</p>
+                <!-- Menu Button -->
+                <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                
+                <!-- App Title -->
+                <h1 class="text-lg font-bold text-green-700">Green Campus</h1>
+                
+                <!-- Points (Profile image removed) -->
+                <div class="flex items-center space-x-3">
+                     <div class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm">
+                        <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
+                        <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <main class="main-content p-4">
+        <main class="main-content p-4 bg-gray-50">
 
-            <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
-                <div class="flex items-center mb-2">
-                    <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
-                    <h3 class="font-bold">Upcoming Event</h3>
+            <!-- == Dashboard Page == -->
+            <div id="dashboard" class="page active">
+                <h2 class="text-2xl font-bold text-gray-800 mb-1">Hi, <span id="user-name-greeting"></span>!</h2>
+                <p class="text-gray-500 mb-6">Let's make our campus greener today.</p>
+                
+                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
+                    <div class="flex items-center mb-2">
+                        <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
+                        <h3 class="font-bold">Upcoming Event</h3>
+                    </div>
+                    <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
+                    <p class="text-sm opacity-90 mb-3">Join us this Saturday to make our local park greener. Earn bonus points!</p>
+                    <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View Details</button>
                 </div>
-                <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
-                <p class="text-sm opacity-90 mb-3">Join us this Saturday in Kalyan to make our local park greener!</p>
-                <a href="2.html" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50">View Details</a>
-            </div>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Your Impact </h3>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                    <i data-lucide="leaf" class="w-8 h-8 text-green-500 mr-3"></i>
-                    <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Your Impact</h3>
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="leaf" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">12 kg</p>
                         <p class="text-xs text-gray-500">CO2 Saved</p>
                     </div>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm flex items-center">
-                    <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mr-3"></i>
-                    <div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">45</p>
-                        <p class="text-xs text-gray-500">Items Recycled</p>
+                        <p class="text-xs text-gray-500">Recycled</p>
+                    </div>
+                     <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
+                        <p class="font-bold text-lg">2</p>
+                        <p class="text-xs text-gray-500">Events</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Top Champions</h3>
+                <div id="leaderboard-dashboard-list" class="space-y-3 mb-4">
+                    <!-- Leaderboard Top 3 will be dynamically inserted here -->
+                </div>
+                <button onclick="showPage('leaderboard')" class="w-full bg-gray-100 border border-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                    View All Rankings
+                </button>
+
+                <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day</h3>
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
+                    <div class="flex">
+                        <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
+                        <div>
+                            <p class="font-bold">Unplug chargers!</p>
+                            <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- == Profile Page == -->
+            <div id="profile" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Profile</h2>
+                <div class="space-y-6">
+                    <!-- Profile Header Card -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="bg-green-500 h-24"></div>
+                        <div class="p-5 -mt-16 flex flex-col items-center">
+                            <img id="profile-avatar" src="" class="w-28 h-28 rounded-full border-4 border-white shadow-lg">
+                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 mt-3"></h3>
+                            <p id="profile-email" class="text-gray-500"></p>
+                            <p id="profile-joined" class="text-sm text-gray-400 mt-1"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Stats Card -->
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h4 class="text-lg font-bold text-gray-800 mb-4">Your Stats</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Total Points -->
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="leaf" class="w-10 h-10 text-green-500 mx-auto mb-2"></i>
+                                <p id="profile-points" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">EcoPoints</to>
+                            </div>
+                            <!-- Rank -->
+                             <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="trophy" class="w-10 h-10 text-yellow-500 mx-auto mb-2"></i>
+                                <p id="profile-rank" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">Your Rank</to>
+                            </div>
+                            <!-- Challenges -->
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="award" class="w-10 h-10 text-blue-500 mx-auto mb-2"></i>
+                                <p id="profile-challenges" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">Challenges</to>
+                            </div>
+                            <!-- Events -->
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="calendar-check" class="w-10 h-10 text-purple-500 mx-auto mb-2"></i>
+                                <p id="profile-events" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">Events</to>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+            
+            <!-- == Leaderboard Page == -->
+            <div id="leaderboard" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Champions</h2>
+                <div id="leaderboard-page-list" class="space-y-3">
+                    <!-- Full leaderboard will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- == Challenges Page == -->
+            <div id="challenges" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco Challenges</h2>
+                <div id="challenge-list" class="space-y-4">
+                    <!-- Challenges will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- == Events Page == -->
+            <div id="events" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
+                <div id="event-list" class="space-y-4">
+                    <!-- Events will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- == Rewards Page == -->
+            <div id="rewards" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Redeem Rewards</h2>
+                <div id="reward-list" class="space-y-4">
+                    <!-- Rewards will be dynamically inserted here -->
+                </div>
+                <div id="redeem-message" class="mt-6 text-center"></div>
+            </div>
+
+            <!-- == History Page == -->
+            <div id="history" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Activity History</h2>
+                <div id="history-list" class="space-y-3">
+                    <!-- History will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <!-- == About Page (NEW) == -->
+            <div id="about" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">About Us</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <p class="text-gray-600">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
+                    <p class="text-gray-600">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
+                </div>
+            </div>
+            
+            <!-- == Help Page (NEW) == -->
+            <div id="help" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Help & Support</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-700">Frequently Asked Questions</h3>
+                    <div class="text-left">
+                        <p class="font-medium text-gray-800">How do I earn points?</p>
+                        <p class="text-gray-600 mb-3">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
+                        <p class="font-medium text-gray-800">How do I redeem rewards?</p>
+                        <p class="text-gray-600 mb-3">Navigate to the 'Rewards' tab and tap the redeem button for any reward you can afford with your points.</p>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Contact Us</h3>
+                        <p class="text-gray-600">For further assistance, please email us at <a href="#" class="text-green-600 font-medium">support@greencampus.edu</a>.</p>
                     </div>
                 </div>
             </div>
             
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Top Champions </h3>
-             <div class="space-y-2 mb-6">
-               <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                   <span class="font-bold text-yellow-500 mr-3">1.</span>
-                   <img src="https://placehold.co/40x40/EAB308/FFFFFF?text=JD" class="w-8 h-8 rounded-full mr-3" alt="Jane Doe">
-                   <p class="font-semibold text-gray-700">Jane Doe</p>
-                   <p class="ml-auto font-bold text-gray-600">520 Pts</p>
-               </div>
-                <div class="flex items-center bg-white p-3 rounded-lg shadow-sm border-2 border-green-500">
-                   <span class="font-bold text-gray-500 mr-3">2.</span>
-                   <img src="https://placehold.co/40x40/A3E635/FFFFFF?text=AG" class="w-8 h-8 rounded-full mr-3" alt="Alex Green">
-                   <p class="font-semibold text-green-700">You (Alex Green)</p>
-                   <p class="ml-auto font-bold text-green-700">350 Pts</p>
-               </div>
-            </div>
-
-            <h3 class="text-lg font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day💡</h3>
-            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg mb-4">
-                <div class="flex">
-                    <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
-                    <div>
-                        <p class="font-bold">Unplug Chargers!</p>
-                        <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
+            <!-- == Settings Page (NEW) == -->
+            <div id="settings" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-700">Push Notifications</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-notifs" id="toggle-notifs" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="toggle-notifs" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center border-t pt-4">
+                        <span class="font-medium text-gray-700">Email Updates</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-email" id="toggle-email" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="toggle-email" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </main>
 
-        <nav class="bg-white border-t border-gray-200">
+        <!-- NEW Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200" style="max-width: 420px; margin: auto; z-index: 20;">
             <div class="flex justify-around">
-                <a href="1.html" class="nav-item active flex-1 text-center py-3">
-                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Dashboard</span>
-                </a>
-                <a href="2.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Events</span>
-                </a>
-                <a href="3.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Rewards</span>
-                </a>
-                <a href="4.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">History</span>
-                </a>
+                <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
+                </button>
+                <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="trophy" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
+                </button>
+                <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
+                </button>
+                <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
+                </button>
+                 <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
+                </button>
             </div>
         </nav>
     </div>
 
     <script>
-        lucide.createIcons();
+        // --- Demo Data and State ---
+        let state = {
+            currentUser: {
+                id: 4,
+                name: 'Alex Green',
+                points: 350,
+                avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
+                email: 'alex.green@college.edu',
+                joined: 'Sep 2025'
+            },
+            leaderboard: [
+                { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD' },
+                { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS' },
+                { id: 3, name: 'Sarah Lee', points: 395, avatarUrl: 'https://placehold.co/40x40/EC4899/FFFFFF?text=SL' },
+                { id: 4, name: 'Alex Green', points: 350, avatarUrl: 'https://placehold.co/40x40/A3E635/FFFFFF?text=AG', isCurrentUser: true },
+                { id: 5, name: 'Tom Wilson', points: 280, avatarUrl: 'https://placehold.co/40x40/F97316/FFFFFF?text=TW' },
+                { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC' },
+            ],
+            history: [
+                { type: 'reward', description: 'Redeemed Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart' },
+                { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award' },
+                { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check' },
+                { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text' },
+            ],
+            events: [
+                { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Help clean up Kalyan Central Park. Gloves and bags provided.', points: 75, rsvp: true },
+                { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 04, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
+                { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
+            ],
+            rewards: [
+                { id: 1, name: 'Canteen Coupon', cost: 25, icon: 'pizza' },
+                { id: 2, name: 'Stationery Discount', cost: 30, icon: 'notebook-pen' },
+                { id: 3, name: 'Branded Food Coupon', cost: 50, icon: 'shopping-cart' },
+                { id: 4, name: 'Green Club T-Shirt', cost: 150, icon: 'shirt' },
+            ],
+            challenges: [
+                { id: 1, title: '7-Day Reusable Cup', description: 'Use only a reusable cup for all drinks on campus for 7 days.', points: 50, isCompleted: true },
+                { id: 2, title: 'Digital Notes Only', description: 'Take all your class notes digitally for one week.', points: 15, isCompleted: true },
+                { id: 3, title: 'Waste-Free Lunch', description: 'Pack a lunch with zero single-use plastic.', points: 20, isCompleted: false },
+                { id: 4, title: 'Cycle to Campus', description: 'Bike or walk to campus instead of driving (3 times).', points: 40, isCompleted: false },
+            ]
+        };
+
+        // --- DOM Elements ---
+        const pages = document.querySelectorAll('.page');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const sidebarNavItems = document.querySelectorAll('.sidebar-nav-item');
+        const navItems = document.querySelectorAll('.nav-item'); // For Bottom Nav
+        
+        // Headers
+        const userPointsHeader = document.getElementById('user-points-header');
+        const userNameGreeting = document.getElementById('user-name-greeting');
+        
+        // Sidebar Profile
+        const userAvatarSidebar = document.getElementById('user-avatar-sidebar');
+        const userNameSidebar = document.getElementById('user-name-sidebar');
+        const userPointsSidebar = document.getElementById('user-points-sidebar');
+
+        // Page Content Lists
+        const eventList = document.getElementById('event-list');
+        const rewardList = document.getElementById('reward-list');
+        const historyList = document.getElementById('history-list');
+        const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
+        const leaderboardPageList = document.getElementById('leaderboard-page-list');
+        const challengeList = document.getElementById('challenge-list');
+        
+        // Profile Page Elements
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const profileJoined = document.getElementById('profile-joined');
+        const profilePoints = document.getElementById('profile-points');
+        const profileRank = document.getElementById('profile-rank');
+        const profileChallenges = document.getElementById('profile-challenges');
+        const profileEvents = document.getElementById('profile-events');
+
+
+        // --- Render Functions ---
+        const renderHeader = () => {
+            const user = state.currentUser;
+            userPointsHeader.textContent = user.points;
+            userNameGreeting.textContent = user.name.split(' ')[0]; // Just first name
+            
+            // Render sidebar profile info
+            userAvatarSidebar.src = user.avatarUrl.replace('40x40', '80x80'); // Larger avatar
+            userNameSidebar.textContent = user.name;
+            userPointsSidebar.textContent = user.points;
+        };
+        
+        const renderLeaderboardDashboard = () => {
+            leaderboardDashboardList.innerHTML = '';
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            
+            sortedLeaderboard.slice(0, 3).forEach((user, index) => {
+                const rank = index + 1;
+                let rankBadge = '';
+                if (rank === 1) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-700"></i>`;
+
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
+                
+                leaderboardDashboardList.innerHTML += `
+                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
+                        <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
+                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
+                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderLeaderboardPage = () => {
+            leaderboardPageList.innerHTML = '';
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            
+            sortedLeaderboard.forEach((user, index) => {
+                const rank = index + 1;
+                let rankBadge = `<span class="font-bold text-gray-500 w-6 text-center">${rank}.</span>`;
+                if (rank === 1) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-700"></i>`;
+
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
+                
+                leaderboardPageList.innerHTML += `
+                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
+                        <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
+                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
+                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+        
+        const renderProfile = () => {
+            const user = state.currentUser;
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            const userRank = sortedLeaderboard.findIndex(u => u.id === user.id) + 1;
+
+            profileAvatar.src = user.avatarUrl.replace('40x40', '100x100');
+            profileName.textContent = user.name;
+            profileEmail.textContent = user.email;
+            profileJoined.textContent = `Joined ${user.joined}`;
+            
+            profilePoints.textContent = user.points;
+            profileRank.textContent = `#${userRank}`;
+            profileChallenges.textContent = state.challenges.filter(c => c.isCompleted).length;
+            profileEvents.textContent = state.events.filter(e => e.rsvp).length;
+            
+            lucide.createIcons();
+        };
+
+        const renderHistory = () => {
+            historyList.innerHTML = '';
+            if (state.history.length === 0) {
+                historyList.innerHTML = `<p class="text-center text-gray-500">No activity yet.</p>`;
+                return;
+            }
+            state.history.forEach(item => {
+                const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                const sign = item.points >= 0 ? '+' : '';
+                
+                historyList.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm flex items-center">
+                        <div class="p-2 bg-gray-100 rounded-lg mr-4">
+                            <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-gray-800">${item.description}</p>
+                            <p class="text-xs text-gray-500">${item.date}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold ${pointClass}">${sign}${item.points}</p>
+                            <p class="text-xs text-gray-500">EcoPoints</p>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderEvents = () => {
+            eventList.innerHTML = '';
+            state.events.forEach(e => {
+                const rsvpButton = e.rsvp
+                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Attending</button>`
+                    : `<button onclick="updateEventRSVP(${e.id})" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>`;
+                
+                eventList.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <div class="flex items-start">
+                            <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                                <i data-lucide="calendar" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-xs font-semibold text-purple-600">${e.date}</p>
+                                <h3 class="font-bold text-gray-800 text-lg">${e.title}</h3>
+                                <p class="text-sm text-gray-500 mb-3">${e.description}</p>
+                                <p class="text-sm font-bold text-green-600 mb-3">+${e.points} EcoPoints for attending</p>
+                                ${rsvpButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderChallenges = () => {
+            challengeList.innerHTML = '';
+            state.challenges.forEach(c => {
+                const actionButton = c.isCompleted
+                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Completed</button>`
+                    : `<button class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-blue-700 w-full">Start Challenge</button>`;
+                
+                challengeList.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <div class="flex items-start">
+                            <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                                <i data-lucide="award" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h3 class="font-bold text-gray-800 text-lg">${c.title}</h3>
+                                <p class="text-sm text-gray-500 mb-3">${c.description}</p>
+                                <p class="text-sm font-bold text-green-600 mb-3">+${c.points} EcoPoints</p>
+                                ${actionButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderRewards = () => {
+            rewardList.innerHTML = '';
+            state.rewards.forEach(r => {
+                const canAfford = state.currentUser.points >= r.cost;
+                const buttonClass = canAfford 
+                    ? 'bg-blue-600 hover:bg-blue-700' 
+                    : 'bg-gray-400 cursor-not-allowed';
+                
+                rewardList.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-md flex items-center">
+                        <div class="p-3 bg-orange-100 rounded-lg mr-4">
+                            <i data-lucide="${r.icon}" class="w-8 h-8 text-orange-500"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-gray-800">${r.name}</h3>
+                            <p class="text-sm text-gray-500">Redeem for ${r.cost} points</p>
+                        </div>
+                        <button onclick="redeemReward(${r.cost}, '${r.name}')" class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors whitespace-nowrap" ${!canAfford ? 'disabled' : ''}>
+                            ${r.cost} Pts
+                        </button>
+                    </div>`;
+            });
+            lucide.createIcons();
+        };
+
+        // --- Logic and State Management ---
+        const showPage = (pageId) => {
+            pages.forEach(p => p.classList.remove('active'));
+            const newPage = document.getElementById(pageId);
+            if (newPage) {
+                newPage.classList.add('active');
+            }
+            
+            // Update Sidebar
+            sidebarNavItems.forEach(item => {
+                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+            });
+            
+            // Update Bottom Nav
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+            });
+            
+            toggleSidebar(true); // Close sidebar on navigation
+        };
+
+        const toggleSidebar = (forceClose = false) => {
+            if (forceClose) {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('opacity-0');
+                sidebarOverlay.classList.add('hidden');
+            } else {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+                sidebarOverlay.classList.toggle('opacity-0');
+            }
+        };
+
+        const updateEventRSVP = (id) => {
+            const event = state.events.find(e => e.id === id);
+            if(event) {
+                event.rsvp = true;
+                renderEvents();
+                renderProfile(); // Re-render profile to update stats
+            }
+        };
+
+        const redeemReward = (cost, name) => {
+            const redeemMsgEl = document.getElementById('redeem-message');
+            if (state.currentUser.points >= cost) {
+                state.currentUser.points -= cost;
+                
+                // Add to history
+                state.history.unshift({
+                    type: 'reward', 
+                    description: `Redeemed ${name}`, 
+                    points: -cost, 
+                    date: new Date().toISOString().split('T')[0].replaceAll('-', '/'), // Format date
+                    icon: 'shopping-cart'
+                });
+                
+                renderHeader();
+                renderRewards();
+                renderHistory();
+                renderProfile();
+                
+                redeemMsgEl.textContent = `Successfully redeemed ${name}!`;
+                redeemMsgEl.className = 'mt-6 text-center text-green-600 font-semibold';
+            } else {
+                redeemMsgEl.textContent = 'Not enough points for this reward.';
+                redeemMsgEl.className = 'mt-6 text-center text-red-600 font-semibold';
+            }
+            setTimeout(() => { redeemMsgEl.textContent = ''; }, 4000);
+        };
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up all event listeners
+            document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
+
+            // Initial Renders
+            renderHeader();
+            renderLeaderboardDashboard();
+            renderLeaderboardPage();
+            renderProfile();
+            renderEvents();
+            renderChallenges();
+            renderRewards();
+            renderHistory();
+            
+            showPage('dashboard');
+            lucide.createIcons(); // Final pass for all icons
+        });
     </script>
 </body>
 </html>
+
