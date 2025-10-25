@@ -33,7 +33,6 @@
         /* Add padding and make main content scrollable */
         .main-content { 
             flex-grow: 1; 
-            /* padding-bottom: 100px;  <-- REMOVED THIS LINE */
             overflow-y: auto; /* This is the fix: makes this area scroll */
         }
         
@@ -238,8 +237,8 @@
             </div>
 
             <div id="rewards" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Redeem Rewards</h2>
-                <div id="reward-list" class="space-y-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco-Store Rewards</h2>
+                <div id="reward-list" class="grid grid-cols-2 gap-4">
                     </div>
                 <div id="redeem-message" class="mt-6 text-center"></div>
             </div>
@@ -345,13 +344,32 @@
                 { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 04, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
                 { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
             ],
+            
+            // --- *** MODIFIED REWARDS DATA *** ---
             rewards: [
-                { id: 1, name: 'Canteen Coupon', cost: 25, icon: 'pizza' },
-                { id: 2, name: 'Stationery Discount', cost: 30, icon: 'notebook-pen' },
-                { id: 3, name: 'Branded Food Coupon', cost: 50, icon: 'shopping-cart' },
-                { id: 4, name: 'Green Club T-Shirt', cost: 150, icon: 'shirt' },
+                // Eco-Friendly
+                { id: 1, name: 'Reusable Bamboo Cup', description: 'Eco-friendly cup for your daily coffee.', cost: 150, imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Cup' },
+                { id: 2, name: 'Canvas Tote Bag', description: 'Durable bag for groceries and books.', cost: 200, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Bag' },
+                { id: 3, name: 'Bamboo Toothbrush Set', description: 'Pack of 4 biodegradable toothbrushes.', cost: 100, imageUrl: 'https://placehold.co/300x300/93C5FD/1F2937?text=Brush' },
+                { id: 4, name: 'Metal Straw Set', description: 'Set of 4 stainless steel straws with cleaner.', cost: 75, imageUrl: 'https://placehold.co/300x300/FCA5A5/1F2937?text=Straws' },
+                { id: 5, name: 'Reusable Water Bottle', description: '500ml insulated stainless steel bottle.', cost: 350, imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Bottle' },
+                { id: 6, name: 'Beeswax Food Wraps', description: 'Eco-friendly alternative to plastic wrap.', cost: 120, imageUrl: 'https://placehold.co/300x300/FCD34D/1F2937?text=Wraps' },
+                { id: 7, name: 'Solar-Powered Charger', description: 'Small solar panel for charging your phone.', cost: 750, imageUrl: 'https://placehold.co/300x300/6EE7B7/1F2937?text=Solar' },
+
+                // Campus & Student Life
+                { id: 8, name: '$5 Canteen Voucher', description: 'Enjoy a free meal at the campus canteen.', cost: 50, imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Food' },
+                { id: 9, name: 'Coffee Shop Coupon', description: 'Get a free large coffee at "The Bean".', cost: 40, imageUrl: 'https://placehold.co/300x300/D1D5DB/1F2937?text=Coffee' },
+                { id: 10, name: 'College Hoodie', description: 'Official college branded cozy hoodie.', cost: 1000, imageUrl: 'https://placehold.co/300x300/818CF8/1F2937?text=Hoodie' },
+                { id: 11, name: '10% Bookstore Discount', description: 'Get 10% off your next textbook purchase.', cost: 150, imageUrl: 'https://placehold.co/300x300/FBCFE8/1F2937?text=10%25+Off' },
+                { id: 12, name: 'Premium Notebook Set', description: 'A5 leather-bound notebook and pen.', cost: 250, imageUrl: 'https://placehold.co/300x300/A78BFA/1F2937?text=Notebook' },
+                { id: 13, name: 'Portable Power Bank', description: '10,000mAh slim power bank.', cost: 600, imageUrl: 'https://placehold.co/300x300/F87171/1F2937?text=Power' },
+                { id: 14, name: 'Wireless Earbuds', description: 'Bluetooth 5.0 earbuds with charging case.', cost: 1200, imageUrl: 'https://placehold.co/300x300/60A5FA/1F2937?text=Earbuds' },
+                { id: 15, name: 'Library Fee Waiver', description: 'Waive one overdue library book fine.', cost: 25, imageUrl: 'https://placehold.co/300x300/F0ABFC/1F2937?text=Waiver' },
+                { id: 16, name: 'Movie Ticket', description: 'One standard ticket to the local cinema.', cost: 300, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Ticket' },
+                { id: 17, name: 'USB Flash Drive 64GB', description: 'A handy 64GB USB 3.0 flash drive.', cost: 220, imageUrl: 'https://placehold.co/300x300/9CA3AF/1F2937?text=USB' },
+                { id: 18, name: 'Gym Day Pass', description: 'One free day pass to the campus gym.', cost: 60, imageUrl: 'https://placehold.co/300x300/B45309/1F2937?text=Gym' }
             ],
-            // challenges: [ ... ] // Removed
+            // --- *** END OF MODIFIED REWARDS *** ---
         };
 
         // --- DOM Elements ---
@@ -376,7 +394,6 @@
         const historyList = document.getElementById('history-list');
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
-        // const challengeList = ... // Removed
         
         // Profile Page Elements
         const profileAvatar = document.getElementById('profile-avatar');
@@ -385,7 +402,6 @@
         const profileJoined = document.getElementById('profile-joined');
         const profilePoints = document.getElementById('profile-points');
         const profileRank = document.getElementById('profile-rank');
-        // const profileChallenges = ... // Removed
         const profileEvents = document.getElementById('profile-events');
 
 
@@ -463,11 +479,11 @@
             
             profilePoints.textContent = user.points;
             profileRank.textContent = `#${userRank}`;
-            // profileChallenges.textContent = ... // Removed
             profileEvents.textContent = state.events.filter(e => e.rsvp).length;
             
             lucide.createIcons();
         };
+
 
         const renderHistory = () => {
             historyList.innerHTML = '';
@@ -525,31 +541,37 @@
             lucide.createIcons();
         };
 
-        // const renderChallenges = () => { ... } // Removed
-
+        // --- COMPLETELY REWRITTEN RENDERREWARDS FUNCTION ---
         const renderRewards = () => {
             rewardList.innerHTML = '';
             state.rewards.forEach(r => {
                 const canAfford = state.currentUser.points >= r.cost;
                 const buttonClass = canAfford 
-                    ? 'bg-blue-600 hover:bg-blue-700' 
+                    ? 'bg-green-600 hover:bg-green-700' 
                     : 'bg-gray-400 cursor-not-allowed';
+                const buttonText = canAfford ? 'Redeem' : 'Not Enough';
                 
                 rewardList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-md flex items-center">
-                        <div class="p-3 bg-orange-100 rounded-lg mr-4">
-                            <i data-lucide="${r.icon}" class="w-8 h-8 text-orange-500"></i>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
+                        <img src="${r.imageUrl}" alt="${r.name}" class="w-full h-32 object-cover">
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h3 class="font-bold text-gray-800 text-md mb-1">${r.name}</h3>
+                            <p class="text-xs text-gray-500 mb-3 flex-grow">${r.description}</p>
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-lg text-green-600">${r.cost}</span>
+                                <span class="text-sm text-gray-500 ml-1">EcoPoints</span>
+                            </div>
+
+                            <button onclick="redeemReward(${r.cost}, '${r.name}')" 
+                                    class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto" 
+                                    ${!canAfford ? 'disabled' : ''}>
+                                ${buttonText}
+                            </button>
                         </div>
-                        <div class="flex-grow">
-                            <h3 class="font-bold text-gray-800">${r.name}</h3>
-                            <p class="text-sm text-gray-500">Redeem for ${r.cost} points</p>
-                        </div>
-                        <button onclick="redeemReward(${r.cost}, '${r.name}')" class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors whitespace-nowrap" ${!canAfford ? 'disabled' : ''}>
-                            ${r.cost} Pts
-                        </button>
                     </div>`;
             });
-            lucide.createIcons();
+            // No lucide icons used in this render, so no need to call createIcons()
         };
 
         // --- Logic and State Management ---
@@ -605,7 +627,7 @@
                     description: `Redeemed ${name}`, 
                     points: -cost, 
                     date: new Date().toISOString().split('T')[0].replaceAll('-', '/'), // Format date
-                    icon: 'shopping-cart'
+                    icon: 'shopping-cart' // Keep 'shopping-cart' icon for history
                 });
                 
                 renderHeader();
@@ -633,7 +655,6 @@
             renderLeaderboardPage();
             renderProfile();
             renderEvents();
-            // renderChallenges(); // Removed
             renderRewards();
             renderHistory();
             
