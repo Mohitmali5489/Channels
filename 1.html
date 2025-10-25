@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevent body scroll */
+        }
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
@@ -15,16 +19,22 @@
         .app-container {
             max-width: 420px;
             margin: auto;
-            min-height: 100vh;
+            height: 100%; /* Changed from 100vh to 100% */
             display: flex;
             flex-direction: column;
             position: relative;
             overflow-x: hidden;
         }
-        /* Add padding to main content to avoid overlap with bottom nav */
+        
+        header, nav {
+            flex-shrink: 0; /* Prevent header and nav from shrinking */
+        }
+
+        /* Add padding and make main content scrollable */
         .main-content { 
             flex-grow: 1; 
-            padding-bottom: 70px; /* Space for bottom nav */
+            /* padding-bottom: 100px;  <-- REMOVED THIS LINE */
+            overflow-y: auto; /* This is the fix: makes this area scroll */
         }
         
         /* Page Transitions */
@@ -67,18 +77,15 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Sidebar (Off-canvas Menu) -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
     <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full flex flex-col">
         
-        <!-- Profile Section -->
         <div class="p-6 border-b">
             <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500" alt="User Avatar">
             <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800"></h2>
             <p class="text-sm text-green-600 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
         </div>
 
-        <!-- NEW Sidebar Navigation -->
         <nav class="flex-grow p-4 space-y-2">
             <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
                 <i data-lucide="user" class="w-5 h-5 mr-3"></i>Profile
@@ -87,7 +94,6 @@
                 <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
             </button>
             
-            <!-- Divider -->
             <div class="pt-2 border-t border-gray-200"></div>
 
             <button onclick="showPage('about')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
@@ -101,29 +107,23 @@
             </button>
         </nav>
 
-        <!-- Footer -->
         <div class="p-6 border-t">
-            <p class="text-xs text-center text-gray-400">Green Campus v4.0</p>
+            <p class="text-xs text-center text-gray-400">Green Campus v5.0</p>
         </div>
     </div>
 
-    <!-- Main App Container -->
     <div class="app-container bg-white shadow-lg">
 
-        <!-- UPDATED Main Header -->
         <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
-                <!-- Menu Button -->
                 <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
                 
-                <!-- App Title -->
                 <h1 class="text-lg font-bold text-green-700">Green Campus</h1>
                 
-                <!-- Points (Profile image removed) -->
                 <div class="flex items-center space-x-3">
-                     <div class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm">
+                    <div class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm">
                         <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
                         <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
                     </div>
@@ -133,7 +133,6 @@
 
         <main class="main-content p-4 bg-gray-50">
 
-            <!-- == Dashboard Page == -->
             <div id="dashboard" class="page active">
                 <h2 class="text-2xl font-bold text-gray-800 mb-1">Hi, <span id="user-name-greeting"></span>!</h2>
                 <p class="text-gray-500 mb-6">Let's make our campus greener today.</p>
@@ -160,7 +159,7 @@
                         <p class="font-bold text-lg">45</p>
                         <p class="text-xs text-gray-500">Recycled</p>
                     </div>
-                     <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
                         <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">2</p>
                         <p class="text-xs text-gray-500">Events</p>
@@ -169,8 +168,7 @@
                 
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Top Champions</h3>
                 <div id="leaderboard-dashboard-list" class="space-y-3 mb-4">
-                    <!-- Leaderboard Top 3 will be dynamically inserted here -->
-                </div>
+                    </div>
                 <button onclick="showPage('leaderboard')" class="w-full bg-gray-100 border border-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
                     View All Rankings
                 </button>
@@ -187,11 +185,9 @@
                 </div>
             </div>
 
-            <!-- == Profile Page == -->
             <div id="profile" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Profile</h2>
                 <div class="space-y-6">
-                    <!-- Profile Header Card -->
                     <div class="bg-white rounded-xl shadow-md overflow-hidden">
                         <div class="bg-green-500 h-24"></div>
                         <div class="p-5 -mt-16 flex flex-col items-center">
@@ -202,29 +198,19 @@
                         </div>
                     </div>
                     
-                    <!-- Profile Stats Card -->
                     <div class="bg-white p-5 rounded-xl shadow-md">
                         <h4 class="text-lg font-bold text-gray-800 mb-4">Your Stats</h4>
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Total Points -->
                             <div class="bg-gray-100 p-4 rounded-lg text-center">
                                 <i data-lucide="leaf" class="w-10 h-10 text-green-500 mx-auto mb-2"></i>
                                 <p id="profile-points" class="text-2xl font-bold text-gray-800"></p>
                                 <p class="text-sm text-gray-500">EcoPoints</to>
                             </div>
-                            <!-- Rank -->
-                             <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <i data-lucide="trophy" class="w-10 h-10 text-yellow-500 mx-auto mb-2"></i>
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="users" class="w-10 h-10 text-yellow-500 mx-auto mb-2"></i>
                                 <p id="profile-rank" class="text-2xl font-bold text-gray-800"></p>
                                 <p class="text-sm text-gray-500">Your Rank</to>
                             </div>
-                            <!-- Challenges -->
-                            <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <i data-lucide="award" class="w-10 h-10 text-blue-500 mx-auto mb-2"></i>
-                                <p id="profile-challenges" class="text-2xl font-bold text-gray-800"></p>
-                                <p class="text-sm text-gray-500">Challenges</to>
-                            </div>
-                            <!-- Events -->
                             <div class="bg-gray-100 p-4 rounded-lg text-center">
                                 <i data-lucide="calendar-check" class="w-10 h-10 text-purple-500 mx-auto mb-2"></i>
                                 <p id="profile-events" class="text-2xl font-bold text-gray-800"></p>
@@ -239,48 +225,31 @@
                 </div>
             </div>
             
-            <!-- == Leaderboard Page == -->
             <div id="leaderboard" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Champions</h2>
                 <div id="leaderboard-page-list" class="space-y-3">
-                    <!-- Full leaderboard will be dynamically inserted here -->
-                </div>
+                    </div>
             </div>
 
-            <!-- == Challenges Page == -->
-            <div id="challenges" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco Challenges</h2>
-                <div id="challenge-list" class="space-y-4">
-                    <!-- Challenges will be dynamically inserted here -->
-                </div>
-            </div>
-
-            <!-- == Events Page == -->
             <div id="events" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
                 <div id="event-list" class="space-y-4">
-                    <!-- Events will be dynamically inserted here -->
-                </div>
+                    </div>
             </div>
 
-            <!-- == Rewards Page == -->
             <div id="rewards" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Redeem Rewards</h2>
                 <div id="reward-list" class="space-y-4">
-                    <!-- Rewards will be dynamically inserted here -->
-                </div>
+                    </div>
                 <div id="redeem-message" class="mt-6 text-center"></div>
             </div>
 
-            <!-- == History Page == -->
             <div id="history" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Activity History</h2>
                 <div id="history-list" class="space-y-3">
-                    <!-- History will be dynamically inserted here -->
-                </div>
+                    </div>
             </div>
             
-            <!-- == About Page (NEW) == -->
             <div id="about" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">About Us</h2>
                 <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
@@ -289,7 +258,6 @@
                 </div>
             </div>
             
-            <!-- == Help Page (NEW) == -->
             <div id="help" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Help & Support</h2>
                 <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
@@ -307,7 +275,6 @@
                 </div>
             </div>
             
-            <!-- == Settings Page (NEW) == -->
             <div id="settings" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
                 <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
@@ -330,22 +297,18 @@
 
         </main>
 
-        <!-- NEW Bottom Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200" style="max-width: 420px; margin: auto; z-index: 20;">
+        <nav class="bg-white border-t border-gray-200">
             <div class="flex justify-around">
                 <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
                 </button>
                 <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="trophy" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
-                </button>
-                <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
+                    <i data-lucide="users" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
                 </button>
                 <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
                 </button>
-                 <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
                 </button>
             </div>
@@ -388,12 +351,7 @@
                 { id: 3, name: 'Branded Food Coupon', cost: 50, icon: 'shopping-cart' },
                 { id: 4, name: 'Green Club T-Shirt', cost: 150, icon: 'shirt' },
             ],
-            challenges: [
-                { id: 1, title: '7-Day Reusable Cup', description: 'Use only a reusable cup for all drinks on campus for 7 days.', points: 50, isCompleted: true },
-                { id: 2, title: 'Digital Notes Only', description: 'Take all your class notes digitally for one week.', points: 15, isCompleted: true },
-                { id: 3, title: 'Waste-Free Lunch', description: 'Pack a lunch with zero single-use plastic.', points: 20, isCompleted: false },
-                { id: 4, title: 'Cycle to Campus', description: 'Bike or walk to campus instead of driving (3 times).', points: 40, isCompleted: false },
-            ]
+            // challenges: [ ... ] // Removed
         };
 
         // --- DOM Elements ---
@@ -418,7 +376,7 @@
         const historyList = document.getElementById('history-list');
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
-        const challengeList = document.getElementById('challenge-list');
+        // const challengeList = ... // Removed
         
         // Profile Page Elements
         const profileAvatar = document.getElementById('profile-avatar');
@@ -427,7 +385,7 @@
         const profileJoined = document.getElementById('profile-joined');
         const profilePoints = document.getElementById('profile-points');
         const profileRank = document.getElementById('profile-rank');
-        const profileChallenges = document.getElementById('profile-challenges');
+        // const profileChallenges = ... // Removed
         const profileEvents = document.getElementById('profile-events');
 
 
@@ -450,9 +408,9 @@
             sortedLeaderboard.slice(0, 3).forEach((user, index) => {
                 const rank = index + 1;
                 let rankBadge = '';
-                if (rank === 1) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-500"></i>`;
-                else if (rank === 2) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-gray-400"></i>`;
-                else if (rank === 3) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-700"></i>`;
+                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
 
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
                 
@@ -475,9 +433,9 @@
             sortedLeaderboard.forEach((user, index) => {
                 const rank = index + 1;
                 let rankBadge = `<span class="font-bold text-gray-500 w-6 text-center">${rank}.</span>`;
-                if (rank === 1) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-500"></i>`;
-                else if (rank === 2) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-gray-400"></i>`;
-                else if (rank === 3) rankBadge = `<i data-lucide="trophy" class="w-6 h-6 text-yellow-700"></i>`;
+                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
 
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
                 
@@ -505,7 +463,7 @@
             
             profilePoints.textContent = user.points;
             profileRank.textContent = `#${userRank}`;
-            profileChallenges.textContent = state.challenges.filter(c => c.isCompleted).length;
+            // profileChallenges.textContent = ... // Removed
             profileEvents.textContent = state.events.filter(e => e.rsvp).length;
             
             lucide.createIcons();
@@ -567,31 +525,7 @@
             lucide.createIcons();
         };
 
-        const renderChallenges = () => {
-            challengeList.innerHTML = '';
-            state.challenges.forEach(c => {
-                const actionButton = c.isCompleted
-                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Completed</button>`
-                    : `<button class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-blue-700 w-full">Start Challenge</button>`;
-                
-                challengeList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-md">
-                        <div class="flex items-start">
-                            <div class="p-3 bg-blue-100 rounded-lg mr-4">
-                                <i data-lucide="award" class="w-6 h-6 text-blue-600"></i>
-                            </div>
-                            <div class="flex-grow">
-                                <h3 class="font-bold text-gray-800 text-lg">${c.title}</h3>
-                                <p class="text-sm text-gray-500 mb-3">${c.description}</p>
-                                <p class="text-sm font-bold text-green-600 mb-3">+${c.points} EcoPoints</p>
-                                ${actionButton}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        };
+        // const renderChallenges = () => { ... } // Removed
 
         const renderRewards = () => {
             rewardList.innerHTML = '';
@@ -699,7 +633,7 @@
             renderLeaderboardPage();
             renderProfile();
             renderEvents();
-            renderChallenges();
+            // renderChallenges(); // Removed
             renderRewards();
             renderHistory();
             
@@ -709,4 +643,3 @@
     </script>
 </body>
 </html>
-
