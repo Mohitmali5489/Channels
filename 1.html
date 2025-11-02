@@ -79,29 +79,28 @@
             display: block;
         }
 
-        /* *** NEW: Level Step Styling *** */
+        /* *** MODIFIED: Level Step Styling *** */
+        /* This is the parent div for each level item */
         .level-step {
-            @apply flex items-center relative;
+            @apply flex items-start;
         }
-        .level-step:not(:last-child) .level-line {
-            @apply w-full h-1 bg-gray-200 absolute top-4 left-4 -translate-y-1/2;
+        .level-dot {
+            @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-white z-10 transition-all flex-shrink-0;
         }
-        .level-step .level-dot {
-            @apply w-8 h-8 rounded-full flex items-center justify-center font-bold text-white z-10;
-        }
-        .level-step.completed .level-line {
-            @apply bg-green-500;
-        }
+        /* Styles applied by JS based on user's progress */
         .level-step.completed .level-dot {
             @apply bg-green-500;
         }
         .level-step.active .level-dot {
-            @apply bg-green-600 ring-4 ring-green-100;
+            @apply bg-green-600 ring-4 ring-green-200 scale-110; /* Make active one stand out */
         }
         .level-step.upcoming .level-dot {
-            @apply bg-gray-300;
+            @apply bg-gray-300 text-gray-500;
         }
-        /* *** END NEW *** */
+        .level-step.upcoming .level-text-content {
+            @apply opacity-50; /* Dim the text of future levels */
+        }
+        /* *** END MODIFICATION *** */
     </style>
 </head>
 <body class="bg-gray-100">
@@ -161,14 +160,16 @@
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
-                <div class="w-1/3 text-center"> <h1 class="text-2xl font-extrabold text-green-700">EcoBirla</h1>
-                </div>
+                <div class="w-1/3 text-center"> <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 hover:opacity-80 transition-opacity">
+                        EcoBirla
+                    </button>
+                    </div>
                 <div class="w-1/3 flex justify-end"> <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
                         <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
                         <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
                     </button>
                 </div>
-                </div>
+            </div>
         </header>
         <main class="main-content p-4 bg-gray-50">
 
@@ -277,6 +278,7 @@
                         <div id="profile-recent-activity" class="space-y-3">
                             </div>
                     </div>
+
                     <div class="bg-white p-5 rounded-xl shadow-md">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="text-lg font-bold text-gray-800">My Active Rewards</h4>
@@ -285,8 +287,10 @@
                         <div id="profile-active-rewards" class="space-y-3">
                             </div>
                     </div>
-                    </div>
+
+                </div>
             </div>
+            
             <div id="leaderboard" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Champions</h2>
                 <div id="leaderboard-page-list" class="space-y-3">
@@ -315,29 +319,52 @@
                         <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
                     </div>
                     
-                    <h4 class="text-md font-semibold text-gray-700 mb-3 mt-6">All Levels</h4>
-                    <div class="grid grid-cols-4 gap-2">
-                        <div id="level-step-1" class="level-step">
-                            <div class="level-line"></div>
-                            <div class="level-dot">1</div>
-                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Green Starter</p>
+                    <h4 class="text-md font-semibold text-gray-700 mb-4 mt-6">All Levels</h4>
+                    <div class="relative pl-5"> <div class="absolute left-5 top-0 bottom-0 w-1 bg-gray-200" style="left: 1.1875rem;">
+                             <div id="level-line-progress" class="absolute top-0 left-0 w-full bg-green-500" style="height: 0%; transition: height 0.5s ease;"></div>
                         </div>
-                         <div id="level-step-2" class="level-step">
-                            <div class="level-line"></div>
-                            <div class="level-dot">2</div>
-                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Eco Learner</p>
-                        </div>
-                         <div id="level-step-3" class="level-step">
-                            <div class="level-line"></div>
-                            <div class="level-dot">3</div>
-                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Sustainability Leader</p>
-                        </div>
-                         <div id="level-step-4" class="level-step">
-                            <div class="level-dot">4</div>
-                            <p class="text-xs text-gray-600 font-medium ml-2">Planet Protector</p>
+                        
+                        <div id="all-levels-list" class="relative z-10 space-y-6">
+                            
+                            <div id="level-step-1" class="level-step flex items-start">
+                                <div class="level-dot">1</div>
+                                <div class="ml-4 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Green Starter</h5>
+                                    <p class="text-sm font-semibold text-gray-500">0 - 149 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">Just beginning your eco-journey. Every point counts!</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-2" class="level-step flex items-start">
+                                <div class="level-dot">2</div>
+                                <div class="ml-4 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Eco Learner</h5>
+                                    <p class="text-sm font-semibold text-gray-500">150 - 399 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">You're building green habits. Keep up the momentum!</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-3" class="level-step flex items-start">
+                                <div class="level-dot">3</div>
+                                <div class="ml-4 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Sustainability Leader</h5>
+                                    <p class="text-sm font-semibold text-gray-500">400 - 799 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">A true inspiration! You're making a real impact on campus.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-4" class="level-step flex items-start">
+                                <div class="level-dot">4</div>
+                                <div class="ml-4 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Planet Protector</h5>
+                                    <p class="text-sm font-semibold text-gray-500">800+ Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">You've reached the pinnacle of green leadership. Amazing!</p>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-                </div>
+                    </div>
 
                 <div class="bg-white p-6 rounded-xl shadow-md mb-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">How to Earn Points</h3>
@@ -528,7 +555,6 @@
             ],
             nextUserRewardId: 4, 
 
-            // *** NEW: Level definitions ***
             levels: [
                 { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
                 { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
@@ -570,16 +596,17 @@
         const profileLevelNumber = document.getElementById('profile-level-number');
         const profileLevelProgress = document.getElementById('profile-level-progress');
         const profileLevelNext = document.getElementById('profile-level-next');
-        const profileRecentActivity = document.getElementById('profile-recent-activity'); // <-- NEW
-        const profileActiveRewards = document.getElementById('profile-active-rewards'); // <-- NEW
+        const profileRecentActivity = document.getElementById('profile-recent-activity'); 
+        const profileActiveRewards = document.getElementById('profile-active-rewards'); 
 
         // EcoPoints Page
-        const ecopointsBalance = document.getElementById('ecopoints-balance'); // <-- NEW
-        const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); // <-- NEW
-        const ecopointsLevelNumber = document.getElementById('ecopoints-level-number'); // <-- NEW
-        const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress'); // <-- NEW
-        const ecopointsLevelNext = document.getElementById('ecopoints-level-next'); // <-- NEW
-        const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); // <-- NEW
+        const ecopointsBalance = document.getElementById('ecopoints-balance'); 
+        const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); 
+        const ecopointsLevelNumber = document.getElementById('ecopoints-level-number'); 
+        const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress'); 
+        const ecopointsLevelNext = document.getElementById('ecopoints-level-next'); 
+        const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); 
+        const levelLineProgress = document.getElementById('level-line-progress'); // <-- NEW
 
         // Modals
         const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
@@ -684,7 +711,6 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderProfile now just does the top boxes ***
         const renderProfile = () => {
             const user = state.currentUser;
             const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
@@ -712,9 +738,7 @@
             lucide.createIcons();
         };
 
-        // *** NEW: Renders content for Profile page summaries ***
         const renderProfileSummaries = () => {
-            // Render Recent Activity (top 3)
             profileRecentActivity.innerHTML = '';
             const historySummary = state.history.slice(0, 3);
             if (historySummary.length === 0) {
@@ -738,7 +762,6 @@
                 });
             }
 
-            // Render Active Rewards (top 2)
             profileActiveRewards.innerHTML = '';
             const rewardSummary = state.userRewards.filter(r => r.status === 'active').slice(0, 2);
             if (rewardSummary.length === 0) {
@@ -761,7 +784,7 @@
             lucide.createIcons();
         };
 
-        // *** NEW: Renders content for EcoPoints Page ***
+        // *** MODIFIED: renderEcoPointsPage ***
         const renderEcoPointsPage = () => {
             const user = state.currentUser;
             const levelInfo = getUserLevel(user.points);
@@ -781,17 +804,26 @@
             state.levels.forEach((level, index) => {
                 const stepEl = document.getElementById(`level-step-${level.level}`);
                 stepEl.classList.remove('completed', 'active', 'upcoming');
+                
+                const textContent = stepEl.querySelector('.level-text-content');
+                textContent.classList.remove('opacity-50');
+
                 if (level.level < levelInfo.level) {
                     stepEl.classList.add('completed');
                 } else if (level.level === levelInfo.level) {
                     stepEl.classList.add('active');
                 } else {
                     stepEl.classList.add('upcoming');
+                    textContent.classList.add('opacity-50'); // Dim future levels
                 }
             });
+            
+            // 4. Update the progress line height
+            const totalProgressPercent = ((levelInfo.level - 1) + (levelInfo.progress / 100)) / (state.levels.length - 1) * 100;
+            levelLineProgress.style.height = `${totalProgressPercent}%`;
 
 
-            // 4. Render Recent Transactions (top 3)
+            // 5. Render Recent Transactions (top 3)
             ecopointsRecentActivity.innerHTML = '';
             const historySummary = state.history.slice(0, 3);
             if (historySummary.length === 0) {
@@ -816,6 +848,7 @@
             }
             lucide.createIcons();
         };
+        // *** END MODIFICATION ***
 
         const renderHistory = () => {
             historyList.innerHTML = '';
@@ -960,7 +993,6 @@
 
         // --- Logic and State Management ---
         
-        // *** MODIFIED: showPage now triggers specific renders ***
         const showPage = (pageId) => {
             pages.forEach(p => p.classList.remove('active'));
             const newPage = document.getElementById(pageId);
@@ -1010,7 +1042,7 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile(); // Re-render profile stats
+                renderProfile(); 
             }
         };
 
@@ -1106,7 +1138,7 @@
                 renderRewards(); 
                 renderHistory();
                 renderProfile();
-                renderProfileSummaries(); // Re-render profile lists
+                renderProfileSummaries(); 
                 renderMyRewardsPage(); 
 
                 purchaseModal.innerHTML = `
