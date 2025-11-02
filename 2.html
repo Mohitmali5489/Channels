@@ -2,151 +2,1256 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Green Campus Events</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Campus Challenge</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         html, body {
             height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+            overflow: hidden; 
+        }
+        body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        
-        /* The main container uses Flexbox to structure the layout like an app */
         .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
             max-width: 420px;
             margin: auto;
-            background-color: #f9fafb; /* bg-gray-50 */
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
         
-        /* This main content area grows to fill available space and becomes scrollable */
+        header, nav {
+            flex-shrink: 0; 
+        }
         .main-content { 
-            flex-grow: 1;
-            overflow-y: auto; /* Adds scrolling only when needed */
+            flex-grow: 1; 
+            overflow-y: auto; 
+        }
+        
+        .page { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .page.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .nav-item.active { 
-            color: #10B981; /* Green color for the active icon */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
         }
+        #sidebar-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .sidebar-nav-item.active {
+            background-color: #ECFDF5; 
+            color: #059669; 
+            font-weight: 600;
+        }
+        .sidebar-nav-item.active svg { color: #059669; }
+        
+        .nav-item.active { color: #10B981; }
+        .nav-item.active svg { color: #10B981; }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
+
+        .reward-tab {
+            @apply flex-1 text-center py-3 px-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer;
+        }
+        .reward-tab.active {
+            @apply text-green-600 border-green-600;
+        }
+        .reward-tab-content {
+            display: none;
+        }
+        .reward-tab-content.active {
+            display: block;
+        }
+
+        /* *** NEW: Level Step Styling *** */
+        .level-text-content {
+            transition: opacity 0.3s ease;
+        }
+        .level-number-container span {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        /* *** END NEW *** */
     </style>
 </head>
-<body class="bg-gray-200">
+<body class="bg-gray-100">
 
-    <div class="app-container shadow-lg">
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full flex flex-col">
+        
+        <div class="p-6 border-b">
+            <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500" alt="User Avatar">
+            <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800"></h2>
+            <p id="user-level-sidebar" class="text-sm font-medium text-blue-600 mb-1"></p>
+            <p class="text-sm text-green-600 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
+        </div>
 
-        <header class="bg-white p-4 border-b border-gray-200">
+        <nav class="flex-grow p-4 space-y-2">
+            <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="user" class="w-5 h-5 mr-3"></i>Profile
+            </button>
+            <button onclick="showPage('my-rewards')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="archive" class="w-5 h-5 mr-3"></i>My Rewards
+            </button>
+            <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
+            </button>
+            
+            <div class="pt-2 border-t border-gray-200"></div>
+
+            <button onclick="showPage('about')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="info" class="w-5 h-5 mr-3"></i>About Us
+            </button>
+            <button onclick="showPage('help')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="help-circle" class="w-5 h-5 mr-3"></i>Help & Support
+            </button>
+            <button onclick="showPage('settings')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="settings" class="w-5 h-5 mr-3"></i>Settings
+            </button>
+        </nav>
+
+        <div class="p-4">
+            <button class="w-full bg-red-100 text-red-700 font-bold py-3 px-4 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center">
+                <i data-lucide="log-out" class="w-5 h-5 mr-2"></i>
+                <span>Log Out</span>
+            </button>
+        </div>
+        
+        <div class="p-6 border-t">
+            <p class="text-xs text-center text-gray-400">Green Campus v5.0</p>
+        </div>
+    </div>
+
+
+    <div class="app-container bg-white shadow-lg">
+
+        <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-lg font-bold text-green-700">College Green Club</h1>
-                    <p class="text-sm text-gray-500">Hi, Alex Green! 👋</p>
+                <div class="w-1/3"> 
+                    <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
                 </div>
-                <div class="text-right">
-                     <span class="text-2xl font-bold text-green-600">350</span>
-                    <p class="text-xs text-gray-500">EcoPoints</p>
+                <div class="w-1/3 text-center"> 
+                    <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 hover:opacity-80 transition-opacity">
+                        EcoBirla
+                    </button>
+                </div>
+                <div class="w-1/3 flex justify-end"> 
+                    <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
+                        <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
+                        <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
+                    </button>
                 </div>
             </div>
         </header>
 
-        <main class="main-content p-4">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Upcoming Events 📅</h2>
+        <main class="main-content p-4 bg-gray-50">
 
-            <div class="space-y-4">
-                <div class="bg-white p-4 rounded-xl shadow-md">
-                    <div class="flex items-start">
-                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
-                            <i data-lucide="leaf" class="w-6 h-6 text-purple-600"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-xs font-semibold text-purple-600">Sat, Oct 18, 2025 @ 9:00 AM</p>
-                            <h3 class="font-bold text-gray-800">Tree Plantation Drive</h3>
-                            <p class="text-sm text-gray-500 mb-3">Join us at Gandhinagar Park in Kalyan to plant new saplings.</p>
-                            <p class="text-sm font-bold text-green-600 mb-3">+50 EcoPoints for participating</p>
-                            <button class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>
-                        </div>
+            <div id="dashboard" class="page active">
+                <h2 class="text-2xl font-bold text-gray-800 mb-1">Hi, <span id="user-name-greeting"></span>!</h2>
+                <p class="text-gray-500 mb-6">Let's make our campus greener today.</p>
+                
+                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
+                    <div class="flex items-center mb-2">
+                        <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
+                        <h3 class="font-bold">Upcoming Event</h3>
                     </div>
+                    <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
+                    <p class="text-sm opacity-90 mb-3">Join us this Saturday to make our local park greener. Earn bonus points!</p>
+                    <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View Details</button>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl shadow-md">
-                    <div class="flex items-start">
-                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
-                            <i data-lucide="recycle" class="w-6 h-6 text-purple-600"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-xs font-semibold text-purple-600">Sat, Nov 1, 2025 @ 11:00 AM</p>
-                            <h3 class="font-bold text-gray-800">E-Waste Collection Day</h3>
-                            <p class="text-sm text-gray-500 mb-3">Bring your old electronics to the collection point at the college entrance.</p>
-                            <p class="text-sm font-bold text-green-600 mb-3">+25 EcoPoints per item</p>
-                            <button class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>
-                        </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Your Impact</h3>
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="leaf" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
+                        <p class="font-bold text-lg">12 kg</p>
+                        <p class="text-xs text-gray-500">CO2 Saved</p>
                     </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-xl shadow-md">
-                    <div class="flex items-start">
-                        <div class="p-3 bg-purple-100 rounded-lg mr-4">
-                            <i data-lucide="presentation" class="w-6 h-6 text-purple-600"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-xs font-semibold text-purple-600">Sat, Nov 8, 2025 @ 2:00 PM</p>
-                            <h3 class="font-bold text-gray-800">Workshop: Composting Basics</h3>
-                            <p class="text-sm text-gray-500 mb-3">Learn how to turn food scraps into garden gold in the Biology Lab.</p>
-                            <p class="text-sm font-bold text-green-600 mb-3">+30 EcoPoints for attending</p>
-                            <button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full cursor-not-allowed" disabled>✓ Attending</button>
-                        </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
+                        <p class="font-bold text-lg">45</p>
+                        <p class="text-xs text-gray-500">Recycled</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                        <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
+                        <p class="font-bold text-lg">2</p>
+                        <p class="text-xs text-gray-500">Events</p>
                     </div>
                 </div>
                 
-                 <div class="bg-white p-4 rounded-xl shadow-md opacity-70">
-                    <div class="flex items-start">
-                        <div class="p-3 bg-gray-200 rounded-lg mr-4">
-                            <i data-lucide="check-circle-2" class="w-6 h-6 text-gray-500"></i>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-xs font-semibold text-gray-500">Sat, Oct 11, 2025 (Yesterday)</p>
-                            <h3 class="font-bold text-gray-600">Community Park Cleanup</h3>
-                            <p class="text-sm text-gray-500 mb-3">A successful cleanup at Kalyan Central Park. Thanks to all volunteers!</p>
-                             <button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full cursor-not-allowed" disabled>Event Completed</button>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Top Champions</h3>
+                <div id="leaderboard-dashboard-list" class="space-y-3 mb-4">
+                    </div>
+                <button onclick="showPage('leaderboard')" class="w-full bg-gray-100 border border-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                    View All Rankings
+                </button>
+
+                <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day</h3>
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
+                    <div class="flex">
+                        <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
+                        <div>
+                            <p class="font-bold">Unplug chargers!</p>
+                            <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <div id="profile" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Profile</h2>
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="bg-green-500 h-24"></div>
+                        <div class="p-5 -mt-16 flex flex-col items-center">
+                            <img id="profile-avatar" src="" class="w-28 h-28 rounded-full border-4 border-white shadow-lg">
+                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 mt-3"></h3>
+                            <p id="profile-email" class="text-gray-500"></p>
+                            <p id="profile-joined" class="text-sm text-gray-400 mt-1"></p>
+
+                            <div class="w-full px-4 mt-4">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span id="profile-level-title" class="text-sm font-semibold text-green-600"></span>
+                                    <span class="text-xs text-gray-500">Lv. <span id="profile-level-number"></span></span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div id="profile-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <p id="profile-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h4 class="text-lg font-bold text-gray-800 mb-4">Your Stats</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="leaf" class="w-10 h-10 text-green-500 mx-auto mb-2"></i>
+                                <p id="profile-points" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">EcoPoints</to>
+                            </div>
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="users" class="w-10 h-10 text-yellow-500 mx-auto mb-2"></i>
+                                <p id="profile-rank" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">Your Rank</to>
+                            </div>
+                            <div class="bg-gray-100 p-4 rounded-lg text-center">
+                                <i data-lucide="calendar-check" class="w-10 h-10 text-purple-500 mx-auto mb-2"></i>
+                                <p id="profile-events" class="text-2xl font-bold text-gray-800"></p>
+                                <p class="text-sm text-gray-500">Events</to>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-gray-800">Recent Activity</h4>
+                            <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                        </div>
+                        <div id="profile-recent-activity" class="space-y-3">
+                            </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-gray-800">My Active Rewards</h4>
+                            <button onclick="showPage('my-rewards')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                        </div>
+                        <div id="profile-active-rewards" class="space-y-3">
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div id="leaderboard" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Champions</h2>
+                <div id="leaderboard-page-list" class="space-y-3">
+                    </div>
+            </div>
+
+            <div id="ecopoints" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">My EcoPoints</h2>
+
+                <div class="bg-white p-6 rounded-xl shadow-md text-center mb-6">
+                    <p class="text-sm text-gray-500">Your current balance is</p>
+                    <p class="text-5xl font-extrabold text-green-600 my-2" id="ecopoints-balance"></p>
+                    <p class="text-sm text-gray-500">Keep up the great work!</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Level Progress</h3>
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <span id="ecopoints-level-title" class="text-sm font-semibold text-green-600"></span>
+                            <span class="text-xs text-gray-500">Lv. <span id="ecopoints-level-number"></span></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="ecopoints-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                    </div>
+                    
+                    <h4 class="text-md font-semibold text-gray-700 mb-6 mt-6">All Levels</h4>
+                    <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 rounded-full"></div>
+                        <div id="level-line-progress" class="absolute left-2 top-0 w-1 bg-green-500 rounded-full" style="height: 0%; transition: height 0.5s ease;"></div>
+
+                        <div id="all-levels-list" class="relative z-10 space-y-8">
+                            
+                            <div id="level-step-1" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">1</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Green Starter</h5>
+                                    <p class="text-sm font-semibold text-gray-500">0 - 149 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">Just beginning your eco-journey. Every point counts!</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-2" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">2</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Eco Learner</h5>
+                                    <p class="text-sm font-semibold text-gray-500">150 - 399 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">You're building green habits. Keep up the momentum!</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-3" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">3</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Sustainability Leader</h5>
+                                    <p class="text-sm font-semibold text-gray-500">400 - 799 Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">A true inspiration! You're making a real impact on campus.</p>
+                                </div>
+                            </div>
+                            
+                            <div id="level-step-4" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">4</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
+                                    <h5 class="font-bold text-gray-800">Planet Protector</h5>
+                                    <p class="text-sm font-semibold text-gray-500">800+ Pts</p>
+                                    <p class="text-xs text-gray-600 mt-1">You've reached the pinnacle of green leadership. Amazing!</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">How to Earn Points</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i data-lucide="recycle" class="w-6 h-6 text-green-500 mr-3"></i>
+                            <p class="text-gray-700">Submit plastic bottles at collection points.</p>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="calendar-check" class="w-6 h-6 text-purple-500 mr-3"></i>
+                            <p class="text-gray-700">Attend Green Club events and workshops.</p>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="award" class="w-6 h-6 text-yellow-500 mr-3"></i>
+                            <p class="text-gray-700">Complete special "Eco-Challenges".</p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-lg font-bold text-gray-800">Recent Transactions</h4>
+                        <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                    </div>
+                    <div id="ecopoints-recent-activity" class="space-y-3">
+                        </div>
+                </div>
+            </div>
+            <div id="events" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
+                <div id="event-list" class="space-y-4">
+                    </div>
+            </div>
+
+            <div id="rewards" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco-Store Rewards</h2>
+                <div id="reward-list" class="grid grid-cols-2 gap-4">
+                    </div>
+            </div>
+
+            <div id="my-rewards" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">My Rewards</h2>
+                <div class="bg-white rounded-lg shadow-sm mb-4">
+                    <div class="flex">
+                        <button id="tab-active" class="reward-tab active" onclick="showRewardTab('active')">
+                            Active
+                        </button>
+                        <button id="tab-used" class="reward-tab" onclick="showRewardTab('used')">
+                            Used
+                        </button>
+                    </div>
+                </div>
+                <div id="content-active" class="reward-tab-content active space-y-4">
+                    <div id="active-rewards-list" class="space-y-4">
+                    </div>
+                </div>
+                <div id="content-used" class="reward-tab-content space-y-4">
+                    <div id="used-rewards-list" class="space-y-4">
+                    </div>
+                </div>
+            </div>
+
+            <div id="history" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Activity History</h2>
+                <div id="history-list" class="space-y-3">
+                    </div>
+            </div>
+            
+            <div id="about" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">About Us</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <p class="text-gray-600">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
+                    <p class="text-gray-600">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
+                </div>
+            </div>
+            
+            <div id="help" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Help & Support</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-700">Frequently Asked Questions</h3>
+                    <div class="text-left">
+                        <p class="font-medium text-gray-800">How do I earn points?</p>
+                        <p class="text-gray-600 mb-3">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
+                        <p class="font-medium text-gray-800">How do I redeem rewards?</p>
+                        <p class="text-gray-600 mb-3">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Contact Us</h3>
+                        <p class="text-gray-600">For further assistance, please email us at <a href="#" class="text-green-600 font-medium">support@greencampus.edu</a>.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="settings" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
+                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium text-gray-700">Push Notifications</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-notifs" id="toggle-notifs" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="toggle-notifs" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center border-t pt-4">
+                        <span class="font-medium text-gray-700">Email Updates</span>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle-email" id="toggle-email" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="toggle-email" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
 
         <nav class="bg-white border-t border-gray-200">
             <div class="flex justify-around">
-                <a href="1.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Dashboard</span>
-                </a>
-                <a href="2.html" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Events</span>
-                </a>
-                <a href="3.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">Rewards</span>
-                </a>
-                <a href="4.html" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="history" class="w-6 h-6 mx-auto"></i>
-                    <span class="text-xs">History</span>
-                </a>
+                <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
+                </button>
+                <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="users" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
+                </button>
+                <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
+                </button>
+                    <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
+                </button>
             </div>
         </nav>
     </div>
 
+    <div id="purchase-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closePurchaseModal()"></div>
+    <div id="purchase-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+    </div>
+
+    <div id="qr-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeQrModal()"></div>
+    <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+    </div>
+
+
     <script>
-        // Renders all the icons on the page
-        lucide.createIcons();
+        // --- Demo Data and State ---
+        let state = {
+            currentUser: {
+                id: 4,
+                name: 'Alex Green',
+                points: 350,
+                avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
+                email: 'alex.green@college.edu',
+                joined: 'Sep 2025'
+            },
+            leaderboard: [
+                { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD' },
+                { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS' },
+                { id: 3, name: 'Sarah Lee', points: 395, avatarUrl: 'https://placehold.co/40x40/EC4899/FFFFFF?text=SL' },
+                { id: 4, name: 'Alex Green', points: 350, avatarUrl: 'https://placehold.co/40x40/A3E635/FFFFFF?text=AG', isCurrentUser: true },
+                { id: 5, name: 'Tom Wilson', points: 280, avatarUrl: 'https://placehold.co/40x40/F97316/FFFFFF?text=TW' },
+                { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC' },
+            ],
+            history: [
+                { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart' },
+                { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award' },
+                { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check' },
+                { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text' },
+            ],
+            events: [
+                { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Help clean up Kalyan Central Park. Gloves and bags provided.', points: 75, rsvp: true },
+                { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 04, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
+                { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
+            ],
+            
+            rewards: [
+                { id: 8, name: '$5 Canteen Voucher', description: 'Enjoy a free meal at the campus canteen.', cost: 50, imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Food', type: 'digital', instructions: 'Show this QR code at the canteen cashier to claim your voucher.' },
+                { id: 9, name: 'Coffee Shop Coupon', description: 'Get a free large coffee at "The Bean".', cost: 40, imageUrl: 'https://placehold.co/300x300/D1D5DB/1F2937?text=Coffee', type: 'digital', instructions: 'Show this QR code at The Bean to get your free coffee.' },
+                { id: 10, name: 'College Hoodie', description: 'Official college branded cozy hoodie.', cost: 1000, imageUrl: 'https://placehold.co/300x300/818CF8/1F2937?text=Hoodie', type: 'physical', instructions: 'Pick up your hoodie from the Green Club office (Room 203, Admin Building) M-F, 9am-4pm.' },
+                { id: 1, name: 'Reusable Bamboo Cup', description: 'Eco-friendly cup for your daily coffee.', cost: 150, imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Cup', type: 'physical', instructions: 'Pick up your cup from the Green Club office (Room 203).' },
+                { id: 2, name: 'Canvas Tote Bag', description: 'Durable bag for groceries and books.', cost: 200, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Bag', type: 'physical', instructions: 'Pick up your bag from the Green Club office (Room 203).' },
+                { id: 15, name: 'Library Fee Waiver', description: 'Waive one overdue library book fine.', cost: 25, imageUrl: 'https://placehold.co/300x300/F0ABFC/1F2937?text=Waiver', type: 'digital', instructions: 'Your waiver has been applied automatically to your library account. It will cover your next fine.' },
+                { id: 5, name: 'Reusable Water Bottle', description: '500ml insulated stainless steel bottle.', cost: 350, imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Bottle', type: 'physical', instructions: 'Pick up your bottle from the Green Club office (Room 203).' },
+            ],
+            
+            userRewards: [
+                { userRewardId: 'ur1', rewardId: 9, purchaseDate: '2025-10-26', status: 'active' },
+                { userRewardId: 'ur2', rewardId: 15, purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' },
+                { userRewardId: 'ur3', rewardId: 8, purchaseDate: '2025-10-22', status: 'active' },
+            ],
+            nextUserRewardId: 4, 
+
+            levels: [
+                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
+                { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
+                { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
+                { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
+            ],
+        };
+
+        // --- DOM Elements ---
+        const pages = document.querySelectorAll('.page');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const sidebarNavItems = document.querySelectorAll('.sidebar-nav-item');
+        const navItems = document.querySelectorAll('.nav-item'); 
+        
+        const userPointsHeader = document.getElementById('user-points-header');
+        const userNameGreeting = document.getElementById('user-name-greeting');
+        
+        const userAvatarSidebar = document.getElementById('user-avatar-sidebar');
+        const userNameSidebar = document.getElementById('user-name-sidebar');
+        const userPointsSidebar = document.getElementById('user-points-sidebar');
+        const userLevelSidebar = document.getElementById('user-level-sidebar');
+
+        const eventList = document.getElementById('event-list');
+        const rewardList = document.getElementById('reward-list');
+        const historyList = document.getElementById('history-list');
+        const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
+        const leaderboardPageList = document.getElementById('leaderboard-page-list');
+        
+        // Profile Page
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const profileJoined = document.getElementById('profile-joined');
+        const profilePoints = document.getElementById('profile-points');
+        const profileRank = document.getElementById('profile-rank');
+        const profileEvents = document.getElementById('profile-events');
+        const profileLevelTitle = document.getElementById('profile-level-title');
+        const profileLevelNumber = document.getElementById('profile-level-number');
+        const profileLevelProgress = document.getElementById('profile-level-progress');
+        const profileLevelNext = document.getElementById('profile-level-next');
+        const profileRecentActivity = document.getElementById('profile-recent-activity'); 
+        const profileActiveRewards = document.getElementById('profile-active-rewards'); 
+
+        // EcoPoints Page
+        const ecopointsBalance = document.getElementById('ecopoints-balance'); 
+        const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); 
+        const ecopointsLevelNumber = document.getElementById('ecopoints-level-number'); 
+        const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress'); 
+        const ecopointsLevelNext = document.getElementById('ecopoints-level-next'); 
+        const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); 
+        const levelLineProgress = document.getElementById('level-line-progress'); 
+
+        // Modals
+        const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
+        const purchaseModal = document.getElementById('purchase-modal');
+        const qrModalOverlay = document.getElementById('qr-modal-overlay');
+        const qrModal = document.getElementById('qr-modal');
+
+        // Reward Tabs
+        const activeRewardsList = document.getElementById('active-rewards-list');
+        const usedRewardsList = document.getElementById('used-rewards-list');
+
+
+        // --- Helper Function: Get User Level ---
+        const getUserLevel = (points) => {
+            let currentLevel = state.levels[0];
+            for (let i = state.levels.length - 1; i >= 0; i--) {
+                if (points >= state.levels[i].minPoints) {
+                    currentLevel = state.levels[i];
+                    break;
+                }
+            }
+
+            if (currentLevel.nextMin !== Infinity) {
+                const pointsInLevel = points - currentLevel.minPoints;
+                const pointsForLevel = currentLevel.nextMin - currentLevel.minPoints;
+                const progress = Math.max(0, Math.min(100, (pointsInLevel / pointsForLevel) * 100));
+                return {
+                    ...currentLevel,
+                    progress: progress,
+                    progressText: `${points} / ${currentLevel.nextMin} Pts`
+                };
+            } else {
+                return {
+                    ...currentLevel,
+                    progress: 100,
+                    progressText: `${points} Pts (Max Level)`
+                };
+            }
+        };
+
+
+        // --- Render Functions ---
+        const renderHeader = () => {
+            const user = state.currentUser;
+            const levelInfo = getUserLevel(user.points); 
+            userPointsHeader.textContent = user.points;
+            userNameGreeting.textContent = user.name.split(' ')[0]; 
+            userAvatarSidebar.src = user.avatarUrl.replace('40x40', '80x80');
+            userNameSidebar.textContent = user.name;
+            userPointsSidebar.textContent = user.points;
+            userLevelSidebar.textContent = `Lv. ${levelInfo.level}: ${levelInfo.title}`;
+            userLevelSidebar.className = `text-sm font-medium ${levelInfo.color} mb-1`;
+        };
+        
+        const renderLeaderboardDashboard = () => {
+            leaderboardDashboardList.innerHTML = '';
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            
+            sortedLeaderboard.slice(0, 3).forEach((user, index) => {
+                const rank = index + 1;
+                let rankBadge = '';
+                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
+
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
+                
+                leaderboardDashboardList.innerHTML += `
+                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
+                        <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
+                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
+                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderLeaderboardPage = () => {
+            leaderboardPageList.innerHTML = '';
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            
+            sortedLeaderboard.forEach((user, index) => {
+                const rank = index + 1;
+                let rankBadge = `<span class="font-bold text-gray-500 w-6 text-center">${rank}.</span>`;
+                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
+
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
+                
+                leaderboardPageList.innerHTML += `
+                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
+                        <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
+                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
+                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderProfile = () => {
+            const user = state.currentUser;
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
+            const userRank = sortedLeaderboard.findIndex(u => u.id === user.id) + 1;
+            const levelInfo = getUserLevel(user.points);
+
+            profileAvatar.src = user.avatarUrl.replace('40x40', '100x100');
+            profileName.textContent = user.name;
+            profileEmail.textContent = user.email;
+            profileJoined.textContent = `Joined ${user.joined}`;
+            
+            profileLevelTitle.textContent = levelInfo.title;
+            profileLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            profileLevelNumber.textContent = levelInfo.level;
+            
+            profileLevelProgress.style.width = `${levelInfo.progress}%`;
+            profileLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
+            
+            profileLevelNext.textContent = levelInfo.progressText;
+            
+            profilePoints.textContent = user.points;
+            profileRank.textContent = `#${userRank}`;
+            profileEvents.textContent = state.events.filter(e => e.rsvp).length;
+            
+            lucide.createIcons();
+        };
+
+        const renderProfileSummaries = () => {
+            profileRecentActivity.innerHTML = '';
+            const historySummary = state.history.slice(0, 3);
+            if (historySummary.length === 0) {
+                 profileRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No activity yet.</p>`;
+            } else {
+                historySummary.forEach(item => {
+                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                    const sign = item.points >= 0 ? '+' : '';
+                    profileRecentActivity.innerHTML += `
+                        <div class="flex items-center">
+                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
+                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
+                                <p class="text-xs text-gray-500">${item.date}</p>
+                            </div>
+                            <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            profileActiveRewards.innerHTML = '';
+            const rewardSummary = state.userRewards.filter(r => r.status === 'active').slice(0, 2);
+            if (rewardSummary.length === 0) {
+                 profileActiveRewards.innerHTML = `<p class="text-center text-gray-500 text-sm">No active rewards.</p>`;
+            } else {
+                rewardSummary.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    profileActiveRewards.innerHTML += `
+                        <div class="flex items-center">
+                            <img src="${rewardDetails.imageUrl}" class="w-12 h-12 object-cover rounded-lg mr-3">
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${rewardDetails.name}</p>
+                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                            </div>
+                            <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">Use</button>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        };
+
+        // *** MODIFIED: renderEcoPointsPage ***
+        const renderEcoPointsPage = () => {
+            const user = state.currentUser;
+            const levelInfo = getUserLevel(user.points);
+
+            // 1. Render Balance
+            ecopointsBalance.textContent = user.points;
+
+            // 2. Render Level Progress Bar
+            ecopointsLevelTitle.textContent = levelInfo.title;
+            ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            ecopointsLevelNumber.textContent = levelInfo.level;
+            ecopointsLevelProgress.style.width = `${levelInfo.progress}%`;
+            ecopointsLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
+            ecopointsLevelNext.textContent = levelInfo.progressText;
+
+            // 3. Render Static Level Step visual
+            state.levels.forEach((level, index) => {
+                const stepEl = document.getElementById(`level-step-${level.level}`);
+                const textContent = stepEl.querySelector('.level-text-content');
+                const numberSpan = stepEl.querySelector('.level-number-container span');
+                
+                // Clear old classes
+                textContent.classList.remove('opacity-50');
+                numberSpan.classList.remove('text-green-600', 'text-gray-400', 'scale-110');
+
+                if (level.level < levelInfo.level) {
+                    // Completed
+                    numberSpan.classList.add('text-green-600');
+                } else if (level.level === levelInfo.level) {
+                    // Active
+                    numberSpan.classList.add('text-green-600', 'scale-110'); // Make active number stand out
+                } else {
+                    // Upcoming
+                    numberSpan.classList.add('text-gray-400');
+                    textContent.classList.add('opacity-50'); 
+                }
+            });
+            
+            // 4. Update the progress line height
+            // (Level - 1) / (Total Levels - 1) gives the progress *between* levels
+            // Add the current level's inner progress
+            const totalProgressPercent = ((levelInfo.level - 1) + (levelInfo.progress / 100)) / (state.levels.length - 1) * 100;
+            levelLineProgress.style.height = `${totalProgressPercent}%`;
+
+
+            // 5. Render Recent Transactions (top 3)
+            ecopointsRecentActivity.innerHTML = '';
+            const historySummary = state.history.slice(0, 3);
+            if (historySummary.length === 0) {
+                 ecopointsRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No transactions yet.</p>`;
+            } else {
+                historySummary.forEach(item => {
+                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                    const sign = item.points >= 0 ? '+' : '';
+                    ecopointsRecentActivity.innerHTML += `
+                        <div class="flex items-center">
+                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
+                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
+                                <p class="text-xs text-gray-500">${item.date}</p>
+                            </div>
+                            <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        };
+        // *** END MODIFICATION ***
+
+        const renderHistory = () => {
+            historyList.innerHTML = '';
+            if (state.history.length === 0) {
+                historyList.innerHTML = `<p class="text-center text-gray-500">No activity yet.</p>`;
+                return;
+            }
+            state.history.forEach(item => {
+                const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                const sign = item.points >= 0 ? '+' : '';
+                
+                historyList.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl shadow-sm flex items-center">
+                        <div class="p-2 bg-gray-100 rounded-lg mr-4">
+                            <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="font-semibold text-gray-800">${item.description}</p>
+                            <p class="text-xs text-gray-500">${item.date}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold ${pointClass}">${sign}${item.points}</p>
+                            <p class="text-xs text-gray-500">EcoPoints</p>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderEvents = () => {
+            eventList.innerHTML = '';
+            state.events.forEach(e => {
+                const rsvpButton = e.rsvp
+                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Attending</button>`
+                    : `<button onclick="updateEventRSVP(${e.id})" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>`;
+                
+                eventList.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl shadow-md">
+                        <div class="flex items-start">
+                            <div class="p-3 bg-purple-100 rounded-lg mr-4">
+                                <i data-lucide="calendar" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-xs font-semibold text-purple-600">${e.date}</p>
+                                <h3 class="font-bold text-gray-800 text-lg">${e.title}</h3>
+                                <p class="text-sm text-gray-500 mb-3">${e.description}</p>
+                                <p class="text-sm font-bold text-green-600 mb-3">+${e.points} EcoPoints for attending</p>
+                                ${rsvpButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        const renderRewards = () => {
+            rewardList.innerHTML = '';
+            state.rewards.sort((a,b) => a.cost - b.cost).forEach(r => {
+                const canAfford = state.currentUser.points >= r.cost;
+                const buttonClass = canAfford 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : 'bg-gray-400 cursor-not-allowed';
+                const buttonText = canAfford ? 'Purchase' : 'Not Enough';
+                
+                rewardList.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
+                        <img src="${r.imageUrl}" alt="${r.name}" class="w-full h-32 object-cover">
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h3 class="font-bold text-gray-800 text-md mb-1">${r.name}</h3>
+                            <p class="text-xs text-gray-500 mb-3 flex-grow">${r.description}</p>
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-bold text-lg text-green-600">${r.cost}</span>
+                                <span class="text-sm text-gray-500 ml-1">EcoPoints</span>
+                            </div>
+                            <button onclick="openPurchaseModal(${r.id})" 
+                                    class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto" 
+                                    ${!canAfford ? 'disabled' : ''}>
+                                ${buttonText}
+                            </button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        const renderMyRewardsPage = () => {
+            activeRewardsList.innerHTML = '';
+            usedRewardsList.innerHTML = '';
+
+            const activeRewards = state.userRewards.filter(ur => ur.status === 'active');
+            const usedRewards = state.userRewards.filter(ur => ur.status === 'used');
+
+            if (activeRewards.length === 0) {
+                activeRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no active rewards. Visit the Eco-Store to get some!</p>`;
+            } else {
+                activeRewards.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    if (!rewardDetails) return;
+
+                    activeRewardsList.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 object-cover">
+                            <div class="p-4 flex-grow flex flex-col">
+                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                <p class="text-xs text-gray-500 mb-2">Purchased: ${userReward.purchaseDate}</p>
+                                <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
+                                    Use Now
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            if (usedRewards.length === 0) {
+                usedRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You haven't used any rewards yet.</p>`;
+            } else {
+                usedRewards.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    if (!rewardDetails) return;
+
+                    usedRewardsList.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 object-cover">
+                            <div class="p-4 flex-grow">
+                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                                <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
+                                <div class="mt-auto w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
+                                    Redeemed
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        };
+
+
+        // --- Logic and State Management ---
+        
+        const showPage = (pageId) => {
+            pages.forEach(p => p.classList.remove('active'));
+            const newPage = document.getElementById(pageId);
+            if (newPage) {
+                newPage.classList.add('active');
+            }
+            sidebarNavItems.forEach(item => {
+                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+            });
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+            });
+            
+            if (pageId === 'my-rewards') {
+                renderMyRewardsPage();
+            }
+            if (pageId === 'profile') {
+                renderProfile(); 
+                renderProfileSummaries(); 
+            }
+            if (pageId === 'ecopoints') {
+                renderEcoPointsPage(); 
+            }
+            if (pageId === 'history') {
+                renderHistory(); 
+            }
+
+            toggleSidebar(true); 
+        };
+
+        const toggleSidebar = (forceClose = false) => {
+            if (forceClose) {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('opacity-0');
+                sidebarOverlay.classList.add('hidden');
+            } else {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+                sidebarOverlay.classList.toggle('opacity-0');
+            }
+        };
+
+        const updateEventRSVP = (id) => {
+            const event = state.events.find(e => e.id === id);
+            if(event) {
+                event.rsvp = true;
+                renderEvents();
+                renderProfile(); 
+            }
+        };
+
+        const showRewardTab = (tabName) => {
+            document.querySelectorAll('.reward-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            document.querySelectorAll('.reward-tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`content-${tabName}`).classList.add('active');
+        };
+
+        
+        const openPurchaseModal = (rewardId) => {
+            const reward = state.rewards.find(r => r.id === rewardId);
+            if (!reward) return;
+
+            purchaseModal.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Purchase Reward</h3>
+                    <button onclick="closePurchaseModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <img src="${reward.imageUrl}" alt="${reward.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                <h4 class="text-lg font-bold text-gray-800">${reward.name}</h4>
+                <p class="text-sm text-gray-500 mb-4">${reward.description}</p>
+                
+                <div class="bg-gray-100 rounded-lg p-3 mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-gray-600">Your Balance</span>
+                        <span class="font-semibold text-gray-800">${state.currentUser.points} EcoPoints</span>
+                    </div>
+                    <div class="flex justify-between items-center text-red-600">
+                        <span class="font-semibold">Cost</span>
+                        <span class="font-bold text-lg">-${reward.cost} EcoPoints</span>
+                    </div>
+                    <hr class="my-2 border-gray-300">
+                    <div class="flex justify-between items-center text-green-600">
+                        <span class="font-semibold">Remaining</span>
+                        <span class="font-bold text-lg">${state.currentUser.points - reward.cost} EcoPoints</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        Cancel
+                    </button>
+                    <button onclick="confirmPurchase(${reward.id})" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                        Confirm & Purchase
+                    </button>
+                </div>
+            `;
+            
+            purchaseModalOverlay.classList.remove('hidden');
+            purchaseModal.classList.remove('translate-y-full');
+            lucide.createIcons();
+        };
+
+        const closePurchaseModal = () => {
+            purchaseModalOverlay.classList.add('hidden');
+            purchaseModal.classList.add('translate-y-full');
+            setTimeout(() => {
+                purchaseModal.innerHTML = '';
+            }, 300);
+        };
+
+        const confirmPurchase = (rewardId) => {
+            const reward = state.rewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            const today = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+
+            if (state.currentUser.points >= reward.cost) {
+                state.currentUser.points -= reward.cost;
+                
+                state.history.unshift({
+                    type: 'reward', 
+                    description: `Purchased ${reward.name}`, 
+                    points: -reward.cost, 
+                    date: today,
+                    icon: 'shopping-cart'
+                });
+
+                const newUserRewardId = 'ur' + state.nextUserRewardId++;
+                state.userRewards.unshift({
+                    userRewardId: newUserRewardId,
+                    rewardId: reward.id,
+                    purchaseDate: today,
+                    status: 'active'
+                });
+                
+                renderHeader();
+                renderRewards(); 
+                renderHistory();
+                renderProfile();
+                renderProfileSummaries(); 
+                renderMyRewardsPage(); 
+
+                purchaseModal.innerHTML = `
+                    <div class="text-center p-4">
+                        <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Successful!</h3>
+                        <p class="text-gray-600 mb-6">You can find your new reward in the "My Rewards" page.</p>
+                        <button onclick="closePurchaseModal()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                            Done
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+
+            } else {
+                purchaseModal.innerHTML = `
+                    <div class="text-center p-4">
+                        <i data-lucide="x-circle" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Failed</h3>
+                        <p class="text-gray-600 mb-6">You do not have enough points for this reward.</p>
+                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                            Close
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        };
+        
+        const openRewardQrModal = (userRewardId) => {
+            const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
+            if (!userReward) return;
+            const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+            if (!rewardDetails) return;
+
+            const qrData = `USER_REWARD_ID::${userReward.userRewardId}`;
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
+
+            qrModal.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">${rewardDetails.name}</h3>
+                    <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-center mb-4 p-4 bg-white rounded-lg border">
+                    <img src="${qrCodeUrl}" alt="QR Code" class="rounded-lg">
+                </div>
+
+                <div class="bg-gray-100 rounded-lg p-4 text-left mb-6">
+                    <h4 class="font-bold text-gray-800 mb-2">How to Redeem:</h4>
+                    <p class="text-sm text-gray-600">${rewardDetails.instructions}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        Done
+                    </button>
+                    <button onclick="markRewardAsUsed('${userReward.userRewardId}')" class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600">
+                        Mark as Used
+                    </button>
+                </div>
+            `;
+
+            qrModalOverlay.classList.remove('hidden');
+            qrModal.classList.remove('translate-y-full');
+            lucide.createIcons();
+        };
+
+        const closeQrModal = () => {
+            qrModalOverlay.classList.add('hidden');
+            qrModal.classList.add('translate-y-full');
+            setTimeout(() => {
+                qrModal.innerHTML = '';
+            }, 300);
+        };
+
+        const markRewardAsUsed = (userRewardId) => {
+            const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
+            if (userReward) {
+                userReward.status = 'used';
+                userReward.usedDate = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+                
+                renderMyRewardsPage();
+                
+                closeQrModal();
+            }
+        };
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
+
+            // Initial Renders
+            renderHeader();
+            renderLeaderboardDashboard();
+            renderLeaderboardPage();
+            renderProfile();
+            renderProfileSummaries();
+            renderEvents();
+            renderRewards();
+            renderHistory();
+            renderMyRewardsPage();
+            renderEcoPointsPage();
+            
+            showPage('dashboard');
+            lucide.createIcons(); 
+        });
     </script>
 </body>
 </html>
