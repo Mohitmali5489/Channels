@@ -79,28 +79,15 @@
             display: block;
         }
 
-        /* *** MODIFIED: Level Step Styling *** */
-        /* This is the parent div for each level item */
-        .level-step {
-            @apply flex items-start;
+        /* *** NEW: Level Step Styling *** */
+        .level-text-content {
+            transition: opacity 0.3s ease;
         }
-        .level-dot {
-            @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-white z-10 transition-all flex-shrink-0;
+        .level-number-container span {
+            transition: all 0.3s ease;
+            transform-origin: center;
         }
-        /* Styles applied by JS based on user's progress */
-        .level-step.completed .level-dot {
-            @apply bg-green-500;
-        }
-        .level-step.active .level-dot {
-            @apply bg-green-600 ring-4 ring-green-200 scale-110; /* Make active one stand out */
-        }
-        .level-step.upcoming .level-dot {
-            @apply bg-gray-300 text-gray-500;
-        }
-        .level-step.upcoming .level-text-content {
-            @apply opacity-50; /* Dim the text of future levels */
-        }
-        /* *** END MODIFICATION *** */
+        /* *** END NEW *** */
     </style>
 </head>
 <body class="bg-gray-100">
@@ -156,21 +143,25 @@
 
         <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
-                <div class="w-1/3"> <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
+                <div class="w-1/3"> 
+                    <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
-                <div class="w-1/3 text-center"> <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 hover:opacity-80 transition-opacity">
+                <div class="w-1/3 text-center"> 
+                    <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 hover:opacity-80 transition-opacity">
                         EcoBirla
                     </button>
-                    </div>
-                <div class="w-1/3 flex justify-end"> <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
+                </div>
+                <div class="w-1/3 flex justify-end"> 
+                    <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
                         <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
                         <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
                     </button>
                 </div>
             </div>
         </header>
+
         <main class="main-content p-4 bg-gray-50">
 
             <div id="dashboard" class="page active">
@@ -319,43 +310,50 @@
                         <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
                     </div>
                     
-                    <h4 class="text-md font-semibold text-gray-700 mb-4 mt-6">All Levels</h4>
-                    <div class="relative pl-5"> <div class="absolute left-5 top-0 bottom-0 w-1 bg-gray-200" style="left: 1.1875rem;">
-                             <div id="level-line-progress" class="absolute top-0 left-0 w-full bg-green-500" style="height: 0%; transition: height 0.5s ease;"></div>
-                        </div>
-                        
-                        <div id="all-levels-list" class="relative z-10 space-y-6">
+                    <h4 class="text-md font-semibold text-gray-700 mb-6 mt-6">All Levels</h4>
+                    <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 rounded-full"></div>
+                        <div id="level-line-progress" class="absolute left-2 top-0 w-1 bg-green-500 rounded-full" style="height: 0%; transition: height 0.5s ease;"></div>
+
+                        <div id="all-levels-list" class="relative z-10 space-y-8">
                             
-                            <div id="level-step-1" class="level-step flex items-start">
-                                <div class="level-dot">1</div>
-                                <div class="ml-4 level-text-content">
+                            <div id="level-step-1" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">1</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Green Starter</h5>
                                     <p class="text-sm font-semibold text-gray-500">0 - 149 Pts</p>
                                     <p class="text-xs text-gray-600 mt-1">Just beginning your eco-journey. Every point counts!</p>
                                 </div>
                             </div>
                             
-                            <div id="level-step-2" class="level-step flex items-start">
-                                <div class="level-dot">2</div>
-                                <div class="ml-4 level-text-content">
+                            <div id="level-step-2" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">2</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Eco Learner</h5>
                                     <p class="text-sm font-semibold text-gray-500">150 - 399 Pts</p>
                                     <p class="text-xs text-gray-600 mt-1">You're building green habits. Keep up the momentum!</p>
                                 </div>
                             </div>
                             
-                            <div id="level-step-3" class="level-step flex items-start">
-                                <div class="level-dot">3</div>
-                                <div class="ml-4 level-text-content">
+                            <div id="level-step-3" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">3</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Sustainability Leader</h5>
                                     <p class="text-sm font-semibold text-gray-500">400 - 799 Pts</p>
                                     <p class="text-xs text-gray-600 mt-1">A true inspiration! You're making a real impact on campus.</p>
                                 </div>
                             </div>
                             
-                            <div id="level-step-4" class="level-step flex items-start">
-                                <div class="level-dot">4</div>
-                                <div class="ml-4 level-text-content">
+                            <div id="level-step-4" class="level-step relative flex items-start">
+                                <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
+                                    <span class="font-bold text-lg bg-white px-1">4</span>
+                                </div>
+                                <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Planet Protector</h5>
                                     <p class="text-sm font-semibold text-gray-500">800+ Pts</p>
                                     <p class="text-xs text-gray-600 mt-1">You've reached the pinnacle of green leadership. Amazing!</p>
@@ -606,7 +604,7 @@
         const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress'); 
         const ecopointsLevelNext = document.getElementById('ecopoints-level-next'); 
         const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); 
-        const levelLineProgress = document.getElementById('level-line-progress'); // <-- NEW
+        const levelLineProgress = document.getElementById('level-line-progress'); 
 
         // Modals
         const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
@@ -803,22 +801,29 @@
             // 3. Render Static Level Step visual
             state.levels.forEach((level, index) => {
                 const stepEl = document.getElementById(`level-step-${level.level}`);
-                stepEl.classList.remove('completed', 'active', 'upcoming');
-                
                 const textContent = stepEl.querySelector('.level-text-content');
+                const numberSpan = stepEl.querySelector('.level-number-container span');
+                
+                // Clear old classes
                 textContent.classList.remove('opacity-50');
+                numberSpan.classList.remove('text-green-600', 'text-gray-400', 'scale-110');
 
                 if (level.level < levelInfo.level) {
-                    stepEl.classList.add('completed');
+                    // Completed
+                    numberSpan.classList.add('text-green-600');
                 } else if (level.level === levelInfo.level) {
-                    stepEl.classList.add('active');
+                    // Active
+                    numberSpan.classList.add('text-green-600', 'scale-110'); // Make active number stand out
                 } else {
-                    stepEl.classList.add('upcoming');
-                    textContent.classList.add('opacity-50'); // Dim future levels
+                    // Upcoming
+                    numberSpan.classList.add('text-gray-400');
+                    textContent.classList.add('opacity-50'); 
                 }
             });
             
             // 4. Update the progress line height
+            // (Level - 1) / (Total Levels - 1) gives the progress *between* levels
+            // Add the current level's inner progress
             const totalProgressPercent = ((levelInfo.level - 1) + (levelInfo.progress / 100)) / (state.levels.length - 1) * 100;
             levelLineProgress.style.height = `${totalProgressPercent}%`;
 
@@ -1006,21 +1011,19 @@
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
             
-            // --- Specific renders based on page ---
             if (pageId === 'my-rewards') {
                 renderMyRewardsPage();
             }
             if (pageId === 'profile') {
-                renderProfile(); // Renders top boxes
-                renderProfileSummaries(); // Renders bottom lists
+                renderProfile(); 
+                renderProfileSummaries(); 
             }
             if (pageId === 'ecopoints') {
-                renderEcoPointsPage(); // Renders the new ecopoints page
+                renderEcoPointsPage(); 
             }
             if (pageId === 'history') {
-                renderHistory(); // Full history list
+                renderHistory(); 
             }
-            // --- End specific renders ---
 
             toggleSidebar(true); 
         };
@@ -1234,7 +1237,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
 
-            // Initial Render
+            // Initial Renders
             renderHeader();
             renderLeaderboardDashboard();
             renderLeaderboardPage();
