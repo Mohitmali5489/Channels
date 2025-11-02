@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Green Campus Challenge</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         html, body {
             height: 100%;
@@ -77,6 +78,30 @@
         .reward-tab-content.active {
             display: block;
         }
+
+        /* *** NEW: Level Step Styling *** */
+        .level-step {
+            @apply flex items-center relative;
+        }
+        .level-step:not(:last-child) .level-line {
+            @apply w-full h-1 bg-gray-200 absolute top-4 left-4 -translate-y-1/2;
+        }
+        .level-step .level-dot {
+            @apply w-8 h-8 rounded-full flex items-center justify-center font-bold text-white z-10;
+        }
+        .level-step.completed .level-line {
+            @apply bg-green-500;
+        }
+        .level-step.completed .level-dot {
+            @apply bg-green-500;
+        }
+        .level-step.active .level-dot {
+            @apply bg-green-600 ring-4 ring-green-100;
+        }
+        .level-step.upcoming .level-dot {
+            @apply bg-gray-300;
+        }
+        /* *** END NEW *** */
     </style>
 </head>
 <body class="bg-gray-100">
@@ -121,10 +146,13 @@
                 <span>Log Out</span>
             </button>
         </div>
+        
         <div class="p-6 border-t">
             <p class="text-xs text-center text-gray-400">Green Campus v5.0</p>
         </div>
     </div>
+
+
     <div class="app-container bg-white shadow-lg">
 
         <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
@@ -135,12 +163,12 @@
                 </div>
                 <div class="w-1/3 text-center"> <h1 class="text-2xl font-extrabold text-green-700">EcoBirla</h1>
                 </div>
-                <div class="w-1/3 flex justify-end"> <div class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm">
+                <div class="w-1/3 flex justify-end"> <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
                         <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
                         <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
-                    </div>
+                    </button>
                 </div>
-            </div>
+                </div>
         </header>
         <main class="main-content p-4 bg-gray-50">
 
@@ -240,7 +268,23 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-gray-800">Recent Activity</h4>
+                            <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                        </div>
+                        <div id="profile-recent-activity" class="space-y-3">
+                            </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-gray-800">My Active Rewards</h4>
+                            <button onclick="showPage('my-rewards')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                        </div>
+                        <div id="profile-active-rewards" class="space-y-3">
+                            </div>
+                    </div>
                     </div>
             </div>
             <div id="leaderboard" class="page">
@@ -249,6 +293,79 @@
                     </div>
             </div>
 
+            <div id="ecopoints" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">My EcoPoints</h2>
+
+                <div class="bg-white p-6 rounded-xl shadow-md text-center mb-6">
+                    <p class="text-sm text-gray-500">Your current balance is</p>
+                    <p class="text-5xl font-extrabold text-green-600 my-2" id="ecopoints-balance"></p>
+                    <p class="text-sm text-gray-500">Keep up the great work!</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Level Progress</h3>
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <span id="ecopoints-level-title" class="text-sm font-semibold text-green-600"></span>
+                            <span class="text-xs text-gray-500">Lv. <span id="ecopoints-level-number"></span></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="ecopoints-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                    </div>
+                    
+                    <h4 class="text-md font-semibold text-gray-700 mb-3 mt-6">All Levels</h4>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div id="level-step-1" class="level-step">
+                            <div class="level-line"></div>
+                            <div class="level-dot">1</div>
+                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Green Starter</p>
+                        </div>
+                         <div id="level-step-2" class="level-step">
+                            <div class="level-line"></div>
+                            <div class="level-dot">2</div>
+                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Eco Learner</p>
+                        </div>
+                         <div id="level-step-3" class="level-step">
+                            <div class="level-line"></div>
+                            <div class="level-dot">3</div>
+                            <p class="text-xs text-gray-600 font-medium ml-2 -mr-2">Sustainability Leader</p>
+                        </div>
+                         <div id="level-step-4" class="level-step">
+                            <div class="level-dot">4</div>
+                            <p class="text-xs text-gray-600 font-medium ml-2">Planet Protector</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">How to Earn Points</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i data-lucide="recycle" class="w-6 h-6 text-green-500 mr-3"></i>
+                            <p class="text-gray-700">Submit plastic bottles at collection points.</p>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="calendar-check" class="w-6 h-6 text-purple-500 mr-3"></i>
+                            <p class="text-gray-700">Attend Green Club events and workshops.</p>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="award" class="w-6 h-6 text-yellow-500 mr-3"></i>
+                            <p class="text-gray-700">Complete special "Eco-Challenges".</p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-lg font-bold text-gray-800">Recent Transactions</h4>
+                        <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                    </div>
+                    <div id="ecopoints-recent-activity" class="space-y-3">
+                        </div>
+                </div>
+            </div>
             <div id="events" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
                 <div id="event-list" class="space-y-4">
@@ -263,7 +380,6 @@
 
             <div id="my-rewards" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">My Rewards</h2>
-
                 <div class="bg-white rounded-lg shadow-sm mb-4">
                     <div class="flex">
                         <button id="tab-active" class="reward-tab active" onclick="showRewardTab('active')">
@@ -274,14 +390,13 @@
                         </button>
                     </div>
                 </div>
-
                 <div id="content-active" class="reward-tab-content active space-y-4">
                     <div id="active-rewards-list" class="space-y-4">
-                        </div>
+                    </div>
                 </div>
                 <div id="content-used" class="reward-tab-content space-y-4">
                     <div id="used-rewards-list" class="space-y-4">
-                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -358,11 +473,11 @@
 
     <div id="purchase-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closePurchaseModal()"></div>
     <div id="purchase-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
-        </div>
+    </div>
 
     <div id="qr-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeQrModal()"></div>
     <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
-        </div>
+    </div>
 
 
     <script>
@@ -412,6 +527,14 @@
                 { userRewardId: 'ur3', rewardId: 8, purchaseDate: '2025-10-22', status: 'active' },
             ],
             nextUserRewardId: 4, 
+
+            // *** NEW: Level definitions ***
+            levels: [
+                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
+                { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
+                { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
+                { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
+            ],
         };
 
         // --- DOM Elements ---
@@ -435,6 +558,7 @@
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
         
+        // Profile Page
         const profileAvatar = document.getElementById('profile-avatar');
         const profileName = document.getElementById('profile-name');
         const profileEmail = document.getElementById('profile-email');
@@ -442,34 +566,38 @@
         const profilePoints = document.getElementById('profile-points');
         const profileRank = document.getElementById('profile-rank');
         const profileEvents = document.getElementById('profile-events');
-        
         const profileLevelTitle = document.getElementById('profile-level-title');
         const profileLevelNumber = document.getElementById('profile-level-number');
         const profileLevelProgress = document.getElementById('profile-level-progress');
         const profileLevelNext = document.getElementById('profile-level-next');
+        const profileRecentActivity = document.getElementById('profile-recent-activity'); // <-- NEW
+        const profileActiveRewards = document.getElementById('profile-active-rewards'); // <-- NEW
 
+        // EcoPoints Page
+        const ecopointsBalance = document.getElementById('ecopoints-balance'); // <-- NEW
+        const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); // <-- NEW
+        const ecopointsLevelNumber = document.getElementById('ecopoints-level-number'); // <-- NEW
+        const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress'); // <-- NEW
+        const ecopointsLevelNext = document.getElementById('ecopoints-level-next'); // <-- NEW
+        const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); // <-- NEW
+
+        // Modals
         const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
         const purchaseModal = document.getElementById('purchase-modal');
         const qrModalOverlay = document.getElementById('qr-modal-overlay');
         const qrModal = document.getElementById('qr-modal');
 
+        // Reward Tabs
         const activeRewardsList = document.getElementById('active-rewards-list');
         const usedRewardsList = document.getElementById('used-rewards-list');
 
 
         // --- Helper Function: Get User Level ---
         const getUserLevel = (points) => {
-            const levels = [
-                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
-                { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
-                { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
-                { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
-            ];
-
-            let currentLevel = levels[0];
-            for (let i = levels.length - 1; i >= 0; i--) {
-                if (points >= levels[i].minPoints) {
-                    currentLevel = levels[i];
+            let currentLevel = state.levels[0];
+            for (let i = state.levels.length - 1; i >= 0; i--) {
+                if (points >= state.levels[i].minPoints) {
+                    currentLevel = state.levels[i];
                     break;
                 }
             }
@@ -556,6 +684,7 @@
             lucide.createIcons();
         };
 
+        // *** MODIFIED: renderProfile now just does the top boxes ***
         const renderProfile = () => {
             const user = state.currentUser;
             const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
@@ -580,6 +709,111 @@
             profileRank.textContent = `#${userRank}`;
             profileEvents.textContent = state.events.filter(e => e.rsvp).length;
             
+            lucide.createIcons();
+        };
+
+        // *** NEW: Renders content for Profile page summaries ***
+        const renderProfileSummaries = () => {
+            // Render Recent Activity (top 3)
+            profileRecentActivity.innerHTML = '';
+            const historySummary = state.history.slice(0, 3);
+            if (historySummary.length === 0) {
+                 profileRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No activity yet.</p>`;
+            } else {
+                historySummary.forEach(item => {
+                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                    const sign = item.points >= 0 ? '+' : '';
+                    profileRecentActivity.innerHTML += `
+                        <div class="flex items-center">
+                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
+                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
+                                <p class="text-xs text-gray-500">${item.date}</p>
+                            </div>
+                            <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            // Render Active Rewards (top 2)
+            profileActiveRewards.innerHTML = '';
+            const rewardSummary = state.userRewards.filter(r => r.status === 'active').slice(0, 2);
+            if (rewardSummary.length === 0) {
+                 profileActiveRewards.innerHTML = `<p class="text-center text-gray-500 text-sm">No active rewards.</p>`;
+            } else {
+                rewardSummary.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    profileActiveRewards.innerHTML += `
+                        <div class="flex items-center">
+                            <img src="${rewardDetails.imageUrl}" class="w-12 h-12 object-cover rounded-lg mr-3">
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${rewardDetails.name}</p>
+                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                            </div>
+                            <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">Use</button>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        };
+
+        // *** NEW: Renders content for EcoPoints Page ***
+        const renderEcoPointsPage = () => {
+            const user = state.currentUser;
+            const levelInfo = getUserLevel(user.points);
+
+            // 1. Render Balance
+            ecopointsBalance.textContent = user.points;
+
+            // 2. Render Level Progress Bar
+            ecopointsLevelTitle.textContent = levelInfo.title;
+            ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            ecopointsLevelNumber.textContent = levelInfo.level;
+            ecopointsLevelProgress.style.width = `${levelInfo.progress}%`;
+            ecopointsLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
+            ecopointsLevelNext.textContent = levelInfo.progressText;
+
+            // 3. Render Static Level Step visual
+            state.levels.forEach((level, index) => {
+                const stepEl = document.getElementById(`level-step-${level.level}`);
+                stepEl.classList.remove('completed', 'active', 'upcoming');
+                if (level.level < levelInfo.level) {
+                    stepEl.classList.add('completed');
+                } else if (level.level === levelInfo.level) {
+                    stepEl.classList.add('active');
+                } else {
+                    stepEl.classList.add('upcoming');
+                }
+            });
+
+
+            // 4. Render Recent Transactions (top 3)
+            ecopointsRecentActivity.innerHTML = '';
+            const historySummary = state.history.slice(0, 3);
+            if (historySummary.length === 0) {
+                 ecopointsRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No transactions yet.</p>`;
+            } else {
+                historySummary.forEach(item => {
+                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                    const sign = item.points >= 0 ? '+' : '';
+                    ecopointsRecentActivity.innerHTML += `
+                        <div class="flex items-center">
+                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
+                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
+                                <p class="text-xs text-gray-500">${item.date}</p>
+                            </div>
+                            <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
+                        </div>
+                    `;
+                });
+            }
             lucide.createIcons();
         };
 
@@ -669,8 +903,6 @@
             });
         };
 
-
-        // --- *** MODIFIED "MY REWARDS" RENDER FUNCTION *** ---
         const renderMyRewardsPage = () => {
             activeRewardsList.innerHTML = '';
             usedRewardsList.innerHTML = '';
@@ -724,10 +956,11 @@
             }
             lucide.createIcons();
         };
-        // --- *** END MODIFICATION *** ---
 
 
         // --- Logic and State Management ---
+        
+        // *** MODIFIED: showPage now triggers specific renders ***
         const showPage = (pageId) => {
             pages.forEach(p => p.classList.remove('active'));
             const newPage = document.getElementById(pageId);
@@ -741,9 +974,21 @@
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
             
+            // --- Specific renders based on page ---
             if (pageId === 'my-rewards') {
                 renderMyRewardsPage();
             }
+            if (pageId === 'profile') {
+                renderProfile(); // Renders top boxes
+                renderProfileSummaries(); // Renders bottom lists
+            }
+            if (pageId === 'ecopoints') {
+                renderEcoPointsPage(); // Renders the new ecopoints page
+            }
+            if (pageId === 'history') {
+                renderHistory(); // Full history list
+            }
+            // --- End specific renders ---
 
             toggleSidebar(true); 
         };
@@ -765,7 +1010,7 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile(); 
+                renderProfile(); // Re-render profile stats
             }
         };
 
@@ -860,7 +1105,8 @@
                 renderHeader();
                 renderRewards(); 
                 renderHistory();
-                renderProfile(); 
+                renderProfile();
+                renderProfileSummaries(); // Re-render profile lists
                 renderMyRewardsPage(); 
 
                 purchaseModal.innerHTML = `
@@ -961,10 +1207,12 @@
             renderLeaderboardDashboard();
             renderLeaderboardPage();
             renderProfile();
+            renderProfileSummaries();
             renderEvents();
             renderRewards();
             renderHistory();
-            renderMyRewardsPage(); 
+            renderMyRewardsPage();
+            renderEcoPointsPage();
             
             showPage('dashboard');
             lucide.createIcons(); 
