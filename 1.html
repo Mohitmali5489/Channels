@@ -10,7 +10,7 @@
     <style>
         html, body {
             height: 100%;
-            overflow: hidden; /* Prevent body scroll */
+            overflow: hidden; 
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -19,7 +19,7 @@
         .app-container {
             max-width: 420px;
             margin: auto;
-            height: 100%; /* Changed from 100vh to 100% */
+            height: 100%; 
             display: flex;
             flex-direction: column;
             position: relative;
@@ -27,16 +27,13 @@
         }
         
         header, nav {
-            flex-shrink: 0; /* Prevent header and nav from shrinking */
+            flex-shrink: 0; 
         }
-
-        /* Add padding and make main content scrollable */
         .main-content { 
             flex-grow: 1; 
-            overflow-y: auto; /* This is the fix: makes this area scroll */
+            overflow-y: auto; 
         }
         
-        /* Page Transitions */
         .page { display: none; animation: fadeIn 0.3s ease-in-out; }
         .page.active { display: block; }
         @keyframes fadeIn {
@@ -44,7 +41,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sidebar */
         #sidebar {
             transition: transform 0.3s ease-in-out;
         }
@@ -52,19 +48,16 @@
             transition: opacity 0.3s ease-in-out;
         }
 
-        /* Sidebar Nav Active State */
         .sidebar-nav-item.active {
-            background-color: #ECFDF5; /* green-50 */
-            color: #059669; /* green-700 */
+            background-color: #ECFDF5; 
+            color: #059669; 
             font-weight: 600;
         }
         .sidebar-nav-item.active svg { color: #059669; }
         
-        /* Bottom Nav Active State */
         .nav-item.active { color: #10B981; }
         .nav-item.active svg { color: #10B981; }
 
-        /* General UI Toggles (for Settings page) */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #10B981;
@@ -72,6 +65,21 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #10B981;
         }
+
+        /* *** NEW: Tab Styles for "My Rewards" *** */
+        .reward-tab {
+            @apply flex-1 text-center py-3 px-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer;
+        }
+        .reward-tab.active {
+            @apply text-green-600 border-green-600;
+        }
+        .reward-tab-content {
+            display: none;
+        }
+        .reward-tab-content.active {
+            display: block;
+        }
+        /* *** END NEW *** */
     </style>
 </head>
 <body class="bg-gray-100">
@@ -82,12 +90,16 @@
         <div class="p-6 border-b">
             <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500" alt="User Avatar">
             <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800"></h2>
+            <p id="user-level-sidebar" class="text-sm font-medium text-blue-600 mb-1"></p>
             <p class="text-sm text-green-600 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
         </div>
 
         <nav class="flex-grow p-4 space-y-2">
             <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
                 <i data-lucide="user" class="w-5 h-5 mr-3"></i>Profile
+            </button>
+            <button onclick="showPage('my-rewards')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                <i data-lucide="archive" class="w-5 h-5 mr-3"></i>My Rewards
             </button>
             <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
                 <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
@@ -105,7 +117,6 @@
                 <i data-lucide="settings" class="w-5 h-5 mr-3"></i>Settings
             </button>
         </nav>
-
         <div class="p-6 border-t">
             <p class="text-xs text-center text-gray-400">Green Campus v5.0</p>
         </div>
@@ -194,6 +205,17 @@
                             <h3 id="profile-name" class="text-2xl font-bold text-gray-800 mt-3"></h3>
                             <p id="profile-email" class="text-gray-500"></p>
                             <p id="profile-joined" class="text-sm text-gray-400 mt-1"></p>
+
+                            <div class="w-full px-4 mt-4">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span id="profile-level-title" class="text-sm font-semibold text-green-600"></span>
+                                    <span class="text-xs text-gray-500">Lv. <span id="profile-level-number"></span></span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div id="profile-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <p id="profile-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                            </div>
                         </div>
                     </div>
                     
@@ -240,9 +262,31 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco-Store Rewards</h2>
                 <div id="reward-list" class="grid grid-cols-2 gap-4">
                     </div>
-                <div id="redeem-message" class="mt-6 text-center"></div>
             </div>
 
+            <div id="my-rewards" class="page">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">My Rewards</h2>
+
+                <div class="bg-white rounded-lg shadow-sm mb-4">
+                    <div class="flex">
+                        <button id="tab-active" class="reward-tab active" onclick="showRewardTab('active')">
+                            Active
+                        </button>
+                        <button id="tab-used" class="reward-tab" onclick="showRewardTab('used')">
+                            Used
+                        </button>
+                    </div>
+                </div>
+
+                <div id="content-active" class="reward-tab-content active space-y-4">
+                    <div id="active-rewards-list" class="space-y-4">
+                        </div>
+                </div>
+                <div id="content-used" class="reward-tab-content space-y-4">
+                    <div id="used-rewards-list" class="space-y-4">
+                        </div>
+                </div>
+            </div>
             <div id="history" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Activity History</h2>
                 <div id="history-list" class="space-y-3">
@@ -265,7 +309,7 @@
                         <p class="font-medium text-gray-800">How do I earn points?</p>
                         <p class="text-gray-600 mb-3">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
                         <p class="font-medium text-gray-800">How do I redeem rewards?</p>
-                        <p class="text-gray-600 mb-3">Navigate to the 'Rewards' tab and tap the redeem button for any reward you can afford with your points.</p>
+                        <p class="text-gray-600 mb-3">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
                     </div>
                     <div class="border-t pt-4">
                         <h3 class="text-lg font-semibold text-gray-700">Contact Us</h3>
@@ -314,6 +358,12 @@
         </nav>
     </div>
 
+    <div id="purchase-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closePurchaseModal()"></div>
+    <div id="purchase-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+        </div>
+    <div id="qr-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeQrModal()"></div>
+    <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+        </div>
     <script>
         // --- Demo Data and State ---
         let state = {
@@ -334,7 +384,7 @@
                 { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC' },
             ],
             history: [
-                { type: 'reward', description: 'Redeemed Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart' },
+                { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart' },
                 { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award' },
                 { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check' },
                 { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text' },
@@ -345,31 +395,23 @@
                 { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
             ],
             
-            // --- *** MODIFIED REWARDS DATA *** ---
             rewards: [
-                // Eco-Friendly
-                { id: 1, name: 'Reusable Bamboo Cup', description: 'Eco-friendly cup for your daily coffee.', cost: 150, imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Cup' },
-                { id: 2, name: 'Canvas Tote Bag', description: 'Durable bag for groceries and books.', cost: 200, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Bag' },
-                { id: 3, name: 'Bamboo Toothbrush Set', description: 'Pack of 4 biodegradable toothbrushes.', cost: 100, imageUrl: 'https://placehold.co/300x300/93C5FD/1F2937?text=Brush' },
-                { id: 4, name: 'Metal Straw Set', description: 'Set of 4 stainless steel straws with cleaner.', cost: 75, imageUrl: 'https://placehold.co/300x300/FCA5A5/1F2937?text=Straws' },
-                { id: 5, name: 'Reusable Water Bottle', description: '500ml insulated stainless steel bottle.', cost: 350, imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Bottle' },
-                { id: 6, name: 'Beeswax Food Wraps', description: 'Eco-friendly alternative to plastic wrap.', cost: 120, imageUrl: 'https://placehold.co/300x300/FCD34D/1F2937?text=Wraps' },
-                { id: 7, name: 'Solar-Powered Charger', description: 'Small solar panel for charging your phone.', cost: 750, imageUrl: 'https://placehold.co/300x300/6EE7B7/1F2937?text=Solar' },
-
-                // Campus & Student Life
-                { id: 8, name: '$5 Canteen Voucher', description: 'Enjoy a free meal at the campus canteen.', cost: 50, imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Food' },
-                { id: 9, name: 'Coffee Shop Coupon', description: 'Get a free large coffee at "The Bean".', cost: 40, imageUrl: 'https://placehold.co/300x300/D1D5DB/1F2937?text=Coffee' },
-                { id: 10, name: 'College Hoodie', description: 'Official college branded cozy hoodie.', cost: 1000, imageUrl: 'https://placehold.co/300x300/818CF8/1F2937?text=Hoodie' },
-                { id: 11, name: '10% Bookstore Discount', description: 'Get 10% off your next textbook purchase.', cost: 150, imageUrl: 'https://placehold.co/300x300/FBCFE8/1F2937?text=10%25+Off' },
-                { id: 12, name: 'Premium Notebook Set', description: 'A5 leather-bound notebook and pen.', cost: 250, imageUrl: 'https://placehold.co/300x300/A78BFA/1F2937?text=Notebook' },
-                { id: 13, name: 'Portable Power Bank', description: '10,000mAh slim power bank.', cost: 600, imageUrl: 'https://placehold.co/300x300/F87171/1F2937?text=Power' },
-                { id: 14, name: 'Wireless Earbuds', description: 'Bluetooth 5.0 earbuds with charging case.', cost: 1200, imageUrl: 'https://placehold.co/300x300/60A5FA/1F2937?text=Earbuds' },
-                { id: 15, name: 'Library Fee Waiver', description: 'Waive one overdue library book fine.', cost: 25, imageUrl: 'https://placehold.co/300x300/F0ABFC/1F2937?text=Waiver' },
-                { id: 16, name: 'Movie Ticket', description: 'One standard ticket to the local cinema.', cost: 300, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Ticket' },
-                { id: 17, name: 'USB Flash Drive 64GB', description: 'A handy 64GB USB 3.0 flash drive.', cost: 220, imageUrl: 'https://placehold.co/300x300/9CA3AF/1F2937?text=USB' },
-                { id: 18, name: 'Gym Day Pass', description: 'One free day pass to the campus gym.', cost: 60, imageUrl: 'https://placehold.co/300x300/B45309/1F2937?text=Gym' }
+                { id: 8, name: '$5 Canteen Voucher', description: 'Enjoy a free meal at the campus canteen.', cost: 50, imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Food', type: 'digital', instructions: 'Show this QR code at the canteen cashier to claim your voucher.' },
+                { id: 9, name: 'Coffee Shop Coupon', description: 'Get a free large coffee at "The Bean".', cost: 40, imageUrl: 'https://placehold.co/300x300/D1D5DB/1F2937?text=Coffee', type: 'digital', instructions: 'Show this QR code at The Bean to get your free coffee.' },
+                { id: 10, name: 'College Hoodie', description: 'Official college branded cozy hoodie.', cost: 1000, imageUrl: 'https://placehold.co/300x300/818CF8/1F2937?text=Hoodie', type: 'physical', instructions: 'Pick up your hoodie from the Green Club office (Room 203, Admin Building) M-F, 9am-4pm.' },
+                { id: 1, name: 'Reusable Bamboo Cup', description: 'Eco-friendly cup for your daily coffee.', cost: 150, imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Cup', type: 'physical', instructions: 'Pick up your cup from the Green Club office (Room 203).' },
+                { id: 2, name: 'Canvas Tote Bag', description: 'Durable bag for groceries and books.', cost: 200, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Bag', type: 'physical', instructions: 'Pick up your bag from the Green Club office (Room 203).' },
+                { id: 15, name: 'Library Fee Waiver', description: 'Waive one overdue library book fine.', cost: 25, imageUrl: 'https://placehold.co/300x300/F0ABFC/1F2937?text=Waiver', type: 'digital', instructions: 'Your waiver has been applied automatically to your library account. It will cover your next fine.' },
+                { id: 5, name: 'Reusable Water Bottle', description: '500ml insulated stainless steel bottle.', cost: 350, imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Bottle', type: 'physical', instructions: 'Pick up your bottle from the Green Club office (Room 203).' },
             ],
-            // --- *** END OF MODIFIED REWARDS *** ---
+            
+            // --- *** NEW: USER REWARDS INVENTORY *** ---
+            userRewards: [
+                { userRewardId: 'ur1', rewardId: 9, purchaseDate: '2025-10-26', status: 'active' },
+                { userRewardId: 'ur2', rewardId: 15, purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' },
+                { userRewardId: 'ur3', rewardId: 8, purchaseDate: '2025-10-22', status: 'active' },
+            ],
+            nextUserRewardId: 4, // Simple ID incrementer
         };
 
         // --- DOM Elements ---
@@ -377,25 +419,22 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const sidebarNavItems = document.querySelectorAll('.sidebar-nav-item');
-        const navItems = document.querySelectorAll('.nav-item'); // For Bottom Nav
+        const navItems = document.querySelectorAll('.nav-item'); 
         
-        // Headers
         const userPointsHeader = document.getElementById('user-points-header');
         const userNameGreeting = document.getElementById('user-name-greeting');
         
-        // Sidebar Profile
         const userAvatarSidebar = document.getElementById('user-avatar-sidebar');
         const userNameSidebar = document.getElementById('user-name-sidebar');
         const userPointsSidebar = document.getElementById('user-points-sidebar');
+        const userLevelSidebar = document.getElementById('user-level-sidebar');
 
-        // Page Content Lists
         const eventList = document.getElementById('event-list');
         const rewardList = document.getElementById('reward-list');
         const historyList = document.getElementById('history-list');
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
         
-        // Profile Page Elements
         const profileAvatar = document.getElementById('profile-avatar');
         const profileName = document.getElementById('profile-name');
         const profileEmail = document.getElementById('profile-email');
@@ -403,18 +442,70 @@
         const profilePoints = document.getElementById('profile-points');
         const profileRank = document.getElementById('profile-rank');
         const profileEvents = document.getElementById('profile-events');
+        
+        const profileLevelTitle = document.getElementById('profile-level-title');
+        const profileLevelNumber = document.getElementById('profile-level-number');
+        const profileLevelProgress = document.getElementById('profile-level-progress');
+        const profileLevelNext = document.getElementById('profile-level-next');
+
+        // *** RENAMED & NEW MODAL ELEMENTS ***
+        const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
+        const purchaseModal = document.getElementById('purchase-modal');
+        const qrModalOverlay = document.getElementById('qr-modal-overlay');
+        const qrModal = document.getElementById('qr-modal');
+
+        // *** NEW: REWARD TAB ELEMENTS ***
+        const activeRewardsList = document.getElementById('active-rewards-list');
+        const usedRewardsList = document.getElementById('used-rewards-list');
+
+
+        // --- Helper Function: Get User Level ---
+        const getUserLevel = (points) => {
+            const levels = [
+                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
+                { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
+                { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
+                { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
+            ];
+
+            let currentLevel = levels[0];
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (points >= levels[i].minPoints) {
+                    currentLevel = levels[i];
+                    break;
+                }
+            }
+
+            if (currentLevel.nextMin !== Infinity) {
+                const pointsInLevel = points - currentLevel.minPoints;
+                const pointsForLevel = currentLevel.nextMin - currentLevel.minPoints;
+                const progress = Math.max(0, Math.min(100, (pointsInLevel / pointsForLevel) * 100));
+                return {
+                    ...currentLevel,
+                    progress: progress,
+                    progressText: `${points} / ${currentLevel.nextMin} Pts`
+                };
+            } else {
+                return {
+                    ...currentLevel,
+                    progress: 100,
+                    progressText: `${points} Pts (Max Level)`
+                };
+            }
+        };
 
 
         // --- Render Functions ---
         const renderHeader = () => {
             const user = state.currentUser;
+            const levelInfo = getUserLevel(user.points); 
             userPointsHeader.textContent = user.points;
-            userNameGreeting.textContent = user.name.split(' ')[0]; // Just first name
-            
-            // Render sidebar profile info
-            userAvatarSidebar.src = user.avatarUrl.replace('40x40', '80x80'); // Larger avatar
+            userNameGreeting.textContent = user.name.split(' ')[0]; 
+            userAvatarSidebar.src = user.avatarUrl.replace('40x40', '80x80');
             userNameSidebar.textContent = user.name;
             userPointsSidebar.textContent = user.points;
+            userLevelSidebar.textContent = `Lv. ${levelInfo.level}: ${levelInfo.title}`;
+            userLevelSidebar.className = `text-sm font-medium ${levelInfo.color} mb-1`;
         };
         
         const renderLeaderboardDashboard = () => {
@@ -466,16 +557,26 @@
             });
             lucide.createIcons();
         };
-        
+
         const renderProfile = () => {
             const user = state.currentUser;
             const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
             const userRank = sortedLeaderboard.findIndex(u => u.id === user.id) + 1;
+            const levelInfo = getUserLevel(user.points);
 
             profileAvatar.src = user.avatarUrl.replace('40x40', '100x100');
             profileName.textContent = user.name;
             profileEmail.textContent = user.email;
             profileJoined.textContent = `Joined ${user.joined}`;
+            
+            profileLevelTitle.textContent = levelInfo.title;
+            profileLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            profileLevelNumber.textContent = levelInfo.level;
+            
+            profileLevelProgress.style.width = `${levelInfo.progress}%`;
+            profileLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
+            
+            profileLevelNext.textContent = levelInfo.progressText;
             
             profilePoints.textContent = user.points;
             profileRank.textContent = `#${userRank}`;
@@ -483,7 +584,6 @@
             
             lucide.createIcons();
         };
-
 
         const renderHistory = () => {
             historyList.innerHTML = '';
@@ -541,15 +641,14 @@
             lucide.createIcons();
         };
 
-        // --- COMPLETELY REWRITTEN RENDERREWARDS FUNCTION ---
         const renderRewards = () => {
             rewardList.innerHTML = '';
-            state.rewards.forEach(r => {
+            state.rewards.sort((a,b) => a.cost - b.cost).forEach(r => {
                 const canAfford = state.currentUser.points >= r.cost;
                 const buttonClass = canAfford 
                     ? 'bg-green-600 hover:bg-green-700' 
                     : 'bg-gray-400 cursor-not-allowed';
-                const buttonText = canAfford ? 'Redeem' : 'Not Enough';
+                const buttonText = canAfford ? 'Purchase' : 'Not Enough'; // <-- Text changed to "Purchase"
                 
                 rewardList.innerHTML += `
                     <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
@@ -563,7 +662,7 @@
                                 <span class="text-sm text-gray-500 ml-1">EcoPoints</span>
                             </div>
 
-                            <button onclick="redeemReward(${r.cost}, '${r.name}')" 
+                            <button onclick="openPurchaseModal(${r.id})" 
                                     class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto" 
                                     ${!canAfford ? 'disabled' : ''}>
                                 ${buttonText}
@@ -571,7 +670,64 @@
                         </div>
                     </div>`;
             });
-            // No lucide icons used in this render, so no need to call createIcons()
+        };
+
+
+        // --- *** NEW: RENDER "MY REWARDS" PAGE *** ---
+        const renderMyRewardsPage = () => {
+            activeRewardsList.innerHTML = '';
+            usedRewardsList.innerHTML = '';
+
+            const activeRewards = state.userRewards.filter(ur => ur.status === 'active');
+            const usedRewards = state.userRewards.filter(ur => ur.status === 'used');
+
+            // Render Active Rewards
+            if (activeRewards.length === 0) {
+                activeRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no active rewards. Visit the Eco-Store to get some!</p>`;
+            } else {
+                activeRewards.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    if (!rewardDetails) return;
+
+                    activeRewardsList.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-24 object-cover">
+                            <div class="p-4 flex-grow flex flex-col">
+                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                <p class="text-xs text-gray-500 mb-2">Purchased: ${userReward.purchaseDate}</p>
+                                <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
+                                    Use Now
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Render Used Rewards
+            if (usedRewards.length === 0) {
+                usedRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You haven't used any rewards yet.</p>`;
+            } else {
+                usedRewards.forEach(userReward => {
+                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    if (!rewardDetails) return;
+
+                    usedRewardsList.innerHTML += `
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-24 object-cover">
+                            <div class="p-4 flex-grow">
+                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                                <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
+                                <div class="mt-auto w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
+                                    Redeemed
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
         };
 
         // --- Logic and State Management ---
@@ -581,18 +737,19 @@
             if (newPage) {
                 newPage.classList.add('active');
             }
-            
-            // Update Sidebar
             sidebarNavItems.forEach(item => {
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
-            
-            // Update Bottom Nav
             navItems.forEach(item => {
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
             
-            toggleSidebar(true); // Close sidebar on navigation
+            // *** Re-render My Rewards page every time it's shown ***
+            if (pageId === 'my-rewards') {
+                renderMyRewardsPage();
+            }
+
+            toggleSidebar(true); 
         };
 
         const toggleSidebar = (forceClose = false) => {
@@ -612,41 +769,211 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile(); // Re-render profile to update stats
+                renderProfile(); 
             }
         };
 
-        const redeemReward = (cost, name) => {
-            const redeemMsgEl = document.getElementById('redeem-message');
-            if (state.currentUser.points >= cost) {
-                state.currentUser.points -= cost;
+        // --- *** NEW: "My Rewards" Tabbed Logic *** ---
+        const showRewardTab = (tabName) => {
+            // Update tabs
+            document.querySelectorAll('.reward-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.reward-tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`content-${tabName}`).classList.add('active');
+        };
+
+
+        // --- *** RENAMED & MODIFIED MODAL FUNCTIONS *** ---
+        
+        const openPurchaseModal = (rewardId) => {
+            const reward = state.rewards.find(r => r.id === rewardId);
+            if (!reward) return;
+
+            purchaseModal.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Purchase Reward</h3>
+                    <button onclick="closePurchaseModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
                 
-                // Add to history
+                <img src="${reward.imageUrl}" alt="${reward.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                <h4 class="text-lg font-bold text-gray-800">${reward.name}</h4>
+                <p class="text-sm text-gray-500 mb-4">${reward.description}</p>
+                
+                <div class="bg-gray-100 rounded-lg p-3 mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-gray-600">Your Balance</span>
+                        <span class="font-semibold text-gray-800">${state.currentUser.points} EcoPoints</span>
+                    </div>
+                    <div class="flex justify-between items-center text-red-600">
+                        <span class="font-semibold">Cost</span>
+                        <span class="font-bold text-lg">-${reward.cost} EcoPoints</span>
+                    </div>
+                    <hr class="my-2 border-gray-300">
+                    <div class="flex justify-between items-center text-green-600">
+                        <span class="font-semibold">Remaining</span>
+                        <span class="font-bold text-lg">${state.currentUser.points - reward.cost} EcoPoints</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        Cancel
+                    </button>
+                    <button onclick="confirmPurchase(${reward.id})" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                        Confirm & Purchase
+                    </button>
+                </div>
+            `;
+            
+            purchaseModalOverlay.classList.remove('hidden');
+            purchaseModal.classList.remove('translate-y-full');
+            lucide.createIcons();
+        };
+
+        const closePurchaseModal = () => {
+            purchaseModalOverlay.classList.add('hidden');
+            purchaseModal.classList.add('translate-y-full');
+            setTimeout(() => {
+                purchaseModal.innerHTML = '';
+            }, 300);
+        };
+
+        const confirmPurchase = (rewardId) => {
+            const reward = state.rewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            const today = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+
+            if (state.currentUser.points >= reward.cost) {
+                // 1. Process Redemption
+                state.currentUser.points -= reward.cost;
+                
+                // 2. Add to HISTORY (transaction log)
                 state.history.unshift({
                     type: 'reward', 
-                    description: `Redeemed ${name}`, 
-                    points: -cost, 
-                    date: new Date().toISOString().split('T')[0].replaceAll('-', '/'), // Format date
-                    icon: 'shopping-cart' // Keep 'shopping-cart' icon for history
+                    description: `Purchased ${reward.name}`, 
+                    points: -reward.cost, 
+                    date: today,
+                    icon: 'shopping-cart'
+                });
+
+                // 3. *** NEW: Add to USER REWARDS (inventory) ***
+                const newUserRewardId = 'ur' + state.nextUserRewardId++;
+                state.userRewards.unshift({
+                    userRewardId: newUserRewardId,
+                    rewardId: reward.id,
+                    purchaseDate: today,
+                    status: 'active'
                 });
                 
+                // 4. Re-render all necessary components
                 renderHeader();
-                renderRewards();
+                renderRewards(); // This will update the "Purchase" buttons
                 renderHistory();
-                renderProfile();
-                
-                redeemMsgEl.textContent = `Successfully redeemed ${name}!`;
-                redeemMsgEl.className = 'mt-6 text-center text-green-600 font-semibold';
+                renderProfile(); 
+                renderMyRewardsPage(); // Update the rewards page in the background
+
+                // 5. Show Success Message in Modal
+                purchaseModal.innerHTML = `
+                    <div class="text-center p-4">
+                        <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Successful!</h3>
+                        <p class="text-gray-600 mb-6">You can find your new reward in the "My Rewards" page.</p>
+                        <button onclick="closePurchaseModal()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                            Done
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
+
             } else {
-                redeemMsgEl.textContent = 'Not enough points for this reward.';
-                redeemMsgEl.className = 'mt-6 text-center text-red-600 font-semibold';
+                // 6. Show Failure Message in Modal
+                purchaseModal.innerHTML = `
+                    <div class="text-center p-4">
+                        <i data-lucide="x-circle" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Failed</h3>
+                        <p class="text-gray-600 mb-6">You do not have enough points for this reward.</p>
+                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                            Close
+                        </button>
+                    </div>
+                `;
+                lucide.createIcons();
             }
-            setTimeout(() => { redeemMsgEl.textContent = ''; }, 4000);
         };
+
+        // --- *** NEW: QR MODAL FUNCTIONS *** ---
+        
+        const openRewardQrModal = (userRewardId) => {
+            const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
+            if (!userReward) return;
+            const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+            if (!rewardDetails) return;
+
+            // Generate a unique QR code for THIS specific user reward
+            const qrData = `USER_REWARD_ID::${userReward.userRewardId}`;
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
+
+            qrModal.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">${rewardDetails.name}</h3>
+                    <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-center mb-4 p-4 bg-white rounded-lg border">
+                    <img src="${qrCodeUrl}" alt="QR Code" class="rounded-lg">
+                </div>
+
+                <div class="bg-gray-100 rounded-lg p-4 text-left mb-6">
+                    <h4 class="font-bold text-gray-800 mb-2">How to Redeem:</h4>
+                    <p class="text-sm text-gray-600">${rewardDetails.instructions}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        Done
+                    </button>
+                    <button onclick="markRewardAsUsed('${userReward.userRewardId}')" class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600">
+                        Mark as Used
+                    </button>
+                </div>
+            `;
+
+            qrModalOverlay.classList.remove('hidden');
+            qrModal.classList.remove('translate-y-full');
+            lucide.createIcons();
+        };
+
+        const closeQrModal = () => {
+            qrModalOverlay.classList.add('hidden');
+            qrModal.classList.add('translate-y-full');
+            setTimeout(() => {
+                qrModal.innerHTML = '';
+            }, 300);
+        };
+
+        const markRewardAsUsed = (userRewardId) => {
+            const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
+            if (userReward) {
+                userReward.status = 'used';
+                userReward.usedDate = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+                
+                // Re-render the "My Rewards" page to show the change
+                renderMyRewardsPage();
+                
+                // Close the modal
+                closeQrModal();
+            }
+        };
+
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Set up all event listeners
             document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
 
             // Initial Renders
@@ -657,9 +984,10 @@
             renderEvents();
             renderRewards();
             renderHistory();
+            renderMyRewardsPage(); // Also render this on load
             
             showPage('dashboard');
-            lucide.createIcons(); // Final pass for all icons
+            lucide.createIcons(); 
         });
     </script>
 </body>
