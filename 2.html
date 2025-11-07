@@ -399,10 +399,9 @@
 
             <div id="rewards" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco-Store Rewards</h2>
-                <div id="reward-list" class="grid grid-cols-2 gap-4">
+                <div id="store-list" class="space-y-6">
                     </div>
             </div>
-
             <div id="my-rewards" class="page">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">My Rewards</h2>
                 <div class="bg-white rounded-lg shadow-sm mb-4">
@@ -417,11 +416,11 @@
                 </div>
                 <div id="content-active" class="reward-tab-content active space-y-4">
                     <div id="active-rewards-list" class="space-y-4">
-                    </div>
+                        </div>
                 </div>
                 <div id="content-used" class="reward-tab-content space-y-4">
                     <div id="used-rewards-list" class="space-y-4">
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -536,20 +535,43 @@
                 { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
             ],
             
-            rewards: [
-                { id: 8, name: '$5 Canteen Voucher', description: 'Enjoy a free meal at the campus canteen.', cost: 50, imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Food', type: 'digital', instructions: 'Show this QR code at the canteen cashier to claim your voucher.' },
-                { id: 9, name: 'Coffee Shop Coupon', description: 'Get a free large coffee at "The Bean".', cost: 40, imageUrl: 'https://placehold.co/300x300/D1D5DB/1F2937?text=Coffee', type: 'digital', instructions: 'Show this QR code at The Bean to get your free coffee.' },
-                { id: 10, name: 'College Hoodie', description: 'Official college branded cozy hoodie.', cost: 1000, imageUrl: 'https://placehold.co/300x300/818CF8/1F2937?text=Hoodie', type: 'physical', instructions: 'Pick up your hoodie from the Green Club office (Room 203, Admin Building) M-F, 9am-4pm.' },
-                { id: 1, name: 'Reusable Bamboo Cup', description: 'Eco-friendly cup for your daily coffee.', cost: 150, imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Cup', type: 'physical', instructions: 'Pick up your cup from the Green Club office (Room 203).' },
-                { id: 2, name: 'Canvas Tote Bag', description: 'Durable bag for groceries and books.', cost: 200, imageUrl: 'https://placehold.co/300x300/FDBA74/1F2937?text=Bag', type: 'physical', instructions: 'Pick up your bag from the Green Club office (Room 203).' },
-                { id: 15, name: 'Library Fee Waiver', description: 'Waive one overdue library book fine.', cost: 25, imageUrl: 'https://placehold.co/300x300/F0ABFC/1F2937?text=Waiver', type: 'digital', instructions: 'Your waiver has been applied automatically to your library account. It will cover your next fine.' },
-                { id: 5, name: 'Reusable Water Bottle', description: '500ml insulated stainless steel bottle.', cost: 350, imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Bottle', type: 'physical', instructions: 'Pick up your bottle from the Green Club office (Room 203).' },
+            // *** NEW REWARDS DATA STRUCTURE ***
+            stores: [
+                {
+                    storeId: 's1',
+                    storeName: 'Campus Canteen',
+                    storeLogo: 'https://placehold.co/100x100/F9A8D4/1F2937?text=Canteen',
+                    products: [
+                        { productId: 'p1', name: 'Veg Thali', imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Thali', originalPrice: 80, discountedPrice: 50, cost: 30, instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.' },
+                        { productId: 'p2', name: 'Samosa & Chai', imageUrl: 'https://placehold.co/300x300/FBCFE8/1F2937?text=Chai', originalPrice: 30, discountedPrice: 15, cost: 15, instructions: 'Show this QR code at the canteen cashier (Counter 2).' },
+                        { productId: 'p3', name: 'Masala Dosa', imageUrl: 'https://placehold.co/300x300/FCE7F3/1F2937?text=Dosa', originalPrice: 60, discountedPrice: 40, cost: 20, instructions: 'Show this QR code at the canteen cashier (Counter 1).' }
+                    ]
+                },
+                {
+                    storeId: 's2',
+                    storeName: 'The Beanery',
+                    storeLogo: 'https://placehold.co/100x100/A5B4FC/1F2937?text=Bean',
+                    products: [
+                        { productId: 'p4', name: 'Large Cappuccino', imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Coffee', originalPrice: 120, discountedPrice: 80, cost: 40, instructions: 'Show this QR code to the barista to redeem your discount.' },
+                        { productId: 'p5', name: 'Choco-chip Brownie', imageUrl: 'https://placehold.co/300x300/C7D2FE/1F2937?text=Brownie', originalPrice: 70, discountedPrice: 50, cost: 20, instructions: 'Show this QR code to the barista to redeem your discount.' }
+                    ]
+                },
+                {
+                    storeId: 's3',
+                    storeName: 'College Merch Store',
+                    storeLogo: 'https://placehold.co/100x100/86EFAC/1F2937?text=Merch',
+                    products: [
+                        { productId: 'p6', name: 'College Hoodie', imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Hoodie', originalPrice: 1000, discountedPrice: 800, cost: 200, instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.' },
+                        { productId: 'p7', name: 'Reusable Steel Bottle', imageUrl: 'https://placehold.co/300x300/BBF7D0/1F2937?text=Bottle', originalPrice: 500, discountedPrice: 350, cost: 150, instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.' }
+                    ]
+                }
             ],
             
+            // *** UPDATED USER REWARDS ***
             userRewards: [
-                { userRewardId: 'ur1', rewardId: 9, purchaseDate: '2025-10-26', status: 'active' },
-                { userRewardId: 'ur2', rewardId: 15, purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' },
-                { userRewardId: 'ur3', rewardId: 8, purchaseDate: '2025-10-22', status: 'active' },
+                { userRewardId: 'ur1', storeId: 's2', productId: 'p4', purchaseDate: '2025-10-26', status: 'active' }, // Coffee
+                { userRewardId: 'ur2', storeId: 's1', productId: 'p2', purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' }, // Samosa
+                { userRewardId: 'ur3', storeId: 's1', productId: 'p1', purchaseDate: '2025-10-22', status: 'active' }, // Thali
             ],
             nextUserRewardId: 4, 
 
@@ -559,6 +581,26 @@
                 { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
                 { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
             ],
+        };
+
+        // --- Helper Function: Get Reward Details ---
+        // Finds the store and product for a given userReward
+        const getRewardDetails = (userReward) => {
+             if (!userReward) return null;
+            const store = state.stores.find(s => s.storeId === userReward.storeId);
+            if (!store) return null;
+            const product = store.products.find(p => p.productId === userReward.productId);
+            if (!product) return null;
+            
+            return {
+                ...product, // All product details
+                storeName: store.storeName,
+                storeLogo: store.storeLogo,
+                userRewardId: userReward.userRewardId,
+                purchaseDate: userReward.purchaseDate,
+                status: userReward.status,
+                usedDate: userReward.usedDate
+            };
         };
 
         // --- DOM Elements ---
@@ -577,7 +619,7 @@
         const userLevelSidebar = document.getElementById('user-level-sidebar');
 
         const eventList = document.getElementById('event-list');
-        const rewardList = document.getElementById('reward-list');
+        const storeList = document.getElementById('store-list'); // *** RENAMED from rewardList ***
         const historyList = document.getElementById('history-list');
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
@@ -666,9 +708,9 @@
             sortedLeaderboard.slice(0, 3).forEach((user, index) => {
                 const rank = index + 1;
                 let rankBadge = '';
-                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
-                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
-                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
+                if (rank === 1) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
 
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
                 
@@ -691,9 +733,9 @@
             sortedLeaderboard.forEach((user, index) => {
                 const rank = index + 1;
                 let rankBadge = `<span class="font-bold text-gray-500 w-6 text-center">${rank}.</span>`;
-                if (rank === 1) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>`;
-                else if (rank === 2) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-gray-400"></i>`;
-                else if (rank === 3) rankBadge = `<i data-lucide="users" class="w-6 h-6 text-yellow-700"></i>`;
+                if (rank === 1) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
 
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
                 
@@ -736,6 +778,7 @@
             lucide.createIcons();
         };
 
+        // *** MODIFIED: renderProfileSummaries ***
         const renderProfileSummaries = () => {
             profileRecentActivity.innerHTML = '';
             const historySummary = state.history.slice(0, 3);
@@ -766,13 +809,16 @@
                  profileActiveRewards.innerHTML = `<p class="text-center text-gray-500 text-sm">No active rewards.</p>`;
             } else {
                 rewardSummary.forEach(userReward => {
-                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    // Use the helper to get details
+                    const rewardDetails = getRewardDetails(userReward);
+                    if (!rewardDetails) return;
+
                     profileActiveRewards.innerHTML += `
                         <div class="flex items-center">
                             <img src="${rewardDetails.imageUrl}" class="w-12 h-12 object-cover rounded-lg mr-3">
                             <div class="flex-grow">
                                 <p class="font-semibold text-gray-800 text-sm">${rewardDetails.name}</p>
-                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                                <p class="text-xs text-gray-500">${rewardDetails.storeName}</p>
                             </div>
                             <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">Use</button>
                         </div>
@@ -822,8 +868,6 @@
             });
             
             // 4. Update the progress line height
-            // (Level - 1) / (Total Levels - 1) gives the progress *between* levels
-            // Add the current level's inner progress
             const totalProgressPercent = ((levelInfo.level - 1) + (levelInfo.progress / 100)) / (state.levels.length - 1) * 100;
             levelLineProgress.style.height = `${totalProgressPercent}%`;
 
@@ -911,36 +955,55 @@
             lucide.createIcons();
         };
 
+        // *** MODIFIED: renderRewards ***
         const renderRewards = () => {
-            rewardList.innerHTML = '';
-            state.rewards.sort((a,b) => a.cost - b.cost).forEach(r => {
-                const canAfford = state.currentUser.points >= r.cost;
-                const buttonClass = canAfford 
-                    ? 'bg-green-600 hover:bg-green-700' 
-                    : 'bg-gray-400 cursor-not-allowed';
-                const buttonText = canAfford ? 'Purchase' : 'Not Enough';
+            storeList.innerHTML = ''; // Use the new storeList container
+            
+            state.stores.forEach(store => {
+                let productsHTML = '';
                 
-                rewardList.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
-                        <img src="${r.imageUrl}" alt="${r.name}" class="w-full h-32 object-cover">
-                        <div class="p-4 flex flex-col flex-grow">
-                            <h3 class="font-bold text-gray-800 text-md mb-1">${r.name}</h3>
-                            <p class="text-xs text-gray-500 mb-3 flex-grow">${r.description}</p>
-                            
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="font-bold text-lg text-green-600">${r.cost}</span>
-                                <span class="text-sm text-gray-500 ml-1">EcoPoints</span>
+                store.products.sort((a,b) => a.cost - b.cost).forEach(product => {
+                    const canAfford = state.currentUser.points >= product.cost;
+                    const buttonClass = canAfford 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-gray-400 cursor-not-allowed';
+                    
+                    productsHTML += `
+                        <div class="border rounded-lg overflow-hidden flex flex-col shadow-sm">
+                            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-24 object-cover">
+                            <div class="p-3 flex flex-col flex-grow">
+                                <p class="font-bold text-gray-800 text-sm">${product.name}</p>
+                                <div class="my-2">
+                                    <span class="text-sm text-gray-500 line-through">₹${product.originalPrice}</span>
+                                    <span class="text-lg font-bold text-red-600 ml-1">₹${product.discountedPrice}</span>
+                                </div>
+                                <button onclick="openPurchaseModal('${store.storeId}', '${product.productId}')" 
+                                        class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto flex items-center justify-center space-x-2" 
+                                        ${!canAfford ? 'disabled' : ''}>
+                                    <i data-lucide="leaf" class="w-4 h-4"></i>
+                                    <span>${product.cost} Points</span>
+                                </button>
                             </div>
-                            <button onclick="openPurchaseModal(${r.id})" 
-                                    class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto" 
-                                    ${!canAfford ? 'disabled' : ''}>
-                                ${buttonText}
-                            </button>
                         </div>
-                    </div>`;
+                    `;
+                });
+
+                storeList.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-4 flex items-center border-b bg-gray-50">
+                            <img src="${store.storeLogo}" class="w-12 h-12 rounded-full mr-4 border">
+                            <h3 class="text-xl font-bold text-gray-800">${store.storeName}</h3>
+                        </div>
+                        <div class="p-4 grid grid-cols-2 gap-4">
+                            ${productsHTML}
+                        </div>
+                    </div>
+                `;
             });
+            lucide.createIcons();
         };
 
+        // *** MODIFIED: renderMyRewardsPage ***
         const renderMyRewardsPage = () => {
             activeRewardsList.innerHTML = '';
             usedRewardsList.innerHTML = '';
@@ -952,15 +1015,16 @@
                 activeRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no active rewards. Visit the Eco-Store to get some!</p>`;
             } else {
                 activeRewards.forEach(userReward => {
-                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    const rewardDetails = getRewardDetails(userReward);
                     if (!rewardDetails) return;
 
                     activeRewardsList.innerHTML += `
                         <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
-                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 object-cover">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
                             <div class="p-4 flex-grow flex flex-col">
                                 <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                <p class="text-xs text-gray-500 mb-2">Purchased: ${userReward.purchaseDate}</p>
+                                <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
+                                <p class="text-xs text-gray-400 mb-2 mt-1">Purchased: ${userReward.purchaseDate}</p>
                                 <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
                                     Use Now
                                 </button>
@@ -974,17 +1038,18 @@
                 usedRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You haven't used any rewards yet.</p>`;
             } else {
                 usedRewards.forEach(userReward => {
-                    const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+                    const rewardDetails = getRewardDetails(userReward);
                     if (!rewardDetails) return;
 
                     usedRewardsList.innerHTML += `
                         <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
-                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 object-cover">
+                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
                             <div class="p-4 flex-grow">
                                 <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                <p class="text-xs text-gray-500">Purchased: ${userReward.purchaseDate}</p>
+                                <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
+                                <p class="text-xs text-gray-400 mt-1">Purchased: ${userReward.purchaseDate}</p>
                                 <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
-                                <div class="mt-auto w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
+                                <div class="mt-2 w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
                                     Redeemed
                                 </div>
                             </div>
@@ -1011,6 +1076,7 @@
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
             
+            // Re-render data just in time
             if (pageId === 'my-rewards') {
                 renderMyRewardsPage();
             }
@@ -1023,6 +1089,12 @@
             }
             if (pageId === 'history') {
                 renderHistory(); 
+            }
+            if (pageId === 'leaderboard') {
+                renderLeaderboardPage(); 
+            }
+            if (pageId === 'rewards') {
+                renderRewards(); 
             }
 
             toggleSidebar(true); 
@@ -1045,7 +1117,7 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile(); 
+                renderProfile(); // Update profile event count
             }
         };
 
@@ -1058,9 +1130,12 @@
         };
 
         
-        const openPurchaseModal = (rewardId) => {
-            const reward = state.rewards.find(r => r.id === rewardId);
-            if (!reward) return;
+        // *** MODIFIED: openPurchaseModal ***
+        const openPurchaseModal = (storeId, productId) => {
+            const store = state.stores.find(s => s.storeId === storeId);
+            if (!store) return;
+            const product = store.products.find(p => p.productId === productId);
+            if (!product) return;
 
             purchaseModal.innerHTML = `
                 <div class="flex justify-between items-center mb-4">
@@ -1070,23 +1145,28 @@
                     </button>
                 </div>
                 
-                <img src="${reward.imageUrl}" alt="${reward.name}" class="w-full h-40 object-cover rounded-lg mb-4">
-                <h4 class="text-lg font-bold text-gray-800">${reward.name}</h4>
-                <p class="text-sm text-gray-500 mb-4">${reward.description}</p>
+                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-cover rounded-lg mb-4">
+                <h4 class="text-lg font-bold text-gray-800">${product.name}</h4>
+                <p class="text-sm text-gray-500 mb-2">From ${store.storeName}</p>
                 
-                <div class="bg-gray-100 rounded-lg p-3 mb-4">
+                <div class="my-2">
+                    <span class="text-lg text-gray-500 line-through">₹${product.originalPrice}</span>
+                    <span class="text-2xl font-bold text-red-600 ml-2">₹${product.discountedPrice}</span>
+                </div>
+
+                <div class="bg-gray-100 rounded-lg p-3 mb-4 mt-4">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-gray-600">Your Balance</span>
                         <span class="font-semibold text-gray-800">${state.currentUser.points} EcoPoints</span>
                     </div>
                     <div class="flex justify-between items-center text-red-600">
                         <span class="font-semibold">Cost</span>
-                        <span class="font-bold text-lg">-${reward.cost} EcoPoints</span>
+                        <span class="font-bold text-lg">-${product.cost} EcoPoints</span>
                     </div>
                     <hr class="my-2 border-gray-300">
                     <div class="flex justify-between items-center text-green-600">
                         <span class="font-semibold">Remaining</span>
-                        <span class="font-bold text-lg">${state.currentUser.points - reward.cost} EcoPoints</span>
+                        <span class="font-bold text-lg">${state.currentUser.points - product.cost} EcoPoints</span>
                     </div>
                 </div>
 
@@ -1094,7 +1174,7 @@
                     <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
                         Cancel
                     </button>
-                    <button onclick="confirmPurchase(${reward.id})" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                    <button onclick="confirmPurchase('${store.storeId}', '${product.productId}')" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
                         Confirm & Purchase
                     </button>
                 </div>
@@ -1113,18 +1193,22 @@
             }, 300);
         };
 
-        const confirmPurchase = (rewardId) => {
-            const reward = state.rewards.find(r => r.id === rewardId);
-            if (!reward) return;
+        // *** MODIFIED: confirmPurchase ***
+        const confirmPurchase = (storeId, productId) => {
+            const store = state.stores.find(s => s.storeId === storeId);
+            if (!store) return;
+            const product = store.products.find(p => p.productId === productId);
+            if (!product) return;
+            
             const today = new Date().toISOString().split('T')[0].replaceAll('-', '/');
 
-            if (state.currentUser.points >= reward.cost) {
-                state.currentUser.points -= reward.cost;
+            if (state.currentUser.points >= product.cost) {
+                state.currentUser.points -= product.cost;
                 
                 state.history.unshift({
                     type: 'reward', 
-                    description: `Purchased ${reward.name}`, 
-                    points: -reward.cost, 
+                    description: `Purchased ${product.name}`, 
+                    points: -product.cost, 
                     date: today,
                     icon: 'shopping-cart'
                 });
@@ -1132,11 +1216,13 @@
                 const newUserRewardId = 'ur' + state.nextUserRewardId++;
                 state.userRewards.unshift({
                     userRewardId: newUserRewardId,
-                    rewardId: reward.id,
+                    storeId: store.storeId, // Add storeId
+                    productId: product.productId, // Add productId
                     purchaseDate: today,
                     status: 'active'
                 });
                 
+                // Re-render all affected components
                 renderHeader();
                 renderRewards(); 
                 renderHistory();
@@ -1171,10 +1257,10 @@
             }
         };
         
+        // *** MODIFIED: openRewardQrModal ***
         const openRewardQrModal = (userRewardId) => {
             const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
-            if (!userReward) return;
-            const rewardDetails = state.rewards.find(r => r.id === userReward.rewardId);
+            const rewardDetails = getRewardDetails(userReward); // Use helper
             if (!rewardDetails) return;
 
             const qrData = `USER_REWARD_ID::${userReward.userRewardId}`;
@@ -1233,21 +1319,15 @@
         };
 
 
-        // --- Initial Load ---
+        // --- Initials Load ---
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
 
             // Initial Renders
             renderHeader();
             renderLeaderboardDashboard();
-            renderLeaderboardPage();
-            renderProfile();
-            renderProfileSummaries();
             renderEvents();
-            renderRewards();
-            renderHistory();
-            renderMyRewardsPage();
-            renderEcoPointsPage();
+            renderRewards(); // Render new rewards structure
             
             showPage('dashboard');
             lucide.createIcons(); 
