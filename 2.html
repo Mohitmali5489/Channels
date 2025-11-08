@@ -32,6 +32,7 @@
         .main-content { 
             flex-grow: 1; 
             overflow-y: auto; 
+            overflow-x: hidden;
         }
         
         .page { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -66,20 +67,6 @@
             background-color: #10B981;
         }
 
-        .reward-tab {
-            @apply flex-1 text-center py-3 px-4 font-semibold text-gray-500 border-b-2 border-transparent cursor-pointer;
-        }
-        .reward-tab.active {
-            @apply text-green-600 border-green-600;
-        }
-        .reward-tab-content {
-            display: none;
-        }
-        .reward-tab-content.active {
-            display: block;
-        }
-
-        /* *** NEW: Level Step Styling *** */
         .level-text-content {
             transition: opacity 0.3s ease;
         }
@@ -87,10 +74,17 @@
             transition: all 0.3s ease;
             transform-origin: center;
         }
-        /* *** END NEW *** */
+        
+        .horizontal-scroll {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
     <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full flex flex-col">
@@ -162,11 +156,13 @@
             </div>
         </header>
 
-        <main class="main-content p-4 bg-gray-50">
+        <main class="main-content bg-gray-50"> 
 
-            <div id="dashboard" class="page active">
-                <h2 class="text-2xl font-bold text-gray-800 mb-1">Hi, <span id="user-name-greeting"></span>!</h2>
-                <p class="text-gray-500 mb-6">Let's make our campus greener today.</p>
+            <div id="dashboard" class="page active p-6">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Hi, <span id="user-name-greeting"></span>!</h2>
+                    <p class="text-lg text-gray-600">Let's make our campus greener today.</p>
+                </div>
                 
                 <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
                     <div class="flex items-center mb-2">
@@ -178,33 +174,42 @@
                     <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View Details</button>
                 </div>
 
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Your Impact</h3>
-                <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                <div id="daily-check-in-card" class="mb-6">
+                    </div>
+
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Your Impact</h3>
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="leaf" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">12 kg</p>
                         <p class="text-xs text-gray-500">CO2 Saved</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">45</p>
                         <p class="text-xs text-gray-500">Recycled</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm text-center">
+                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
                         <p class="font-bold text-lg">2</p>
                         <p class="text-xs text-gray-500">Events</p>
                     </div>
                 </div>
                 
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Top Champions</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Daily Challenges</h3>
+                <div id="challenges-dashboard-list" class="space-y-3 mb-4">
+                    </div>
+                <button onclick="showPage('challenges')" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors">
+                    View All Challenges
+                </button>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Top Champions</h3>
                 <div id="leaderboard-dashboard-list" class="space-y-3 mb-4">
                     </div>
-                <button onclick="showPage('leaderboard')" class="w-full bg-gray-100 border border-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                <button onclick="showPage('leaderboard')" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors">
                     View All Rankings
                 </button>
 
-                <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">Eco Tip of the Day</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Eco Tip of the Day</h3>
                 <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
                     <div class="flex">
                         <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
@@ -216,8 +221,8 @@
                 </div>
             </div>
 
-            <div id="profile" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Profile</h2>
+            <div id="profile" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Your Profile</h2>
                 <div class="space-y-6">
                     <div class="bg-white rounded-xl shadow-md overflow-hidden">
                         <div class="bg-green-500 h-24"></div>
@@ -240,56 +245,51 @@
                         </div>
                     </div>
                     
-                    <div class="bg-white p-5 rounded-xl shadow-md">
-                        <h4 class="text-lg font-bold text-gray-800 mb-4">Your Stats</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <i data-lucide="leaf" class="w-10 h-10 text-green-500 mx-auto mb-2"></i>
-                                <p id="profile-points" class="text-2xl font-bold text-gray-800"></p>
-                                <p class="text-sm text-gray-500">EcoPoints</to>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Personal Info</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Student ID</span>
+                                <span id="profile-student-id" class="font-semibold text-gray-900"></span>
                             </div>
-                            <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <i data-lucide="users" class="w-10 h-10 text-yellow-500 mx-auto mb-2"></i>
-                                <p id="profile-rank" class="text-2xl font-bold text-gray-800"></p>
-                                <p class="text-sm text-gray-500">Your Rank</to>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Course</span>
+                                <span id="profile-course" class="font-semibold text-gray-900"></span>
                             </div>
-                            <div class="bg-gray-100 p-4 rounded-lg text-center">
-                                <i data-lucide="calendar-check" class="w-10 h-10 text-purple-500 mx-auto mb-2"></i>
-                                <p id="profile-events" class="text-2xl font-bold text-gray-800"></p>
-                                <p class="text-sm text-gray-500">Events</to>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Mobile</span>
+                                <span id="profile-mobile" class="font-semibold text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Email</span>
+                                <span id="profile-email-personal" class="font-semibold text-gray-900"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-xl shadow-md">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-lg font-bold text-gray-800">Recent Activity</h4>
-                            <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
-                        </div>
-                        <div id="profile-recent-activity" class="space-y-3">
-                            </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-xl shadow-md">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-lg font-bold text-gray-800">My Active Rewards</h4>
-                            <button onclick="showPage('my-rewards')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
-                        </div>
-                        <div id="profile-active-rewards" class="space-y-3">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Membership</h4>
+                        <div id="profile-membership" class="flex items-center">
                             </div>
                     </div>
 
                 </div>
             </div>
             
-            <div id="leaderboard" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Top Champions</h2>
+            <div id="leaderboard" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Top Champions</h2>
                 <div id="leaderboard-page-list" class="space-y-3">
+                </div>
+            </div>
+            
+            <div id="challenges" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Daily Challenges</h2>
+                <div id="challenges-page-list" class="space-y-4">
                     </div>
             </div>
 
-            <div id="ecopoints" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">My EcoPoints</h2>
+            <div id="ecopoints" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">My EcoPoints</h2>
 
                 <div class="bg-white p-6 rounded-xl shadow-md text-center mb-6">
                     <p class="text-sm text-gray-500">Your current balance is</p>
@@ -298,7 +298,7 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Level Progress</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Level Progress</h3>
                     <div class="mb-4">
                         <div class="flex justify-between items-center mb-1">
                             <span id="ecopoints-level-title" class="text-sm font-semibold text-green-600"></span>
@@ -310,7 +310,7 @@
                         <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
                     </div>
                     
-                    <h4 class="text-md font-semibold text-gray-700 mb-6 mt-6">All Levels</h4>
+                    <h4 class="text-lg font-semibold text-gray-700 mb-6 mt-6">All Levels</h4>
                     <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 rounded-full"></div>
                         <div id="level-line-progress" class="absolute left-2 top-0 w-1 bg-green-500 rounded-full" style="height: 0%; transition: height 0.5s ease;"></div>
 
@@ -318,7 +318,7 @@
                             
                             <div id="level-step-1" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-white px-1">1</span>
+                                    <span class="font-bold text-lg bg-gray-50 px-1">1</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Green Starter</h5>
@@ -329,7 +329,7 @@
                             
                             <div id="level-step-2" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-white px-1">2</span>
+                                    <span class="font-bold text-lg bg-gray-50 px-1">2</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Eco Learner</h5>
@@ -340,7 +340,7 @@
                             
                             <div id="level-step-3" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-white px-1">3</span>
+                                    <span class="font-bold text-lg bg-gray-50 px-1">3</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Sustainability Leader</h5>
@@ -351,7 +351,7 @@
                             
                             <div id="level-step-4" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-white px-1">4</span>
+                                    <span class="font-bold text-lg bg-gray-50 px-1">4</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
                                     <h5 class="font-bold text-gray-800">Planet Protector</h5>
@@ -362,11 +362,11 @@
 
                         </div>
                     </div>
-                    </div>
+                </div>
 
                 <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">How to Earn Points</h3>
-                    <ul class="space-y-3">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">How to Earn Points</h3>
+                    <ul class="space-y-4">
                         <li class="flex items-center">
                             <i data-lucide="recycle" class="w-6 h-6 text-green-500 mr-3"></i>
                             <p class="text-gray-700">Submit plastic bottles at collection points.</p>
@@ -382,90 +382,86 @@
                     </ul>
                 </div>
                 
-                <div class="bg-white p-5 rounded-xl shadow-md">
+                <div class="bg-white p-6 rounded-xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
                         <h4 class="text-lg font-bold text-gray-800">Recent Transactions</h4>
                         <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
                     </div>
                     <div id="ecopoints-recent-activity" class="space-y-3">
-                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="events" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
+
+            <div id="events" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Upcoming Events</h2>
                 <div id="event-list" class="space-y-4">
-                    </div>
-            </div>
-
-            <div id="rewards" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Eco-Store Rewards</h2>
-                <div id="store-list" class="space-y-6">
-                    </div>
-            </div>
-            <div id="my-rewards" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">My Rewards</h2>
-                <div class="bg-white rounded-lg shadow-sm mb-4">
-                    <div class="flex">
-                        <button id="tab-active" class="reward-tab active" onclick="showRewardTab('active')">
-                            Active
-                        </button>
-                        <button id="tab-used" class="reward-tab" onclick="showRewardTab('used')">
-                            Used
-                        </button>
-                    </div>
-                </div>
-                <div id="content-active" class="reward-tab-content active space-y-4">
-                    <div id="active-rewards-list" class="space-y-4">
-                        </div>
-                </div>
-                <div id="content-used" class="reward-tab-content space-y-4">
-                    <div id="used-rewards-list" class="space-y-4">
-                        </div>
                 </div>
             </div>
 
-            <div id="history" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Activity History</h2>
+            <div id="rewards" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Eco-Store Rewards</h2>
+                <div id="store-list-preview" class="space-y-6">
+                    </div>
+            </div>
+            
+            <div id="store-detail-page" class="page">
+                </div>
+
+            <div id="product-detail-page" class="page">
+                </div>
+            
+            <div id="my-rewards" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">My Rewards</h2>
+                <div id="all-rewards-list" class="space-y-4">
+                    </div>
+            </div>
+
+            <div id="history" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Activity History</h2>
                 <div id="history-list" class="space-y-3">
-                    </div>
-            </div>
-            
-            <div id="about" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">About Us</h2>
-                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
-                    <p class="text-gray-600">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
-                    <p class="text-gray-600">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
                 </div>
             </div>
             
-            <div id="help" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Help & Support</h2>
-                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
-                    <h3 class="text-lg font-semibold text-gray-700">Frequently Asked Questions</h3>
-                    <div class="text-left">
-                        <p class="font-medium text-gray-800">How do I earn points?</p>
-                        <p class="text-gray-600 mb-3">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
-                        <p class="font-medium text-gray-800">How do I redeem rewards?</p>
-                        <p class="text-gray-600 mb-3">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
+            <div id="about" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">About Us</h2>
+                <div class="space-y-4 bg-white p-6 rounded-xl shadow-md">
+                    <p class="text-gray-600 leading-relaxed">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
+                    <p class="text-gray-600 leading-relaxed">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
+                </div>
+            </div>
+            
+            <div id="help" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Help & Support</h2>
+                <div class="space-y-4 bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900">Frequently Asked Questions</h3>
+                    <div class="text-left space-y-4">
+                        <div>
+                            <p class="font-semibold text-gray-800">How do I earn points?</p>
+                            <p class="text-gray-600">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">How do I redeem rewards?</p>
+                            <p class="text-gray-600">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
+                        </div>
                     </div>
-                    <div class="border-t pt-4">
-                        <h3 class="text-lg font-semibold text-gray-700">Contact Us</h3>
-                        <p class="text-gray-600">For further assistance, please email us at <a href="#" class="text-green-600 font-medium">support@greencampus.edu</a>.</p>
+                    <div class="border-t pt-6 mt-6">
+                        <h3 class="text-xl font-bold text-gray-900">Contact Us</h3>
+                        <p class="text-gray-600 mt-2">For further assistance, please email us at <a href="#" class="text-green-600 font-medium">support@greencampus.edu</a>.</p>
                     </div>
                 </div>
             </div>
             
-            <div id="settings" class="page">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
-                <div class="space-y-4 bg-white p-5 rounded-xl shadow-md">
-                    <div class="flex justify-between items-center">
+            <div id="settings" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Settings</h2>
+                <div class="space-y-5 bg-white p-6 rounded-xl shadow-md divide-y divide-gray-200">
+                    <div class="flex justify-between items-center pb-4">
                         <span class="font-medium text-gray-700">Push Notifications</span>
                         <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                             <input type="checkbox" name="toggle-notifs" id="toggle-notifs" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
                             <label for="toggle-notifs" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center border-t pt-4">
+                    <div class="flex justify-between items-center pt-5">
                         <span class="font-medium text-gray-700">Email Updates</span>
                         <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                             <input type="checkbox" name="toggle-email" id="toggle-email" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
@@ -485,10 +481,13 @@
                 <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="users" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
                 </button>
+                <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                    <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
+                </button>
                 <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
                 </button>
-                    <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
                     <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
                 </button>
             </div>
@@ -512,9 +511,15 @@
                 name: 'Alex Green',
                 points: 350,
                 avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
-                email: 'alex.green@college.edu',
-                joined: 'Sep 2025'
+                email: 'mohitforestudies@gmail.com', 
+                joined: 'Sep 2025',
+                studentId: '5207872', 
+                course: 'SYBAF', 
+                mobile: '9850751835', 
+                isGreenClubMember: true,
+                lastCheckInDate: '2025-11-07' // Set to yesterday for demo
             },
+            checkInReward: 10,
             leaderboard: [
                 { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD' },
                 { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS' },
@@ -529,22 +534,70 @@
                 { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check' },
                 { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text' },
             ],
+            // *** NEW: Daily Challenges Data ***
+            dailyChallenges: [
+                { id: 'c1', title: 'Use a Reusable Bottle', description: 'Ditch the plastic. Use a reusable bottle for your drinks today.', points: 15, status: 'active', icon: 'bottle-water' },
+                { id: 'c2', title: 'Walk to Campus', description: 'Skip the bus or bike and walk to your classes.', points: 20, status: 'active', icon: 'walk' },
+                { id: 'c3', title: 'Sort Your Waste', description: 'Correctly sort at least 5 items into recyclable and non-recyclable bins.', points: 10, status: 'completed', icon: 'recycle' },
+                { id: 'c4', title: 'Meat-Free Meal', description: 'Have at least one vegetarian or vegan meal today.', points: 15, status: 'active', icon: 'carrot' },
+            ],
             events: [
                 { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Help clean up Kalyan Central Park. Gloves and bags provided.', points: 75, rsvp: true },
                 { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 04, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
                 { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
             ],
             
-            // *** NEW REWARDS DATA STRUCTURE ***
             stores: [
                 {
                     storeId: 's1',
                     storeName: 'Campus Canteen',
                     storeLogo: 'https://placehold.co/100x100/F9A8D4/1F2937?text=Canteen',
                     products: [
-                        { productId: 'p1', name: 'Veg Thali', imageUrl: 'https://placehold.co/300x300/F9A8D4/1F2937?text=Thali', originalPrice: 80, discountedPrice: 50, cost: 30, instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.' },
-                        { productId: 'p2', name: 'Samosa & Chai', imageUrl: 'https://placehold.co/300x300/FBCFE8/1F2937?text=Chai', originalPrice: 30, discountedPrice: 15, cost: 15, instructions: 'Show this QR code at the canteen cashier (Counter 2).' },
-                        { productId: 'p3', name: 'Masala Dosa', imageUrl: 'https://placehold.co/300x300/FCE7F3/1F2937?text=Dosa', originalPrice: 60, discountedPrice: 40, cost: 20, instructions: 'Show this QR code at the canteen cashier (Counter 1).' }
+                        { 
+                            productId: 'p1', 
+                            name: 'Veg Thali', 
+                            images: ['https://placehold.co/400x300/F9A8D4/1F2937?text=Thali'],
+                            description: 'A wholesome and delicious vegetarian thali, complete with dal, two vegetables, rice, roti, and a sweet dish. Perfect for a hearty lunch.',
+                            features: ['100% Vegetarian', 'Daily changing menu', 'Freshly prepared'],
+                            specifications: [
+                                { key: 'Includes', value: 'Dal, 2 Sabzi, Roti, Rice, Sweet' },
+                                { key: 'Availability', value: '11:00 AM - 2:00 PM' }
+                            ],
+                            originalPrice: 80, 
+                            discountedPrice: 50, 
+                            cost: 30, 
+                            instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.' 
+                        },
+                        { 
+                            productId: 'p2', 
+                            name: 'Samosa & Chai', 
+                            images: ['https://placehold.co/400x300/FBCFE8/1F2937?text=Chai'],
+                            description: 'The classic college combo. One crispy, spicy samosa served with a hot cup of masala chai. Ideal for a quick snack.',
+                            features: ['Freshly fried samosa', 'Strong masala chai'],
+                            specifications: [
+                                { key: 'Includes', value: '1 Samosa, 1 Cup Chai' },
+                                { key: 'Availability', value: '8:00 AM - 5:00 PM' }
+                            ],
+                            originalPrice: 30, 
+                            discountedPrice: 15, 
+                            cost: 15, 
+                            instructions: 'Show this QR code at the canteen cashier (Counter 2).' 
+                        },
+                        { 
+                            productId: 'p3', 
+                            name: 'Masala Dosa', 
+                            images: ['https://placehold.co/400x300/FCE7F3/1F2937?text=Dosa'],
+                            description: 'A crispy rice crepe filled with a savory potato masala, served with sambar and coconut chutney. Made fresh to order.',
+                            features: ['Crispy and golden', 'Spicy potato filling', 'Served with Sambar & Chutney'],
+                            specifications: [
+                                { key: 'Includes', value: '1 Dosa, Sambar, Chutney' },
+                                { key: 'Availability', value: '8:00 AM - 11:00 AM' }
+                            ],
+                            originalPrice: 60, 
+                            discountedPrice: 40, 
+                            cost: 20, 
+                            instructions: 'Show this QR code at the canteen cashier (Counter 1).' 
+                        }
                     ]
                 },
                 {
@@ -552,8 +605,36 @@
                     storeName: 'The Beanery',
                     storeLogo: 'https://placehold.co/100x100/A5B4FC/1F2937?text=Bean',
                     products: [
-                        { productId: 'p4', name: 'Large Cappuccino', imageUrl: 'https://placehold.co/300x300/A5B4FC/1F2937?text=Coffee', originalPrice: 120, discountedPrice: 80, cost: 40, instructions: 'Show this QR code to the barista to redeem your discount.' },
-                        { productId: 'p5', name: 'Choco-chip Brownie', imageUrl: 'https://placehold.co/300x300/C7D2FE/1F2937?text=Brownie', originalPrice: 70, discountedPrice: 50, cost: 20, instructions: 'Show this QR code to the barista to redeem your discount.' }
+                        { 
+                            productId: 'p4', 
+                            name: 'Large Cappuccino', 
+                            images: ['https://placehold.co/400x300/A5B4FC/1F2937?text=Coffee'],
+                            description: 'A rich and foamy large cappuccino made with premium espresso beans. Customize with your choice of milk (dairy/non-dairy).',
+                            features: ['Premium Arabica beans', 'Choice of milk', 'Topped with cocoa powder'],
+                            specifications: [
+                                { key: 'Size', value: 'Large (16 oz)' },
+                                { key: 'Options', value: 'Soy, Almond, Oat milk available' }
+                            ],
+                            originalPrice: 120, 
+                            discountedPrice: 80, 
+                            cost: 40, 
+                            instructions: 'Show this QR code to the barista to redeem your discount.' 
+                        },
+                        { 
+                            productId: 'p5', 
+                            name: 'Choco-chip Brownie', 
+                            images: ['https://placehold.co/400x300/C7D2FE/1F2937?text=Brownie'],
+                            description: 'A fudgy, gooey chocolate brownie loaded with choco-chips. Served warm. Best paired with a coffee!',
+                            features: ['Extra fudgy', 'Loaded with chocolate chips', 'Can be served warm'],
+                            specifications: [
+                                { key: 'Allergens', value: 'Contains Gluten, Dairy, Egg' },
+                                { key: 'Serving', value: '1 Piece' }
+                            ],
+                            originalPrice: 70, 
+                            discountedPrice: 50, 
+                            cost: 20, 
+                            instructions: 'Show this QR code to the barista to redeem your discount.' 
+                        }
                     ]
                 },
                 {
@@ -561,13 +642,41 @@
                     storeName: 'College Merch Store',
                     storeLogo: 'https://placehold.co/100x100/86EFAC/1F2937?text=Merch',
                     products: [
-                        { productId: 'p6', name: 'College Hoodie', imageUrl: 'https://placehold.co/300x300/86EFAC/1F2937?text=Hoodie', originalPrice: 1000, discountedPrice: 800, cost: 200, instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.' },
-                        { productId: 'p7', name: 'Reusable Steel Bottle', imageUrl: 'https://placehold.co/300x300/BBF7D0/1F2937?text=Bottle', originalPrice: 500, discountedPrice: 350, cost: 150, instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.' }
+                        { 
+                            productId: 'p6', 
+                            name: 'College Hoodie', 
+                            images: ['https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie'],
+                            description: 'Show your college spirit with this comfortable and stylish hoodie. Features an embroidered college logo. Made from 100% cotton fleece.',
+                            features: ['Embroidered logo', 'Soft cotton fleece', 'Kangaroo pocket'],
+                            specifications: [
+                                { key: 'Material', value: '100% Cotton' },
+                                { key: 'Sizes', value: 'S, M, L, XL, XXL' },
+                                { key: 'Color', value: 'Navy Blue, Grey' }
+                            ],
+                            originalPrice: 1000, 
+                            discountedPrice: 800, 
+                            cost: 200, 
+                            instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.' 
+                        },
+                        { 
+                            productId: 'p7', 
+                            name: 'Reusable Steel Bottle', 
+                            images: ['https://placehold.co/400x300/BBF7D0/1F2937?text=Bottle'],
+                            description: 'A durable, insulated steel bottle to keep your drinks hot or cold. Eco-friendly and stylish, with a laser-etched college logo.',
+                            features: ['Insulated (Hot/Cold)', 'Leak-proof lid', 'BPA-Free'],
+                            specifications: [
+                                { key: 'Capacity', value: '750ml' },
+                                { key: 'Material', value: 'Stainless Steel' }
+                            ],
+                            originalPrice: 500, 
+                            discountedPrice: 350, 
+                            cost: 150, 
+                            instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.' 
+                        }
                     ]
                 }
             ],
             
-            // *** UPDATED USER REWARDS ***
             userRewards: [
                 { userRewardId: 'ur1', storeId: 's2', productId: 'p4', purchaseDate: '2025-10-26', status: 'active' }, // Coffee
                 { userRewardId: 'ur2', storeId: 's1', productId: 'p2', purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' }, // Samosa
@@ -583,8 +692,10 @@
             ],
         };
 
-        // --- Helper Function: Get Reward Details ---
-        // Finds the store and product for a given userReward
+        const getTodayDateString = () => {
+            return new Date().toISOString().split('T')[0];
+        };
+
         const getRewardDetails = (userReward) => {
              if (!userReward) return null;
             const store = state.stores.find(s => s.storeId === userReward.storeId);
@@ -593,7 +704,7 @@
             if (!product) return null;
             
             return {
-                ...product, // All product details
+                ...product, 
                 storeName: store.storeName,
                 storeLogo: store.storeLogo,
                 userRewardId: userReward.userRewardId,
@@ -602,8 +713,16 @@
                 usedDate: userReward.usedDate
             };
         };
+        
+        const getProduct = (storeId, productId) => {
+            const store = state.stores.find(s => s.storeId === storeId);
+            if (!store) return { store: null, product: null };
+            const product = store.products.find(p => p.productId === productId);
+            return { store, product };
+        }
 
         // --- DOM Elements ---
+        const mainContent = document.querySelector('.main-content');
         const pages = document.querySelectorAll('.page');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -618,28 +737,34 @@
         const userPointsSidebar = document.getElementById('user-points-sidebar');
         const userLevelSidebar = document.getElementById('user-level-sidebar');
 
+        const checkInCard = document.getElementById('daily-check-in-card');
+
         const eventList = document.getElementById('event-list');
-        const storeList = document.getElementById('store-list'); // *** RENAMED from rewardList ***
+        const storeListPreview = document.getElementById('store-list-preview'); 
+        const storeDetailPage = document.getElementById('store-detail-page'); 
+        const productDetailPage = document.getElementById('product-detail-page'); 
         const historyList = document.getElementById('history-list');
         const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
         
-        // Profile Page
+        // *** NEW: Challenge List Elements ***
+        const challengesPageList = document.getElementById('challenges-page-list');
+        const challengesDashboardList = document.getElementById('challenges-dashboard-list');
+        
         const profileAvatar = document.getElementById('profile-avatar');
         const profileName = document.getElementById('profile-name');
         const profileEmail = document.getElementById('profile-email');
         const profileJoined = document.getElementById('profile-joined');
-        const profilePoints = document.getElementById('profile-points');
-        const profileRank = document.getElementById('profile-rank');
-        const profileEvents = document.getElementById('profile-events');
         const profileLevelTitle = document.getElementById('profile-level-title');
         const profileLevelNumber = document.getElementById('profile-level-number');
         const profileLevelProgress = document.getElementById('profile-level-progress');
         const profileLevelNext = document.getElementById('profile-level-next');
-        const profileRecentActivity = document.getElementById('profile-recent-activity'); 
-        const profileActiveRewards = document.getElementById('profile-active-rewards'); 
+        const profileStudentId = document.getElementById('profile-student-id');
+        const profileCourse = document.getElementById('profile-course');
+        const profileMobile = document.getElementById('profile-mobile');
+        const profileEmailPersonal = document.getElementById('profile-email-personal');
+        const profileMembership = document.getElementById('profile-membership');
 
-        // EcoPoints Page
         const ecopointsBalance = document.getElementById('ecopoints-balance'); 
         const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); 
         const ecopointsLevelNumber = document.getElementById('ecopoints-level-number'); 
@@ -648,18 +773,14 @@
         const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity'); 
         const levelLineProgress = document.getElementById('level-line-progress'); 
 
-        // Modals
         const purchaseModalOverlay = document.getElementById('purchase-modal-overlay');
         const purchaseModal = document.getElementById('purchase-modal');
         const qrModalOverlay = document.getElementById('qr-modal-overlay');
         const qrModal = document.getElementById('qr-modal');
 
-        // Reward Tabs
-        const activeRewardsList = document.getElementById('active-rewards-list');
-        const usedRewardsList = document.getElementById('used-rewards-list');
+        const allRewardsList = document.getElementById('all-rewards-list');
 
 
-        // --- Helper Function: Get User Level ---
         const getUserLevel = (points) => {
             let currentLevel = state.levels[0];
             for (let i = state.levels.length - 1; i >= 0; i--) {
@@ -700,6 +821,40 @@
             userLevelSidebar.textContent = `Lv. ${levelInfo.level}: ${levelInfo.title}`;
             userLevelSidebar.className = `text-sm font-medium ${levelInfo.color} mb-1`;
         };
+
+        const renderCheckInCard = () => {
+            const today = getTodayDateString();
+            const user = state.currentUser;
+            
+            if (user.lastCheckInDate === today) {
+                // Completed State
+                checkInCard.className = "bg-green-50 border border-green-200 p-5 rounded-xl mb-6 flex items-center justify-between";
+                checkInCard.innerHTML = `
+                    <div>
+                        <h3 class="text-lg font-bold text-green-800">Daily Check-in</h3>
+                        <p class="text-sm text-green-700">You've already checked in today!</p>
+                    </div>
+                    <div class="bg-green-100 text-green-700 font-bold py-2 px-4 rounded-lg flex items-center space-x-2 whitespace-nowrap">
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                        <span>Checked-in</span>
+                    </div>
+                `;
+            } else {
+                // Active State
+                checkInCard.className = "bg-white border border-gray-200 p-5 rounded-xl mb-6 flex items-center justify-between shadow-sm";
+                checkInCard.innerHTML = `
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Daily Check-in</h3>
+                        <p class="text-sm text-gray-600">Earn +${state.checkInReward} points for checking in!</p>
+                    </div>
+                    <button onclick="performCheckIn()" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 whitespace-nowrap hover:bg-green-700 transition-colors">
+                        <i data-lucide="log-in" class="w-5 h-5"></i>
+                        <span>Check-in</span>
+                    </button>
+                `;
+            }
+            lucide.createIcons();
+        };
         
         const renderLeaderboardDashboard = () => {
             leaderboardDashboardList.innerHTML = '';
@@ -715,7 +870,7 @@
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
                 
                 leaderboardDashboardList.innerHTML += `
-                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                    <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm">
                         <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
                         <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
                         <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
@@ -740,7 +895,7 @@
                 const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
                 
                 leaderboardPageList.innerHTML += `
-                    <div class="flex items-center ${isCurrentUserClass} p-3 rounded-lg shadow-sm">
+                    <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm">
                         <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
                         <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
                         <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
@@ -751,10 +906,69 @@
             lucide.createIcons();
         };
 
+        // *** NEW: Render Challenge Card (helper) ***
+        const renderChallengeCard = (challenge) => {
+            let buttonHTML = '';
+            if (challenge.status === 'active') {
+                buttonHTML = `<button onclick="completeChallenge('${challenge.id}')" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-700 transition-colors">Complete</button>`;
+            } else {
+                buttonHTML = `<button class="w-full bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed flex items-center justify-center space-x-2">
+                                <i data-lucide="check" class="w-5 h-5"></i>
+                                <span>Completed</span>
+                            </button>`;
+            }
+
+            return `
+                <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="flex items-start">
+                        <div class="p-3 bg-yellow-100 rounded-lg mr-4">
+                            <i data-lucide="${challenge.icon}" class="w-6 h-6 text-yellow-600"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-gray-800 text-lg">${challenge.title}</h3>
+                            <p class="text-sm text-gray-500 mb-3">${challenge.description}</p>
+                            <p class="text-sm font-bold text-green-600 mb-3">+${challenge.points} EcoPoints</p>
+                            ${buttonHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+        
+        // *** NEW: Render Challenges Page ***
+        const renderChallengesPage = () => {
+            challengesPageList.innerHTML = '';
+            const challenges = state.dailyChallenges;
+            
+            if(challenges.length === 0) {
+                challengesPageList.innerHTML = `<p class="text-center text-gray-500">No challenges available today. Check back tomorrow!</p>`;
+                return;
+            }
+
+            challenges.forEach(challenge => {
+                challengesPageList.innerHTML += renderChallengeCard(challenge);
+            });
+            lucide.createIcons();
+        };
+
+        // *** NEW: Render Challenges Dashboard Preview ***
+        const renderChallengesDashboard = () => {
+            challengesDashboardList.innerHTML = '';
+            const activeChallenges = state.dailyChallenges.filter(c => c.status === 'active').slice(0, 2);
+
+            if (activeChallenges.length === 0) {
+                challengesDashboardList.innerHTML = `<p class="text-center text-gray-500 text-sm p-4 bg-white rounded-xl shadow-sm">You've completed all daily challenges!</p>`;
+                return;
+            }
+
+            activeChallenges.forEach(challenge => {
+                challengesDashboardList.innerHTML += renderChallengeCard(challenge);
+            });
+            lucide.createIcons();
+        };
+
         const renderProfile = () => {
             const user = state.currentUser;
-            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
-            const userRank = sortedLeaderboard.findIndex(u => u.id === user.id) + 1;
             const levelInfo = getUserLevel(user.points);
 
             profileAvatar.src = user.avatarUrl.replace('40x40', '100x100');
@@ -765,78 +979,46 @@
             profileLevelTitle.textContent = levelInfo.title;
             profileLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
             profileLevelNumber.textContent = levelInfo.level;
-            
             profileLevelProgress.style.width = `${levelInfo.progress}%`;
             profileLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
-            
             profileLevelNext.textContent = levelInfo.progressText;
             
-            profilePoints.textContent = user.points;
-            profileRank.textContent = `#${userRank}`;
-            profileEvents.textContent = state.events.filter(e => e.rsvp).length;
+            profileStudentId.textContent = user.studentId;
+            profileCourse.textContent = user.course;
+            profileMobile.textContent = user.mobile;
+            profileEmailPersonal.textContent = user.email;
+
+            if (user.isGreenClubMember) {
+                profileMembership.innerHTML = `
+                    <div class="p-3 bg-green-100 rounded-lg mr-4">
+                        <i data-lucide="leaf" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Green Club</p>
+                        <p class="text-sm text-green-600">Active Member</p>
+                    </div>
+                `;
+            } else {
+                profileMembership.innerHTML = `
+                    <div class="p-3 bg-gray-100 rounded-lg mr-4">
+                        <i data-lucide="x-circle" class="w-6 h-6 text-gray-500"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">No Memberships</p>
+                        <p class="text-sm text-gray-500">Join a club to see it here.</p>
+                    </div>
+                `;
+            }
             
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderProfileSummaries ***
-        const renderProfileSummaries = () => {
-            profileRecentActivity.innerHTML = '';
-            const historySummary = state.history.slice(0, 3);
-            if (historySummary.length === 0) {
-                 profileRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No activity yet.</p>`;
-            } else {
-                historySummary.forEach(item => {
-                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
-                    const sign = item.points >= 0 ? '+' : '';
-                    profileRecentActivity.innerHTML += `
-                        <div class="flex items-center">
-                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
-                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
-                            </div>
-                            <div class="flex-grow">
-                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
-                                <p class="text-xs text-gray-500">${item.date}</p>
-                            </div>
-                            <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
-                        </div>
-                    `;
-                });
-            }
-
-            profileActiveRewards.innerHTML = '';
-            const rewardSummary = state.userRewards.filter(r => r.status === 'active').slice(0, 2);
-            if (rewardSummary.length === 0) {
-                 profileActiveRewards.innerHTML = `<p class="text-center text-gray-500 text-sm">No active rewards.</p>`;
-            } else {
-                rewardSummary.forEach(userReward => {
-                    // Use the helper to get details
-                    const rewardDetails = getRewardDetails(userReward);
-                    if (!rewardDetails) return;
-
-                    profileActiveRewards.innerHTML += `
-                        <div class="flex items-center">
-                            <img src="${rewardDetails.imageUrl}" class="w-12 h-12 object-cover rounded-lg mr-3">
-                            <div class="flex-grow">
-                                <p class="font-semibold text-gray-800 text-sm">${rewardDetails.name}</p>
-                                <p class="text-xs text-gray-500">${rewardDetails.storeName}</p>
-                            </div>
-                            <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">Use</button>
-                        </div>
-                    `;
-                });
-            }
-            lucide.createIcons();
-        };
-
-        // *** MODIFIED: renderEcoPointsPage ***
         const renderEcoPointsPage = () => {
             const user = state.currentUser;
             const levelInfo = getUserLevel(user.points);
 
-            // 1. Render Balance
             ecopointsBalance.textContent = user.points;
 
-            // 2. Render Level Progress Bar
             ecopointsLevelTitle.textContent = levelInfo.title;
             ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
             ecopointsLevelNumber.textContent = levelInfo.level;
@@ -844,35 +1026,30 @@
             ecopointsLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
             ecopointsLevelNext.textContent = levelInfo.progressText;
 
-            // 3. Render Static Level Step visual
             state.levels.forEach((level, index) => {
                 const stepEl = document.getElementById(`level-step-${level.level}`);
                 const textContent = stepEl.querySelector('.level-text-content');
                 const numberSpan = stepEl.querySelector('.level-number-container span');
+                const titleH5 = textContent.querySelector('h5'); 
                 
-                // Clear old classes
-                textContent.classList.remove('opacity-50');
+                textContent.classList.remove('opacity-60');
                 numberSpan.classList.remove('text-green-600', 'text-gray-400', 'scale-110');
+                titleH5.classList.remove('text-green-700', 'font-extrabold');
 
                 if (level.level < levelInfo.level) {
-                    // Completed
                     numberSpan.classList.add('text-green-600');
                 } else if (level.level === levelInfo.level) {
-                    // Active
-                    numberSpan.classList.add('text-green-600', 'scale-110'); // Make active number stand out
+                    numberSpan.classList.add('text-green-600', 'scale-110'); 
+                    titleH5.classList.add('text-green-700', 'font-extrabold'); 
                 } else {
-                    // Upcoming
                     numberSpan.classList.add('text-gray-400');
-                    textContent.classList.add('opacity-50'); 
+                    textContent.classList.add('opacity-60'); 
                 }
             });
             
-            // 4. Update the progress line height
             const totalProgressPercent = ((levelInfo.level - 1) + (levelInfo.progress / 100)) / (state.levels.length - 1) * 100;
             levelLineProgress.style.height = `${totalProgressPercent}%`;
 
-
-            // 5. Render Recent Transactions (top 3)
             ecopointsRecentActivity.innerHTML = '';
             const historySummary = state.history.slice(0, 3);
             if (historySummary.length === 0) {
@@ -897,21 +1074,23 @@
             }
             lucide.createIcons();
         };
-        // *** END MODIFICATION ***
 
         const renderHistory = () => {
             historyList.innerHTML = '';
-            if (state.history.length === 0) {
+            // Sort history by date, newest first (assuming YYYY-MM-DD format)
+            const sortedHistory = [...state.history].sort((a, b) => new Date(b.date.replaceAll('/', '-')) - new Date(a.date.replaceAll('/', '-')));
+            
+            if (sortedHistory.length === 0) {
                 historyList.innerHTML = `<p class="text-center text-gray-500">No activity yet.</p>`;
                 return;
             }
-            state.history.forEach(item => {
+            sortedHistory.forEach(item => {
                 const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
                 const sign = item.points >= 0 ? '+' : '';
                 
                 historyList.innerHTML += `
-                    <div class="bg-white p-3 rounded-xl shadow-sm flex items-center">
-                        <div class="p-2 bg-gray-100 rounded-lg mr-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm flex items-center">
+                        <div class="p-3 bg-gray-100 rounded-lg mr-4">
                             <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600"></i>
                         </div>
                         <div class="flex-grow">
@@ -955,47 +1134,56 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderRewards ***
+        // *** MODIFIED: renderProductCard (image size) ***
+        const renderProductCard = (product, storeId, type = 'grid') => {
+            const cardWidth = type === 'preview' ? 'w-36' : 'w-full';
+            
+            return `
+                <div class="${cardWidth} flex-shrink-0 bg-white border rounded-xl overflow-hidden flex flex-col shadow-md cursor-pointer transition-shadow hover:shadow-lg" 
+                     onclick="showProductDetailPage('${storeId}', '${product.productId}')">
+                    
+                    <img src="${product.images[0].replace('400x300', '300x400')}" alt="${product.name}" class="w-full h-48 object-cover"> <div class="p-3 flex flex-col flex-grow">
+                        <p class="font-bold text-gray-800 text-sm truncate">${product.name}</p>
+                        
+                        <div class="mt-auto pt-2">
+                            <p class="text-xs text-gray-400 line-through">₹${product.originalPrice}</p>
+                            <div class="flex items-center font-bold text-gray-800 my-1">
+                                <span class="text-md text-green-700">₹${product.discountedPrice}</span>
+                                <span class="mx-1 text-gray-400 text-xs">+</span>
+                                <i data-lucide="leaf" class="w-3 h-3 text-green-500 mr-1"></i>
+                                <span class="text-sm text-green-700">${product.cost}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
         const renderRewards = () => {
-            storeList.innerHTML = ''; // Use the new storeList container
+            storeListPreview.innerHTML = ''; 
             
             state.stores.forEach(store => {
                 let productsHTML = '';
                 
-                store.products.sort((a,b) => a.cost - b.cost).forEach(product => {
-                    const canAfford = state.currentUser.points >= product.cost;
-                    const buttonClass = canAfford 
-                        ? 'bg-green-600 hover:bg-green-700' 
-                        : 'bg-gray-400 cursor-not-allowed';
-                    
-                    productsHTML += `
-                        <div class="border rounded-lg overflow-hidden flex flex-col shadow-sm">
-                            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-24 object-cover">
-                            <div class="p-3 flex flex-col flex-grow">
-                                <p class="font-bold text-gray-800 text-sm">${product.name}</p>
-                                <div class="my-2">
-                                    <span class="text-sm text-gray-500 line-through">₹${product.originalPrice}</span>
-                                    <span class="text-lg font-bold text-red-600 ml-1">₹${product.discountedPrice}</span>
-                                </div>
-                                <button onclick="openPurchaseModal('${store.storeId}', '${product.productId}')" 
-                                        class="${buttonClass} text-white text-sm font-bold py-2 px-3 rounded-lg transition-colors w-full mt-auto flex items-center justify-center space-x-2" 
-                                        ${!canAfford ? 'disabled' : ''}>
-                                    <i data-lucide="leaf" class="w-4 h-4"></i>
-                                    <span>${product.cost} Points</span>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                store.products.slice(0, 3).forEach(product => {
+                    productsHTML += renderProductCard(product, store.storeId, 'preview');
                 });
 
-                storeList.innerHTML += `
+                storeListPreview.innerHTML += `
                     <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="p-4 flex items-center border-b bg-gray-50">
-                            <img src="${store.storeLogo}" class="w-12 h-12 rounded-full mr-4 border">
-                            <h3 class="text-xl font-bold text-gray-800">${store.storeName}</h3>
+                        <div class="p-4 flex items-center justify-between border-b bg-gray-50">
+                            <div class="flex items-center cursor-pointer" onclick="showStoreDetailPage('${store.storeId}')">
+                                <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border">
+                                <h3 class="text-lg font-bold text-gray-800">${store.storeName}</h3>
+                            </div>
+                            <button onclick="showStoreDetailPage('${store.storeId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">
+                                View All
+                            </button>
                         </div>
-                        <div class="p-4 grid grid-cols-2 gap-4">
-                            ${productsHTML}
+                        <div class="p-4">
+                            <div class="flex gap-3 overflow-x-auto horizontal-scroll">
+                                ${productsHTML}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1003,58 +1191,47 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderMyRewardsPage ***
+        // *** MODIFIED: renderMyRewardsPage (image size) ***
         const renderMyRewardsPage = () => {
-            activeRewardsList.innerHTML = '';
-            usedRewardsList.innerHTML = '';
+            allRewardsList.innerHTML = '';
 
-            const activeRewards = state.userRewards.filter(ur => ur.status === 'active');
-            const usedRewards = state.userRewards.filter(ur => ur.status === 'used');
+            const allRewards = state.userRewards; 
 
-            if (activeRewards.length === 0) {
-                activeRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no active rewards. Visit the Eco-Store to get some!</p>`;
+            if (allRewards.length === 0) {
+                allRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no rewards. Visit the Eco-Store to get some!</p>`;
             } else {
-                activeRewards.forEach(userReward => {
+                allRewards.forEach(userReward => {
                     const rewardDetails = getRewardDetails(userReward);
                     if (!rewardDetails) return;
 
-                    activeRewardsList.innerHTML += `
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
-                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
-                            <div class="p-4 flex-grow flex flex-col">
-                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
-                                <p class="text-xs text-gray-400 mb-2 mt-1">Purchased: ${userReward.purchaseDate}</p>
-                                <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
-                                    Use Now
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            if (usedRewards.length === 0) {
-                usedRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You haven't used any rewards yet.</p>`;
-            } else {
-                usedRewards.forEach(userReward => {
-                    const rewardDetails = getRewardDetails(userReward);
-                    if (!rewardDetails) return;
-
-                    usedRewardsList.innerHTML += `
-                        <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
-                            <img src="${rewardDetails.imageUrl}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
-                            <div class="p-4 flex-grow">
-                                <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
-                                <p class="text-xs text-gray-400 mt-1">Purchased: ${userReward.purchaseDate}</p>
-                                <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
-                                <div class="mt-2 w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
-                                    Redeemed
+                    if (userReward.status === 'active') {
+                        allRewardsList.innerHTML += `
+                            <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
+                                <img src="${rewardDetails.images[0].replace('400x300', '300x400')}" alt="${rewardDetails.name}" class="w-28 h-full object-cover"> <div class="p-4 flex-grow flex flex-col">
+                                    <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                    <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
+                                    <p class="text-xs text-gray-400 mb-2 mt-1">Purchased: ${userReward.purchaseDate}</p>
+                                    <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
+                                        Use Now
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        allRewardsList.innerHTML += `
+                            <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
+                                <img src="${rewardDetails.images[0].replace('400x300', '300x400')}" alt="${rewardDetails.name}" class="w-28 h-full object-cover"> <div class="p-4 flex-grow">
+                                    <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
+                                    <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
+                                    <p class="text-xs text-gray-400 mt-1">Purchased: ${userReward.purchaseDate}</p>
+                                    <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
+                                    <div class="mt-2 w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
+                                        Redeemed
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
                 });
             }
             lucide.createIcons();
@@ -1063,26 +1240,100 @@
 
         // --- Logic and State Management ---
         
+        const performCheckIn = () => {
+            const today = getTodayDateString();
+            if (state.currentUser.lastCheckInDate === today) {
+                return; 
+            }
+
+            state.currentUser.lastCheckInDate = today;
+            state.currentUser.points += state.checkInReward;
+
+            state.history.unshift({
+                type: 'check-in',
+                description: 'Daily Check-in Bonus',
+                points: state.checkInReward,
+                date: today.replaceAll('-', '/'), 
+                icon: 'log-in'
+            });
+
+            renderCheckInCard();
+            renderHeader(); 
+            
+            if (document.getElementById('profile').classList.contains('active')) {
+                renderProfile();
+            }
+            if (document.getElementById('ecopoints').classList.contains('active')) {
+                renderEcoPointsPage();
+            }
+            if (document.getElementById('history').classList.contains('active')) {
+                renderHistory();
+            }
+        };
+
+        // *** NEW: Complete Challenge Function ***
+        const completeChallenge = (challengeId) => {
+            const challenge = state.dailyChallenges.find(c => c.id === challengeId);
+            if (!challenge || challenge.status === 'completed') {
+                return;
+            }
+
+            // 1. Update challenge status
+            challenge.status = 'completed';
+
+            // 2. Add points
+            state.currentUser.points += challenge.points;
+
+            // 3. Add to history
+            state.history.unshift({
+                type: 'challenge',
+                description: `Completed: ${challenge.title}`,
+                points: challenge.points,
+                date: getTodayDateString().replaceAll('-', '/'),
+                icon: 'award'
+            });
+
+            // 4. Re-render
+            renderHeader();
+            renderChallengesPage();
+            renderChallengesDashboard(); // Update dashboard preview
+            
+            if (document.getElementById('profile').classList.contains('active')) {
+                renderProfile();
+            }
+            if (document.getElementById('ecopoints').classList.contains('active')) {
+                renderEcoPointsPage();
+            }
+            if (document.getElementById('history').classList.contains('active')) {
+                renderHistory();
+            }
+        };
+        
         const showPage = (pageId) => {
             pages.forEach(p => p.classList.remove('active'));
+            storeDetailPage.innerHTML = '';
+            productDetailPage.innerHTML = '';
+            
             const newPage = document.getElementById(pageId);
             if (newPage) {
                 newPage.classList.add('active');
             }
+            
             sidebarNavItems.forEach(item => {
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
+            
             navItems.forEach(item => {
                 item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
             });
             
-            // Re-render data just in time
+            mainContent.scrollTop = 0;
+            
             if (pageId === 'my-rewards') {
                 renderMyRewardsPage();
             }
             if (pageId === 'profile') {
                 renderProfile(); 
-                renderProfileSummaries(); 
             }
             if (pageId === 'ecopoints') {
                 renderEcoPointsPage(); 
@@ -1096,8 +1347,121 @@
             if (pageId === 'rewards') {
                 renderRewards(); 
             }
+            if (pageId === 'challenges') { // *** NEW ***
+                renderChallengesPage();
+            }
+            if (pageId === 'dashboard') {
+                renderCheckInCard();
+                renderLeaderboardDashboard();
+                renderChallengesDashboard(); // *** NEW ***
+            }
 
             toggleSidebar(true); 
+        };
+        
+        const showStoreDetailPage = (storeId) => {
+            const store = state.stores.find(s => s.storeId === storeId);
+            if (!store) return;
+            
+            let productsHTML = '';
+            store.products.sort((a,b) => a.cost - b.cost).forEach(product => {
+                productsHTML += renderProductCard(product, store.storeId, 'grid');
+            });
+            
+            storeDetailPage.innerHTML = `
+                <div class="p-4 bg-white sticky top-0 z-10 border-b flex items-center">
+                    <button onclick="showPage('rewards')" class="p-2 text-gray-600 -ml-2 mr-2">
+                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                    </button>
+                    <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border">
+                    <h2 class="text-xl font-bold text-gray-800">${store.storeName}</h2>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">All Products</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${productsHTML}
+                    </div>
+                </div>
+            `;
+            
+            pages.forEach(p => p.classList.remove('active'));
+            storeDetailPage.classList.add('active');
+            mainContent.scrollTop = 0;
+            lucide.createIcons();
+        };
+
+        // *** MODIFIED: showProductDetailPage (image size) ***
+        const showProductDetailPage = (storeId, productId) => {
+            const { store, product } = getProduct(storeId, productId);
+            if (!product) return;
+
+            const canAfford = state.currentUser.points >= product.cost;
+            const buttonClass = canAfford 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-gray-400 cursor-not-allowed';
+
+            let featuresHTML = '';
+            product.features.forEach(f => {
+                featuresHTML += `<li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>${f}</li>`;
+            });
+            
+            let specsHTML = '';
+            product.specifications.forEach(s => {
+                specsHTML += `
+                    <div class="bg-gray-100 p-3 rounded-lg text-center">
+                        <p class="text-xs text-gray-500">${s.key}</p>
+                        <p class="font-semibold text-gray-800 text-sm">${s.value}</p>
+                    </div>
+                `;
+            });
+
+            productDetailPage.innerHTML = `
+                <div class="pb-24">
+                    <div class="relative">
+                        <img src="${product.images[0]}" alt="${product.name}" class="w-full h-80 object-cover"> <button onclick="showStoreDetailPage('${store.storeId}')" class="absolute top-4 left-4 p-2 bg-white/80 rounded-full shadow-md text-gray-700">
+                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-6 bg-white">
+                        <h2 class="text-3xl font-bold text-gray-800">${product.name}</h2>
+                        <p class="text-sm text-gray-500 mb-6">${store.storeName}</p>
+                        
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Description</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">${product.description}</p>
+
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Features</h3>
+                        <ul class="space-y-2 text-gray-600 mb-6">${featuresHTML}</ul>
+
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Specifications</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-6">${specsHTML}</div>
+                    </div>
+                </div>
+
+                <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4 shadow-lg-top">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 line-through">₹${product.originalPrice}</p>
+                            <div class="flex items-center font-bold text-gray-800">
+                                <span class="text-2xl text-green-700">₹${product.discountedPrice}</span>
+                                <span class="mx-2 text-gray-400">+</span>
+                                <i data-lucide="leaf" class="w-5 h-5 text-green-500 mr-1"></i>
+                                <span class="text-2xl text-green-700">${product.cost}</span>
+                            </div>
+                        </div>
+                        <button onclick="openPurchaseModal('${store.storeId}', '${product.productId}')" 
+                                class="${buttonClass} text-white text-md font-bold py-3 px-6 rounded-lg transition-colors" 
+                                ${!canAfford ? 'disabled' : ''}>
+                            Redeem Offer
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            pages.forEach(p => p.classList.remove('active'));
+            productDetailPage.classList.add('active');
+            mainContent.scrollTop = 0;
+            lucide.createIcons();
         };
 
         const toggleSidebar = (forceClose = false) => {
@@ -1117,24 +1481,13 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile(); // Update profile event count
+                renderProfile();
             }
         };
 
-        const showRewardTab = (tabName) => {
-            document.querySelectorAll('.reward-tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            document.querySelectorAll('.reward-tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`content-${tabName}`).classList.add('active');
-        };
-
-        
-        // *** MODIFIED: openPurchaseModal ***
+        // *** MODIFIED: openPurchaseModal (image size) ***
         const openPurchaseModal = (storeId, productId) => {
-            const store = state.stores.find(s => s.storeId === storeId);
-            if (!store) return;
-            const product = store.products.find(p => p.productId === productId);
+            const { store, product } = getProduct(storeId, productId);
             if (!product) return;
 
             purchaseModal.innerHTML = `
@@ -1145,13 +1498,17 @@
                     </button>
                 </div>
                 
-                <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-40 object-cover rounded-lg mb-4">
-                <h4 class="text-lg font-bold text-gray-800">${product.name}</h4>
-                <p class="text-sm text-gray-500 mb-2">From ${store.storeName}</p>
-                
-                <div class="my-2">
-                    <span class="text-lg text-gray-500 line-through">₹${product.originalPrice}</span>
-                    <span class="text-2xl font-bold text-red-600 ml-2">₹${product.discountedPrice}</span>
+                <div class="flex items-center mb-4">
+                    <img src="${product.images[0].replace('400x300', '300x400')}" alt="${product.name}" class="w-24 h-32 object-cover rounded-lg mr-4"> <div>
+                        <h4 class="text-lg font-bold text-gray-800">${product.name}</h4>
+                        <p class="text-sm text-gray-500 mb-2">From ${store.storeName}</p>
+                        <div class="flex items-center font-bold text-gray-800">
+                            <span class="text-lg text-green-700">₹${product.discountedPrice}</span>
+                            <span class="mx-1 text-gray-400">+</span>
+                            <i data-lucide="leaf" class="w-4 h-4 text-green-500 mr-1"></i>
+                            <span class="text-lg text-green-700">${product.cost}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-gray-100 rounded-lg p-3 mb-4 mt-4">
@@ -1193,14 +1550,11 @@
             }, 300);
         };
 
-        // *** MODIFIED: confirmPurchase ***
         const confirmPurchase = (storeId, productId) => {
-            const store = state.stores.find(s => s.storeId === storeId);
-            if (!store) return;
-            const product = store.products.find(p => p.productId === productId);
+            const { store, product } = getProduct(storeId, productId);
             if (!product) return;
             
-            const today = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+            const today = getTodayDateString(); 
 
             if (state.currentUser.points >= product.cost) {
                 state.currentUser.points -= product.cost;
@@ -1209,33 +1563,38 @@
                     type: 'reward', 
                     description: `Purchased ${product.name}`, 
                     points: -product.cost, 
-                    date: today,
+                    date: today.replaceAll('-', '/'),
                     icon: 'shopping-cart'
                 });
 
                 const newUserRewardId = 'ur' + state.nextUserRewardId++;
                 state.userRewards.unshift({
                     userRewardId: newUserRewardId,
-                    storeId: store.storeId, // Add storeId
-                    productId: product.productId, // Add productId
-                    purchaseDate: today,
+                    storeId: store.storeId,
+                    productId: product.productId, 
+                    purchaseDate: today.replaceAll('-', '/'),
                     status: 'active'
                 });
                 
-                // Re-render all affected components
                 renderHeader();
                 renderRewards(); 
-                renderHistory();
-                renderProfile();
-                renderProfileSummaries(); 
-                renderMyRewardsPage(); 
+
+                if (storeDetailPage.classList.contains('active')) {
+                    showStoreDetailPage(storeId);
+                }
+                if (productDetailPage.classList.contains('active')) {
+                    showProductDetailPage(storeId, productId);
+                }
 
                 purchaseModal.innerHTML = `
                     <div class="text-center p-4">
                         <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
                         <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Successful!</h3>
                         <p class="text-gray-600 mb-6">You can find your new reward in the "My Rewards" page.</p>
-                        <button onclick="closePurchaseModal()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                        <button onclick="closePurchaseModalAndShowMyRewards()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 mb-2">
+                            Go to My Rewards
+                        </button>
+                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
                             Done
                         </button>
                     </div>
@@ -1257,10 +1616,14 @@
             }
         };
         
-        // *** MODIFIED: openRewardQrModal ***
+        const closePurchaseModalAndShowMyRewards = () => {
+            closePurchaseModal();
+            showPage('my-rewards');
+        };
+        
         const openRewardQrModal = (userRewardId) => {
             const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
-            const rewardDetails = getRewardDetails(userReward); // Use helper
+            const rewardDetails = getRewardDetails(userReward); 
             if (!rewardDetails) return;
 
             const qrData = `USER_REWARD_ID::${userReward.userRewardId}`;
@@ -1310,7 +1673,7 @@
             const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
             if (userReward) {
                 userReward.status = 'used';
-                userReward.usedDate = new Date().toISOString().split('T')[0].replaceAll('-', '/');
+                userReward.usedDate = getTodayDateString().replaceAll('-', '/');
                 
                 renderMyRewardsPage();
                 
@@ -1326,8 +1689,10 @@
             // Initial Renders
             renderHeader();
             renderLeaderboardDashboard();
+            renderChallengesDashboard(); // *** NEW ***
             renderEvents();
-            renderRewards(); // Render new rewards structure
+            renderRewards(); 
+            renderCheckInCard(); 
             
             showPage('dashboard');
             lucide.createIcons(); 
