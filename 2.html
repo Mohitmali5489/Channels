@@ -47,12 +47,13 @@
             overflow-x: hidden;
         }
         
-        .page { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .page.active { display: block; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* MODIFIED: New Page Transition */
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
+        .page { display: none; animation: slideInRight 0.3s ease-out; }
+        .page.active { display: block; }
 
         #sidebar {
             transition: transform 0.3s ease-in-out;
@@ -142,11 +143,26 @@
         #checkin-modal.open #checkin-modal-content {
             transform: translateY(0);
         }
-
-        /* NEW: Feed Styles */
-        .feed-card-actions button .lucide-heart.liked {
-            fill: #ef4444; /* red-500 */
-            color: #ef4444;
+        
+        /* NEW: Points Header Pulse */
+        @keyframes pulse-points {
+            0% { transform: scale(1); color: #10B981; } /* default green */
+            50% { transform: scale(1.2) rotate(-5deg); color: #34D399; } /* lighter green */
+            100% { transform: scale(1); color: #10B981; }
+        }
+        .points-pulse {
+            animation: pulse-points 0.4s ease-out;
+        }
+        
+        /* NEW: Filter Button Active State */
+        .store-filter-btn.active {
+            background-color: #10B981; /* green-600 */
+            color: white;
+            font-weight: 600;
+        }
+        .dark .store-filter-btn.active {
+            background-color: #059669; /* green-700 */
+            color: white;
         }
     </style>
 </head>
@@ -179,10 +195,7 @@
             <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
             </button>
-
-            <button onclick="showPage('feed')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i data-lucide="rss" class="w-5 h-5 mr-3"></i>Community Feed
-            </button>
+            
             <button onclick="showPage('eco-wars')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="shield" class="w-5 h-5 mr-3"></i>Eco Wars
             </button>
@@ -330,7 +343,7 @@
                             </div>
                             <p id="profile-pic-error" class="text-sm text-red-500 mt-2"></p>
                             
-                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-3"></h3>
+                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-3 flex items-center"></h3>
                             <p id="profile-email" class="text-gray-500 dark:text-gray-400"></p>
                             <p id="profile-joined" class="text-sm text-gray-400 dark:text-gray-500 mt-1"></p>
 
@@ -394,17 +407,6 @@
                     </div>
             </div>
 
-            <div id="feed" class="page p-0">
-                <div class="bg-white dark:bg-gray-950 sticky top-0 z-10 p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
-                    <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Green Feed</h2>
-                    <button class="bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
-                        <i data-lucide="plus" class="w-6 h-6"></i>
-                    </button>
-                </div>
-                <div id="feed-page-list" class="space-y-4 p-4">
-                    </div>
-            </div>
-
             <div id="challenges" class="page p-6">
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Daily Challenges</h2>
                 <div id="challenges-page-list" class="space-y-4">
@@ -433,7 +435,7 @@
                         <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 dark:text-gray-400 mt-1"></p>
                     </div>
                     
-                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6 mt-6">All Levels</h4>
+                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6 mt-6">All Levels (Based on Lifetime Points)</h4>
                     <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
                         <div id="level-line-progress" class="absolute left-2 top-0 w-1 bg-green-500 rounded-full" style="height: 0%; transition: height 0.5s ease;"></div>
 
@@ -527,14 +529,25 @@
                 <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
                     <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Find Rewards</h3>
                     <div class="relative">
-                        <input type="text" id="store-search-input" placeholder="Search for stores or products..." class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <input type="text" id="store-search-input" placeholder="Search for stores or products..." class="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button id="store-search-clear" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-gray-600 hidden">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
                     </div>
                     <div class="flex gap-2 mt-3 overflow-x-auto horizontal-scroll pb-2">
-                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Canteen</button>
-                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Merch</button>
-                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Coffee</button>
-                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg"><i data-lucide="filter" class="w-5 h-5"></i></button>
+                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="all">
+                            All
+                        </button>
+                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Canteen">
+                            Canteen
+                        </button>
+                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Merch">
+                            Merch
+                        </button>
+                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Coffee">
+                            Coffee
+                        </button>
                     </div>
                 </div>
 
@@ -548,6 +561,9 @@
             <div id="product-detail-page" class="page dark:bg-gray-900">
                 </div>
             
+            <div id="user-profile-page" class="page dark:bg-gray-900">
+                </div>
+
             <div id="my-rewards" class="page p-6">
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">My Rewards</h2>
                 <div id="all-rewards-list" class="space-y-4">
@@ -625,9 +641,6 @@
                 <button onclick="showPage('eco-wars')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="shield" class="w-6 h-6 mx-auto"></i><span class="text-xs">Eco Wars</span>
                 </button>
-                <button onclick="showPage('feed')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
-                    <i data-lucide="rss" class="w-6 h-6 mx-auto"></i><span class="text-xs">Feed</span>
-                </button>
                 <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
                 </button>
@@ -667,7 +680,6 @@
     <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
     </div>
 
-
     <script>
         // --- Demo Data and State ---
         
@@ -685,24 +697,26 @@
                 id: 4,
                 name: 'Alex Green',
                 avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
-                points: 350,
+                points: 350, // This is the current, spendable balance
+                lifetimePoints: 350, // This is the total points ever earned
                 email: 'mohitforestudies@gmail.com', 
                 joined: 'Sep 2025',
                 studentId: '5207872', 
                 course: 'SYBAF', 
                 mobile: '9850751835', 
                 isGreenClubMember: true,
+                isVerified: false, // Added for verified tick
                 lastCheckInDate: yesterday, // Set to yesterday for demo
                 checkInStreak: 3 // User is on a 3-day streak
             },
             checkInReward: 10, // Base reward
             leaderboard: [
-                { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD' },
-                { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS' },
-                { id: 3, name: 'Sarah Lee', points: 395, avatarUrl: 'https://placehold.co/40x40/EC4899/FFFFFF?text=SL' },
-                { id: 4, name: 'Alex Green', points: 350, avatarUrl: 'https://placehold.co/40x40/A3E635/FFFFFF?text=AG', isCurrentUser: true },
-                { id: 5, name: 'Tom Wilson', points: 280, avatarUrl: 'https://placehold.co/40x40/F97316/FFFFFF?text=TW' },
-                { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC' },
+                { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD', isVerified: true },
+                { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS', isVerified: false },
+                { id: 3, name: 'Sarah Lee', points: 395, avatarUrl: 'https://placehold.co/40x40/EC4899/FFFFFF?text=SL', isVerified: false },
+                { id: 4, name: 'Alex Green', points: 350, avatarUrl: 'https://placehold.co/40x40/A3E635/FFFFFF?text=AG', isCurrentUser: true, isVerified: false },
+                { id: 5, name: 'Tom Wilson', points: 280, avatarUrl: 'https://placehold.co/40x40/F97316/FFFFFF?text=TW', isVerified: false },
+                { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC', isVerified: true },
             ],
             // NEW: Department Leaderboard Data
             departmentLeaderboard: [
@@ -712,32 +726,6 @@
                 { id: 'd4', name: 'BCom', points: 2500, color: 'green' },
                 { id: 'd5', name: 'BA', points: 1800, color: 'purple' },
             ],
-            // NEW: Community Feed Data
-            communityFeed: [
-                { 
-                    id: 'f1', 
-                    userName: 'EcoBirla Admin', 
-                    userAvatar: 'https://placehold.co/40x40/10B981/FFFFFF?text=GC', 
-                    imageUrl: 'https://placehold.co/400x400/A7F3D0/1F2937?text=Welcome!', 
-                    caption: 'Welcome to the new Green Feed! Share your eco-actions and tag us!', 
-                    likes: 15, 
-                    comments: [{userName: 'Alex Green', text: 'This is awesome!'}], 
-                    isLiked: false 
-                },
-                { 
-                    id: 'f2', 
-                    userName: 'Jane Doe', 
-                    userAvatar: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD', 
-                    imageUrl: 'https://placehold.co/400x400/F3F4F6/9CA3AF?text=My+Reusable+Cup', 
-                    caption: 'Got my coffee in a reusable cup today! #SaveThePlanet', 
-                    likes: 42, 
-                    comments: [
-                        {userName: 'Mike Smith', text: 'Great job!'},
-                        {userName: 'Sarah Lee', text: 'Love that cup!'}
-                    ], 
-                    isLiked: true 
-                },
-            ],
             history: [
                 { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart', kg: 0 },
                 { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award', kg: 0 },
@@ -746,13 +734,11 @@
                 { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text', kg: 0 },
                 { type: 'recycle', description: 'Submitted 30 Bottles', points: 30, date: '2025-10-10', icon: 'recycle', kg: 1.2 },
             ],
-            // MODIFIED: New Verifiable Challenges
+            // MODIFIED: Removed challenge 'c4' which depended on the feed
             dailyChallenges: [
                 { id: 'c1', title: 'Selfie with a Tree', description: 'Upload a selfie with any tree on campus.', points_reward: 20, icon: 'camera', status: 'active', buttonText: 'Upload Selfie' },
                 { id: 'c2', title: 'Daily Eco-Quiz', description: 'Get 3/3 questions right to earn points.', points_reward: 15, icon: 'brain', status: 'active', buttonText: 'Start Quiz' },
                 { id: 'c3', title: 'Spot a Reusable', description: 'Upload a photo of someone using a reusable bottle or cup.', points_reward: 10, icon: 'eye', status: 'pending', buttonText: 'Pending Review' },
-                // MODIFIED: Replaced Recycle Right with Compliment Nature
-                { id: 'c4', title: '🌸 Compliment Nature', description: 'Post a nice photo of campus nature with a caption.', points_reward: 10, icon: 'flower-2', status: 'active', buttonText: 'Post to Feed' }
             ],
             events: [
                 { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 15, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: true, status: 'upcoming' },
@@ -930,9 +916,8 @@
         const historyList = document.getElementById('history-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
         
-        // NEW: Eco Wars & Feed Elements
+        // NEW: Eco Wars
         const ecoWarsPageList = document.getElementById('eco-wars-page-list');
-        const feedPageList = document.getElementById('feed-page-list');
 
         const challengesPageList = document.getElementById('challenges-page-list');
         const storeSearchInput = document.getElementById('store-search-input'); 
@@ -979,6 +964,65 @@
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
 
+        // --- NEW: Animate Points Update ---
+        const animatePointsUpdate = (newPoints) => {
+            const oldPoints = state.currentUser.points;
+            state.currentUser.points = newPoints; // Set the new points in the state
+
+            // Animate the header
+            userPointsHeader.classList.add('points-pulse');
+            
+            // Optional: Animate sidebar points if open
+            userPointsSidebar.classList.add('points-pulse');
+
+            // Update text content
+            userPointsHeader.textContent = newPoints;
+            userPointsSidebar.textContent = newPoints;
+
+            // Remove animation class after it finishes
+            setTimeout(() => {
+                userPointsHeader.classList.remove('points-pulse');
+                userPointsSidebar.classList.remove('points-pulse');
+            }, 400); 
+        };
+
+        // --- NEW: Verified Badge Helper ---
+        const renderVerifiedBadge = (isVerified, size = 'sm') => {
+            if (!isVerified) return '';
+            
+            const sizeClass = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
+            return `
+                <span class="ml-1 text-blue-500" title="Verified User">
+                    <i data-lucide="shield-check" class="${sizeClass} fill-blue-500 text-white dark:text-gray-900"></i>
+                </span>
+            `;
+        };
+
+        // --- NEW: Find User Helper ---
+        const findUserById = (userId) => {
+            if (userId === state.currentUser.id) return state.currentUser;
+            
+            // For demo, we just search the leaderboard. A real app would fetch from a user DB.
+            const user = state.leaderboard.find(u => u.id === userId);
+            
+            if (user) return user;
+            
+            // Fallback for users not in leaderboard (like Admin)
+            if (userId === 'admin') {
+                return { 
+                    id: 'admin', 
+                    name: 'EcoBirla Admin', 
+                    avatarUrl: 'https://placehold.co/40x40/10B981/FFFFFF?text=GC', 
+                    points: 9999, 
+                    lifetimePoints: 9999,
+                    isVerified: true, 
+                    course: 'Administration',
+                    joined: 'Jan 2025'
+                };
+            }
+            return null; // User not found
+        };
+
 
         const getUserLevel = (points) => {
             let currentLevel = state.levels[0];
@@ -1011,7 +1055,8 @@
         // --- Render Functions ---
         const renderHeader = () => {
             const user = state.currentUser;
-            const levelInfo = getUserLevel(user.points); 
+            // MODIFIED: Use lifetimePoints for level
+            const levelInfo = getUserLevel(user.lifetimePoints); 
             userPointsHeader.textContent = user.points;
             userNameGreeting.textContent = user.name.split(' ')[0]; 
             userAvatarSidebar.src = user.avatarUrl;
@@ -1083,13 +1128,14 @@
                 else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
                 else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
 
-                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 dark:bg-green-900/50 border-2 border-green-500' : 'bg-white dark:bg-gray-800';
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 dark:bg-green-900/50 border-2 border-green-500' : 'bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700';
                 
                 leaderboardPageList.innerHTML += `
-                    <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm">
+                    <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm" onclick="showUserProfilePage(${user.id})">
                         <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
                         <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
                         <p class="font-semibold text-gray-700 dark:text-gray-200">${user.isCurrentUser ? 'You' : user.name}</p>
+                        ${renderVerifiedBadge(user.isVerified, 'sm')}
                         <p class="ml-auto font-bold text-gray-600 dark:text-gray-300">${user.points} Pts</p>
                     </div>
                 `;
@@ -1124,58 +1170,6 @@
                         <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
                         <p class="font-semibold text-lg text-gray-700 dark:text-gray-200">${dept.name}</p>
                         <p class="ml-auto font-bold text-lg text-gray-600 dark:text-gray-300">${dept.points} Pts</p>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        };
-
-        // NEW: Render Community Feed Page
-        const renderCommunityFeed = () => {
-            feedPageList.innerHTML = '';
-            state.communityFeed.forEach(post => {
-                const likeClass = post.isLiked ? 'liked' : '';
-                feedPageList.innerHTML += `
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-                        <div class="p-4 flex items-center space-x-3">
-                            <img src="${post.userAvatar}" alt="${post.userName}" class="w-10 h-10 rounded-full">
-                            <div>
-                                <p class="font-semibold text-gray-800 dark:text-gray-100">${post.userName}</p>
-                            </div>
-                        </div>
-                        
-                        <img src="${post.imageUrl}" alt="Post image" class="w-full h-auto object-cover">
-                        
-                        <div class="p-4 flex items-center space-x-4 border-b border-gray-200 dark:border-gray-700">
-                            <button onclick="handleLikePost('${post.id}')" class="feed-card-actions text-gray-600 dark:text-gray-400 hover:text-red-500">
-                                <i data-lucide="heart" class="w-6 h-6 ${likeClass}"></i>
-                            </button>
-                            <button class="text-gray-600 dark:text-gray-400 hover:text-blue-500">
-                                <i data-lucide="message-circle" class="w-6 h-6"></i>
-                            </button>
-                            <button class="text-gray-600 dark:text-gray-400 hover:text-green-500">
-                                <i data-lucide="send" class="w-6 h-6"></i>
-                            </button>
-                        </div>
-
-                        <div class="p-4">
-                            <p class="text-gray-700 dark:text-gray-300 text-sm mb-2">
-                                <span class="font-bold text-gray-800 dark:text-gray-100">${post.likes}</span> likes
-                            </p>
-                            <p class="text-gray-700 dark:text-gray-300 text-sm">
-                                <span class="font-bold text-gray-800 dark:text-gray-100">${post.userName}</span>
-                                ${post.caption}
-                            </p>
-                            <div class="mt-3 space-y-2">
-                                ${post.comments.map(comment => `
-                                    <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                        <span class="font-semibold text-gray-700 dark:text-gray-200">${comment.userName}</span>
-                                        ${comment.text}
-                                    </p>
-                                `).join('')}
-                            </div>
-                            <input type="text" placeholder="Add a comment..." class="w-full mt-3 bg-gray-100 dark:bg-gray-700 rounded-lg p-2 text-sm border-none focus:ring-green-500">
-                        </div>
                     </div>
                 `;
             });
@@ -1232,10 +1226,12 @@
 
         const renderProfile = () => {
             const user = state.currentUser;
-            const levelInfo = getUserLevel(user.points);
+            // MODIFIED: Use lifetimePoints for level
+            const levelInfo = getUserLevel(user.lifetimePoints);
 
             profileAvatar.src = user.avatarUrl;
-            profileName.textContent = user.name;
+            // MODIFIED: Add verified badge
+            profileName.innerHTML = `${user.name} ${renderVerifiedBadge(user.isVerified, 'lg')}`;
             profileEmail.textContent = user.email;
             profileJoined.textContent = `Joined ${user.joined}`;
             
@@ -1278,10 +1274,12 @@
 
         const renderEcoPointsPage = () => {
             const user = state.currentUser;
-            const levelInfo = getUserLevel(user.points);
+            // MODIFIED: Use lifetimePoints for level
+            const levelInfo = getUserLevel(user.lifetimePoints);
 
-            ecopointsBalance.textContent = user.points;
-
+            ecopointsBalance.textContent = user.points; // Balance is still current points
+            
+            // Level progress is based on lifetime points
             ecopointsLevelTitle.textContent = levelInfo.title;
             ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color} dark:text-green-400`;
             ecopointsLevelNumber.textContent = levelInfo.level;
@@ -1450,19 +1448,48 @@
             `;
         };
 
+        let currentFilterCategory = 'all'; // Add this line before the function
+
         const renderRewards = () => {
-            const searchTerm = document.getElementById('store-search-input').value.toLowerCase();
+            const searchTerm = storeSearchInput.value.toLowerCase();
+            const clearButton = document.getElementById('store-search-clear');
+            
+            // Show/hide clear button
+            clearButton.classList.toggle('hidden', searchTerm.length === 0);
+
             storeListPreview.innerHTML = ''; 
             
-            const filteredStores = state.stores.filter(store => {
-                if (store.storeName.toLowerCase().includes(searchTerm)) {
-                    return true;
-                }
-                return store.products.some(product => product.name.toLowerCase().includes(searchTerm));
+            // 1. Filter by Category
+            const categoryFilteredStores = state.stores.filter(store => {
+                if (currentFilterCategory === 'all') return true;
+                // Simple category check (you can make this more robust)
+                if (store.storeName.toLowerCase().includes(currentFilterCategory.toLowerCase())) return true;
+                if (currentFilterCategory === 'Coffee' && store.storeName === 'The Beanery') return true;
+                return false;
             });
 
+            // 2. Filter by Search Term
+            const filteredStores = categoryFilteredStores.map(store => {
+                // If store name matches, include all products
+                if (store.storeName.toLowerCase().includes(searchTerm)) {
+                    return store;
+                }
+                
+                // Otherwise, filter products within the store
+                const matchingProducts = store.products.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm)
+                );
+                
+                if (matchingProducts.length > 0) {
+                    // Return a *new* store object with only matching products
+                    return { ...store, products: matchingProducts };
+                }
+                
+                return null; // No match in store name or product names
+            }).filter(store => store !== null); // Remove nulls
+
             if (filteredStores.length === 0) {
-                storeListPreview.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No stores or products found matching "${searchTerm}".</p>`;
+                storeListPreview.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No stores or products found.</p>`;
                 return;
             }
 
@@ -1583,7 +1610,10 @@
             const totalReward = state.checkInReward + streakBonus;
 
             state.currentUser.lastCheckInDate = today;
-            state.currentUser.points += totalReward;
+            // --- MODIFICATION START ---
+            const newPoints = state.currentUser.points + totalReward;
+            state.currentUser.lifetimePoints += totalReward;
+            // --- MODIFICATION END ---
 
             state.history.unshift({
                 type: 'check-in',
@@ -1596,7 +1626,9 @@
 
             renderCheckinModal();
             renderDashboardCheckinButton();
-            renderHeader(); 
+            // --- MODIFICATION START ---
+            animatePointsUpdate(newPoints); // Animate the point change
+            // --- MODIFICATION END ---
             
             if (document.getElementById('profile').classList.contains('active')) {
                 renderProfile();
@@ -1607,21 +1639,6 @@
             if (document.getElementById('history').classList.contains('active')) {
                 renderHistory();
             }
-        };
-
-        // NEW: Handle Feed Post Like
-        window.handleLikePost = (postId) => {
-            const post = state.communityFeed.find(p => p.id === postId);
-            if (!post) return;
-
-            if (post.isLiked) {
-                post.likes -= 1;
-                post.isLiked = false;
-            } else {
-                post.likes += 1;
-                post.isLiked = true;
-            }
-            renderCommunityFeed(); // Re-render the feed to show the change
         };
 
         window.handleChallengeAction = (challengeId) => {
@@ -1638,7 +1655,11 @@
                 alert('Starting quiz... (Demo)');
                 challenge.status = 'completed';
                 challenge.buttonText = 'Completed';
-                state.currentUser.points += challenge.points_reward;
+                // --- MODIFICATION START ---
+                const newPoints = state.currentUser.points + challenge.points_reward;
+                state.currentUser.lifetimePoints += challenge.points_reward;
+                // --- MODIFICATION END ---
+                
                 state.history.unshift({
                     type: 'challenge',
                     description: `Completed: ${challenge.title}`,
@@ -1647,13 +1668,9 @@
                     icon: challenge.icon,
                     kg: 0
                 });
-                renderHeader();
-            } else if (challenge.id === 'c4') { // NEW: Compliment Nature
-                showPage('feed');
-                alert('Post your nature photo to the feed to complete the challenge!');
-                // In a real app, you'd verify this. For demo, we'll mark as pending.
-                challenge.status = 'pending';
-                challenge.buttonText = 'Pending Review';
+                // --- MODIFICATION START ---
+                animatePointsUpdate(newPoints); // Animate the point change
+                // --- MODIFICATION END ---
             }
 
             renderChallengesPage();
@@ -1682,7 +1699,6 @@
             
             // NEW: Added render calls for new pages
             if (pageId === 'eco-wars') renderEcoWarsPage();
-            if (pageId === 'feed') renderCommunityFeed();
 
             if (pageId === 'my-rewards') renderMyRewardsPage();
             if (pageId === 'profile') renderProfile(); 
@@ -1810,6 +1826,80 @@
             lucide.createIcons();
         };
 
+        // --- NEW: Show Other User Profile Page ---
+        const showUserProfilePage = (userId) => {
+            if (!userId) return;
+            if (userId === state.currentUser.id) {
+                showPage('profile');
+                return;
+            }
+
+            const user = findUserById(userId);
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+
+            const levelInfo = getUserLevel(user.lifetimePoints || user.points); // Use lifetimePoints if available
+            const userProfilePage = document.getElementById('user-profile-page');
+            
+            userProfilePage.innerHTML = `
+                <div class="p-4 bg-white dark:bg-gray-950 sticky top-0 z-10 border-b dark:border-gray-800 flex items-center">
+                    <button onclick="showPage('leaderboard')" class="p-2 text-gray-600 dark:text-gray-300 -ml-2 mr-2">
+                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                    </button>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">${user.name}'s Profile</h2>
+                </div>
+                
+                <div class="p-6">
+                    <div class="space-y-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                            <div class="bg-gray-400 dark:bg-gray-700 h-24"></div>
+                            <div class="p-5 -mt-16 flex flex-col items-center">
+                                <img src="${user.avatarUrl.replace('40x40', '80x80')}" class="w-28 h-28 rounded-full border-4 border-white dark:border-gray-800 shadow-lg object-cover">
+                                
+                                <div class="flex items-center mt-3">
+                                    <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">${user.name}</h3>
+                                    ${renderVerifiedBadge(user.isVerified, 'lg')}
+                                </div>
+                                <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Joined ${user.joined || 'N/A'}</p>
+
+                                <div class="w-full px-4 mt-4">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-sm font-semibold ${levelInfo.color} dark:text-green-400">${levelInfo.title}</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Lv. ${levelInfo.level}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                        <div class="bg-green-500 h-2.5 rounded-full ${levelInfo.progressBg}" style="width: ${levelInfo.progress}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                            <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">User Info</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Course</span>
+                                    <span class="font-semibold text-gray-900 dark:text-gray-100">${user.course || 'N/A'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Total Points</span>
+                                    <span class="font-semibold text-gray-900 dark:text-gray-100">${user.points}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Manually show the page
+            pages.forEach(p => p.classList.remove('active'));
+            userProfilePage.classList.add('active');
+            mainContent.scrollTop = 0;
+            lucide.createIcons();
+        };
+
         const toggleSidebar = (forceClose = false) => {
             if (forceClose) {
                 sidebar.classList.add('-translate-x-full');
@@ -1900,7 +1990,10 @@
             if (!product) return;
 
             if (state.currentUser.points >= product.cost) {
-                state.currentUser.points -= product.cost;
+                // --- MODIFICATION START ---
+                const newPoints = state.currentUser.points - product.cost;
+                // state.currentUser.lifetimePoints stays the same
+                // --- MODIFICATION END ---
                 
                 state.history.unshift({
                     type: 'reward', 
@@ -1920,7 +2013,9 @@
                     status: 'active'
                 });
                 
-                renderHeader();
+                // --- MODIFICATION START ---
+                animatePointsUpdate(newPoints); // Animate the point change
+                // --- MODIFICATION END ---
                 renderRewards(); 
 
                 if (storeDetailPage.classList.contains('active')) {
@@ -2129,6 +2224,26 @@
             logoutButton.addEventListener('click', () => {
                 alert('Log out clicked! (Demo)');
             });
+
+            // --- NEW: Rewards Filter/Search Listeners ---
+            document.getElementById('store-search-clear').addEventListener('click', () => {
+                storeSearchInput.value = '';
+                renderRewards();
+            });
+
+            document.querySelectorAll('.store-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active class
+                    document.querySelectorAll('.store-filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Set filter and re-render
+                    currentFilterCategory = btn.dataset.filterCategory;
+                    renderRewards();
+                });
+            });
+            // Set 'All' as active by default
+            document.querySelector('.store-filter-btn[data-filter-category="all"]').classList.add('active');
 
             // Initial Renders
             renderHeader();
