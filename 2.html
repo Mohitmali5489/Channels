@@ -3,10 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Campus Challenge</title>
+    <title>EcoBirla (Customized)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Enable class-based dark mode
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <style>
         html, body {
             height: 100%;
@@ -49,6 +61,7 @@
             transition: opacity 0.3s ease-in-out;
         }
 
+        /* Light Mode Active */
         .sidebar-nav-item.active {
             background-color: #ECFDF5; 
             color: #059669; 
@@ -59,12 +72,19 @@
         .nav-item.active { color: #10B981; }
         .nav-item.active svg { color: #10B981; }
 
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #10B981;
+        /* Dark Mode Active */
+        .dark .sidebar-nav-item.active {
+            background-color: #064E3B;
+            color: #A7F3D0;
         }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #10B981;
+        .dark .sidebar-nav-item.active svg { color: #A7F3D0; }
+
+        .dark .nav-item.active { color: #34D399; }
+        .dark .nav-item.active svg { color: #34D399; }
+
+        /* Theme Toggle */
+        #theme-toggle-btn > span {
+            transition: transform 0.3s ease-in-out;
         }
 
         .level-text-content {
@@ -82,86 +102,164 @@
         .horizontal-scroll::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
         }
+
+        /* Loader */
+        #app-loading {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-out;
+        }
+        #app-loading.loaded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        @keyframes pulse-logo {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+        .app-loader-logo {
+            animation: pulse-logo 2s infinite ease-in-out;
+        }
+
+        /* Check-in Modal */
+        #checkin-modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s;
+        }
+        #checkin-modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        #checkin-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        #checkin-modal.open #checkin-modal-content {
+            transform: translateY(0);
+        }
+
+        /* NEW: Feed Styles */
+        .feed-card-actions button .lucide-heart.liked {
+            fill: #ef4444; /* red-500 */
+            color: #ef4444;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 dark:bg-gray-900">
+
+    <div id="app-loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900">
+        <div class="app-loader-logo">
+            <svg class="w-40 h-40 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.5" d="M17.657 17.657L12 21.314 6.343 17.657l5.657-3.657 5.657 3.657zM12 3l5.657 3.657L12 10.314 6.343 6.657 12 3z"></path></svg>
+        </div>
+        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-4">A BKBNC GREEN CLUB INITIATIVE</p>
+    </div>
 
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full flex flex-col">
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-800 shadow-xl z-40 transform -translate-x-full flex flex-col">
         
-        <div class="p-6 border-b">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500" alt="User Avatar">
-            <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800"></h2>
-            <p id="user-level-sidebar" class="text-sm font-medium text-blue-600 mb-1"></p>
-            <p class="text-sm text-green-600 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
+            <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800 dark:text-gray-100"></h2>
+            <p id="user-level-sidebar" class="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1"></p>
+            <p class="text-sm text-green-600 dark:text-green-400 font-semibold"><span id="user-points-sidebar"></span> EcoPoints</p>
         </div>
 
         <nav class="flex-grow p-4 space-y-2">
-            <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <button onclick="showPage('profile')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="user" class="w-5 h-5 mr-3"></i>Profile
             </button>
-            <button onclick="showPage('my-rewards')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <button onclick="showPage('my-rewards')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="archive" class="w-5 h-5 mr-3"></i>My Rewards
             </button>
-            <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <button onclick="showPage('history')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
             </button>
-            
-            <div class="pt-2 border-t border-gray-200"></div>
 
-            <button onclick="showPage('about')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <button onclick="showPage('feed')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i data-lucide="rss" class="w-5 h-5 mr-3"></i>Community Feed
+            </button>
+            <button onclick="showPage('eco-wars')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i data-lucide="shield" class="w-5 h-5 mr-3"></i>Eco Wars
+            </button>
+            <button onclick="showPage('leaderboard')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i data-lucide="users" class="w-5 h-5 mr-3"></i>Top Champions
+            </button>
+            <button onclick="showPage('events')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>All Events
+            </button>
+            
+            <div class="pt-2 border-t border-gray-200 dark:border-gray-700"></div>
+
+            <button onclick="showPage('about')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="info" class="w-5 h-5 mr-3"></i>About Us
             </button>
-            <button onclick="showPage('help')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <button onclick="showPage('help')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="help-circle" class="w-5 h-5 mr-3"></i>Help & Support
             </button>
-            <button onclick="showPage('settings')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100">
-                <i data-lucide="settings" class="w-5 h-5 mr-3"></i>Settings
+            <button onclick="showPage('change-password')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i data-lucide="key-round" class="w-5 h-5 mr-3"></i>Change Password
             </button>
+            
+            <div class="pt-2 border-t border-gray-200 dark:border-gray-700"></div>
+            <div class="flex items-center justify-between p-3 rounded-lg text-gray-700 dark:text-gray-300">
+                <div class="flex items-center">
+                    <i id="theme-icon" data-lucide="sun" class="w-5 h-5 mr-3"></i>
+                    <span id="theme-text">Light Mode</span>
+                </div>
+                <button id="theme-toggle-btn" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors bg-gray-200 dark:bg-gray-600">
+                    <span class="sr-only">Toggle theme</span>
+                    <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform translate-x-1 dark:translate-x-6"></span>
+                </button>
+            </div>
         </nav>
 
         <div class="p-4">
-            <button class="w-full bg-red-100 text-red-700 font-bold py-3 px-4 rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center">
+            <button id="logout-button" class="w-full bg-red-100 text-red-700 font-bold py-3 px-4 rounded-lg hover:bg-red-200 dark:bg-red-800 dark:text-red-100 dark:hover:bg-red-700 transition-colors flex items-center justify-center">
                 <i data-lucide="log-out" class="w-5 h-5 mr-2"></i>
                 <span>Log Out</span>
             </button>
         </div>
         
-        <div class="p-6 border-t">
-            <p class="text-xs text-center text-gray-400">Green Campus v5.0</p>
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-center text-gray-400 dark:text-gray-500">EcoBirla v5.3 (Custom)</p>
         </div>
     </div>
 
 
-    <div class="app-container bg-white shadow-lg">
+    <div class="app-container bg-white dark:bg-gray-950 shadow-lg">
 
-        <header class="bg-white sticky top-0 z-10 p-4 border-b border-gray-200">
+        <header class="bg-white dark:bg-gray-950 sticky top-0 z-10 p-4 border-b border-gray-200 dark:border-gray-800">
             <div class="flex justify-between items-center">
                 <div class="w-1/3"> 
-                    <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600">
+                    <button id="sidebar-toggle-btn" class="p-2 -ml-2 text-gray-600 dark:text-gray-300">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
                 <div class="w-1/3 text-center"> 
-                    <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 hover:opacity-80 transition-opacity">
+                    <button onclick="showPage('dashboard')" class="text-2xl font-extrabold text-green-700 dark:text-green-500 hover:opacity-80 transition-opacity">
                         EcoBirla
                     </button>
                 </div>
                 <div class="w-1/3 flex justify-end"> 
-                    <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 transition-colors">
+                    <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full p-1 pr-3 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                         <i data-lucide="leaf" class="w-5 h-5 text-green-500 mx-1"></i>
-                        <span id="user-points-header" class="text-sm font-bold text-gray-700 ml-1"></span>
+                        <span id="user-points-header" class="text-sm font-bold text-gray-700 dark:text-gray-200 ml-1"></span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="main-content bg-gray-50"> 
+        <main class="main-content bg-gray-50 dark:bg-gray-900"> 
 
             <div id="dashboard" class="page active p-6">
                 <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-900">Hi, <span id="user-name-greeting"></span>!</h2>
-                    <p class="text-lg text-gray-600">Let's make our campus greener today.</p>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Hi, <span id="user-name-greeting"></span>!</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400">Let's make our campus greener today.</p>
                 </div>
                 
                 <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-5 rounded-xl mb-6 shadow-lg">
@@ -169,52 +267,43 @@
                         <i data-lucide="calendar-check" class="w-5 h-5 mr-2"></i>
                         <h3 class="font-bold">Upcoming Event</h3>
                     </div>
-                    <p class="text-lg font-semibold mb-1">Community Park Cleanup</p>
-                    <p class="text-sm opacity-90 mb-3">Join us this Saturday to make our local park greener. Earn bonus points!</p>
-                    <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View Details</button>
+                    <p class="text-lg font-semibold mb-1">Workshop: Composting Basics</p>
+                    <p class="text-sm opacity-90 mb-3">Join us this Saturday to learn how to turn food scraps into garden gold.</p>
+                    <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View All Events</button>
                 </div>
 
-                <div id="daily-check-in-card" class="mb-6">
+                <button id="daily-checkin-button" onclick="openCheckinModal()" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-5 rounded-xl mb-6 flex items-center justify-between shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Daily Check-in</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Tap here to get your daily points!</p>
                     </div>
+                    <div class="flex items-center space-x-2 text-yellow-600 dark:text-yellow-400">
+                        <i data-lucide="sun" class="w-6 h-6"></i>
+                        <span id="dashboard-streak-text" class="text-sm font-bold">3 Day Streak!</span>
+                    </div>
+                </button>
 
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">Your Impact</h3>
-                <div class="grid grid-cols-3 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
+
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Your Impact</h3>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="leaf" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
-                        <p class="font-bold text-lg">12 kg</p>
-                        <p class="text-xs text-gray-500">CO2 Saved</p>
+                        <p id="impact-co2" class="font-bold text-lg dark:text-gray-100">0 kg</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">CO2 Saved</p>
                     </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
-                        <p class="font-bold text-lg">45</p>
-                        <p class="text-xs text-gray-500">Recycled</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm text-center">
-                        <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
-                        <p class="font-bold text-lg">2</p>
-                        <p class="text-xs text-gray-500">Events</p>
+                        <p id="impact-recycled" class="font-bold text-lg dark:text-gray-100">0 kg</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Recycled</p>
                     </div>
                 </div>
                 
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">Daily Challenges</h3>
-                <div id="challenges-dashboard-list" class="space-y-3 mb-4">
-                    </div>
-                <button onclick="showPage('challenges')" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors">
-                    View All Challenges
-                </button>
-                <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Top Champions</h3>
-                <div id="leaderboard-dashboard-list" class="space-y-3 mb-4">
-                    </div>
-                <button onclick="showPage('leaderboard')" class="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors">
-                    View All Rankings
-                </button>
-
-                <h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">Eco Tip of the Day</h3>
-                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 mt-8">Eco Tip of the Day</h3>
+                <div class="bg-blue-100 dark:bg-blue-900/50 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-4 rounded-lg" role="alert">
                     <div class="flex">
                         <div class="py-1"><i data-lucide="lightbulb" class="w-5 h-5 text-blue-500 mr-3"></i></div>
                         <div>
-                            <p class="font-bold">Unplug chargers!</p>
+                            <p class="font-bold dark:text-blue-200">Unplug chargers!</p>
                             <p class="text-sm">Chargers and electronics still draw power even when not in use. Unplug them to save energy.</p>
                         </div>
                     </div>
@@ -222,53 +311,66 @@
             </div>
 
             <div id="profile" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Your Profile</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Your Profile</h2>
                 <div class="space-y-6">
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
                         <div class="bg-green-500 h-24"></div>
                         <div class="p-5 -mt-16 flex flex-col items-center">
-                            <img id="profile-avatar" src="" class="w-28 h-28 rounded-full border-4 border-white shadow-lg">
-                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 mt-3"></h3>
-                            <p id="profile-email" class="text-gray-500"></p>
-                            <p id="profile-joined" class="text-sm text-gray-400 mt-1"></p>
+                            
+                            <div class="relative group">
+                                <img id="profile-avatar" src="" class="w-28 h-28 rounded-full border-4 border-white dark:border-gray-800 shadow-lg object-cover">
+                                <label for="profile-pic-upload" class="absolute inset-0 w-28 h-28 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <i data-lucide="camera" class="w-8 h-8 text-white"></i>
+                                </label>
+                                <input type="file" id="profile-pic-upload" accept="image/*" class="hidden">
+                                
+                                <div id="profile-pic-loader" class="absolute inset-0 w-28 h-28 rounded-full bg-black/70 flex items-center justify-center hidden">
+                                    <div class="w-8 h-8 border-4 border-t-green-500 border-gray-200 rounded-full animate-spin"></div>
+                                </div>
+                            </div>
+                            <p id="profile-pic-error" class="text-sm text-red-500 mt-2"></p>
+                            
+                            <h3 id="profile-name" class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-3"></h3>
+                            <p id="profile-email" class="text-gray-500 dark:text-gray-400"></p>
+                            <p id="profile-joined" class="text-sm text-gray-400 dark:text-gray-500 mt-1"></p>
 
                             <div class="w-full px-4 mt-4">
                                 <div class="flex justify-between items-center mb-1">
-                                    <span id="profile-level-title" class="text-sm font-semibold text-green-600"></span>
-                                    <span class="text-xs text-gray-500">Lv. <span id="profile-level-number"></span></span>
+                                    <span id="profile-level-title" class="text-sm font-semibold text-green-600 dark:text-green-400"></span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">Lv. <span id="profile-level-number"></span></span>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                                     <div id="profile-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
                                 </div>
-                                <p id="profile-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                                <p id="profile-level-next" class="text-xs text-right text-gray-500 dark:text-gray-400 mt-1"></p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <h4 class="text-xl font-bold text-gray-900 mb-4">Personal Info</h4>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Personal Info</h4>
                         <div class="space-y-3">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Student ID</span>
-                                <span id="profile-student-id" class="font-semibold text-gray-900"></span>
+                                <span class="text-gray-600 dark:text-gray-400">Student ID</span>
+                                <span id="profile-student-id" class="font-semibold text-gray-900 dark:text-gray-100"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Course</span>
-                                <span id="profile-course" class="font-semibold text-gray-900"></span>
+                                <span class="text-gray-600 dark:text-gray-400">Course</span>
+                                <span id="profile-course" class="font-semibold text-gray-900 dark:text-gray-100"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Mobile</span>
-                                <span id="profile-mobile" class="font-semibold text-gray-900"></span>
+                                <span class="text-gray-600 dark:text-gray-400">Mobile</span>
+                                <span id="profile-mobile" class="font-semibold text-gray-900 dark:text-gray-100"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Email</span>
-                                <span id="profile-email-personal" class="font-semibold text-gray-900"></span>
+                                <span class="text-gray-600 dark:text-gray-400">Email</span>
+                                <span id="profile-email-personal" class="font-semibold text-gray-900 dark:text-gray-100"></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <h4 class="text-xl font-bold text-gray-900 mb-4">Membership</h4>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Membership</h4>
                         <div id="profile-membership" class="flex items-center">
                             </div>
                     </div>
@@ -277,86 +379,107 @@
             </div>
             
             <div id="leaderboard" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Top Champions</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Top Champions</h2>
                 <div id="leaderboard-page-list" class="space-y-3">
                 </div>
             </div>
-            
+
+            <div id="eco-wars" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Eco Wars</h2>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Department Leaderboard</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Monthly competition between departments. May the greenest win!</p>
+                </div>
+                <div id="eco-wars-page-list" class="space-y-3">
+                    </div>
+            </div>
+
+            <div id="feed" class="page p-0">
+                <div class="bg-white dark:bg-gray-950 sticky top-0 z-10 p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Green Feed</h2>
+                    <button class="bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div id="feed-page-list" class="space-y-4 p-4">
+                    </div>
+            </div>
+
             <div id="challenges" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Daily Challenges</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Daily Challenges</h2>
                 <div id="challenges-page-list" class="space-y-4">
                     </div>
             </div>
 
             <div id="ecopoints" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">My EcoPoints</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">My EcoPoints</h2>
 
-                <div class="bg-white p-6 rounded-xl shadow-md text-center mb-6">
-                    <p class="text-sm text-gray-500">Your current balance is</p>
-                    <p class="text-5xl font-extrabold text-green-600 my-2" id="ecopoints-balance"></p>
-                    <p class="text-sm text-gray-500">Keep up the great work!</p>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md text-center mb-6">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Your current balance is</p>
+                    <p class="text-5xl font-extrabold text-green-600 dark:text-green-400 my-2" id="ecopoints-balance"></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Keep up the great work!</p>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">Level Progress</h3>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Level Progress</h3>
                     <div class="mb-4">
                         <div class="flex justify-between items-center mb-1">
-                            <span id="ecopoints-level-title" class="text-sm font-semibold text-green-600"></span>
-                            <span class="text-xs text-gray-500">Lv. <span id="ecopoints-level-number"></span></span>
+                            <span id="ecopoints-level-title" class="text-sm font-semibold text-green-600 dark:text-green-400"></span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Lv. <span id="ecopoints-level-number"></span></span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                             <div id="ecopoints-level-progress" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
                         </div>
-                        <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 mt-1"></p>
+                        <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 dark:text-gray-400 mt-1"></p>
                     </div>
                     
-                    <h4 class="text-lg font-semibold text-gray-700 mb-6 mt-6">All Levels</h4>
-                    <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 rounded-full"></div>
+                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6 mt-6">All Levels</h4>
+                    <div class="relative"> <div class="absolute left-2 top-0 bottom-0 w-1 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
                         <div id="level-line-progress" class="absolute left-2 top-0 w-1 bg-green-500 rounded-full" style="height: 0%; transition: height 0.5s ease;"></div>
 
                         <div id="all-levels-list" class="relative z-10 space-y-8">
                             
                             <div id="level-step-1" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-gray-50 px-1">1</span>
+                                    <span class="font-bold text-lg bg-gray-50 dark:bg-gray-900 px-1">1</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
-                                    <h5 class="font-bold text-gray-800">Green Starter</h5>
-                                    <p class="text-sm font-semibold text-gray-500">0 - 149 Pts</p>
-                                    <p class="text-xs text-gray-600 mt-1">Just beginning your eco-journey. Every point counts!</p>
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-100">Green Starter</h5>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">0 - 1000 Pts</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Just beginning your eco-journey. Every point counts!</p>
                                 </div>
                             </div>
                             
                             <div id="level-step-2" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-gray-50 px-1">2</span>
+                                    <span class="font-bold text-lg bg-gray-50 dark:bg-gray-900 px-1">2</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
-                                    <h5 class="font-bold text-gray-800">Eco Learner</h5>
-                                    <p class="text-sm font-semibold text-gray-500">150 - 399 Pts</p>
-                                    <p class="text-xs text-gray-600 mt-1">You're building green habits. Keep up the momentum!</p>
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-100">Eco Learner</h5>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">1001 - 2000 Pts</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">You're building green habits. Keep up the momentum!</p>
                                 </div>
                             </div>
                             
                             <div id="level-step-3" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-gray-50 px-1">3</span>
+                                    <span class="font-bold text-lg bg-gray-50 dark:bg-gray-900 px-1">3</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
-                                    <h5 class="font-bold text-gray-800">Sustainability Leader</h5>
-                                    <p class="text-sm font-semibold text-gray-500">400 - 799 Pts</p>
-                                    <p class="text-xs text-gray-600 mt-1">A true inspiration! You're making a real impact on campus.</p>
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-100">Sustainability Leader</h5>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">2001 - 4000 Pts</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">A true inspiration! You're making a real impact on campus.</p>
                                 </div>
                             </div>
                             
                             <div id="level-step-4" class="level-step relative flex items-start">
                                 <div class="level-number-container absolute top-0 left-0 w-4 h-6 flex items-center justify-center" style="left: -0.125rem;">
-                                    <span class="font-bold text-lg bg-gray-50 px-1">4</span>
+                                    <span class="font-bold text-lg bg-gray-50 dark:bg-gray-900 px-1">4</span>
                                 </div>
                                 <div class="ml-8 level-text-content">
-                                    <h5 class="font-bold text-gray-800">Planet Protector</h5>
-                                    <p class="text-sm font-semibold text-gray-500">800+ Pts</p>
-                                    <p class="text-xs text-gray-600 mt-1">You've reached the pinnacle of green leadership. Amazing!</p>
+                                    <h5 class="font-bold text-gray-800 dark:text-gray-100">Planet Protector</h5>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">4000+ Pts</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">You've reached the pinnacle of green leadership. Amazing!</p>
                                 </div>
                             </div>
 
@@ -364,28 +487,28 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4">How to Earn Points</h3>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Earn Points</h3>
                     <ul class="space-y-4">
                         <li class="flex items-center">
                             <i data-lucide="recycle" class="w-6 h-6 text-green-500 mr-3"></i>
-                            <p class="text-gray-700">Submit plastic bottles at collection points.</p>
+                            <p class="text-gray-700 dark:text-gray-300">Submit plastic bottles at collection points.</p>
                         </li>
                         <li class="flex items-center">
                             <i data-lucide="calendar-check" class="w-6 h-6 text-purple-500 mr-3"></i>
-                            <p class="text-gray-700">Attend Green Club events and workshops.</p>
+                            <p class="text-gray-700 dark:text-gray-300">Attend Green Club events and workshops.</p>
                         </li>
                         <li class="flex items-center">
                             <i data-lucide="award" class="w-6 h-6 text-yellow-500 mr-3"></i>
-                            <p class="text-gray-700">Complete special "Eco-Challenges".</p>
+                            <p class="text-gray-700 dark:text-gray-300">Complete special "Eco-Challenges".</p>
                         </li>
                     </ul>
                 </div>
                 
-                <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
                     <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-lg font-bold text-gray-800">Recent Transactions</h4>
-                        <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 hover:text-green-700">View All</button>
+                        <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">Recent Transactions</h4>
+                        <button onclick="showPage('history')" class="text-sm font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300">View All</button>
                     </div>
                     <div id="ecopoints-recent-activity" class="space-y-3">
                     </div>
@@ -393,133 +516,186 @@
             </div>
 
             <div id="events" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Upcoming Events</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">All Events</h2>
                 <div id="event-list" class="space-y-4">
-                </div>
+                    </div>
             </div>
 
             <div id="rewards" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Eco-Store Rewards</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Eco-Store Rewards</h2>
+                
+                <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Find Rewards</h3>
+                    <div class="relative">
+                        <input type="text" id="store-search-input" placeholder="Search for stores or products..." class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <div class="flex gap-2 mt-3 overflow-x-auto horizontal-scroll pb-2">
+                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Canteen</button>
+                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Merch</button>
+                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter: Coffee</button>
+                        <button class="flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg"><i data-lucide="filter" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+
                 <div id="store-list-preview" class="space-y-6">
                     </div>
             </div>
             
-            <div id="store-detail-page" class="page">
+            <div id="store-detail-page" class="page dark:bg-gray-900">
                 </div>
 
-            <div id="product-detail-page" class="page">
+            <div id="product-detail-page" class="page dark:bg-gray-900">
                 </div>
             
             <div id="my-rewards" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">My Rewards</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">My Rewards</h2>
                 <div id="all-rewards-list" class="space-y-4">
                     </div>
             </div>
 
             <div id="history" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Activity History</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Activity History</h2>
                 <div id="history-list" class="space-y-3">
-                </div>
+                    </div>
             </div>
             
             <div id="about" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">About Us</h2>
-                <div class="space-y-4 bg-white p-6 rounded-xl shadow-md">
-                    <p class="text-gray-600 leading-relaxed">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
-                    <p class="text-gray-600 leading-relaxed">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">About Us</h2>
+                <div class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Welcome to the Green Campus Challenge, an initiative by the College Green Club to promote sustainability and eco-friendly practices among students.</p>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">Our mission is to reduce our campus's carbon footprint through fun challenges, engaging events, and rewarding positive actions. Join us in making our campus a greener place, one EcoPoint at a time!</p>
                 </div>
             </div>
             
             <div id="help" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Help & Support</h2>
-                <div class="space-y-4 bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-gray-900">Frequently Asked Questions</h3>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Help & Support</h2>
+                <div class="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Frequently Asked Questions</h3>
                     <div class="text-left space-y-4">
                         <div>
-                            <p class="font-semibold text-gray-800">How do I earn points?</p>
-                            <p class="text-gray-600">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
+                            <p class="font-semibold text-gray-800 dark:text-gray-200">How do I earn points?</p>
+                            <p class="text-gray-600 dark:text-gray-300">You can earn EcoPoints by participating in events, completing challenges, and logging your eco-friendly activities.</p>
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800">How do I redeem rewards?</p>
-                            <p class="text-gray-600">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
+                            <p class="font-semibold text-gray-800 dark:text-gray-200">How do I redeem rewards?</p>
+                            <p class="text-gray-600 dark:text-gray-300">Navigate to the 'Rewards' tab to purchase a reward. Then, go to 'My Rewards' to find your active coupons and redeem them.</p>
                         </div>
                     </div>
-                    <div class="border-t pt-6 mt-6">
-                        <h3 class="text-xl font-bold text-gray-900">Contact Us</h3>
-                        <p class="text-gray-600 mt-2">For further assistance, please email us at <a href="#" class="text-green-600 font-medium">support@greencampus.edu</a>.</p>
+                    <div class="border-t dark:border-gray-700 pt-6 mt-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Contact Us</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mt-2">For further assistance, please email us at <a href="#" class="text-green-600 dark:text-green-400 font-medium">support@greencampus.edu</a>.</p>
                     </div>
                 </div>
             </div>
-            
-            <div id="settings" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Settings</h2>
-                <div class="space-y-5 bg-white p-6 rounded-xl shadow-md divide-y divide-gray-200">
-                    <div class="flex justify-between items-center pb-4">
-                        <span class="font-medium text-gray-700">Push Notifications</span>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                            <input type="checkbox" name="toggle-notifs" id="toggle-notifs" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
-                            <label for="toggle-notifs" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+
+            <div id="change-password" class="page p-6">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Change Password</h2>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+                    <form id="change-password-form" class="space-y-6">
+                        <div>
+                            <label for="new-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                            <div class="mt-1">
+                                <input id="new-password" name="new-password" type="password" required
+                                       class="w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
+                                       placeholder="••••••••">
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex justify-between items-center pt-5">
-                        <span class="font-medium text-gray-700">Email Updates</span>
-                        <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                            <input type="checkbox" name="toggle-email" id="toggle-email" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                            <label for="toggle-email" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        
+                        <div id="password-message" class="text-sm text-center">
+                            </div>
+
+                        <div>
+                            <button type="submit" id="change-password-button"
+                                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+                                Update Password
+                            </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
         </main>
 
-        <nav class="bg-white border-t border-gray-200">
+        <nav class="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
             <div class="flex justify-around">
-                <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
                 </button>
-                <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="users" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaders</span>
+                <button onclick="showPage('eco-wars')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
+                    <i data-lucide="shield" class="w-6 h-6 mx-auto"></i><span class="text-xs">Eco Wars</span>
                 </button>
-                <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                <button onclick="showPage('feed')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
+                    <i data-lucide="rss" class="w-6 h-6 mx-auto"></i><span class="text-xs">Feed</span>
+                </button>
+                <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
                 </button>
-                <button onclick="showPage('events')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
-                    <i data-lucide="calendar" class="w-6 h-6 mx-auto"></i><span class="text-xs">Events</span>
-                </button>
-                <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 hover:text-green-500">
+                <button onclick="showPage('rewards')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="gift" class="w-6 h-6 mx-auto"></i><span class="text-xs">Rewards</span>
                 </button>
             </div>
         </nav>
     </div>
 
+    <div id="checkin-modal" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end justify-center opacity-0 invisible" onclick="closeCheckinModal()">
+        <div id="checkin-modal-content" class="bg-white dark:bg-gray-800 rounded-t-2xl shadow-lg w-full max-w-md p-6 transform translate-y-full" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Daily Check-in</h3>
+                <button onclick="closeCheckinModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <p class="text-center text-gray-600 dark:text-gray-300 mb-2">Your current streak:</p>
+            <p id="checkin-modal-streak" class="text-center text-5xl font-extrabold text-yellow-600 dark:text-yellow-400 mb-6">3 Days</p>
+
+            <div id="checkin-modal-calendar" class="flex justify-center space-x-2 mb-6">
+                </div>
+            
+            <div id="checkin-modal-button-container">
+                </div>
+        </div>
+    </div>
+
+
     <div id="purchase-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closePurchaseModal()"></div>
-    <div id="purchase-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+    <div id="purchase-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
     </div>
 
     <div id="qr-modal-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeQrModal()"></div>
-    <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
+    <div id="qr-modal" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-gray-800 rounded-t-2xl shadow-lg z-50 p-6 transform translate-y-full transition-transform duration-300 ease-in-out">
     </div>
 
 
     <script>
         // --- Demo Data and State ---
+        
+        const getDemoDateString = (dayOffset = 0) => {
+            const date = new Date('2025-11-14T10:00:00'); // Set a fixed "today" for consistent demo
+            date.setDate(date.getDate() + dayOffset);
+            return date.toISOString().split('T')[0];
+        };
+        
+        const today = getDemoDateString(0); // "2025-11-14"
+        const yesterday = getDemoDateString(-1); // "2025-11-13"
+
         let state = {
             currentUser: {
                 id: 4,
                 name: 'Alex Green',
-                points: 350,
                 avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
+                points: 350,
                 email: 'mohitforestudies@gmail.com', 
                 joined: 'Sep 2025',
                 studentId: '5207872', 
                 course: 'SYBAF', 
                 mobile: '9850751835', 
                 isGreenClubMember: true,
-                lastCheckInDate: '2025-11-07' // Set to yesterday for demo
+                lastCheckInDate: yesterday, // Set to yesterday for demo
+                checkInStreak: 3 // User is on a 3-day streak
             },
-            checkInReward: 10,
+            checkInReward: 10, // Base reward
             leaderboard: [
                 { id: 1, name: 'Jane Doe', points: 520, avatarUrl: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD' },
                 { id: 2, name: 'Mike Smith', points: 410, avatarUrl: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=MS' },
@@ -528,23 +704,61 @@
                 { id: 5, name: 'Tom Wilson', points: 280, avatarUrl: 'https://placehold.co/40x40/F97316/FFFFFF?text=TW' },
                 { id: 6, name: 'Emily Chen', points: 250, avatarUrl: 'https://placehold.co/40x40/8B5CF6/FFFFFF?text=EC' },
             ],
-            history: [
-                { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart' },
-                { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award' },
-                { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check' },
-                { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text' },
+            // NEW: Department Leaderboard Data
+            departmentLeaderboard: [
+                { id: 'd1', name: 'BSc IT', points: 4320, color: 'blue' },
+                { id: 'd2', name: 'BMS', points: 3980, color: 'red' },
+                { id: 'd3', name: 'BAF', points: 3100, color: 'yellow' },
+                { id: 'd4', name: 'BCom', points: 2500, color: 'green' },
+                { id: 'd5', name: 'BA', points: 1800, color: 'purple' },
             ],
-            // *** NEW: Daily Challenges Data ***
+            // NEW: Community Feed Data
+            communityFeed: [
+                { 
+                    id: 'f1', 
+                    userName: 'EcoBirla Admin', 
+                    userAvatar: 'https://placehold.co/40x40/10B981/FFFFFF?text=GC', 
+                    imageUrl: 'https://placehold.co/400x400/A7F3D0/1F2937?text=Welcome!', 
+                    caption: 'Welcome to the new Green Feed! Share your eco-actions and tag us!', 
+                    likes: 15, 
+                    comments: [{userName: 'Alex Green', text: 'This is awesome!'}], 
+                    isLiked: false 
+                },
+                { 
+                    id: 'f2', 
+                    userName: 'Jane Doe', 
+                    userAvatar: 'https://placehold.co/40x40/EAB308/FFFFFF?text=JD', 
+                    imageUrl: 'https://placehold.co/400x400/F3F4F6/9CA3AF?text=My+Reusable+Cup', 
+                    caption: 'Got my coffee in a reusable cup today! #SaveThePlanet', 
+                    likes: 42, 
+                    comments: [
+                        {userName: 'Mike Smith', text: 'Great job!'},
+                        {userName: 'Sarah Lee', text: 'Love that cup!'}
+                    ], 
+                    isLiked: true 
+                },
+            ],
+            history: [
+                { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart', kg: 0 },
+                { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award', kg: 0 },
+                { type: 'recycle', description: 'Submitted 12 Bottles', points: 15, date: '2025-10-20', icon: 'recycle', kg: 0.5 },
+                { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check', kg: 0 },
+                { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text', kg: 0 },
+                { type: 'recycle', description: 'Submitted 30 Bottles', points: 30, date: '2025-10-10', icon: 'recycle', kg: 1.2 },
+            ],
+            // MODIFIED: New Verifiable Challenges
             dailyChallenges: [
-                { id: 'c1', title: 'Use a Reusable Bottle', description: 'Ditch the plastic. Use a reusable bottle for your drinks today.', points: 15, status: 'active', icon: 'bottle-water' },
-                { id: 'c2', title: 'Walk to Campus', description: 'Skip the bus or bike and walk to your classes.', points: 20, status: 'active', icon: 'walk' },
-                { id: 'c3', title: 'Sort Your Waste', description: 'Correctly sort at least 5 items into recyclable and non-recyclable bins.', points: 10, status: 'completed', icon: 'recycle' },
-                { id: 'c4', title: 'Meat-Free Meal', description: 'Have at least one vegetarian or vegan meal today.', points: 15, status: 'active', icon: 'carrot' },
+                { id: 'c1', title: 'Selfie with a Tree', description: 'Upload a selfie with any tree on campus.', points_reward: 20, icon: 'camera', status: 'active', buttonText: 'Upload Selfie' },
+                { id: 'c2', title: 'Daily Eco-Quiz', description: 'Get 3/3 questions right to earn points.', points_reward: 15, icon: 'brain', status: 'active', buttonText: 'Start Quiz' },
+                { id: 'c3', title: 'Spot a Reusable', description: 'Upload a photo of someone using a reusable bottle or cup.', points_reward: 10, icon: 'eye', status: 'pending', buttonText: 'Pending Review' },
+                // MODIFIED: Replaced Recycle Right with Compliment Nature
+                { id: 'c4', title: '🌸 Compliment Nature', description: 'Post a nice photo of campus nature with a caption.', points_reward: 10, icon: 'flower-2', status: 'active', buttonText: 'Post to Feed' }
             ],
             events: [
-                { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Help clean up Kalyan Central Park. Gloves and bags provided.', points: 75, rsvp: true },
-                { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 04, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: false },
-                { id: 3, title: 'Green Docu-Night', date: 'Nov 11, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false },
+                { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 15, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, rsvp: true, status: 'upcoming' },
+                { id: 3, title: 'Green Docu-Night', date: 'Nov 22, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, rsvp: false, status: 'upcoming' },
+                { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Helped clean up Kalyan Central Park.', points: 75, rsvp: true, status: 'attended' },
+                { id: 4, title: 'Tree Planting Drive', date: 'Oct 15, 2025', description: 'Campus-wide tree planting initiative.', points: 50, rsvp: true, status: 'missed' },
             ],
             
             stores: [
@@ -559,13 +773,8 @@
                             images: ['https://placehold.co/400x300/F9A8D4/1F2937?text=Thali'],
                             description: 'A wholesome and delicious vegetarian thali, complete with dal, two vegetables, rice, roti, and a sweet dish. Perfect for a hearty lunch.',
                             features: ['100% Vegetarian', 'Daily changing menu', 'Freshly prepared'],
-                            specifications: [
-                                { key: 'Includes', value: 'Dal, 2 Sabzi, Roti, Rice, Sweet' },
-                                { key: 'Availability', value: '11:00 AM - 2:00 PM' }
-                            ],
-                            originalPrice: 80, 
-                            discountedPrice: 50, 
-                            cost: 30, 
+                            specifications: [ { key: 'Includes', value: 'Dal, 2 Sabzi, Roti, Rice, Sweet' }, { key: 'Availability', value: '11:00 AM - 2:00 PM' } ],
+                            originalPrice: 80, discountedPrice: 50, cost: 30, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.' 
                         },
                         { 
@@ -574,13 +783,8 @@
                             images: ['https://placehold.co/400x300/FBCFE8/1F2937?text=Chai'],
                             description: 'The classic college combo. One crispy, spicy samosa served with a hot cup of masala chai. Ideal for a quick snack.',
                             features: ['Freshly fried samosa', 'Strong masala chai'],
-                            specifications: [
-                                { key: 'Includes', value: '1 Samosa, 1 Cup Chai' },
-                                { key: 'Availability', value: '8:00 AM - 5:00 PM' }
-                            ],
-                            originalPrice: 30, 
-                            discountedPrice: 15, 
-                            cost: 15, 
+                            specifications: [ { key: 'Includes', value: '1 Samosa, 1 Cup Chai' }, { key: 'Availability', value: '8:00 AM - 5:00 PM' } ],
+                            originalPrice: 30, discountedPrice: 15, cost: 15, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 2).' 
                         },
                         { 
@@ -589,13 +793,8 @@
                             images: ['https://placehold.co/400x300/FCE7F3/1F2937?text=Dosa'],
                             description: 'A crispy rice crepe filled with a savory potato masala, served with sambar and coconut chutney. Made fresh to order.',
                             features: ['Crispy and golden', 'Spicy potato filling', 'Served with Sambar & Chutney'],
-                            specifications: [
-                                { key: 'Includes', value: '1 Dosa, Sambar, Chutney' },
-                                { key: 'Availability', value: '8:00 AM - 11:00 AM' }
-                            ],
-                            originalPrice: 60, 
-                            discountedPrice: 40, 
-                            cost: 20, 
+                            specifications: [ { key: 'Includes', value: '1 Dosa, Sambar, Chutney' }, { key: 'Availability', value: '8:00 AM - 11:00 AM' } ],
+                            originalPrice: 60, discountedPrice: 40, cost: 20, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 1).' 
                         }
                     ]
@@ -611,13 +810,8 @@
                             images: ['https://placehold.co/400x300/A5B4FC/1F2937?text=Coffee'],
                             description: 'A rich and foamy large cappuccino made with premium espresso beans. Customize with your choice of milk (dairy/non-dairy).',
                             features: ['Premium Arabica beans', 'Choice of milk', 'Topped with cocoa powder'],
-                            specifications: [
-                                { key: 'Size', value: 'Large (16 oz)' },
-                                { key: 'Options', value: 'Soy, Almond, Oat milk available' }
-                            ],
-                            originalPrice: 120, 
-                            discountedPrice: 80, 
-                            cost: 40, 
+                            specifications: [ { key: 'Size', value: 'Large (16 oz)' }, { key: 'Options', value: 'Soy, Almond, Oat milk available' } ],
+                            originalPrice: 120, discountedPrice: 80, cost: 40, 
                             instructions: 'Show this QR code to the barista to redeem your discount.' 
                         },
                         { 
@@ -626,13 +820,8 @@
                             images: ['https://placehold.co/400x300/C7D2FE/1F2937?text=Brownie'],
                             description: 'A fudgy, gooey chocolate brownie loaded with choco-chips. Served warm. Best paired with a coffee!',
                             features: ['Extra fudgy', 'Loaded with chocolate chips', 'Can be served warm'],
-                            specifications: [
-                                { key: 'Allergens', value: 'Contains Gluten, Dairy, Egg' },
-                                { key: 'Serving', value: '1 Piece' }
-                            ],
-                            originalPrice: 70, 
-                            discountedPrice: 50, 
-                            cost: 20, 
+                            specifications: [ { key: 'Allergens', value: 'Contains Gluten, Dairy, Egg' }, { key: 'Serving', value: '1 Piece' } ],
+                            originalPrice: 70, discountedPrice: 50, cost: 20, 
                             instructions: 'Show this QR code to the barista to redeem your discount.' 
                         }
                     ]
@@ -648,14 +837,8 @@
                             images: ['https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie'],
                             description: 'Show your college spirit with this comfortable and stylish hoodie. Features an embroidered college logo. Made from 100% cotton fleece.',
                             features: ['Embroidered logo', 'Soft cotton fleece', 'Kangaroo pocket'],
-                            specifications: [
-                                { key: 'Material', value: '100% Cotton' },
-                                { key: 'Sizes', value: 'S, M, L, XL, XXL' },
-                                { key: 'Color', value: 'Navy Blue, Grey' }
-                            ],
-                            originalPrice: 1000, 
-                            discountedPrice: 800, 
-                            cost: 200, 
+                            specifications: [ { key: 'Material', value: '100% Cotton' }, { key: 'Sizes', value: 'S, M, L, XL, XXL' }, { key: 'Color', value: 'Navy Blue, Grey' } ],
+                            originalPrice: 1000, discountedPrice: 800, cost: 200, 
                             instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.' 
                         },
                         { 
@@ -664,13 +847,8 @@
                             images: ['https://placehold.co/400x300/BBF7D0/1F2937?text=Bottle'],
                             description: 'A durable, insulated steel bottle to keep your drinks hot or cold. Eco-friendly and stylish, with a laser-etched college logo.',
                             features: ['Insulated (Hot/Cold)', 'Leak-proof lid', 'BPA-Free'],
-                            specifications: [
-                                { key: 'Capacity', value: '750ml' },
-                                { key: 'Material', value: 'Stainless Steel' }
-                            ],
-                            originalPrice: 500, 
-                            discountedPrice: 350, 
-                            cost: 150, 
+                            specifications: [ { key: 'Capacity', value: '750ml' }, { key: 'Material', value: 'Stainless Steel' } ],
+                            originalPrice: 500, discountedPrice: 350, cost: 150, 
                             instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.' 
                         }
                     ]
@@ -685,15 +863,11 @@
             nextUserRewardId: 4, 
 
             levels: [
-                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 150, color: 'text-gray-600', progressBg: 'bg-gray-500' },
-                { level: 2, title: 'Eco Learner', minPoints: 150, nextMin: 400, color: 'text-blue-600', progressBg: 'bg-blue-500' },
-                { level: 3, title: 'Sustainability Leader', minPoints: 400, nextMin: 800, color: 'text-purple-600', progressBg: 'bg-purple-500' },
-                { level: 4, title: 'Planet Protector', minPoints: 800, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
+                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 1001, color: 'text-gray-600', progressBg: 'bg-gray-500' },
+                { level: 2, title: 'Eco Learner', minPoints: 1001, nextMin: 2001, color: 'text-blue-600', progressBg: 'bg-blue-500' },
+                { level: 3, title: 'Sustainability Leader', minPoints: 2001, nextMin: 4001, color: 'text-purple-600', progressBg: 'bg-purple-500' },
+                { level: 4, title: 'Planet Protector', minPoints: 4001, nextMin: Infinity, color: 'text-yellow-600', progressBg: 'bg-yellow-500' }
             ],
-        };
-
-        const getTodayDateString = () => {
-            return new Date().toISOString().split('T')[0];
         };
 
         const getRewardDetails = (userReward) => {
@@ -722,6 +896,7 @@
         }
 
         // --- DOM Elements ---
+        const appLoading = document.getElementById('app-loading');
         const mainContent = document.querySelector('.main-content');
         const pages = document.querySelectorAll('.page');
         const sidebar = document.getElementById('sidebar');
@@ -737,19 +912,30 @@
         const userPointsSidebar = document.getElementById('user-points-sidebar');
         const userLevelSidebar = document.getElementById('user-level-sidebar');
 
-        const checkInCard = document.getElementById('daily-check-in-card');
+        const dashboardCheckinButton = document.getElementById('daily-checkin-button');
+        const dashboardStreakText = document.getElementById('dashboard-streak-text');
+
+        const checkinModal = document.getElementById('checkin-modal');
+        const checkinModalStreak = document.getElementById('checkin-modal-streak');
+        const checkinModalCalendar = document.getElementById('checkin-modal-calendar');
+        const checkinModalButtonContainer = document.getElementById('checkin-modal-button-container');
+
+        const impactCo2 = document.getElementById('impact-co2');
+        const impactRecycled = document.getElementById('impact-recycled');
 
         const eventList = document.getElementById('event-list');
         const storeListPreview = document.getElementById('store-list-preview'); 
         const storeDetailPage = document.getElementById('store-detail-page'); 
         const productDetailPage = document.getElementById('product-detail-page'); 
         const historyList = document.getElementById('history-list');
-        const leaderboardDashboardList = document.getElementById('leaderboard-dashboard-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
         
-        // *** NEW: Challenge List Elements ***
+        // NEW: Eco Wars & Feed Elements
+        const ecoWarsPageList = document.getElementById('eco-wars-page-list');
+        const feedPageList = document.getElementById('feed-page-list');
+
         const challengesPageList = document.getElementById('challenges-page-list');
-        const challengesDashboardList = document.getElementById('challenges-dashboard-list');
+        const storeSearchInput = document.getElementById('store-search-input'); 
         
         const profileAvatar = document.getElementById('profile-avatar');
         const profileName = document.getElementById('profile-name');
@@ -764,6 +950,10 @@
         const profileMobile = document.getElementById('profile-mobile');
         const profileEmailPersonal = document.getElementById('profile-email-personal');
         const profileMembership = document.getElementById('profile-membership');
+        const profilePicUpload = document.getElementById('profile-pic-upload');
+        const profilePicLoader = document.getElementById('profile-pic-loader');
+        const profilePicError = document.getElementById('profile-pic-error');
+
 
         const ecopointsBalance = document.getElementById('ecopoints-balance'); 
         const ecopointsLevelTitle = document.getElementById('ecopoints-level-title'); 
@@ -779,6 +969,15 @@
         const qrModal = document.getElementById('qr-modal');
 
         const allRewardsList = document.getElementById('all-rewards-list');
+
+        const changePasswordForm = document.getElementById('change-password-form');
+        const changePasswordButton = document.getElementById('change-password-button');
+        const passwordMessage = document.getElementById('password-message');
+        const logoutButton = document.getElementById('logout-button');
+
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
 
 
         const getUserLevel = (points) => {
@@ -815,69 +1014,61 @@
             const levelInfo = getUserLevel(user.points); 
             userPointsHeader.textContent = user.points;
             userNameGreeting.textContent = user.name.split(' ')[0]; 
-            userAvatarSidebar.src = user.avatarUrl.replace('40x40', '80x80');
+            userAvatarSidebar.src = user.avatarUrl;
             userNameSidebar.textContent = user.name;
             userPointsSidebar.textContent = user.points;
             userLevelSidebar.textContent = `Lv. ${levelInfo.level}: ${levelInfo.title}`;
-            userLevelSidebar.className = `text-sm font-medium ${levelInfo.color} mb-1`;
+            userLevelSidebar.className = `text-sm font-medium ${levelInfo.color} dark:text-blue-400 mb-1`;
         };
 
-        const renderCheckInCard = () => {
-            const today = getTodayDateString();
+        const renderDashboardCheckinButton = () => {
             const user = state.currentUser;
-            
             if (user.lastCheckInDate === today) {
-                // Completed State
-                checkInCard.className = "bg-green-50 border border-green-200 p-5 rounded-xl mb-6 flex items-center justify-between";
-                checkInCard.innerHTML = `
-                    <div>
-                        <h3 class="text-lg font-bold text-green-800">Daily Check-in</h3>
-                        <p class="text-sm text-green-700">You've already checked in today!</p>
-                    </div>
-                    <div class="bg-green-100 text-green-700 font-bold py-2 px-4 rounded-lg flex items-center space-x-2 whitespace-nowrap">
-                        <i data-lucide="check" class="w-5 h-5"></i>
-                        <span>Checked-in</span>
-                    </div>
+                dashboardCheckinButton.classList.add('opacity-70', 'cursor-not-allowed');
+                dashboardCheckinButton.querySelector('h3').textContent = 'Checked-in Today!';
+                dashboardCheckinButton.querySelector('p').textContent = 'Come back tomorrow.';
+                dashboardStreakText.textContent = `${user.checkInStreak} Day Streak!`;
+            } else {
+                dashboardCheckinButton.classList.remove('opacity-70', 'cursor-not-allowed');
+                dashboardCheckinButton.querySelector('h3').textContent = 'Daily Check-in';
+                dashboardCheckinButton.querySelector('p').textContent = 'Tap here to get your daily points!';
+                dashboardStreakText.textContent = `${user.checkInStreak} Day Streak!`;
+            }
+        };
+
+        const renderCheckinModal = () => {
+            const user = state.currentUser;
+            const streak = user.checkInStreak;
+            checkinModalStreak.textContent = `${streak} Days`;
+            
+            checkinModalCalendar.innerHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const dayLetter = ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i];
+                let classes = 'w-10 h-10 rounded-full flex items-center justify-center font-bold ';
+                if (i < streak) {
+                    classes += 'bg-green-500 text-white';
+                } else {
+                    classes += 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400';
+                }
+                checkinModalCalendar.innerHTML += `<div class="${classes}">${dayLetter}</div>`;
+            }
+
+            checkinModalButtonContainer.innerHTML = '';
+            if (user.lastCheckInDate === today) {
+                checkinModalButtonContainer.innerHTML = `
+                    <p class="text-center text-lg font-semibold text-green-600 dark:text-green-400 mb-2">You've already checked in today!</p>
+                    <p class="text-center text-gray-600 dark:text-gray-300">Your ${streak}-day streak is safe. Come back tomorrow!</p>
                 `;
             } else {
-                // Active State
-                checkInCard.className = "bg-white border border-gray-200 p-5 rounded-xl mb-6 flex items-center justify-between shadow-sm";
-                checkInCard.innerHTML = `
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Daily Check-in</h3>
-                        <p class="text-sm text-gray-600">Earn +${state.checkInReward} points for checking in!</p>
-                    </div>
-                    <button onclick="performCheckIn()" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2 whitespace-nowrap hover:bg-green-700 transition-colors">
-                        <i data-lucide="log-in" class="w-5 h-5"></i>
-                        <span>Check-in</span>
+                const streakBonus = Math.min((streak + 1) * 5, 25);
+                const totalReward = state.checkInReward + streakBonus;
+                checkinModalButtonContainer.innerHTML = `
+                    <button onclick="performCheckIn()" class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg text-lg hover:bg-green-700 transition-colors">
+                        Check in Now (+${totalReward} Pts)
                     </button>
+                    <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Base: +${state.checkInReward} | Streak: +${streakBonus}</p>
                 `;
             }
-            lucide.createIcons();
-        };
-        
-        const renderLeaderboardDashboard = () => {
-            leaderboardDashboardList.innerHTML = '';
-            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.points - a.points);
-            
-            sortedLeaderboard.slice(0, 3).forEach((user, index) => {
-                const rank = index + 1;
-                let rankBadge = '';
-                if (rank === 1) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-500"></i>`;
-                else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
-                else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
-
-                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-l-4 border-green-500' : 'bg-white';
-                
-                leaderboardDashboardList.innerHTML += `
-                    <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm">
-                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
-                        <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
-                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
-                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
-                    </div>
-                `;
-            });
             lucide.createIcons();
         };
 
@@ -887,61 +1078,149 @@
             
             sortedLeaderboard.forEach((user, index) => {
                 const rank = index + 1;
-                let rankBadge = `<span class="font-bold text-gray-500 w-6 text-center">${rank}.</span>`;
+                let rankBadge = `<span class="font-bold text-gray-500 dark:text-gray-400 w-6 text-center">${rank}.</span>`;
                 if (rank === 1) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-500"></i>`;
                 else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
                 else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
 
-                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 border-2 border-green-500' : 'bg-white';
+                const isCurrentUserClass = user.isCurrentUser ? 'bg-green-100 dark:bg-green-900/50 border-2 border-green-500' : 'bg-white dark:bg-gray-800';
                 
                 leaderboardPageList.innerHTML += `
                     <div class="flex items-center ${isCurrentUserClass} p-4 rounded-xl shadow-sm">
                         <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
                         <img src="${user.avatarUrl}" class="w-10 h-10 rounded-full mr-3" alt="${user.name}">
-                        <p class="font-semibold text-gray-700">${user.isCurrentUser ? 'You' : user.name}</p>
-                        <p class="ml-auto font-bold text-gray-600">${user.points} Pts</p>
+                        <p class="font-semibold text-gray-700 dark:text-gray-200">${user.isCurrentUser ? 'You' : user.name}</p>
+                        <p class="ml-auto font-bold text-gray-600 dark:text-gray-300">${user.points} Pts</p>
                     </div>
                 `;
             });
             lucide.createIcons();
         };
 
-        // *** NEW: Render Challenge Card (helper) ***
+        // NEW: Render Eco Wars Page
+        const renderEcoWarsPage = () => {
+            ecoWarsPageList.innerHTML = '';
+            const sortedDepts = [...state.departmentLeaderboard].sort((a, b) => b.points - a.points);
+            
+            const colors = {
+                blue: 'border-blue-500 bg-blue-100 dark:bg-blue-900/50',
+                red: 'border-red-500 bg-red-100 dark:bg-red-900/50',
+                yellow: 'border-yellow-500 bg-yellow-100 dark:bg-yellow-900/50',
+                green: 'border-green-500 bg-green-100 dark:bg-green-900/50',
+                purple: 'border-purple-500 bg-purple-100 dark:bg-purple-900/50',
+            };
+
+            sortedDepts.forEach((dept, index) => {
+                const rank = index + 1;
+                let rankBadge = `<span class="font-bold text-gray-500 dark:text-gray-400 w-6 text-center">${rank}.</span>`;
+                if (rank === 1) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-500"></i>`;
+                else if (rank === 2) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-gray-400"></i>`;
+                else if (rank === 3) rankBadge = `<i data-lucide="award" class="w-6 h-6 text-yellow-700"></i>`;
+
+                const colorClass = colors[dept.color] || 'border-gray-500 bg-gray-100 dark:bg-gray-700';
+
+                ecoWarsPageList.innerHTML += `
+                    <div class="flex items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border-l-4 ${colorClass}">
+                        <div class="w-8 flex justify-center items-center mr-3">${rankBadge}</div>
+                        <p class="font-semibold text-lg text-gray-700 dark:text-gray-200">${dept.name}</p>
+                        <p class="ml-auto font-bold text-lg text-gray-600 dark:text-gray-300">${dept.points} Pts</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
+        // NEW: Render Community Feed Page
+        const renderCommunityFeed = () => {
+            feedPageList.innerHTML = '';
+            state.communityFeed.forEach(post => {
+                const likeClass = post.isLiked ? 'liked' : '';
+                feedPageList.innerHTML += `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="p-4 flex items-center space-x-3">
+                            <img src="${post.userAvatar}" alt="${post.userName}" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="font-semibold text-gray-800 dark:text-gray-100">${post.userName}</p>
+                            </div>
+                        </div>
+                        
+                        <img src="${post.imageUrl}" alt="Post image" class="w-full h-auto object-cover">
+                        
+                        <div class="p-4 flex items-center space-x-4 border-b border-gray-200 dark:border-gray-700">
+                            <button onclick="handleLikePost('${post.id}')" class="feed-card-actions text-gray-600 dark:text-gray-400 hover:text-red-500">
+                                <i data-lucide="heart" class="w-6 h-6 ${likeClass}"></i>
+                            </button>
+                            <button class="text-gray-600 dark:text-gray-400 hover:text-blue-500">
+                                <i data-lucide="message-circle" class="w-6 h-6"></i>
+                            </button>
+                            <button class="text-gray-600 dark:text-gray-400 hover:text-green-500">
+                                <i data-lucide="send" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-4">
+                            <p class="text-gray-700 dark:text-gray-300 text-sm mb-2">
+                                <span class="font-bold text-gray-800 dark:text-gray-100">${post.likes}</span> likes
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300 text-sm">
+                                <span class="font-bold text-gray-800 dark:text-gray-100">${post.userName}</span>
+                                ${post.caption}
+                            </p>
+                            <div class="mt-3 space-y-2">
+                                ${post.comments.map(comment => `
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                        <span class="font-semibold text-gray-700 dark:text-gray-200">${comment.userName}</span>
+                                        ${comment.text}
+                                    </p>
+                                `).join('')}
+                            </div>
+                            <input type="text" placeholder="Add a comment..." class="w-full mt-3 bg-gray-100 dark:bg-gray-700 rounded-lg p-2 text-sm border-none focus:ring-green-500">
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        };
+
         const renderChallengeCard = (challenge) => {
             let buttonHTML = '';
             if (challenge.status === 'active') {
-                buttonHTML = `<button onclick="completeChallenge('${challenge.id}')" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-700 transition-colors">Complete</button>`;
-            } else {
-                buttonHTML = `<button class="w-full bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed flex items-center justify-center space-x-2">
+                buttonHTML = `<button onclick="handleChallengeAction('${challenge.id}')" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-700 transition-colors">${challenge.buttonText}</button>`;
+            } else if (challenge.status === 'pending') {
+                buttonHTML = `<button class="w-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed flex items-center justify-center space-x-2" disabled>
+                                <i data-lucide="clock" class="w-5 h-5"></i>
+                                <span>${challenge.buttonText}</span>
+                            </button>`;
+            } else { // completed
+                buttonHTML = `<button class="w-full bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed flex items-center justify-center space-x-2" disabled>
                                 <i data-lucide="check" class="w-5 h-5"></i>
-                                <span>Completed</span>
+                                <span>${challenge.buttonText}</span>
                             </button>`;
             }
 
             return `
-                <div class="bg-white p-4 rounded-xl shadow-md">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
                     <div class="flex items-start">
-                        <div class="p-3 bg-yellow-100 rounded-lg mr-4">
-                            <i data-lucide="${challenge.icon}" class="w-6 h-6 text-yellow-600"></i>
+                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg mr-4">
+                            <i data-lucide="${challenge.icon || 'award'}" class="w-6 h-6 text-yellow-600 dark:text-yellow-400"></i>
                         </div>
                         <div class="flex-grow">
-                            <h3 class="font-bold text-gray-800 text-lg">${challenge.title}</h3>
-                            <p class="text-sm text-gray-500 mb-3">${challenge.description}</p>
-                            <p class="text-sm font-bold text-green-600 mb-3">+${challenge.points} EcoPoints</p>
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg">${challenge.title}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">${challenge.description}</p>
+                            <p class="text-sm font-bold text-green-600 dark:text-green-400 mb-3">+${challenge.points_reward} EcoPoints</p>
                             ${buttonHTML}
                         </div>
                     </div>
                 </div>
             `;
         };
-        
-        // *** NEW: Render Challenges Page ***
+
         const renderChallengesPage = () => {
             challengesPageList.innerHTML = '';
             const challenges = state.dailyChallenges;
             
-            if(challenges.length === 0) {
-                challengesPageList.innerHTML = `<p class="text-center text-gray-500">No challenges available today. Check back tomorrow!</p>`;
+            if(!challenges || challenges.length === 0) {
+                challengesPageList.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No challenges available today. Check back tomorrow!</p>`;
                 return;
             }
 
@@ -951,33 +1230,17 @@
             lucide.createIcons();
         };
 
-        // *** NEW: Render Challenges Dashboard Preview ***
-        const renderChallengesDashboard = () => {
-            challengesDashboardList.innerHTML = '';
-            const activeChallenges = state.dailyChallenges.filter(c => c.status === 'active').slice(0, 2);
-
-            if (activeChallenges.length === 0) {
-                challengesDashboardList.innerHTML = `<p class="text-center text-gray-500 text-sm p-4 bg-white rounded-xl shadow-sm">You've completed all daily challenges!</p>`;
-                return;
-            }
-
-            activeChallenges.forEach(challenge => {
-                challengesDashboardList.innerHTML += renderChallengeCard(challenge);
-            });
-            lucide.createIcons();
-        };
-
         const renderProfile = () => {
             const user = state.currentUser;
             const levelInfo = getUserLevel(user.points);
 
-            profileAvatar.src = user.avatarUrl.replace('40x40', '100x100');
+            profileAvatar.src = user.avatarUrl;
             profileName.textContent = user.name;
             profileEmail.textContent = user.email;
             profileJoined.textContent = `Joined ${user.joined}`;
             
             profileLevelTitle.textContent = levelInfo.title;
-            profileLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            profileLevelTitle.className = `text-sm font-semibold ${levelInfo.color} dark:text-green-400`;
             profileLevelNumber.textContent = levelInfo.level;
             profileLevelProgress.style.width = `${levelInfo.progress}%`;
             profileLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
@@ -990,22 +1253,22 @@
 
             if (user.isGreenClubMember) {
                 profileMembership.innerHTML = `
-                    <div class="p-3 bg-green-100 rounded-lg mr-4">
-                        <i data-lucide="leaf" class="w-6 h-6 text-green-600"></i>
+                    <div class="p-3 bg-green-100 dark:bg-green-900/50 rounded-lg mr-4">
+                        <i data-lucide="leaf" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
                     </div>
                     <div>
-                        <p class="font-semibold text-gray-900">Green Club</p>
-                        <p class="text-sm text-green-600">Active Member</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">Green Club</p>
+                        <p class="text-sm text-green-600 dark:text-green-400">Active Member</p>
                     </div>
                 `;
             } else {
                 profileMembership.innerHTML = `
-                    <div class="p-3 bg-gray-100 rounded-lg mr-4">
-                        <i data-lucide="x-circle" class="w-6 h-6 text-gray-500"></i>
+                    <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg mr-4">
+                        <i data-lucide="x-circle" class="w-6 h-6 text-gray-500 dark:text-gray-400"></i>
                     </div>
                     <div>
-                        <p class="font-semibold text-gray-900">No Memberships</p>
-                        <p class="text-sm text-gray-500">Join a club to see it here.</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">No Memberships</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Join a club to see it here.</p>
                     </div>
                 `;
             }
@@ -1020,7 +1283,7 @@
             ecopointsBalance.textContent = user.points;
 
             ecopointsLevelTitle.textContent = levelInfo.title;
-            ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color}`;
+            ecopointsLevelTitle.className = `text-sm font-semibold ${levelInfo.color} dark:text-green-400`;
             ecopointsLevelNumber.textContent = levelInfo.level;
             ecopointsLevelProgress.style.width = `${levelInfo.progress}%`;
             ecopointsLevelProgress.className = `h-2.5 rounded-full ${levelInfo.progressBg}`; 
@@ -1033,16 +1296,16 @@
                 const titleH5 = textContent.querySelector('h5'); 
                 
                 textContent.classList.remove('opacity-60');
-                numberSpan.classList.remove('text-green-600', 'text-gray-400', 'scale-110');
-                titleH5.classList.remove('text-green-700', 'font-extrabold');
+                numberSpan.classList.remove('text-green-600', 'dark:text-green-400', 'text-gray-400', 'dark:text-gray-600', 'scale-110');
+                titleH5.classList.remove('text-green-700', 'dark:text-green-300', 'font-extrabold');
 
                 if (level.level < levelInfo.level) {
-                    numberSpan.classList.add('text-green-600');
+                    numberSpan.classList.add('text-green-600', 'dark:text-green-400');
                 } else if (level.level === levelInfo.level) {
-                    numberSpan.classList.add('text-green-600', 'scale-110'); 
-                    titleH5.classList.add('text-green-700', 'font-extrabold'); 
+                    numberSpan.classList.add('text-green-600', 'dark:text-green-400', 'scale-110'); 
+                    titleH5.classList.add('text-green-700', 'dark:text-green-300', 'font-extrabold'); 
                 } else {
-                    numberSpan.classList.add('text-gray-400');
+                    numberSpan.classList.add('text-gray-400', 'dark:text-gray-600');
                     textContent.classList.add('opacity-60'); 
                 }
             });
@@ -1053,19 +1316,19 @@
             ecopointsRecentActivity.innerHTML = '';
             const historySummary = state.history.slice(0, 3);
             if (historySummary.length === 0) {
-                 ecopointsRecentActivity.innerHTML = `<p class="text-center text-gray-500 text-sm">No transactions yet.</p>`;
+                 ecopointsRecentActivity.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 text-sm">No transactions yet.</p>`;
             } else {
                 historySummary.forEach(item => {
-                    const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+                    const pointClass = item.points >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                     const sign = item.points >= 0 ? '+' : '';
                     ecopointsRecentActivity.innerHTML += `
                         <div class="flex items-center">
-                            <div class="p-2 bg-gray-100 rounded-lg mr-3">
-                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600"></i>
+                            <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg mr-3">
+                                <i data-lucide="${item.icon}" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
                             </div>
                             <div class="flex-grow">
-                                <p class="font-semibold text-gray-800 text-sm">${item.description}</p>
-                                <p class="text-xs text-gray-500">${item.date}</p>
+                                <p class="font-semibold text-gray-800 dark:text-gray-100 text-sm">${item.description}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">${item.date}</p>
                             </div>
                             <p class="font-bold text-sm ${pointClass}">${sign}${item.points}</p>
                         </div>
@@ -1077,29 +1340,26 @@
 
         const renderHistory = () => {
             historyList.innerHTML = '';
-            // Sort history by date, newest first (assuming YYYY-MM-DD format)
-            const sortedHistory = [...state.history].sort((a, b) => new Date(b.date.replaceAll('/', '-')) - new Date(a.date.replaceAll('/', '-')));
-            
-            if (sortedHistory.length === 0) {
-                historyList.innerHTML = `<p class="text-center text-gray-500">No activity yet.</p>`;
+            if (state.history.length === 0) {
+                historyList.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No activity yet.</p>`;
                 return;
             }
-            sortedHistory.forEach(item => {
-                const pointClass = item.points >= 0 ? 'text-green-600' : 'text-red-600';
+            state.history.forEach(item => {
+                const pointClass = item.points >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
                 const sign = item.points >= 0 ? '+' : '';
                 
                 historyList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-sm flex items-center">
-                        <div class="p-3 bg-gray-100 rounded-lg mr-4">
-                            <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600"></i>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex items-center">
+                        <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg mr-4">
+                            <i data-lucide="${item.icon}" class="w-6 h-6 text-gray-600 dark:text-gray-300"></i>
                         </div>
                         <div class="flex-grow">
-                            <p class="font-semibold text-gray-800">${item.description}</p>
-                            <p class="text-xs text-gray-500">${item.date}</p>
+                            <p class="font-semibold text-gray-800 dark:text-gray-100">${item.description}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${item.date}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-bold ${pointClass}">${sign}${item.points}</p>
-                            <p class="text-xs text-gray-500">EcoPoints</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">EcoPoints</p>
                         </div>
                     </div>
                 `;
@@ -1109,23 +1369,53 @@
 
         const renderEvents = () => {
             eventList.innerHTML = '';
-            state.events.forEach(e => {
-                const rsvpButton = e.rsvp
-                    ? `<button class="bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded-lg text-sm w-full" disabled>Attending</button>`
-                    : `<button onclick="updateEventRSVP(${e.id})" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>`;
+            const sortedEvents = [...state.events].sort((a, b) => {
+                if (a.status === 'upcoming' && b.status !== 'upcoming') return -1;
+                if (a.status !== 'upcoming' && b.status === 'upcoming') return 1;
+                if (a.status === 'attended' && b.status === 'missed') return -1;
+                if (a.status === 'missed' && b.status === 'attended') return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            sortedEvents.forEach(e => {
+                let statusButton = '';
+                let opacityClass = '';
+
+                switch (e.status) {
+                    case 'upcoming':
+                        if (e.rsvp) {
+                            statusButton = `<button class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2" disabled>
+                                                <i data-lucide="calendar-check" class="w-4 h-4"></i><span>Attending</span>
+                                            </button>`;
+                        } else {
+                            statusButton = `<button onclick="updateEventRSVP(${e.id})" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600 w-full">RSVP Now</button>`;
+                        }
+                        break;
+                    case 'attended':
+                        statusButton = `<div class="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4"></i><span>Attended (+${e.points} Pts)</span>
+                                        </div>`;
+                        opacityClass = 'opacity-70';
+                        break;
+                    case 'missed':
+                        statusButton = `<div class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2">
+                                            <i data-lucide="x-circle" class="w-4 h-4"></i><span>Missed</span>
+                                        </div>`;
+                        opacityClass = 'opacity-50';
+                        break;
+                }
                 
                 eventList.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl shadow-md">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md ${opacityClass}">
                         <div class="flex items-start">
-                            <div class="p-3 bg-purple-100 rounded-lg mr-4">
-                                <i data-lucide="calendar" class="w-6 h-6 text-purple-600"></i>
+                            <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg mr-4">
+                                <i data-lucide="calendar" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
                             </div>
                             <div class="flex-grow">
-                                <p class="text-xs font-semibold text-purple-600">${e.date}</p>
-                                <h3 class="font-bold text-gray-800 text-lg">${e.title}</h3>
-                                <p class="text-sm text-gray-500 mb-3">${e.description}</p>
-                                <p class="text-sm font-bold text-green-600 mb-3">+${e.points} EcoPoints for attending</p>
-                                ${rsvpButton}
+                                <p class="text-xs font-semibold text-purple-600 dark:text-purple-400">${e.date}</p>
+                                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg">${e.title}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">${e.description}</p>
+                                ${statusButton}
                             </div>
                         </div>
                     </div>
@@ -1134,24 +1424,25 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderProductCard (image size) ***
+
         const renderProductCard = (product, storeId, type = 'grid') => {
             const cardWidth = type === 'preview' ? 'w-36' : 'w-full';
             
             return `
-                <div class="${cardWidth} flex-shrink-0 bg-white border rounded-xl overflow-hidden flex flex-col shadow-md cursor-pointer transition-shadow hover:shadow-lg" 
+                <div class="${cardWidth} flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden flex flex-col shadow-md cursor-pointer transition-shadow hover:shadow-lg" 
                      onclick="showProductDetailPage('${storeId}', '${product.productId}')">
                     
-                    <img src="${product.images[0].replace('400x300', '300x400')}" alt="${product.name}" class="w-full h-48 object-cover"> <div class="p-3 flex flex-col flex-grow">
-                        <p class="font-bold text-gray-800 text-sm truncate">${product.name}</p>
+                    <img src="${product.images[0].replace('400x300', '300x200')}" alt="${product.name}" class="w-full h-24 object-cover">
+                    <div class="p-3 flex flex-col flex-grow">
+                        <p class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">${product.name}</p>
                         
                         <div class="mt-auto pt-2">
-                            <p class="text-xs text-gray-400 line-through">₹${product.originalPrice}</p>
-                            <div class="flex items-center font-bold text-gray-800 my-1">
-                                <span class="text-md text-green-700">₹${product.discountedPrice}</span>
-                                <span class="mx-1 text-gray-400 text-xs">+</span>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 line-through">₹${product.originalPrice}</p>
+                            <div class="flex items-center font-bold text-gray-800 dark:text-gray-100 my-1">
+                                <span class="text-md text-green-700 dark:text-green-400">₹${product.discountedPrice}</span>
+                                <span class="mx-1 text-gray-400 dark:text-gray-500 text-xs">+</span>
                                 <i data-lucide="leaf" class="w-3 h-3 text-green-500 mr-1"></i>
-                                <span class="text-sm text-green-700">${product.cost}</span>
+                                <span class="text-sm text-green-700 dark:text-green-400">${product.cost}</span>
                             </div>
                         </div>
                     </div>
@@ -1160,9 +1451,22 @@
         };
 
         const renderRewards = () => {
+            const searchTerm = document.getElementById('store-search-input').value.toLowerCase();
             storeListPreview.innerHTML = ''; 
             
-            state.stores.forEach(store => {
+            const filteredStores = state.stores.filter(store => {
+                if (store.storeName.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                return store.products.some(product => product.name.toLowerCase().includes(searchTerm));
+            });
+
+            if (filteredStores.length === 0) {
+                storeListPreview.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No stores or products found matching "${searchTerm}".</p>`;
+                return;
+            }
+
+            filteredStores.forEach(store => {
                 let productsHTML = '';
                 
                 store.products.slice(0, 3).forEach(product => {
@@ -1170,13 +1474,13 @@
                 });
 
                 storeListPreview.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="p-4 flex items-center justify-between border-b bg-gray-50">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                             <div class="flex items-center cursor-pointer" onclick="showStoreDetailPage('${store.storeId}')">
-                                <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border">
-                                <h3 class="text-lg font-bold text-gray-800">${store.storeName}</h3>
+                                <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border dark:border-gray-700">
+                                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">${store.storeName}</h3>
                             </div>
-                            <button onclick="showStoreDetailPage('${store.storeId}')" class="text-sm font-semibold text-green-600 hover:text-green-700">
+                            <button onclick="showStoreDetailPage('${store.storeId}')" class="text-sm font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300">
                                 View All
                             </button>
                         </div>
@@ -1191,14 +1495,13 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: renderMyRewardsPage (image size) ***
         const renderMyRewardsPage = () => {
             allRewardsList.innerHTML = '';
 
             const allRewards = state.userRewards; 
 
             if (allRewards.length === 0) {
-                allRewardsList.innerHTML = `<p class="text-center text-gray-500 p-4">You have no rewards. Visit the Eco-Store to get some!</p>`;
+                allRewardsList.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 p-4">You have no rewards. Visit the Eco-Store to get some!</p>`;
             } else {
                 allRewards.forEach(userReward => {
                     const rewardDetails = getRewardDetails(userReward);
@@ -1206,11 +1509,12 @@
 
                     if (userReward.status === 'active') {
                         allRewardsList.innerHTML += `
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden flex">
-                                <img src="${rewardDetails.images[0].replace('400x300', '300x400')}" alt="${rewardDetails.name}" class="w-28 h-full object-cover"> <div class="p-4 flex-grow flex flex-col">
-                                    <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                    <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
-                                    <p class="text-xs text-gray-400 mb-2 mt-1">Purchased: ${userReward.purchaseDate}</p>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex">
+                                <img src="${rewardDetails.images[0].replace('400x300', '200x200')}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
+                                <div class="p-4 flex-grow flex flex-col">
+                                    <h3 class="font-bold text-gray-800 dark:text-gray-100">${rewardDetails.name}</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">${rewardDetails.storeName}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-2 mt-1">Purchased: ${userReward.purchaseDate}</p>
                                     <button onclick="openRewardQrModal('${userReward.userRewardId}')" class="mt-auto w-full bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-green-600">
                                         Use Now
                                     </button>
@@ -1219,13 +1523,14 @@
                         `;
                     } else {
                         allRewardsList.innerHTML += `
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden flex opacity-60">
-                                <img src="${rewardDetails.images[0].replace('400x300', '300x400')}" alt="${rewardDetails.name}" class="w-28 h-full object-cover"> <div class="p-4 flex-grow">
-                                    <h3 class="font-bold text-gray-800">${rewardDetails.name}</h3>
-                                    <p class="text-sm text-gray-500">${rewardDetails.storeName}</p>
-                                    <p class="text-xs text-gray-400 mt-1">Purchased: ${userReward.purchaseDate}</p>
-                                    <p class="text-xs text-gray-500 font-semibold">Used: ${userReward.usedDate}</p>
-                                    <div class="mt-2 w-full bg-gray-200 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm text-center">
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex opacity-60">
+                                <img src="${rewardDetails.images[0].replace('400x300', '200x200')}" alt="${rewardDetails.name}" class="w-24 h-full object-cover">
+                                <div class="p-4 flex-grow">
+                                    <h3 class="font-bold text-gray-800 dark:text-gray-100">${rewardDetails.name}</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">${rewardDetails.storeName}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Purchased: ${userReward.purchaseDate}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Used: ${userReward.usedDate}</p>
+                                    <div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 px-4 rounded-lg text-sm text-center">
                                         Redeemed
                                     </div>
                                 </div>
@@ -1237,27 +1542,60 @@
             lucide.createIcons();
         };
 
+        const renderDashboardStats = () => {
+            const totalKg = state.history
+                .filter(item => item.type === 'recycle')
+                .reduce((acc, item) => acc + (item.kg || 0), 0);
+            
+            const co2FromRecycle = totalKg * 1.5;
+            const co2FromPoints = state.currentUser.points * 0.1;
+            const totalCO2 = co2FromRecycle + co2FromPoints;
+
+            impactCo2.textContent = totalCO2.toFixed(1) + ' kg';
+            impactRecycled.textContent = totalKg.toFixed(1) + ' kg';
+        };
+
 
         // --- Logic and State Management ---
         
+        window.openCheckinModal = () => {
+            renderCheckinModal();
+            checkinModal.classList.add('open');
+            lucide.createIcons();
+        };
+
+        window.closeCheckinModal = () => {
+            checkinModal.classList.remove('open');
+        };
+
         const performCheckIn = () => {
-            const today = getTodayDateString();
             if (state.currentUser.lastCheckInDate === today) {
                 return; 
             }
 
+            if (state.currentUser.lastCheckInDate === yesterday) {
+                state.currentUser.checkInStreak += 1;
+            } else {
+                state.currentUser.checkInStreak = 1; // Reset streak
+            }
+
+            const streakBonus = Math.min(state.currentUser.checkInStreak * 5, 25);
+            const totalReward = state.checkInReward + streakBonus;
+
             state.currentUser.lastCheckInDate = today;
-            state.currentUser.points += state.checkInReward;
+            state.currentUser.points += totalReward;
 
             state.history.unshift({
                 type: 'check-in',
-                description: 'Daily Check-in Bonus',
-                points: state.checkInReward,
+                description: `Daily Check-in (+${state.checkInReward}) + Streak Bonus (+${streakBonus})`,
+                points: totalReward,
                 date: today.replaceAll('-', '/'), 
-                icon: 'log-in'
+                icon: 'log-in',
+                kg: 0
             });
 
-            renderCheckInCard();
+            renderCheckinModal();
+            renderDashboardCheckinButton();
             renderHeader(); 
             
             if (document.getElementById('profile').classList.contains('active')) {
@@ -1271,43 +1609,56 @@
             }
         };
 
-        // *** NEW: Complete Challenge Function ***
-        const completeChallenge = (challengeId) => {
-            const challenge = state.dailyChallenges.find(c => c.id === challengeId);
-            if (!challenge || challenge.status === 'completed') {
+        // NEW: Handle Feed Post Like
+        window.handleLikePost = (postId) => {
+            const post = state.communityFeed.find(p => p.id === postId);
+            if (!post) return;
+
+            if (post.isLiked) {
+                post.likes -= 1;
+                post.isLiked = false;
+            } else {
+                post.likes += 1;
+                post.isLiked = true;
+            }
+            renderCommunityFeed(); // Re-render the feed to show the change
+        };
+
+        window.handleChallengeAction = (challengeId) => {
+            const challenge = state.dailyChallenges.find(c => c.id == challengeId);
+            if (!challenge || challenge.status !== 'active') {
                 return;
             }
-
-            // 1. Update challenge status
-            challenge.status = 'completed';
-
-            // 2. Add points
-            state.currentUser.points += challenge.points;
-
-            // 3. Add to history
-            state.history.unshift({
-                type: 'challenge',
-                description: `Completed: ${challenge.title}`,
-                points: challenge.points,
-                date: getTodayDateString().replaceAll('-', '/'),
-                icon: 'award'
-            });
-
-            // 4. Re-render
-            renderHeader();
-            renderChallengesPage();
-            renderChallengesDashboard(); // Update dashboard preview
             
-            if (document.getElementById('profile').classList.contains('active')) {
-                renderProfile();
+            if (challenge.id === 'c1') { // Selfie
+                alert('Opening camera... (Demo)');
+                challenge.status = 'pending';
+                challenge.buttonText = 'Pending Review';
+            } else if (challenge.id === 'c2') { // Quiz
+                alert('Starting quiz... (Demo)');
+                challenge.status = 'completed';
+                challenge.buttonText = 'Completed';
+                state.currentUser.points += challenge.points_reward;
+                state.history.unshift({
+                    type: 'challenge',
+                    description: `Completed: ${challenge.title}`,
+                    points: challenge.points_reward,
+                    date: today.replaceAll('-', '/'),
+                    icon: challenge.icon,
+                    kg: 0
+                });
+                renderHeader();
+            } else if (challenge.id === 'c4') { // NEW: Compliment Nature
+                showPage('feed');
+                alert('Post your nature photo to the feed to complete the challenge!');
+                // In a real app, you'd verify this. For demo, we'll mark as pending.
+                challenge.status = 'pending';
+                challenge.buttonText = 'Pending Review';
             }
-            if (document.getElementById('ecopoints').classList.contains('active')) {
-                renderEcoPointsPage();
-            }
-            if (document.getElementById('history').classList.contains('active')) {
-                renderHistory();
-            }
+
+            renderChallengesPage();
         };
+
         
         const showPage = (pageId) => {
             pages.forEach(p => p.classList.remove('active'));
@@ -1320,40 +1671,35 @@
             }
             
             sidebarNavItems.forEach(item => {
-                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+                item.classList.toggle('active', item.getAttribute('onclick')?.includes(`'${pageId}'`));
             });
             
             navItems.forEach(item => {
-                item.classList.toggle('active', item.getAttribute('onclick').includes(`'${pageId}'`));
+                item.classList.toggle('active', item.getAttribute('onclick')?.includes(`'${pageId}'`));
             });
             
             mainContent.scrollTop = 0;
             
-            if (pageId === 'my-rewards') {
-                renderMyRewardsPage();
-            }
-            if (pageId === 'profile') {
-                renderProfile(); 
-            }
-            if (pageId === 'ecopoints') {
-                renderEcoPointsPage(); 
-            }
-            if (pageId === 'history') {
-                renderHistory(); 
-            }
-            if (pageId === 'leaderboard') {
-                renderLeaderboardPage(); 
-            }
-            if (pageId === 'rewards') {
-                renderRewards(); 
-            }
-            if (pageId === 'challenges') { // *** NEW ***
-                renderChallengesPage();
-            }
+            // NEW: Added render calls for new pages
+            if (pageId === 'eco-wars') renderEcoWarsPage();
+            if (pageId === 'feed') renderCommunityFeed();
+
+            if (pageId === 'my-rewards') renderMyRewardsPage();
+            if (pageId === 'profile') renderProfile(); 
+            if (pageId === 'ecopoints') renderEcoPointsPage(); 
+            if (pageId === 'history') renderHistory(); 
+            if (pageId === 'leaderboard') renderLeaderboardPage(); 
+            if (pageId === 'rewards') renderRewards(); 
+            if (pageId === 'challenges') renderChallengesPage(); 
+            if (pageId === 'events') renderEvents();
             if (pageId === 'dashboard') {
-                renderCheckInCard();
-                renderLeaderboardDashboard();
-                renderChallengesDashboard(); // *** NEW ***
+                renderDashboardCheckinButton();
+                renderDashboardStats();
+            }
+            if (pageId === 'change-password') {
+                passwordMessage.textContent = '';
+                passwordMessage.className = 'text-sm text-center';
+                changePasswordForm.reset();
             }
 
             toggleSidebar(true); 
@@ -1369,15 +1715,15 @@
             });
             
             storeDetailPage.innerHTML = `
-                <div class="p-4 bg-white sticky top-0 z-10 border-b flex items-center">
-                    <button onclick="showPage('rewards')" class="p-2 text-gray-600 -ml-2 mr-2">
+                <div class="p-4 bg-white dark:bg-gray-950 sticky top-0 z-10 border-b dark:border-gray-800 flex items-center">
+                    <button onclick="showPage('rewards')" class="p-2 text-gray-600 dark:text-gray-300 -ml-2 mr-2">
                         <i data-lucide="arrow-left" class="w-6 h-6"></i>
                     </button>
-                    <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border">
-                    <h2 class="text-xl font-bold text-gray-800">${store.storeName}</h2>
+                    <img src="${store.storeLogo}" class="w-10 h-10 rounded-full mr-3 border dark:border-gray-700">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">${store.storeName}</h2>
                 </div>
                 <div class="p-6">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">All Products</h3>
+                    <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">All Products</h3>
                     <div class="grid grid-cols-2 gap-4">
                         ${productsHTML}
                     </div>
@@ -1390,7 +1736,6 @@
             lucide.createIcons();
         };
 
-        // *** MODIFIED: showProductDetailPage (image size) ***
         const showProductDetailPage = (storeId, productId) => {
             const { store, product } = getProduct(storeId, productId);
             if (!product) return;
@@ -1402,15 +1747,15 @@
 
             let featuresHTML = '';
             product.features.forEach(f => {
-                featuresHTML += `<li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>${f}</li>`;
+                featuresHTML += `<li class="flex items-center text-gray-600 dark:text-gray-300"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>${f}</li>`;
             });
             
             let specsHTML = '';
             product.specifications.forEach(s => {
                 specsHTML += `
-                    <div class="bg-gray-100 p-3 rounded-lg text-center">
-                        <p class="text-xs text-gray-500">${s.key}</p>
-                        <p class="font-semibold text-gray-800 text-sm">${s.value}</p>
+                    <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg text-center">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${s.key}</p>
+                        <p class="font-semibold text-gray-800 dark:text-gray-100 text-sm">${s.value}</p>
                     </div>
                 `;
             });
@@ -1418,35 +1763,36 @@
             productDetailPage.innerHTML = `
                 <div class="pb-24">
                     <div class="relative">
-                        <img src="${product.images[0]}" alt="${product.name}" class="w-full h-80 object-cover"> <button onclick="showStoreDetailPage('${store.storeId}')" class="absolute top-4 left-4 p-2 bg-white/80 rounded-full shadow-md text-gray-700">
+                        <img src="${product.images[0]}" alt="${product.name}" class="w-full h-64 object-cover">
+                        <button onclick="showStoreDetailPage('${store.storeId}')" class="absolute top-4 left-4 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-md text-gray-700 dark:text-gray-200">
                             <i data-lucide="arrow-left" class="w-6 h-6"></i>
                         </button>
                     </div>
                     
-                    <div class="p-6 bg-white">
-                        <h2 class="text-3xl font-bold text-gray-800">${product.name}</h2>
-                        <p class="text-sm text-gray-500 mb-6">${store.storeName}</p>
+                    <div class="p-6 bg-white dark:bg-gray-900">
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${product.name}</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">${store.storeName}</p>
                         
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">Description</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">${product.description}</p>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Description</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">${product.description}</p>
 
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">Features</h3>
-                        <ul class="space-y-2 text-gray-600 mb-6">${featuresHTML}</ul>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Features</h3>
+                        <ul class="space-y-2 mb-6">${featuresHTML}</ul>
 
-                        <h3 class="text-xl font-bold text-gray-900 mb-3">Specifications</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Specifications</h3>
                         <div class="grid grid-cols-2 gap-3 mb-6">${specsHTML}</div>
                     </div>
                 </div>
 
-                <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4 shadow-lg-top">
+                <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-gray-950 border-t dark:border-gray-800 p-4 shadow-lg-top">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-gray-500 line-through">₹${product.originalPrice}</p>
-                            <div class="flex items-center font-bold text-gray-800">
-                                <span class="text-2xl text-green-700">₹${product.discountedPrice}</span>
-                                <span class="mx-2 text-gray-400">+</span>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 line-through">₹${product.originalPrice}</p>
+                            <div class="flex items-center font-bold text-gray-800 dark:text-gray-100">
+                                <span class="text-2xl text-green-700 dark:text-green-400">₹${product.discountedPrice}</span>
+                                <span class="mx-2 text-gray-400 dark:text-gray-500">+</span>
                                 <i data-lucide="leaf" class="w-5 h-5 text-green-500 mr-1"></i>
-                                <span class="text-2xl text-green-700">${product.cost}</span>
+                                <span class="text-2xl text-green-700 dark:text-green-400">${product.cost}</span>
                             </div>
                         </div>
                         <button onclick="openPurchaseModal('${store.storeId}', '${product.productId}')" 
@@ -1481,54 +1827,53 @@
             if(event) {
                 event.rsvp = true;
                 renderEvents();
-                renderProfile();
             }
         };
 
-        // *** MODIFIED: openPurchaseModal (image size) ***
         const openPurchaseModal = (storeId, productId) => {
             const { store, product } = getProduct(storeId, productId);
             if (!product) return;
 
             purchaseModal.innerHTML = `
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">Purchase Reward</h3>
-                    <button onclick="closePurchaseModal()" class="text-gray-400 hover:text-gray-600">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">Purchase Reward</h3>
+                    <button onclick="closePurchaseModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                 </div>
                 
                 <div class="flex items-center mb-4">
-                    <img src="${product.images[0].replace('400x300', '300x400')}" alt="${product.name}" class="w-24 h-32 object-cover rounded-lg mr-4"> <div>
-                        <h4 class="text-lg font-bold text-gray-800">${product.name}</h4>
-                        <p class="text-sm text-gray-500 mb-2">From ${store.storeName}</p>
-                        <div class="flex items-center font-bold text-gray-800">
-                            <span class="text-lg text-green-700">₹${product.discountedPrice}</span>
-                            <span class="mx-1 text-gray-400">+</span>
+                    <img src="${product.images[0].replace('400x300', '100x100')}" alt="${product.name}" class="w-20 h-20 object-cover rounded-lg mr-4">
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">${product.name}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">From ${store.storeName}</p>
+                        <div class="flex items-center font-bold text-gray-800 dark:text-gray-100">
+                            <span class="text-lg text-green-700 dark:text-green-400">₹${product.discountedPrice}</span>
+                            <span class="mx-1 text-gray-400 dark:text-gray-500">+</span>
                             <i data-lucide="leaf" class="w-4 h-4 text-green-500 mr-1"></i>
-                            <span class="text-lg text-green-700">${product.cost}</span>
+                            <span class="text-lg text-green-700 dark:text-green-400">${product.cost}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gray-100 rounded-lg p-3 mb-4 mt-4">
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 mb-4 mt-4">
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-gray-600">Your Balance</span>
-                        <span class="font-semibold text-gray-800">${state.currentUser.points} EcoPoints</span>
+                        <span class="text-gray-600 dark:text-gray-300">Your Balance</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-100">${state.currentUser.points} EcoPoints</span>
                     </div>
-                    <div class="flex justify-between items-center text-red-600">
+                    <div class="flex justify-between items-center text-red-600 dark:text-red-400">
                         <span class="font-semibold">Cost</span>
                         <span class="font-bold text-lg">-${product.cost} EcoPoints</span>
                     </div>
-                    <hr class="my-2 border-gray-300">
-                    <div class="flex justify-between items-center text-green-600">
+                    <hr class="my-2 border-gray-300 dark:border-gray-600">
+                    <div class="flex justify-between items-center text-green-600 dark:text-green-400">
                         <span class="font-semibold">Remaining</span>
                         <span class="font-bold text-lg">${state.currentUser.points - product.cost} EcoPoints</span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                    <button onclick="closePurchaseModal()" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">
                         Cancel
                     </button>
                     <button onclick="confirmPurchase('${store.storeId}', '${product.productId}')" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
@@ -1553,8 +1898,6 @@
         const confirmPurchase = (storeId, productId) => {
             const { store, product } = getProduct(storeId, productId);
             if (!product) return;
-            
-            const today = getTodayDateString(); 
 
             if (state.currentUser.points >= product.cost) {
                 state.currentUser.points -= product.cost;
@@ -1564,7 +1907,8 @@
                     description: `Purchased ${product.name}`, 
                     points: -product.cost, 
                     date: today.replaceAll('-', '/'),
-                    icon: 'shopping-cart'
+                    icon: 'shopping-cart',
+                    kg: 0
                 });
 
                 const newUserRewardId = 'ur' + state.nextUserRewardId++;
@@ -1589,12 +1933,12 @@
                 purchaseModal.innerHTML = `
                     <div class="text-center p-4">
                         <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Successful!</h3>
-                        <p class="text-gray-600 mb-6">You can find your new reward in the "My Rewards" page.</p>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Purchase Successful!</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">You can find your new reward in the "My Rewards" page.</p>
                         <button onclick="closePurchaseModalAndShowMyRewards()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 mb-2">
                             Go to My Rewards
                         </button>
-                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">
                             Done
                         </button>
                     </div>
@@ -1605,9 +1949,9 @@
                 purchaseModal.innerHTML = `
                     <div class="text-center p-4">
                         <i data-lucide="x-circle" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Purchase Failed</h3>
-                        <p class="text-gray-600 mb-6">You do not have enough points for this reward.</p>
-                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Purchase Failed</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">You do not have enough points for this reward.</p>
+                        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">
                             Close
                         </button>
                     </div>
@@ -1631,23 +1975,23 @@
 
             qrModal.innerHTML = `
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold text-gray-800">${rewardDetails.name}</h3>
-                    <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">${rewardDetails.name}</h3>
+                    <button onclick="closeQrModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                 </div>
                 
-                <div class="flex justify-center mb-4 p-4 bg-white rounded-lg border">
+                <div class="flex justify-center mb-4 p-4 bg-white rounded-lg border dark:border-gray-700">
                     <img src="${qrCodeUrl}" alt="QR Code" class="rounded-lg">
                 </div>
 
-                <div class="bg-gray-100 rounded-lg p-4 text-left mb-6">
-                    <h4 class="font-bold text-gray-800 mb-2">How to Redeem:</h4>
-                    <p class="text-sm text-gray-600">${rewardDetails.instructions}</p>
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 text-left mb-6">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-100 mb-2">How to Redeem:</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">${rewardDetails.instructions}</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="closeQrModal()" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300">
+                    <button onclick="closeQrModal()" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">
                         Done
                     </button>
                     <button onclick="markRewardAsUsed('${userReward.userRewardId}')" class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600">
@@ -1673,7 +2017,7 @@
             const userReward = state.userRewards.find(ur => ur.userRewardId === userRewardId);
             if (userReward) {
                 userReward.status = 'used';
-                userReward.usedDate = getTodayDateString().replaceAll('-', '/');
+                userReward.usedDate = today.replaceAll('-', '/');
                 
                 renderMyRewardsPage();
                 
@@ -1681,21 +2025,124 @@
             }
         };
 
+        const handleChangePassword = (event) => {
+            event.preventDefault();
+            
+            changePasswordButton.disabled = true;
+            changePasswordButton.textContent = 'Updating...';
+            passwordMessage.textContent = '';
+            passwordMessage.className = 'text-sm text-center';
+
+            const newPassword = document.getElementById('new-password').value;
+            
+            if (newPassword.length < 6) {
+                passwordMessage.textContent = 'Password must be at least 6 characters.';
+                passwordMessage.classList.add('text-red-600');
+                changePasswordButton.disabled = false;
+                changePasswordButton.textContent = 'Update Password';
+                return;
+            }
+
+            setTimeout(() => {
+                passwordMessage.textContent = 'Password updated successfully! (Demo)';
+                passwordMessage.classList.add('text-green-600');
+                changePasswordForm.reset();
+                changePasswordButton.disabled = false;
+                changePasswordButton.textContent = 'Update Password';
+            }, 1000);
+        };
+
+        const handleProfilePicUpload = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            profilePicLoader.classList.remove('hidden');
+            profilePicError.textContent = '';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const newAvatarUrl = e.target.result;
+                
+                state.currentUser.avatarUrl = newAvatarUrl;
+                profileAvatar.src = newAvatarUrl;
+                userAvatarSidebar.src = newAvatarUrl;
+                
+                profilePicLoader.classList.add('hidden');
+            };
+            
+            reader.onerror = () => {
+                profilePicError.textContent = 'Upload failed. Please try again.';
+                profilePicLoader.classList.add('hidden');
+            };
+            
+            reader.readAsDataURL(file);
+            event.target.value = null;
+        };
+
+        function setAppTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeToggleBtn.querySelector('span').classList.add('dark:translate-x-6');
+                themeIcon.setAttribute('data-lucide', 'moon');
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggleBtn.querySelector('span').classList.remove('dark:translate-x-6');
+                themeIcon.setAttribute('data-lucide', 'sun');
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'light');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setAppTheme(newTheme);
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                setAppTheme(savedTheme);
+            } else if (systemPrefersDark) {
+                setAppTheme('dark');
+            } else {
+                setAppTheme('light');
+            }
+        }
+
 
         // --- Initials Load ---
         document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+
+            // Add Event Listeners
             document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
+            document.getElementById('store-search-input').addEventListener('input', renderRewards);
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            profilePicUpload.addEventListener('change', handleProfilePicUpload);
+            changePasswordForm.addEventListener('submit', handleChangePassword);
+            logoutButton.addEventListener('click', () => {
+                alert('Log out clicked! (Demo)');
+            });
 
             // Initial Renders
             renderHeader();
-            renderLeaderboardDashboard();
-            renderChallengesDashboard(); // *** NEW ***
             renderEvents();
             renderRewards(); 
-            renderCheckInCard(); 
+            renderDashboardCheckinButton();
+            renderDashboardStats(); 
             
             showPage('dashboard');
             lucide.createIcons(); 
+
+            setTimeout(() => {
+                appLoading.classList.add('loaded');
+            }, 500);
         });
     </script>
 </body>
