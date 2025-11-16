@@ -16,6 +16,10 @@
                     fontFamily: {
                         inter: ['Inter', 'sans-serif'],
                     },
+                    textShadow: {
+                        'default': '0 1px 3px rgba(0, 0, 0, 0.4)',
+                        'lg': '0 2px 5px rgba(0, 0, 0, 0.5)',
+                    },
                 },
             },
         }
@@ -306,6 +310,22 @@
             border-radius: 9999px;
         }
 
+        /* NEW: Leaderboard podium style */
+        #leaderboard-podium {
+            background-image: url('https://i.ibb.co/67q7TRqj/Gemini-Generated-Image-gsyd6qgsyd6qgsyd-1.png');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            min-height: 280px;
+        }
+        
+        .podium-text {
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .dark .podium-text {
+             text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+
         /* Remove ALL shadows globally */
         :root {
             --tw-shadow: 0 0 #0000 !important;
@@ -320,6 +340,8 @@
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
+
+    <input type="file" id="challenge-file-input" accept="image/*" class="hidden">
 
     <div id="app-loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900">
         <div class="app-loader-logo">
@@ -393,7 +415,7 @@
         </div>
 
         <div class="p-6 border-t border-gray-200 dark:border-gray-700">
-            <p class="text-xs text-center text-gray-400 dark:text-gray-500">EcoBirla v5.4 (Glass)</p>
+            <p class="text-xs text-center text-gray-400 dark:text-gray-500">EcoBirla v5.6 (Glass)</p>
         </div>
     </div>
 
@@ -542,29 +564,54 @@
             </div>
 
             <div id="leaderboard" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Leaderboard</h2>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">🌿 Eco Hall of Champions</h2>
 
                 <div class="mb-6 p-1 bg-gray-200 dark:bg-gray-800 leaderboard-switch flex">
-                    <button id="leaderboard-tab-dept" onclick="showLeaderboardTab('department')" class="leaderboard-tab-btn flex-1 py-3 px-4 text-sm font-bold text-gray-700 dark:text-gray-300">
-                        Department
-                    </button>
                     <button id="leaderboard-tab-student" onclick="showLeaderboardTab('student')" class="leaderboard-tab-btn flex-1 py-3 px-4 text-sm font-bold text-gray-700 dark:text-gray-300">
-                        Student
+                        Eco Warriors
+                    </button>
+                    <button id="leaderboard-tab-dept" onclick="showLeaderboardTab('department')" class="leaderboard-tab-btn flex-1 py-3 px-4 text-sm font-bold text-gray-700 dark:text-gray-300">
+                        Departments Eco War
                     </button>
                 </div>
 
-                <div id="leaderboard-content-department">
+                <div id="leaderboard-content-department" class="hidden">
                     <div class="glass-card p-4 rounded-2xl mb-6">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Department Rankings</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Monthly competition between departments. Tap a department to see its champions!
+                            Monthly competition between departments.
                         </p>
                     </div>
                     <div id="eco-wars-page-list" class="space-y-3"></div>
                 </div>
 
-                <div id="leaderboard-content-student" class="hidden">
-                    <div id="leaderboard-page-list" class="space-y-3"></div>
+                <div id="leaderboard-content-student">
+                    <div id="leaderboard-podium" class="rounded-2xl overflow-hidden">
+                        <div class="flex items-end justify-center h-[280px] gap-4 text-white podium-text">
+                            <div class="w-1/3 order-1 text-center">
+                                <img id="lb-second-avatar" src="https://placehold.co/80x80" class="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2 mx-auto border-2 border-gray-300 object-cover">
+                                <p id="lb-second-name" class="font-bold text-sm truncate">...</p>
+                                <span id="lb-second-points" class="text-xs font-semibold bg-black/20 rounded-full px-2 py-0.5">...</span>
+                            </div>
+                            <div class="w-1/3 order-2 mb-10 text-center">
+                                <img id="lb-first-avatar" src="https://placehold.co/80x80" class="w-20 h-20 md:w-24 md:h-24 rounded-full mb-2 mx-auto border-4 border-yellow-300 object-cover">
+                                <p id="lb-first-name" class="font-bold text-lg truncate">...</p>
+                                <span id="lb-first-points" class="text-sm font-bold bg-black/20 rounded-full px-3 py-1">...</span>
+                            </div>
+                            <div class="w-1/3 order-3 text-center">
+                                <img id="lb-third-avatar" src="https://placehold.co/80x80" class="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2 mx-auto border-2 border-orange-300 object-cover">
+                                <p id="lb-third-name" class="font-bold text-sm truncate">...</p>
+                                <span id="lb-third-points" class="text-xs font-semibold bg-black/20 rounded-full px-2 py-0.5">...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="leaderboard-your-rank" class="mt-6"></div>
+
+                    <div class="mt-6">
+                         <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">All Warriors (4th Onwards)</h3>
+                         <div id="leaderboard-page-list" class="space-y-3"></div>
+                    </div>
                 </div>
             </div>
 
@@ -594,8 +641,45 @@
                         </div>
                         <p id="ecopoints-level-next" class="text-xs text-right text-gray-500 dark:text-gray-400 mt-1"></p>
                     </div>
+                </div>
 
-                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 mt-4">Recent Transactions</h4>
+                <div class="glass-card p-6 rounded-2xl mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">All Levels</h3>
+                    <div id="all-levels-list" class="space-y-4"></div>
+                </div>
+                
+                <div class="glass-card p-6 rounded-2xl mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Earn Points</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3">
+                                <i data-lucide="recycle" class="w-5 h-5 text-green-600 dark:text-green-300"></i>
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Submit plastic bottles at collection points.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center mr-3">
+                                <i data-lucide="calendar" class="w-5 h-5 text-purple-600 dark:text-purple-300"></i>
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Attend Green Club events and workshops.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-9 h-9 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center mr-3">
+                                <i data-lucide="award" class="w-5 h-5 text-yellow-600 dark:text-yellow-300"></i>
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Complete special "Eco-Challenges".</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl mb-6">
+                     <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Recent Transactions</h4>
                     <div id="ecopoints-recent-activity" class="space-y-3"></div>
                 </div>
             </div>
@@ -1026,10 +1110,10 @@
             ],
             nextUserRewardId: 4,
             levels: [
-                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 1001 },
-                { level: 2, title: 'Eco Learner', minPoints: 1001, nextMin: 2001 },
-                { level: 3, title: 'Sustainability Leader', minPoints: 2001, nextMin: 4001 },
-                { level: 4, title: 'Planet Protector', minPoints: 4001, nextMin: Infinity }
+                { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 1001, description: "Just beginning your eco-journey. Every point counts!" },
+                { level: 2, title: 'Eco Learner', minPoints: 1001, nextMin: 2001, description: "You're building green habits. Keep up the momentum!" },
+                { level: 3, title: 'Sustainability Leader', minPoints: 2001, nextMin: 4001, description: "A true inspiration! You're making a real impact on campus." },
+                { level: 4, title: 'Planet Protector', minPoints: 4001, nextMin: Infinity, description: "You've reached the pinnacle of green leadership. Amazing!" }
             ]
         };
 
@@ -1096,8 +1180,10 @@
         const productDetailPage = document.getElementById('product-detail-page');
         const historyList = document.getElementById('history-list');
         const leaderboardPageList = document.getElementById('leaderboard-page-list');
+        const leaderboardYourRank = document.getElementById('leaderboard-your-rank');
         const ecoWarsPageList = document.getElementById('eco-wars-page-list');
         const challengesPageList = document.getElementById('challenges-page-list');
+        const challengeFileInput = document.getElementById('challenge-file-input');
 
         const storeSearchInput = document.getElementById('store-search-input');
         const sortBySelect = document.getElementById('sort-by-select');
@@ -1121,6 +1207,7 @@
         const ecopointsLevelProgress = document.getElementById('ecopoints-level-progress');
         const ecopointsLevelNext = document.getElementById('ecopoints-level-next');
         const ecopointsRecentActivity = document.getElementById('ecopoints-recent-activity');
+        const allLevelsList = document.getElementById('all-levels-list');
 
         const allRewardsList = document.getElementById('all-rewards-list');
         const checkinModal = document.getElementById('checkin-modal');
@@ -1287,11 +1374,14 @@
             const u = state.currentUser;
             const level = getUserLevel(u.lifetimePoints);
             ecopointsBalance.textContent = u.points;
+
+            // Render Level Progress
             ecopointsLevelTitle.textContent = level.title;
             ecopointsLevelNumber.textContent = level.level;
             ecopointsLevelProgress.style.width = `${level.progress}%`;
             ecopointsLevelNext.textContent = level.progressText;
 
+            // Render Recent Transactions
             ecopointsRecentActivity.innerHTML = '';
             state.history.slice(0, 4).forEach(h => {
                 ecopointsRecentActivity.innerHTML += `
@@ -1311,6 +1401,25 @@
                     </div>
                 `;
             });
+            
+            // Render All Levels
+            allLevelsList.innerHTML = '';
+            state.levels.forEach(l => {
+                allLevelsList.innerHTML += `
+                    <div class="flex items-center">
+                        <span class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3 text-lg font-bold text-green-600 dark:text-green-300">
+                            ${l.level}
+                        </span>
+                        <div>
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-100">${l.title}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${l.minPoints.toLocaleString()}${l.nextMin !== Infinity ? ' - ' + (l.nextMin - 1).toLocaleString() : '+'} Pts</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${l.description}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lucide.createIcons();
         };
 
         // History
@@ -1412,7 +1521,7 @@
         };
 
         // Leaderboard tabs
-        let currentLeaderboardTab = 'department';
+        let currentLeaderboardTab = 'student';
 
         const renderDepartmentLeaderboard = () => {
             ecoWarsPageList.innerHTML = '';
@@ -1427,7 +1536,7 @@
                                 </span>
                                 <div>
                                     <p class="font-semibold text-gray-800 dark:text-gray-100">${dept.name}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">${dept.points} pts</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">${dept.points.toLocaleString()} pts</p>
                                 </div>
                             </div>
                         </div>
@@ -1437,24 +1546,73 @@
 
         const renderStudentLeaderboard = () => {
             leaderboardPageList.innerHTML = '';
-            state.leaderboard
-                .sort((a, b) => b.points - a.points)
-                .forEach((u, index) => {
-                    leaderboardPageList.innerHTML += `
-                        <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="${u.avatarUrl}" class="w-8 h-8 rounded-full mr-3" alt="${u.name}">
-                                <div>
-                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${u.name}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">${u.points} pts</p>
-                                </div>
-                            </div>
-                            <span class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-200">
-                                ${index + 1}
+            leaderboardYourRank.innerHTML = '';
+            
+            const sortedLeaderboard = [...state.leaderboard].sort((a, b) => b.lifetimePoints - a.lifetimePoints);
+            
+            const top3 = sortedLeaderboard.slice(0, 3);
+            const rest = sortedLeaderboard.slice(3);
+            
+            const first = top3[0] || { name: 'N/A', lifetimePoints: 0, avatarUrl: 'https://placehold.co/80x80' };
+            const second = top3[1] || { name: 'N/A', lifetimePoints: 0, avatarUrl: 'https://placehold.co/80x80' };
+            const third = top3[2] || { name: 'N/A', lifetimePoints: 0, avatarUrl: 'https://placehold.co/80x80' };
+
+            // 1st Place
+            document.getElementById('lb-first-avatar').src = first.avatarUrl;
+            document.getElementById('lb-first-name').textContent = first.name;
+            document.getElementById('lb-first-points').textContent = `${first.lifetimePoints.toLocaleString()} pts`;
+
+            // 2nd Place
+            document.getElementById('lb-second-avatar').src = second.avatarUrl;
+            document.getElementById('lb-second-name').textContent = second.name;
+            document.getElementById('lb-second-points').textContent = `${second.lifetimePoints.toLocaleString()} pts`;
+
+            // 3rd Place
+            document.getElementById('lb-third-avatar').src = third.avatarUrl;
+            document.getElementById('lb-third-name').textContent = third.name;
+            document.getElementById('lb-third-points').textContent = `${third.lifetimePoints.toLocaleString()} pts`;
+            
+            // Render rest of the list (4+)
+            rest.forEach((u, index) => {
+                leaderboardPageList.innerHTML += `
+                    <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-700 dark:text-gray-200 mr-3">
+                                ${index + 4}
                             </span>
+                            <img src="${u.avatarUrl}" class="w-8 h-8 rounded-full mr-3" alt="${u.name}">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${u.name}</p>
+                            </div>
                         </div>
-                    `;
-                });
+                        <span class="text-sm font-bold text-gray-600 dark:text-gray-300">
+                            ${u.lifetimePoints.toLocaleString()} pts
+                        </span>
+                    </div>
+                `;
+            });
+            
+            // Find and render user's rank
+            const currentUserRank = sortedLeaderboard.findIndex(u => u.id === state.currentUser.id);
+            if(currentUserRank !== -1) {
+                const u = sortedLeaderboard[currentUserRank];
+                leaderboardYourRank.innerHTML = `
+                    <div class="glass-card p-3 rounded-2xl flex items-center justify-between border-2 border-green-500">
+                        <div class="flex items-center">
+                            <span class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center text-xs font-bold text-green-700 dark:text-green-200 mr-3">
+                                ${currentUserRank + 1}
+                            </span>
+                            <img src="${u.avatarUrl}" class="w-8 h-8 rounded-full mr-3" alt="${u.name}">
+                            <div>
+                                <p class="text-sm font-bold text-green-700 dark:text-green-200">${u.name} (You)</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-bold text-green-700 dark:text-green-200">
+                            ${u.lifetimePoints.toLocaleString()} pts
+                        </span>
+                    </div>
+                `;
+            }
         };
 
         const showLeaderboardTab = (tab) => {
@@ -1957,16 +2115,30 @@
         });
 
         // Challenge: Upload
+        let currentChallengeUploadId = null;
         const handleUploadChallenge = (challengeId) => {
             const challenge = state.dailyChallenges.find(c => c.id === challengeId);
             if (challenge && challenge.status === 'active') {
-                alert('This would open your camera for upload. Submitting for review...');
-                challenge.status = 'pending';
-                challenge.buttonText = 'Pending Review';
-                renderChallengesPage();
-                lucide.createIcons();
+                currentChallengeUploadId = challengeId;
+                challengeFileInput.click(); // Trigger the hidden file input
             }
         };
+
+        challengeFileInput.addEventListener('change', () => {
+            if (currentChallengeUploadId && challengeFileInput.files && challengeFileInput.files[0]) {
+                const challenge = state.dailyChallenges.find(c => c.id === currentChallengeUploadId);
+                if (challenge) {
+                    challenge.status = 'pending';
+                    challenge.buttonText = 'Pending Review';
+                    renderChallengesPage();
+                    lucide.createIcons();
+                }
+                // Reset for next use
+                currentChallengeUploadId = null;
+                challengeFileInput.value = ''; // Clear the input
+            }
+        });
+
 
         // Challenge: Eco-Quiz
         let currentChallengeId = null;
@@ -2063,6 +2235,7 @@
             lucide.createIcons();
         });
 
+S
         // Listeners
         document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
 
