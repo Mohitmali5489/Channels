@@ -193,6 +193,25 @@
             background-color: #1f2937; /* gray-800 */
             color: #34D399; /* green-400 */
         }
+        
+        /* NEW: Product Image Slider */
+        .slider-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+        }
+        .slider-item {
+            scroll-snap-align: center;
+        }
+        .slider-dot {
+            transition: all 0.3s ease;
+        }
+        .slider-dot.active {
+            background-color: #10B981; /* green-600 */
+            transform: scale(1.25);
+        }
+        .dark .slider-dot.active {
+            background-color: #34D399; /* green-400 */
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
@@ -815,12 +834,13 @@
                         { 
                             productId: 'p1', 
                             name: 'Veg Thali', 
-                            images: ['https://placehold.co/400x300/F9A8D4/1F2937?text=Thali'],
+                            // MODIFIED: Added multiple images
+                            images: ['https://placehold.co/400x300/F9A8D4/1F2937?text=Thali+1', 'https://placehold.co/400x300/FBCFE8/1F2937?text=Thali+2', 'https://placehold.co/400x300/FCE7F3/1F2937?text=Thali+3'],
                             description: 'A wholesome and delicious vegetarian thali, complete with dal, two vegetables, rice, roti, and a sweet dish. Perfect for a hearty lunch.',
                             features: ['100% Vegetarian', 'Daily changing menu', 'Freshly prepared'],
                             specifications: [ { key: 'Includes', value: 'Dal, 2 Sabzi, Roti, Rice, Sweet' }, { key: 'Availability', value: '11:00 AM - 2:00 PM' } ],
                             originalPrice: 80, discountedPrice: 50, cost: 30, 
-                            popularity: 25, // NEW: Popularity score
+                            popularity: 25, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.' 
                         },
                         { 
@@ -831,7 +851,7 @@
                             features: ['Freshly fried samosa', 'Strong masala chai'],
                             specifications: [ { key: 'Includes', value: '1 Samosa, 1 Cup Chai' }, { key: 'Availability', value: '8:00 AM - 5:00 PM' } ],
                             originalPrice: 30, discountedPrice: 15, cost: 15, 
-                            popularity: 50, // NEW: Popularity score
+                            popularity: 50, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 2).' 
                         },
                         { 
@@ -842,7 +862,7 @@
                             features: ['Crispy and golden', 'Spicy potato filling', 'Served with Sambar & Chutney'],
                             specifications: [ { key: 'Includes', value: '1 Dosa, Sambar, Chutney' }, { key: 'Availability', value: '8:00 AM - 11:00 AM' } ],
                             originalPrice: 60, discountedPrice: 40, cost: 20, 
-                            popularity: 30, // NEW: Popularity score
+                            popularity: 30, 
                             instructions: 'Show this QR code at the canteen cashier (Counter 1).' 
                         }
                     ]
@@ -860,7 +880,7 @@
                             features: ['Premium Arabica beans', 'Choice of milk', 'Topped with cocoa powder'],
                             specifications: [ { key: 'Size', value: 'Large (16 oz)' }, { key: 'Options', value: 'Soy, Almond, Oat milk available' } ],
                             originalPrice: 120, discountedPrice: 80, cost: 40, 
-                            popularity: 40, // NEW: Popularity score
+                            popularity: 40, 
                             instructions: 'Show this QR code to the barista to redeem your discount.' 
                         },
                         { 
@@ -871,7 +891,7 @@
                             features: ['Extra fudgy', 'Loaded with chocolate chips', 'Can be served warm'],
                             specifications: [ { key: 'Allergens', value: 'Contains Gluten, Dairy, Egg' }, { key: 'Serving', value: '1 Piece' } ],
                             originalPrice: 70, discountedPrice: 50, cost: 20, 
-                            popularity: 28, // NEW: Popularity score
+                            popularity: 28, 
                             instructions: 'Show this QR code to the barista to redeem your discount.' 
                         }
                     ]
@@ -884,12 +904,13 @@
                         { 
                             productId: 'p6', 
                             name: 'College Hoodie', 
-                            images: ['https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie'],
+                            // MODIFIED: Added multiple images
+                            images: ['https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie+Front', 'https://placehold.co/400x300/BBF7D0/1F2937?text=Hoodie+Back', 'https://placehold.co/400x300/D1FAE5/1F2937?text=Hoodie+Logo'],
                             description: 'Show your college spirit with this comfortable and stylish hoodie. Features an embroidered college logo. Made from 100% cotton fleece.',
                             features: ['Embroidered logo', 'Soft cotton fleece', 'Kangaroo pocket'],
                             specifications: [ { key: 'Material', value: '100% Cotton' }, { key: 'Sizes', value: 'S, M, L, XL, XXL' }, { key: 'Color', value: 'Navy Blue, Grey' } ],
                             originalPrice: 1000, discountedPrice: 800, cost: 200, 
-                            popularity: 15, // NEW: Popularity score
+                            popularity: 15, 
                             instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.' 
                         },
                         { 
@@ -900,7 +921,7 @@
                             features: ['Insulated (Hot/Cold)', 'Leak-proof lid', 'BPA-Free'],
                             specifications: [ { key: 'Capacity', value: '750ml' }, { key: 'Material', value: 'Stainless Steel' } ],
                             originalPrice: 500, discountedPrice: 350, cost: 150, 
-                            popularity: 45, // NEW: Popularity score
+                            popularity: 45, 
                             instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.' 
                         }
                     ]
@@ -1510,15 +1531,20 @@
         };
 
 
-        // MODIFIED: Product card now shows store name
+        // MODIFIED: Product card to be taller (A4-like) and show seller logo
         const renderProductCard = (product) => {
             return `
                 <div class="w-full flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden flex flex-col shadow-md cursor-pointer transition-shadow hover:shadow-lg" 
                      onclick="showProductDetailPage('${product.storeId}', '${product.productId}')">
                     
-                    <img src="${product.images[0].replace('400x300', '300x200')}" alt="${product.name}" class="w-full h-24 object-cover">
+                    <img src="${product.images[0].replace('400x300', '300x225')}" alt="${product.name}" class="w-full h-40 object-cover">
+                    
                     <div class="p-3 flex flex-col flex-grow">
-                        <p class="text-xs font-medium text-green-700 dark:text-green-400">${product.storeName}</p>
+                        <div class="flex items-center mb-1">
+                            <img src="${product.storeLogo.replace('100x100', '40x40')}" alt="${product.storeName}" class="w-5 h-5 rounded-full mr-2 border dark:border-gray-600">
+                            <p class="text-xs font-medium text-gray-600 dark:text-gray-400">${product.storeName}</p>
+                        </div>
+                        
                         <p class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate mt-1">${product.name}</p>
                         
                         <div class="mt-auto pt-2">
@@ -1856,6 +1882,7 @@
             lucide.createIcons();
         };
 
+        // MODIFIED: To include image slider
         const showProductDetailPage = (storeId, productId) => {
             const { store, product } = getProduct(storeId, productId);
             if (!product) return;
@@ -1880,20 +1907,43 @@
                 `;
             });
 
+            // --- NEW: Slider HTML ---
+            let sliderImagesHTML = '';
+            let sliderDotsHTML = '';
+            product.images.forEach((imgSrc, index) => {
+                sliderImagesHTML += `
+                    <img src="${imgSrc}" alt="${product.name} image ${index + 1}" class="slider-item w-full h-64 object-cover flex-shrink-0">
+                `;
+                sliderDotsHTML += `
+                    <button class="slider-dot w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 ${index === 0 ? 'active' : ''}" data-index="${index}"></button>
+                `;
+            });
+            // --- End Slider HTML ---
+
             productDetailPage.innerHTML = `
                 <div class="pb-24">
                     <div class="relative">
-                        <img src="${product.images[0]}" alt="${product.name}" class="w-full h-64 object-cover">
-                        <button onclick="showPage('rewards')" class="absolute top-4 left-4 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-md text-gray-700 dark:text-gray-200">
+                        <div id="product-image-slider-container" class="slider-container flex w-full overflow-x-auto snap-x snap-mandatory">
+                            ${sliderImagesHTML}
+                        </div>
+                        
+                        <button onclick="showPage('rewards')" class="absolute top-4 left-4 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-md text-gray-700 dark:text-gray-200 z-10">
                             <i data-lucide="arrow-left" class="w-6 h-6"></i>
                         </button>
+                        
+                        <div id="product-image-dots" class="absolute bottom-4 left-0 right-0 flex justify-center items-center space-x-2 z-10">
+                            ${sliderDotsHTML}
+                        </div>
                     </div>
                     
                     <div class="p-6 bg-white dark:bg-gray-900">
                         <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${product.name}</h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">${store.storeName}</p>
+                        <div class="flex items-center my-2">
+                            <img src="${store.storeLogo.replace('100x100', '40x40')}" alt="${store.storeName}" class="w-6 h-6 rounded-full mr-2 border dark:border-gray-600">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">${store.storeName}</p>
+                        </div>
                         
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Description</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mt-6 mb-3">Description</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">${product.description}</p>
 
                         <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">Features</h3>
@@ -1928,7 +1978,33 @@
             productDetailPage.classList.add('active');
             mainContent.scrollTop = 0;
             lucide.createIcons();
+
+            // --- NEW: Slider Logic ---
+            const slider = document.getElementById('product-image-slider-container');
+            const dots = document.querySelectorAll('.slider-dot');
+            
+            if(slider) {
+                slider.addEventListener('scroll', () => {
+                    const sliderWidth = slider.clientWidth;
+                    const currentIndex = Math.round(slider.scrollLeft / sliderWidth);
+                    
+                    dots.forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentIndex);
+                    });
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        slider.scrollTo({
+                            left: slider.clientWidth * index,
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+            }
+            // --- End Slider Logic ---
         };
+
 
         // --- NEW: Show Other User Profile Page ---
         const showUserProfilePage = (userId) => {
