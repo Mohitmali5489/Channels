@@ -3,336 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flying Block Game</title>
+    <title>EcoBirla (Updated Green Challenge App)</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: { inter: ["Inter", "sans-serif"] },
+                },
+            },
+        };
+    </script>
+
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
-            font-family: 'Inter', sans-serif;
-            touch-action: manipulation; /* Disables double-tap to zoom on mobile */
+            font-family: "Inter", sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        canvas {
-            background-color: #87CEEB; /* Sky blue */
-            display: block;
-            border-radius: 0.5rem; /* rounded-lg */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
-        }
-        #gameContainer {
-            width: 100%;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+        .app-container {
+            max-width: 420px;
+            margin: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             position: relative;
+            overflow-x: hidden;
         }
-        #gameMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 1.5rem 2rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            display: none; /* Hidden by default */
+        header, nav { flex-shrink: 0; }
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .page { display: none; animation: slideInRight .25s ease-out; }
+        .page.active { display: block; }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Sidebar */
+        #sidebar {
+            transition: transform .3s ease-in-out;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        #sidebar::-webkit-scrollbar { display: none; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.75);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(148,163,184,.35);
+        }
+        .dark .glass-card {
+            background: rgba(15,23,42,.95);
+            border-color: rgba(55,65,81,.75);
+        }
+
+        .glass-bottom-bar {
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(16px);
+        }
+        .dark .glass-bottom-bar {
+            background: rgba(15,23,42,0.98);
+        }
+
+        .points-pulse {
+            animation: pulse-points .4s ease-out;
+        }
+        @keyframes pulse-points {
+            0% { transform: scale(1); color:#10B981; }
+            50%{ transform: scale(1.2) rotate(-5deg); color:#34D399; }
+            100%{ transform: scale(1); color:#10B981; }
+        }
+
+        .leaderboard-item {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:.75rem; border-radius:1rem;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="text-center mb-4">
-        <h1 class="text-3xl font-bold text-gray-800">Flying Block</h1>
-        <p class="text-gray-600">Click, tap, or press Space to fly!</p>
+<body class="bg-gray-50 dark:bg-gray-900">
+
+<!-- Sidebar -->
+<div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 opacity-0 hidden"></div>
+
+<div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-800 z-40 transform -translate-x-full flex flex-col">
+
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <img id="user-avatar-sidebar" src="" class="w-16 h-16 rounded-full mb-3 border-2 border-green-500">
+        <h2 id="user-name-sidebar" class="text-xl font-bold text-gray-800 dark:text-gray-100"></h2>
+        <p class="text-sm text-green-600 dark:text-green-400 font-semibold">
+            <span id="user-points-sidebar"></span> EcoPoints
+        </p>
     </div>
 
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="480" height="640"></canvas>
-        <div id="gameMessage">
-            <h2 id="messageTitle">Game Over!</h2>
-            <p id="messageScore" class="my-2">Your score: 0</p>
-            <span class="text-sm font-normal text-gray-500">Click to Restart</span>
-        </div>
+    <nav class="flex-grow p-4 space-y-2">
+        <button onclick="showPage('profile')" class="sidebar-btn"><i data-lucide="user"></i> Profile</button>
+        <button onclick="showPage('my-rewards')" class="sidebar-btn"><i data-lucide="archive"></i> Orders</button>
+        <button onclick="showPage('history')" class="sidebar-btn"><i data-lucide="history"></i> History</button>
+        <button onclick="showPage('leaderboard')" class="sidebar-btn"><i data-lucide="users"></i> Leaderboard</button>
+        <button onclick="showPage('events')" class="sidebar-btn"><i data-lucide="calendar"></i> All Events</button>
+        
+        <div class="pt-2 border-t border-gray-300 dark:border-gray-700"></div>
+
+        <button onclick="showPage('about')" class="sidebar-btn"><i data-lucide="info"></i> About</button>
+        <button onclick="showPage('help')" class="sidebar-btn"><i data-lucide="help-circle"></i> Help & Support</button>
+
+        <div class="pt-2 border-t border-gray-300 dark:border-gray-700"></div>
+        <button id="logout-button" class="w-full bg-red-600 text-white py-3 rounded-xl mt-3">Log Out</button>
+    </nav>
+</div>
+
+<!-- App Layout -->
+<div class="app-container">
+
+<header class="bg-white dark:bg-gray-950 sticky top-0 z-10 p-4 border-b border-gray-200 dark:border-gray-800">
+    <div class="flex justify-between items-center">
+        <button id="sidebar-toggle-btn" class="p-2"><i data-lucide="menu"></i></button>
+        <h1 class="text-2xl font-extrabold text-green-600">EcoBirla</h1>
+        <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-200 dark:bg-gray-800 rounded-full p-1 px-3">
+            <i data-lucide="leaf" class="text-green-500 mr-1"></i>
+            <span id="user-points-header" class="font-bold"></span>
+        </button>
+    </div>
+</header>
+
+<main class="main-content">
+
+<!-- DASHBOARD PAGE START -->
+<div id="dashboard" class="page active p-6">
+    <h2 class="text-3xl font-bold mb-1 text-gray-900 dark:text-gray-100">Hi, <span id="user-name-greeting"></span>! 👋</h2>
+    <p class="text-gray-600 dark:text-gray-300 mb-6">Let's make our campus greener today.</p>
+
+    <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">Eco Tip of the Week</h3>
+    <div class="glass-card p-4 mb-6 flex">
+        <i data-lucide="lightbulb" class="text-blue-600 mr-3"></i>
+        <p class="text-sm text-gray-700 dark:text-gray-300">Unplug chargers when not in use to save energy.</p>
+    </div>
+    <!-- DAILY CHALLENGES -->
+    <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">Today's Challenges</h3>
+    <div id="challenges-list" class="space-y-4"></div>
+</div>
+
+<!-- EVENTS PAGE -->
+<div id="events" class="page p-6">
+    <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Campus Events</h2>
+    <div id="events-list" class="space-y-4"></div>
+</div>
+
+<!-- LEADERBOARD PAGE -->
+<div id="leaderboard" class="page p-6">
+    <h2 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Leaderboard</h2>
+    <p class="text-gray-600 dark:text-gray-300 mb-4">Top eco-warriors of our campus 🌿</p>
+    <div id="leaderboard-list" class="space-y-3"></div>
+</div>
+
+<!-- STORE PAGE -->
+<div id="store" class="page p-6">
+    <h2 class="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">Eco Store</h2>
+    <p class="text-gray-600 dark:text-gray-300 mb-4">Redeem items using EcoPoints!</p>
+    <div id="store-items" class="space-y-4"></div>
+</div>
+
+<!-- MY ORDERS -->
+<div id="my-rewards" class="page p-6">
+    <h2 class="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">My Orders</h2>
+    <p class="text-gray-600 dark:text-gray-300 mb-4">Track your eco-store orders.</p>
+    <div id="orders-list" class="space-y-3"></div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="profile" class="page p-6">
+    <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">Profile</h2>
+
+    <div class="flex flex-col items-center mb-6">
+        <img id="profile-avatar" src="" class="w-28 h-28 rounded-full border-4 border-green-500 mb-3">
+        <h3 id="profile-name" class="text-xl font-bold text-gray-900 dark:text-gray-100"></h3>
+        <p class="text-green-600 dark:text-green-400 font-semibold"><span id="profile-points"></span> EcoPoints</p>
     </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const gameMessage = document.getElementById('gameMessage');
-        const messageTitle = document.getElementById('messageTitle');
-        const messageScore = document.getElementById('messageScore');
+    <div class="space-y-3 glass-card p-4">
+        <p class="text-sm text-gray-600 dark:text-gray-300"><b>Email:</b> <span id="profile-email"></span></p>
+        <p class="text-sm text-gray-600 dark:text-gray-300"><b>Joined:</b> <span id="profile-joined"></span></p>
+    </div>
+</div>
 
-        // --- Image Loading ---
-        const playerImg = new Image();
-        const obstacleImg = new Image();
-        let imagesLoaded = 0;
-        const totalImages = 2;
+<!-- HISTORY PAGE -->
+<div id="history" class="page p-6">
+    <h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">Activity History</h2>
+    <div id="history-list" class="space-y-3"></div>
+</div>
 
-        playerImg.onload = () => imageLoaded();
-        obstacleImg.onload = () => imageLoaded();
+<!-- ABOUT PAGE -->
+<div id="about" class="page p-6">
+    <h2 class="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">About EcoBirla</h2>
+    <p class="text-gray-700 dark:text-gray-300 mb-3 text-sm leading-relaxed">
+        EcoBirla is a sustainability initiative encouraging students to take eco-friendly actions daily and earn rewards.
+    </p>
+</div>
 
-        // Set image sources
-        playerImg.src = 'https://i.ibb.co/NgMPbbVn/image.png';
-        obstacleImg.src = 'https://i.ibb.co/pjTCJ04x/image.png';
-        
-        // Add error handling for image loading
-        playerImg.onerror = () => {
-            console.error("Failed to load player image.");
-            imageLoaded(); // Count as "loaded" to not block the game
-        }
-        obstacleImg.onerror = () => {
-            console.error("Failed to load obstacle image.");
-            imageLoaded(); // Count as "loaded"
-        }
+<!-- HELP PAGE -->
+<div id="help" class="page p-6">
+    <h2 class="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-100">Help & Support</h2>
+    <p class="text-gray-600 dark:text-gray-300">Need help? Contact your campus Eco Coordinator.</p>
+</div>
 
-        function imageLoaded() {
-            imagesLoaded++;
-            // If the start message is already displayed, update it
-            if (imagesLoaded === totalImages && gameMessage.style.display === 'block' && !gameActive) {
-                messageTitle.textContent = 'Ready to Fly?';
-                messageScore.textContent = `Click to Start`;
+</main>
+<!-- BOTTOM NAV -->
+<nav class="glass-bottom-bar fixed bottom-0 left-0 right-0 border-t border-gray-200 dark:border-gray-800">
+    <div class="max-w-md mx-auto flex justify-around py-2">
+        <button class="nav-btn" data-page="dashboard">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 mx-auto"></i>
+            <span class="text-xs">Dashboard</span>
+        </button>
+        <button class="nav-btn" data-page="leaderboard">
+            <i data-lucide="users" class="w-5 h-5 mx-auto"></i>
+            <span class="text-xs">Leaderboard</span>
+        </button>
+        <button class="nav-btn" data-page="store">
+            <i data-lucide="shopping-bag" class="w-5 h-5 mx-auto"></i>
+            <span class="text-xs">Store</span>
+        </button>
+        <button class="nav-btn" data-page="profile">
+            <i data-lucide="user" class="w-5 h-5 mx-auto"></i>
+            <span class="text-xs">Profile</span>
+        </button>
+    </div>
+</nav>
+
+<!-- HIDDEN FILE INPUTS FOR CAMERA + GEO -->
+<input id="treeSelfieInput" type="file" accept="image/*" capture="environment" class="hidden">
+<input id="reusableSelfieInput" type="file" accept="image/*" capture="environment" class="hidden">
+
+<!-- DAILY QUIZ MODAL -->
+<div id="quiz-modal" class="fixed inset-0 bg-black/50 z-40 hidden items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 w-80">
+        <h3 class="text-lg font-bold mb-3 text-gray-900 dark:text-gray-100">Daily Eco-Quiz</h3>
+        <p id="quiz-question" class="text-sm text-gray-700 dark:text-gray-300 mb-3"></p>
+        <div id="quiz-options" class="space-y-2"></div>
+        <button onclick="closeQuiz()" class="mt-4 w-full py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm">Close</button>
+    </div>
+</div>
+
+<!-- AI CHATBOT -->
+<button id="chatbot-toggle" class="fixed bottom-20 right-4 bg-green-600 text-white rounded-full w-12 h-12 flex items-center justify-center z-40">
+    💬
+</button>
+<div id="chatbot-panel" class="hidden fixed bottom-4 right-4 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-lg z-40 flex flex-col">
+    <div class="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+        <span class="font-semibold text-sm text-gray-800 dark:text-gray-100">EcoBot</span>
+        <button onclick="toggleChatbot()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            ✕
+        </button>
+    </div>
+    <div id="chatbot-messages" class="flex-1 overflow-y-auto px-4 py-2 text-sm space-y-1 text-gray-800 dark:text-gray-100"></div>
+    <div class="border-t border-gray-200 dark:border-gray-700 p-2 flex">
+        <input id="chatbot-input" type="text" placeholder="Ask something eco-friendly..." class="flex-1 text-sm px-2 py-1 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+        <button id="chatbot-send" class="ml-2 text-sm px-3 py-1 rounded-lg bg-green-600 text-white">Send</button>
+    </div>
+</div>
+
+</div> <!-- end .app-container -->
+
+<script>
+    // ---------- STATE (EDITABLE JSON STYLE) ----------
+    const state = {
+        currentUser: {
+            name: "Alex Green",
+            email: "alex.green@example.com",
+            joined: "Sep 2025",
+            avatar: "https://placehold.co/120x120/A3E635/ffffff?text=AG",
+            points: 350
+        },
+        dailyChallenges: [
+            {
+                id: "quiz",
+                title: "Daily Eco-Quiz",
+                description: "Answer one question correctly to earn points.",
+                points: 10
+            },
+            {
+                id: "tree",
+                title: "Selfie with a Tree",
+                description: "Click a selfie with any tree on campus.",
+                points: 20
+            },
+            {
+                id: "reusable",
+                title: "Spot a Reusable",
+                description: "Capture someone using a reusable bottle or cup.",
+                points: 15
             }
-        }
-
-        // --- Game Constants ---
-        const PLAYER_WIDTH = 40; // Adjusted for image aspect ratio
-        const PLAYER_HEIGHT = 40;
-        const GRAVITY = 0.4;
-        const FLAP_STRENGTH = -8;
-        const OBSTACLE_WIDTH = 70; // Adjusted for image
-        const OBSTACLE_GAP = 200;
-        const OBSTACLE_SPEED = 3;
-        const OBSTACLE_INTERVAL = 100; // Frames between new obstacles
-
-        // --- Game State ---
-        let player, obstacles, score, frameCount, gameActive;
-
-        function initGame() {
-            player = {
-                x: canvas.width / 4,
-                y: canvas.height / 2,
-                width: PLAYER_WIDTH,
-                height: PLAYER_HEIGHT,
-                velocity: 0
-            };
-            obstacles = [];
-            score = 0;
-            frameCount = 0;
-            gameActive = true;
-            gameMessage.style.display = 'none';
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if (!gameActive) return;
-
-            // 1. Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 2. Update and Draw Player
-            updatePlayer();
-            drawPlayer();
-
-            // 3. Update and Draw Obstacles
-            updateObstacles();
-            drawObstacles();
-
-            // 4. Check for collisions
-            if (checkCollisions()) {
-                endGame();
-                return;
+        ],
+        quiz: {
+            question: "Which of these is the best way to reduce plastic waste?",
+            options: [
+                "Use more single-use bags",
+                "Carry your own cloth bag",
+                "Burn plastic in open air",
+                "Throw plastic into rivers"
+            ],
+            correctIndex: 1,
+            rewardPoints: 10,
+            attemptedToday: false
+        },
+        leaderboard: [
+            { name: "Jane Doe", points: 520, avatar: "https://placehold.co/40x40/EAB308/ffffff?text=JD" },
+            { name: "Mike Smith", points: 410, avatar: "https://placehold.co/40x40/3B82F6/ffffff?text=MS" },
+            { name: "Sarah Lee", points: 395, avatar: "https://placehold.co/40x40/EC4899/ffffff?text=SL" },
+            { name: "Alex Green", points: 350, avatar: "https://placehold.co/40x40/A3E635/ffffff?text=AG" }
+        ],
+        storeItems: [
+            {
+                id: "bottle",
+                name: "Reusable Steel Bottle",
+                pointsCost: 150,
+                description: "Keeps your drink hot or cold. Say no to plastic bottles."
+            },
+            {
+                id: "bag",
+                name: "Cloth Shopping Bag",
+                pointsCost: 80,
+                description: "Reusable cotton bag for daily shopping."
+            },
+            {
+                id: "straw",
+                name: "Metal Straw Kit",
+                pointsCost: 60,
+                description: "Set of 2 metal straws with a cleaning brush."
             }
-
-            // 5. Draw Score
-            drawScore();
-
-            frameCount++;
-            requestAnimationFrame(gameLoop);
-        }
-
-        // --- Player Functions ---
-
-        function updatePlayer() {
-            player.velocity += GRAVITY;
-            player.y += player.velocity;
-
-            // Prevent flying off-screen (top)
-            if (player.y < 0) {
-                player.y = 0;
-                player.velocity = 0;
+        ],
+        orders: [
+            {
+                id: "o1",
+                itemName: "Cloth Shopping Bag",
+                status: "Ready to Collect"
             }
-        }
-
-        function drawPlayer() {
-            // Draw the player image if loaded, otherwise draw a fallback rectangle
-            if (playerImg.complete && playerImg.naturalHeight !== 0) {
-                ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-            } else {
-                ctx.fillStyle = '#FACC15'; // Fallback Yellow
-                ctx.fillRect(player.x, player.y, player.width, player.height);
+        ],
+        events: [
+            {
+                id: "e1",
+                title: "Tree Plantation Drive",
+                date: "Nov 20, 2025",
+                points: 50,
+                description: "Join and plant trees around campus."
+            },
+            {
+                id: "e2",
+                title: "Plastic-Free Canteen Day",
+                date: "Nov 25, 2025",
+                points: 30,
+                description: "Bring your own tiffin, no disposables allowed!"
             }
-        }
+        ],
+        history: [
+            { text: "Completed Reusable Bottle Challenge", points: 15, date: "Nov 10" },
+            { text: "Redeemed Cloth Shopping Bag", points: -80, date: "Nov 08" },
+            { text: "Attended Tree Plantation Drive", points: 50, date: "Nov 03" }
+        ]
+    };
 
-        function flap() {
-            if (gameActive) {
-                player.velocity = FLAP_STRENGTH;
-            }
-        }
+    // ---------- DOM ELEMENTS ----------
+    const pages = document.querySelectorAll(".page");
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const sidebarToggleBtn = document.getElementById("sidebar-toggle-btn");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
 
-        // --- Obstacle Functions ---
+    const userPointsHeader = document.getElementById("user-points-header");
+    const userPointsSidebar = document.getElementById("user-points-sidebar");
+    const userNameSidebar = document.getElementById("user-name-sidebar");
+    const userAvatarSidebar = document.getElementById("user-avatar-sidebar");
+    const userNameGreeting = document.getElementById("user-name-greeting");
 
-        function updateObstacles() {
-            // Add new obstacle
-            if (frameCount % OBSTACLE_INTERVAL === 0) {
-                const gapTop = Math.random() * (canvas.height - OBSTACLE_GAP - 100) + 50;
-                obstacles.push({
-                    x: canvas.width,
-                    topHeight: gapTop,
-                    bottomY: gapTop + OBSTACLE_GAP,
-                    scored: false
-                });
-            }
+    const challengesList = document.getElementById("challenges-list");
+    const leaderboardList = document.getElementById("leaderboard-list");
+    const storeItemsDiv = document.getElementById("store-items");
+    const ordersList = document.getElementById("orders-list");
+    const eventsList = document.getElementById("events-list");
+    const historyList = document.getElementById("history-list");
 
-            // Move obstacles
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                const obs = obstacles[i];
-                obs.x -= OBSTACLE_SPEED;
+    const profileAvatar = document.getElementById("profile-avatar");
+    const profileName = document.getElementById("profile-name");
+    const profileEmail = document.getElementById("profile-email");
+    const profileJoined = document.getElementById("profile-joined");
+    const profilePoints = document.getElementById("profile-points");
 
-                // Check for score
-                if (!obs.scored && obs.x + OBSTACLE_WIDTH < player.x) {
-                    score++;
-                    obs.scored = true;
-                }
+    const quizModal = document.getElementById("quiz-modal");
+    const quizQuestionEl = document.getElementById("quiz-question");
+    const quizOptionsEl = document.getElementById("quiz-options");
 
-                // Remove off-screen obstacles
-                if (obs.x + OBSTACLE_WIDTH < 0) {
-                    obstacles.splice(i, 1);
-                }
-            }
-        }
+    const treeSelfieInput = document.getElementById("treeSelfieInput");
+    const reusableSelfieInput = document.getElementById("reusableSelfieInput");
 
-        function drawObstacles() {
-            const imgReady = obstacleImg.complete && obstacleImg.naturalHeight !== 0;
+    const chatbotToggle = document.getElementById("chatbot-toggle");
+    const chatbotPanel = document.getElementById("chatbot-panel");
+    const chatbotMessages = document.getElementById("chatbot-messages");
+    const chatbotInput = document.getElementById("chatbot-input");
+    const chatbotSend = document.getElementById("chatbot-send");
 
-            for (const obs of obstacles) {
-                if (imgReady) {
-                    // --- Draw Bottom Pipe ---
-                    // Draw the image from (obs.x, obs.bottomY) with our width and the height of the bottom gap.
-                    ctx.drawImage(obstacleImg, obs.x, obs.bottomY, OBSTACLE_WIDTH, canvas.height - obs.bottomY);
+    // ---------- UTILITIES ----------
+    function setPoints(newPoints) {
+        state.currentUser.points = newPoints;
+        userPointsHeader.textContent = newPoints;
+        userPointsSidebar.textContent = newPoints;
+        userPointsHeader.classList.add("points-pulse");
+        setTimeout(() => userPointsHeader.classList.remove("points-pulse"), 400);
+    }
 
-                    // --- Draw Top Pipe (flipped) ---
-                    ctx.save();
-                    ctx.translate(obs.x, obs.topHeight); // Go to the bottom edge of the top pipe
-                    ctx.scale(1, -1); // Flip the Y axis
-                    // Now draw the image at (0, 0), which is really (obs.x, obs.topHeight).
-                    // It will draw "upwards" (negative y) from this point, filling the top pipe area.
-                    ctx.drawImage(obstacleImg, 0, 0, OBSTACLE_WIDTH, obs.topHeight);
-                    ctx.restore(); // Restore the context to normal
-                } else {
-                    // Fallback rectangles if image fails to load
-                    ctx.fillStyle = '#DC2626'; // Red
-                    ctx.fillRect(obs.x, 0, OBSTACLE_WIDTH, obs.topHeight);
-                    ctx.fillRect(obs.x, obs.bottomY, OBSTACLE_WIDTH, canvas.height - obs.bottomY);
-                }
-            }
-        }
+    function showPage(pageId) {
+        pages.forEach(p => p.classList.remove("active"));
+        const page = document.getElementById(pageId);
+        if (page) page.classList.add("active");
 
-        // --- Game Logic ---
-
-        function checkCollisions() {
-            // Ground collision
-            if (player.y + player.height > canvas.height) {
-                return true;
-            }
-
-            // Obstacle collision
-            for (const obs of obstacles) {
-                if (
-                    player.x < obs.x + OBSTACLE_WIDTH &&
-                    player.x + player.width > obs.x &&
-                    (player.y < obs.topHeight || player.y + player.height > obs.bottomY)
-                ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function drawScore() {
-            ctx.fillStyle = 'white';
-            ctx.font = '30px "Inter", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(score, canvas.width / 2, 60);
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 1;
-            ctx.strokeText(score, canvas.width / 2, 60);
-        }
-
-        function endGame() {
-            gameActive = false;
-            messageTitle.textContent = 'Game Over!';
-            messageScore.textContent = `Your score: ${score}`;
-            gameMessage.style.display = 'block';
-        }
-        
-        function showStartMessage() {
-            gameActive = false;
-            // Show loading message until images are ready
-            if (imagesLoaded < totalImages) {
-                messageTitle.textContent = 'Loading Game...';
-                messageScore.textContent = `Loading assets (${imagesLoaded}/${totalImages})...`;
-            } else {
-                messageTitle.textContent = 'Ready to Fly?';
-                messageScore.textContent = `Click to Start`;
-            }
-            gameMessage.style.display = 'block';
-        }
-
-        // --- Event Listeners ---
-        
-        function handleInput(event) {
-            // Don't prevent default for spacebar if user is typing elsewhere
-            if (event.code === 'Space') {
-                event.preventDefault();
-            }
-            
-            if (gameActive) {
-                flap();
-            }
-        }
-        
-        function handleRestart() {
-             // Only allow restart if images are loaded
-             if (!gameActive && imagesLoaded === totalImages) {
-                initGame();
-            }
-        }
-
-        // Handle mouse click, touch, and spacebar
-        document.addEventListener('keydown', (e) => {
-            if(e.code === 'Space') {
-                handleInput(e);
-                // Only restart if images are loaded
-                if (!gameActive && imagesLoaded === totalImages) {
-                    handleRestart();
-                }
+        navButtons.forEach(btn => {
+            btn.classList.remove("text-green-600", "dark:text-green-400");
+            if (btn.dataset.page === pageId) {
+                btn.classList.add("text-green-600", "dark:text-green-400");
             }
         });
-        
-        canvas.addEventListener('mousedown', handleInput);
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevent scrolling on tap
-            handleInput(e);
-        });
-        
-        gameMessage.addEventListener('click', handleRestart);
 
-        // Show the initial (loading) message
-        showStartMessage();
-    </script>
+        // close sidebar if open
+        sidebar.classList.add("-translate-x-full");
+        sidebarOverlay.classList.add("opacity-0", "hidden");
+    }
+
+    function toggleSidebar() {
+        const isHidden = sidebar.classList.contains("-translate-x-full");
+        if (isHidden) {
+            sidebar.classList.remove("-translate-x-full");
+            sidebarOverlay.classList.remove("hidden");
+            setTimeout(() => sidebarOverlay.classList.remove("opacity-0"), 10);
+        } else {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("opacity-0");
+            setTimeout(() => sidebarOverlay.classList.add("hidden"), 200);
+        }
+    }
+
+    // ---------- RENDER FUNCTIONS ----------
+    function renderUserHeader() {
+        const u = state.currentUser;
+        userPointsHeader.textContent = u.points;
+        userPointsSidebar.textContent = u.points;
+        userNameSidebar.textContent = u.name;
+        userAvatarSidebar.src = u.avatar;
+        userNameGreeting.textContent = u.name.split(" ")[0];
+
+        profileAvatar.src = u.avatar;
+        profileName.textContent = u.name;
+        profileEmail.textContent = u.email;
+        profileJoined.textContent = u.joined;
+        profilePoints.textContent = u.points;
+    }
+
+    function renderChallenges() {
+        challengesList.innerHTML = "";
+        state.dailyChallenges.forEach(ch => {
+            let buttonHtml = "";
+            if (ch.id === "quiz") {
+                buttonHtml = `<button class="mt-3 px-3 py-2 rounded-lg bg-green-600 text-white text-sm" onclick="startQuiz()">Start Quiz</button>`;
+            } else if (ch.id === "tree") {
+                buttonHtml = `<button class="mt-3 px-3 py-2 rounded-lg bg-green-600 text-white text-sm" onclick="handleSelfie('tree')">Upload Selfie</button>`;
+            } else if (ch.id === "reusable") {
+                buttonHtml = `<button class="mt-3 px-3 py-2 rounded-lg bg-green-600 text-white text-sm" onclick="handleSelfie('reusable')">Upload Photo</button>`;
+            }
+
+            challengesList.innerHTML += `
+                <div class="glass-card p-4">
+                    <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm">${ch.title}</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">${ch.description}</p>
+                    <p class="mt-2 text-xs text-green-600 dark:text-green-400 font-semibold">+${ch.points} pts</p>
+                    ${buttonHtml}
+                </div>
+            `;
+        });
+    }
+
+    function renderLeaderboard() {
+        leaderboardList.innerHTML = "";
+        state.leaderboard
+            .sort((a, b) => b.points - a.points)
+            .forEach((u, index) => {
+                leaderboardList.innerHTML += `
+                    <div class="glass-card leaderboard-item">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs font-bold text-gray-400">#${index + 1}</span>
+                            <img src="${u.avatar}" class="w-9 h-9 rounded-full">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">${u.name}</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-bold text-green-600 dark:text-green-400">${u.points} pts</span>
+                    </div>
+                `;
+            });
+    }
+
+    function renderStore() {
+        storeItemsDiv.innerHTML = "";
+        state.storeItems.forEach(item => {
+            storeItemsDiv.innerHTML += `
+                <div class="glass-card p-4">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">${item.name}</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">${item.description}</p>
+                    <p class="mt-2 text-xs font-bold text-green-600 dark:text-green-400">${item.pointsCost} EcoPoints</p>
+                </div>
+            `;
+        });
+    }
+
+    function renderOrders() {
+        ordersList.innerHTML = "";
+        state.orders.forEach(o => {
+            ordersList.innerHTML += `
+                <div class="glass-card p-3 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">${o.itemName}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${o.status}</p>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderEvents() {
+        eventsList.innerHTML = "";
+        state.events.forEach(ev => {
+            eventsList.innerHTML += `
+                <div class="glass-card p-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">${ev.date}</p>
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">${ev.title}</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">${ev.description}</p>
+                    <p class="mt-2 text-xs font-bold text-green-600 dark:text-green-400">+${ev.points} pts</p>
+                </div>
+            `;
+        });
+    }
+
+    function renderHistory() {
+        historyList.innerHTML = "";
+        state.history.forEach(h => {
+            const color = h.points >= 0 ? "text-green-600" : "text-red-500";
+            historyList.innerHTML += `
+                <div class="glass-card p-3 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">${h.text}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${h.date}</p>
+                    </div>
+                    <span class="text-xs font-bold ${color}">${h.points > 0 ? "+" : ""}${h.points}</span>
+                </div>
+            `;
+        });
+    }
+
+    // ---------- QUIZ ----------
+    function startQuiz() {
+        if (state.quiz.attemptedToday) {
+            alert("You've already attempted today's quiz. Come back tomorrow!");
+            return;
+        }
+        quizQuestionEl.textContent = state.quiz.question;
+        quizOptionsEl.innerHTML = "";
+        state.quiz.options.forEach((opt, idx) => {
+            quizOptionsEl.innerHTML += `
+                <button class="w-full text-left px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm"
+                    onclick="submitQuiz(${idx})">${opt}</button>
+            `;
+        });
+        quizModal.classList.remove("hidden");
+        quizModal.classList.add("flex");
+    }
+
+    function closeQuiz() {
+        quizModal.classList.add("hidden");
+        quizModal.classList.remove("flex");
+    }
+
+    function submitQuiz(index) {
+        const correct = index === state.quiz.correctIndex;
+        if (correct) {
+            alert("Correct! You earned +" + state.quiz.rewardPoints + " EcoPoints 🎉");
+            setPoints(state.currentUser.points + state.quiz.rewardPoints);
+        } else {
+            alert("Not quite! Try reading today's eco tip and try again tomorrow.");
+        }
+        state.quiz.attemptedToday = true;
+        closeQuiz();
+    }
+
+    window.startQuiz = startQuiz;
+    window.closeQuiz = closeQuiz;
+    window.submitQuiz = submitQuiz;
+
+    // ---------- SELFIE + GEO ----------
+    function handleSelfie(type) {
+        const input = type === "tree" ? treeSelfieInput : reusableSelfieInput;
+
+        // Request both geolocation and camera; browser may show combined prompts.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    console.log("Geo captured", pos.coords.latitude, pos.coords.longitude);
+                    input.click();
+                },
+                (err) => {
+                    console.warn("Geo error", err);
+                    input.click();
+                }
+            );
+        } else {
+            input.click();
+        }
+
+        input.onchange = () => {
+            if (input.files && input.files.length > 0) {
+                alert("Photo and location queued. Submitted for review ✅");
+            }
+        };
+    }
+    window.handleSelfie = handleSelfie;
+
+    // ---------- CHATBOT ----------
+    function toggleChatbot() {
+        chatbotPanel.classList.toggle("hidden");
+    }
+    window.toggleChatbot = toggleChatbot;
+
+    function addChatMessage(sender, text) {
+        const safe = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        chatbotMessages.innerHTML += `
+            <div class="text-xs"><span class="font-semibold">${sender}:</span> ${safe}</div>
+        `;
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function ecoBotReply(message) {
+        const msg = message.toLowerCase();
+        if (msg.includes("plastic")) {
+            return "Try carrying a reusable bottle and cloth bag to cut down plastic. 🌍";
+        }
+        if (msg.includes("energy")) {
+            return "Switch off lights and fans when not needed, and unplug chargers. ⚡";
+        }
+        if (msg.includes("water")) {
+            return "Close taps tightly and collect rainwater for plants if possible. 💧";
+        }
+        return "Great question! Small daily actions like reusing, recycling, and saving energy make a big impact. 🌿";
+    }
+
+    function sendChatbotMessage() {
+        const text = chatbotInput.value.trim();
+        if (!text) return;
+        addChatMessage("You", text);
+        chatbotInput.value = "";
+        const reply = ecoBotReply(text);
+        setTimeout(() => addChatMessage("EcoBot", reply), 200);
+    }
+
+    chatbotToggle.addEventListener("click", toggleChatbot);
+    chatbotSend.addEventListener("click", sendChatbotMessage);
+    chatbotInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendChatbotMessage();
+        }
+    });
+
+    // ---------- INIT ----------
+    document.addEventListener("DOMContentLoaded", () => {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        // Style helpers for buttons if not in CSS
+        document.querySelectorAll(".sidebar-btn").forEach(btn => {
+            btn.classList.add(
+                "w-full","flex","items-center","space-x-3",
+                "px-3","py-2","rounded-lg",
+                "text-sm","text-gray-700","dark:text-gray-200",
+                "hover:bg-gray-100","dark:hover:bg-gray-700"
+            );
+            const icon = btn.querySelector("i");
+            if (icon) {
+                icon.classList.add("w-4","h-4","mr-2");
+            }
+        });
+
+        navButtons.forEach(btn => {
+            btn.classList.add(
+                "flex","flex-col","items-center","justify-center",
+                "text-gray-500","dark:text-gray-400","text-xs","space-y-0.5"
+            );
+        });
+
+        sidebarToggleBtn.addEventListener("click", toggleSidebar);
+
+        renderUserHeader();
+        renderChallenges();
+        renderLeaderboard();
+        renderStore();
+        renderOrders();
+        renderEvents();
+        renderHistory();
+
+        showPage("dashboard");
+    });
+</script>
 
 </body>
 </html>
