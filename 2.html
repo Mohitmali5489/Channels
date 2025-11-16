@@ -172,12 +172,26 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.5rem center;
+            background-position: right 0.75rem center; /* Adjusted padding */
             background-size: 1.25em;
-            padding-right: 2rem;
+            padding-right: 2.5rem; /* Adjusted padding */
         }
         .dark .custom-select {
              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        }
+        
+        /* NEW: Leaderboard Tab Switch */
+        .leaderboard-tab-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .leaderboard-tab-btn.active {
+            background-color: #ffffff; /* white */
+            color: #10B981; /* green-600 */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .dark .leaderboard-tab-btn.active {
+            background-color: #1f2937; /* gray-800 */
+            color: #34D399; /* green-400 */
         }
     </style>
 </head>
@@ -212,11 +226,8 @@
                 <i data-lucide="history" class="w-5 h-5 mr-3"></i>History
             </button>
             
-            <button onclick="showPage('eco-wars')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i data-lucide="shield" class="w-5 h-5 mr-3"></i>Eco Wars
-            </button>
             <button onclick="showPage('leaderboard')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i data-lucide="users" class="w-5 h-5 mr-3"></i>Top Champions
+                <i data-lucide="shield" class="w-5 h-5 mr-3"></i>Leaderboard
             </button>
             <button onclick="showPage('events')" class="sidebar-nav-item w-full flex items-center p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <i data-lucide="calendar" class="w-5 h-5 mr-3"></i>All Events
@@ -301,20 +312,20 @@
                     <button onclick="showPage('events')" class="bg-white text-green-600 font-bold py-2 px-4 rounded-full text-sm hover:bg-green-50 transition-all">View All Events</button>
                 </div>
 
-                <button id="daily-checkin-button" onclick="openCheckinModal()" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-5 rounded-xl mb-6 flex items-center justify-between shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <button id="daily-checkin-button" onclick="openCheckinModal()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-400 dark:from-yellow-500 dark:to-orange-500 p-5 rounded-xl mb-6 flex items-center justify-between shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02]">
                     <div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Daily Check-in</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Tap here to get your daily points!</p>
+                        <h3 class="text-lg font-bold text-white dark:text-gray-900">Daily Check-in</h3>
+                        <p class="text-sm text-white/90 dark:text-gray-800">Tap here to get your daily points!</p>
                     </div>
-                    <div class="flex items-center space-x-2 text-yellow-600 dark:text-yellow-400">
+                    <div class="flex items-center space-x-2 bg-white/30 dark:bg-black/20 text-white dark:text-gray-900 py-2 px-3 rounded-full">
                         <i data-lucide="sun" class="w-6 h-6"></i>
-                        <span id="dashboard-streak-text" class="text-sm font-bold">3 Day Streak!</span>
+                        <span id="dashboard-streak-text" class="text-sm font-bold">15 Day Streak!</span>
                     </div>
                 </button>
 
 
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Your Impact</h3>
-                <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="grid grid-cols-3 gap-4 mb-8">
                     <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
                         <i data-lucide="leaf" class="w-8 h-8 text-green-500 mx-auto mb-2"></i>
                         <p id="impact-co2" class="font-bold text-lg dark:text-gray-100">0 kg</p>
@@ -324,6 +335,11 @@
                         <i data-lucide="recycle" class="w-8 h-8 text-blue-500 mx-auto mb-2"></i>
                         <p id="impact-recycled" class="font-bold text-lg dark:text-gray-100">0 kg</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Recycled</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
+                        <i data-lucide="calendar-check" class="w-8 h-8 text-purple-500 mx-auto mb-2"></i>
+                        <p id="impact-events" class="font-bold text-lg dark:text-gray-100">0</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Events Attended</p>
                     </div>
                 </div>
                 
@@ -408,19 +424,30 @@
             </div>
             
             <div id="leaderboard" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Top Champions</h2>
-                <div id="leaderboard-page-list" class="space-y-3">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Leaderboard</h2>
+                
+                <div class="mb-6 p-1 bg-gray-200 dark:bg-gray-800 rounded-lg flex">
+                    <button id="leaderboard-tab-dept" onclick="showLeaderboardTab('department')" class="leaderboard-tab-btn flex-1 py-3 px-4 rounded-md text-sm font-bold text-gray-700 dark:text-gray-300">
+                        Department
+                    </button>
+                    <button id="leaderboard-tab-student" onclick="showLeaderboardTab('student')" class="leaderboard-tab-btn flex-1 py-3 px-4 rounded-md text-sm font-bold text-gray-700 dark:text-gray-300">
+                        Student
+                    </button>
                 </div>
-            </div>
-
-            <div id="eco-wars" class="page p-6">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Eco Wars</h2>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md mb-6">
-                    <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Department Leaderboard</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Monthly competition between departments. Tap a department to see its champions!</p>
-                </div>
-                <div id="eco-wars-page-list" class="space-y-3">
+    
+                <div id="leaderboard-content-department">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Department Rankings</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Monthly competition between departments. Tap a department to see its champions!</p>
                     </div>
+                    <div id="eco-wars-page-list" class="space-y-3">
+                        </div>
+                </div>
+    
+                <div id="leaderboard-content-student" class="hidden">
+                     <div id="leaderboard-page-list" class="space-y-3">
+                        </div>
+                </div>
             </div>
 
             <div id="challenges" class="page p-6">
@@ -542,32 +569,36 @@
             <div id="rewards" class="page p-6">
                 <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Eco-Store Rewards</h2>
                 
-                <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Find Rewards</h3>
+                <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md space-y-4">
                     <div class="relative">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                        <input type="text" id="store-search-input" placeholder="Search for products or stores..." class="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <button id="store-search-clear" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-gray-600 hidden">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10"></i>
+                        <input type="text" id="store-search-input" placeholder="Search for products or stores..." class="w-full pl-12 pr-10 py-3 border border-gray-300 dark:border-gray-700 rounded-full bg-gray-50 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button id="store-search-clear" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-gray-600 hidden">
                             <i data-lucide="x" class="w-5 h-5"></i>
                         </button>
                     </div>
-                    <div class="flex gap-2 mt-3 overflow-x-auto horizontal-scroll pb-2">
-                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="all">
-                            All
-                        </button>
-                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Canteen">
-                            Canteen
-                        </button>
-                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Merch">
-                            Merch
-                        </button>
-                        <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium" data-filter-category="Coffee">
-                            Coffee
-                        </button>
+        
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">Categories</h4>
+                        <div class="flex gap-2 overflow-x-auto horizontal-scroll pb-2">
+                            <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-5 py-2 rounded-full text-sm font-medium transition-colors" data-filter-category="all">
+                                All
+                            </button>
+                            <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-5 py-2 rounded-full text-sm font-medium transition-colors" data-filter-category="Canteen">
+                                Canteen
+                            </button>
+                            <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-5 py-2 rounded-full text-sm font-medium transition-colors" data-filter-category="Merch">
+                                Merch
+                            </button>
+                            <button class="store-filter-btn flex-shrink-0 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-5 py-2 rounded-full text-sm font-medium transition-colors" data-filter-category="Coffee">
+                                Coffee
+                            </button>
+                        </div>
                     </div>
-                    <div class="mt-4">
-                        <label for="sort-by-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort by</label>
-                        <select id="sort-by-select" class="custom-select w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white">
+        
+                    <div>
+                        <label for="sort-by-select" class="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">Sort by</label>
+                        <select id="sort-by-select" class="custom-select w-full border border-gray-300 dark:border-gray-700 px-4 py-3 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-900 dark:text-white">
                             <option value="popularity">Popularity</option>
                             <option value="points-lh">Points: Low to High</option>
                             <option value="points-hl">Points: High to Low</option>
@@ -667,8 +698,8 @@
                 <button onclick="showPage('dashboard')" class="nav-item active flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="layout-dashboard" class="w-6 h-6 mx-auto"></i><span class="text-xs">Dashboard</span>
                 </button>
-                <button onclick="showPage('eco-wars')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
-                    <i data-lucide="shield" class="w-6 h-6 mx-auto"></i><span class="text-xs">Eco Wars</span>
+                <button onclick="showPage('leaderboard')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
+                    <i data-lucide="shield" class="w-6 h-6 mx-auto"></i><span class="text-xs">Leaderboard</span>
                 </button>
                 <button onclick="showPage('challenges')" class="nav-item flex-1 text-center py-3 text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400">
                     <i data-lucide="award" class="w-6 h-6 mx-auto"></i><span class="text-xs">Challenges</span>
@@ -690,7 +721,7 @@
             </div>
             
             <p class="text-center text-gray-600 dark:text-gray-300 mb-2">Your current streak:</p>
-            <p id="checkin-modal-streak" class="text-center text-5xl font-extrabold text-yellow-600 dark:text-yellow-400 mb-6">3 Days</p>
+            <p id="checkin-modal-streak" class="text-center text-5xl font-extrabold text-yellow-600 dark:text-yellow-400 mb-6">15 Days</p>
 
             <div id="checkin-modal-calendar" class="flex justify-center space-x-2 mb-6">
                 </div>
@@ -737,7 +768,7 @@
                 isGreenClubMember: true,
                 isVerified: false, 
                 lastCheckInDate: yesterday, 
-                checkInStreak: 3 
+                checkInStreak: 15 // MODIFIED: Set streak to 15
             },
             checkInReward: 10, 
             leaderboard: [
@@ -959,6 +990,7 @@
 
         const impactCo2 = document.getElementById('impact-co2');
         const impactRecycled = document.getElementById('impact-recycled');
+        const impactEvents = document.getElementById('impact-events'); // NEW
 
         const eventList = document.getElementById('event-list');
         // MODIFIED: Get new product grid
@@ -1121,12 +1153,12 @@
         const renderDashboardCheckinButton = () => {
             const user = state.currentUser;
             if (user.lastCheckInDate === today) {
-                dashboardCheckinButton.classList.add('opacity-70', 'cursor-not-allowed');
+                dashboardCheckinButton.classList.add('opacity-70', 'cursor-not-allowed', 'from-gray-400', 'to-gray-500', 'dark:from-gray-600', 'dark:to-gray-700'); // Add disabled gradient
                 dashboardCheckinButton.querySelector('h3').textContent = 'Checked-in Today!';
                 dashboardCheckinButton.querySelector('p').textContent = 'Come back tomorrow.';
                 dashboardStreakText.textContent = `${user.checkInStreak} Day Streak!`;
             } else {
-                dashboardCheckinButton.classList.remove('opacity-70', 'cursor-not-allowed');
+                dashboardCheckinButton.classList.remove('opacity-70', 'cursor-not-allowed', 'from-gray-400', 'to-gray-500', 'dark:from-gray-600', 'dark:to-gray-700'); // Remove disabled gradient
                 dashboardCheckinButton.querySelector('h3').textContent = 'Daily Check-in';
                 dashboardCheckinButton.querySelector('p').textContent = 'Tap here to get your daily points!';
                 dashboardStreakText.textContent = `${user.checkInStreak} Day Streak!`;
@@ -1142,8 +1174,10 @@
             for (let i = 0; i < 7; i++) {
                 const dayLetter = ['M', 'T', 'W', 'T', 'F', 'S', 'S'][i];
                 let classes = 'w-10 h-10 rounded-full flex items-center justify-center font-bold ';
-                if (i < streak) {
+                if (i < (streak % 7)) { // Show checks for the week
                     classes += 'bg-green-500 text-white';
+                } else if (streak >= 7) { // If streak is longer than a week, fill all
+                     classes += 'bg-green-500 text-white';
                 } else {
                     classes += 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400';
                 }
@@ -1618,9 +1652,12 @@
             const co2FromRecycle = totalKg * 1.5;
             const co2FromPoints = state.currentUser.points * 0.1;
             const totalCO2 = co2FromRecycle + co2FromPoints;
+            
+            const attendedEvents = state.events.filter(e => e.status === 'attended').length; // NEW
 
             impactCo2.textContent = totalCO2.toFixed(1) + ' kg';
             impactRecycled.textContent = totalKg.toFixed(1) + ' kg';
+            impactEvents.textContent = attendedEvents; // NEW
         };
 
 
@@ -1717,6 +1754,31 @@
             renderChallengesPage();
         };
 
+        // NEW: Leaderboard Tab Logic
+        let currentLeaderboardTab = 'department'; // Default tab
+
+        window.showLeaderboardTab = (tab) => {
+            currentLeaderboardTab = tab;
+            const deptTab = document.getElementById('leaderboard-tab-dept');
+            const studentTab = document.getElementById('leaderboard-tab-student');
+            const deptContent = document.getElementById('leaderboard-content-department');
+            const studentContent = document.getElementById('leaderboard-content-student');
+
+            if (tab === 'department') {
+                deptTab.classList.add('active');
+                studentTab.classList.remove('active');
+                deptContent.classList.remove('hidden');
+                studentContent.classList.add('hidden');
+                renderEcoWarsPage(); // This is the department list renderer
+            } else {
+                deptTab.classList.remove('active');
+                studentTab.classList.add('active');
+                deptContent.classList.add('hidden');
+                studentContent.classList.remove('hidden');
+                renderLeaderboardPage(); // This is the student list renderer
+            }
+        };
+
         
         const showPage = (pageId) => {
             pages.forEach(p => p.classList.remove('active'));
@@ -1738,14 +1800,14 @@
             
             mainContent.scrollTop = 0;
             
-            // NEW: Added render calls for new pages
-            if (pageId === 'eco-wars') renderEcoWarsPage();
-
+            // MODIFIED: Render calls
+            if (pageId === 'leaderboard') {
+                showLeaderboardTab(currentLeaderboardTab); 
+            }
             if (pageId === 'my-rewards') renderMyRewardsPage();
             if (pageId === 'profile') renderProfile(); 
             if (pageId === 'ecopoints') renderEcoPointsPage(); 
             if (pageId === 'history') renderHistory(); 
-            if (pageId === 'leaderboard') renderLeaderboardPage(); 
             if (pageId === 'rewards') renderRewards(); 
             if (pageId === 'challenges') renderChallengesPage(); 
             if (pageId === 'events') renderEvents();
@@ -1980,7 +2042,7 @@
 
             departmentDetailPage.innerHTML = `
                 <div class="p-4 bg-white dark:bg-gray-950 sticky top-0 z-10 border-b dark:border-gray-800 flex items-center">
-                    <button onclick="showPage('eco-wars')" class="p-2 text-gray-600 dark:text-gray-300 -ml-2 mr-2">
+                    <button onclick="showPage('leaderboard')" class="p-2 text-gray-600 dark:text-gray-300 -ml-2 mr-2">
                         <i data-lucide="arrow-left" class="w-6 h-6"></i>
                     </button>
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">${department.name} Champions</h2>
