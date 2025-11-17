@@ -21,6 +21,79 @@
             },
         }
     </script>
+    <style>
+        /* Inline styles for specific requested features */
+        
+        /* Camera Modal Overlay */
+        #camera-modal {
+            transition: opacity 0.3s ease-in-out, visibility 0.3s;
+            z-index: 60; 
+        }
+        #camera-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modern Grey Check-in Completed State */
+        .checkin-completed {
+            background: #F3F4F6 !important; /* Light Grey */
+            background-image: none !important;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
+            border: 1px solid #E5E7EB !important;
+            color: #9CA3AF !important; /* Grey text */
+            cursor: default !important;
+            transform: none !important;
+        }
+        .dark .checkin-completed {
+            background: #1F2937 !important; /* Dark Grey */
+            border-color: #374151 !important;
+            color: #6B7280 !important;
+        }
+
+        /* Hide specific elements inside the button when completed */
+        .checkin-completed .checkin-hide-on-complete {
+            display: none !important;
+        }
+
+        /* Change text color for specific children when completed */
+        .checkin-completed h3, 
+        .checkin-completed span, 
+        .checkin-completed i,
+        .checkin-completed p {
+            color: #6B7280 !important; /* Cool Grey */
+        }
+        .dark .checkin-completed h3, 
+        .dark .checkin-completed span, 
+        .dark .checkin-completed i,
+        .dark .checkin-completed p {
+            color: #9CA3AF !important;
+        }
+
+        /* Remove Shadow/Border from AI Chatbot Button */
+        #chatbot-btn img {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Slider for Product Details */
+        .slider-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .slider-item {
+            scroll-snap-align: center;
+        }
+        .slider-dot {
+            transition: all 0.3s ease;
+        }
+        .slider-dot.active {
+            background-color: #10B981;
+            transform: scale(1.25);
+        }
+        .dark .slider-dot.active {
+            background-color: #34D399;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
 
@@ -103,7 +176,7 @@
         </div>
 
         <div class="p-6 border-t border-gray-200 dark:border-gray-700">
-            <p class="text-xs text-center text-gray-400 dark:text-gray-500">EcoBirla v6.1 (Glass)</p>
+            <p class="text-xs text-center text-gray-400 dark:text-gray-500">EcoBirla v6.2 (Live)</p>
         </div>
     </div>
 
@@ -157,14 +230,18 @@
                     </button>
                 </div>
 
-                <button id="daily-checkin-button" onclick="openCheckinModal()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-400 dark:from-yellow-500 dark:to-orange-500 p-5 rounded-2xl mb-6 flex items-center justify-between relative overflow-hidden">
+                <button id="daily-checkin-button" onclick="openCheckinModal()" class="w-full bg-gradient-to-r from-yellow-400 to-orange-400 dark:from-yellow-500 dark:to-orange-500 p-5 rounded-2xl mb-6 flex items-center justify-between relative overflow-hidden transition-all duration-300">
                    <div>
                         <h3 class="text-lg font-bold text-white dark:text-gray-900">Daily Check-in</h3>
-                        <p id="checkin-subtext" class="text-sm text-white/90 dark:text-gray-800">Tap here to get your daily points!</p>
+                        <p id="checkin-subtext" class="text-sm text-white/90 dark:text-gray-800 checkin-hide-on-complete">Tap here to get your daily points!</p>
+                        <p id="checkin-done-text" class="text-sm hidden font-medium">Come back tomorrow!</p>
                     </div>
-                    <div class="flex items-center space-x-2 bg-white/25 dark:bg-black/20 text-white dark:text-gray-900 py-2 px-3 rounded-full">
+                    <div class="flex items-center space-x-2 bg-white/25 dark:bg-black/20 text-white dark:text-gray-900 py-2 px-3 rounded-full checkin-hide-on-complete">
                         <i data-lucide="sun" class="w-6 h-6"></i>
                         <span id="dashboard-streak-text" class="text-sm font-bold">0 Day Streak</span>
+                    </div>
+                    <div id="checkin-check-icon" class="hidden">
+                        <i data-lucide="check-circle" class="w-8 h-8"></i>
                     </div>
                 </button>
 
@@ -319,36 +396,6 @@
                     <div id="all-levels-list" class="space-y-4"></div>
                 </div>
                 
-                <div class="glass-card p-6 rounded-2xl mb-6">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">How to Earn Points</h3>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <span class="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3">
-                                <i data-lucide="recycle" class="w-5 h-5 text-green-600 dark:text-green-300"></i>
-                            </span>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Submit plastic bottles at collection points.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center mr-3">
-                                <i data-lucide="calendar" class="w-5 h-5 text-purple-600 dark:text-purple-300"></i>
-                            </span>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Attend Green Club events and workshops.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="w-9 h-9 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center mr-3">
-                                <i data-lucide="award" class="w-5 h-5 text-yellow-600 dark:text-yellow-300"></i>
-                            </span>
-                            <div>
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Complete special "Eco-Challenges".</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="glass-card p-6 rounded-2xl mb-6">
                      <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Recent Transactions</h4>
                     <div id="ecopoints-recent-activity" class="space-y-3"></div>
@@ -517,8 +564,8 @@
 
         </main>
 
-        <button onclick="openChatbotModal()" class="fixed z-20 bottom-24 right-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-             <img src="https://i.ibb.co/7xwsMnBc/Pngtree-green-earth-globe-clip-art-16672659-1.png" alt="EcoBot" class="w-10 h-10 object-contain">
+        <button onclick="openChatbotModal()" id="chatbot-btn" class="fixed z-20 bottom-24 right-6 w-16 h-16 flex items-center justify-center hover:scale-105 transition-transform">
+             <img src="https://i.ibb.co/7xwsMnBc/Pngtree-green-earth-globe-clip-art-16672659-1.png" alt="EcoBot" class="w-full h-full object-contain drop-shadow-xl">
         </button>
 
         <nav class="glass-bottom-bar border-t border-gray-200/70 dark:border-gray-800">
@@ -609,6 +656,24 @@
                 </div>
                 <div id="eco-quiz-modal-result" class="hidden text-center mt-4"></div>
             </div>
+        </div>
+    </div>
+
+    <div id="camera-modal" class="fixed inset-0 bg-black z-50 hidden flex flex-col">
+        <div class="relative flex-grow bg-black">
+            <video id="camera-feed" autoplay playsinline class="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]"></video>
+            <canvas id="camera-canvas" class="hidden"></canvas>
+        </div>
+        <div class="bg-black p-6 pb-10 flex justify-around items-center">
+            <button onclick="closeCameraModal()" class="text-white p-4 rounded-full bg-gray-800">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <button onclick="capturePhoto()" class="p-1 rounded-full border-4 border-white">
+                <div class="w-16 h-16 bg-white rounded-full"></div>
+            </button>
+            <button onclick="switchCamera()" class="text-white p-4 rounded-full bg-gray-800">
+                <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+            </button>
         </div>
     </div>
 
