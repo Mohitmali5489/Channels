@@ -35,7 +35,7 @@ let state = {
         { id: 1, name: 'Jane Doe', initials: 'JD', course: 'FYBCOM', lifetimePoints: 520, departmentId: 'd1' },
         { id: 2, name: 'Mike Smith', initials: 'MS', course: 'SYBCOM', lifetimePoints: 410, departmentId: 'd2' },
         { id: 3, name: 'Sarah Lee', initials: 'SL', course: 'TYBCOM', lifetimePoints: 395, departmentId: 'd1' },
-        { id: 4, name: 'Alex Green', initials: 'AG', course: 'FYBCOM', lifetimePoints: 375, departmentId: 'd3', isCurrentUser: true }, // User is currently 4th
+        { id: 4, name: 'Alex Green', initials: 'AG', course: 'FYBCOM', lifetimePoints: 375, departmentId: 'd3', isCurrentUser: true },
         { id: 5, name: 'Tom Wilson', initials: 'TW', course: 'SYBCOM', lifetimePoints: 280, departmentId: 'd3' },
         { id: 6, name: 'Emily Chen', initials: 'EC', course: 'FYBCOM', lifetimePoints: 250, departmentId: 'd2' },
         { id: 7, name: 'Rohan Patel', initials: 'RP', course: 'TYBCOM', lifetimePoints: 210, departmentId: 'd4' },
@@ -54,15 +54,20 @@ let state = {
         { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-11-14', icon: 'award' },
         { type: 'recycle', description: 'Submitted 12 Bottles', points: 15, date: '2025-11-12', icon: 'recycle' },
     ],
+    // RESTORED: Full sample data for Challenges
     dailyChallenges: [
         { id: 'c1', title: 'Selfie with a Tree', description: 'Upload a selfie with any tree on campus.', points_reward: 20, icon: 'camera', status: 'active', buttonText: 'Upload Selfie', type: 'upload' },
         { id: 'c2', title: 'Daily Eco-Quiz', description: 'Get 3/3 questions right to earn points.', points_reward: 15, icon: 'brain', status: 'active', buttonText: 'Start Quiz', type: 'quiz' },
+        { id: 'c3', title: 'Spot a Reusable', description: 'Upload a photo of someone using a reusable bottle or cup.', points_reward: 10, icon: 'eye', status: 'active', buttonText: 'Upload Photo', type: 'upload' },
     ],
+    // RESTORED: Full sample data for Events
     events: [
         { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 20, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, status: 'upcoming' },
+        { id: 3, title: 'Green Docu-Night', date: 'Nov 22, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, status: 'upcoming' },
         { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Helped clean up Kalyan Central Park.', points: 75, status: 'attended' },
+        { id: 4, title: 'Tree Planting Drive', date: 'Oct 15, 2025', description: 'Campus-wide tree planting initiative.', points: 50, status: 'missed' },
     ],
-    // Store Data
+    // RESTORED: Full sample data for Eco-Store to match screenshot
     stores: [
         {
             storeId: 's1',
@@ -82,6 +87,34 @@ let state = {
                     images: ['https://placehold.co/400x300/FBCFE8/1F2937?text=Samosa'],
                     description: 'The classic college snack combo.',
                     originalPrice: 30, discountedPrice: 15, cost: 15, popularity: 100
+                },
+                {
+                    productId: 'p3',
+                    name: 'Masala Dosa',
+                    images: ['https://placehold.co/400x300/FCE7F3/1F2937?text=Dosa'],
+                    description: 'Crispy crepe with potato masala and chutney.',
+                    originalPrice: 60, discountedPrice: 40, cost: 20, popularity: 85
+                }
+            ]
+        },
+        {
+            storeId: 's2',
+            storeName: 'The Beanery',
+            storeLogo: 'https://placehold.co/100x100/A5B4FC/1F2937?text=Bean',
+            products: [
+                {
+                    productId: 'p4',
+                    name: 'Large Cappuccino',
+                    images: ['https://placehold.co/400x300/A5B4FC/1F2937?text=Coffee'],
+                    description: 'Rich and foamy large cappuccino.',
+                    originalPrice: 120, discountedPrice: 80, cost: 40, popularity: 70
+                },
+                {
+                    productId: 'p5',
+                    name: 'Choco-chip Brownie',
+                    images: ['https://placehold.co/400x300/C7D2FE/1F2937?text=Brownie'],
+                    description: 'Fudgy brownie loaded with choco-chips.',
+                    originalPrice: 70, discountedPrice: 50, cost: 20, popularity: 75
                 }
             ]
         },
@@ -96,6 +129,13 @@ let state = {
                     images: ['https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie'],
                     description: 'Premium cotton hoodie with embroidered college logo.',
                     originalPrice: 1000, discountedPrice: 800, cost: 200, popularity: 50
+                },
+                {
+                    productId: 'p7',
+                    name: 'Steel Bottle',
+                    images: ['https://placehold.co/400x300/BBF7D0/1F2937?text=Bottle'],
+                    description: 'Insulated eco-friendly steel bottle.',
+                    originalPrice: 500, discountedPrice: 350, cost: 150, popularity: 60
                 }
             ]
         }
@@ -156,6 +196,8 @@ const els = {
     storeSearch: document.getElementById('store-search-input'),
     storeSearchClear: document.getElementById('store-search-clear'),
     sortBy: document.getElementById('sort-by-select'),
+    challengesList: document.getElementById('challenges-page-list'),
+    eventsList: document.getElementById('event-list')
 };
 
 // Navigation Logic
@@ -169,7 +211,6 @@ const showPage = (pageId) => {
 
     // Update Nav/Sidebar active states
     document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(btn => {
-        // Check if the button's onclick string contains the pageId
         const onclickVal = btn.getAttribute('onclick');
         if (onclickVal && onclickVal.includes(`'${pageId}'`)) {
             btn.classList.add('active');
@@ -184,10 +225,9 @@ const showPage = (pageId) => {
     // Specific Page Renders
     if (pageId === 'dashboard') {
         renderDashboard();
-        // Hide leaf layer on dashboard
         if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
     } else if (pageId === 'leaderboard') {
-        showLeaderboardTab(currentLeaderboardTab); // Re-render current tab
+        showLeaderboardTab(currentLeaderboardTab);
     } else if (pageId === 'redeem-code') {
         resetRedeemForm();
         if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
@@ -196,6 +236,12 @@ const showPage = (pageId) => {
         if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
     } else if (pageId === 'ecopoints') {
         renderEcoPointsPage();
+        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
+    } else if (pageId === 'challenges') {
+        renderChallengesPage();
+        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
+    } else if (pageId === 'events') {
+        renderEventsPage();
         if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
     } else {
         if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
@@ -224,7 +270,6 @@ const animatePointsUpdate = (newPoints) => {
     els.userPointsHeader.classList.add('points-pulse');
     els.userPointsHeader.textContent = newPoints;
     
-    // Update sidebar points too
     const sidebarPoints = document.getElementById('user-points-sidebar');
     if(sidebarPoints) sidebarPoints.textContent = newPoints;
 
@@ -257,16 +302,11 @@ const renderCheckinButtonState = () => {
     els.dashboardStreakText.textContent = `${state.currentUser.checkInStreak} Day Streak`;
     
     if (state.currentUser.isCheckedInToday) {
-        // Visual Update: Completed State
         els.dailyCheckinBtn.classList.add('checkin-completed');
-        // Change Title Text (found inside the button)
         els.dailyCheckinBtn.querySelector('h3').textContent = "Checked In!";
-        // Hide subtext
         if (els.checkinSubtext) els.checkinSubtext.style.display = 'none';
-        // Disable click
         els.dailyCheckinBtn.onclick = null; 
     } else {
-        // Reset State
         els.dailyCheckinBtn.classList.remove('checkin-completed');
         els.dailyCheckinBtn.querySelector('h3').textContent = "Daily Check-in";
         if (els.checkinSubtext) els.checkinSubtext.style.display = 'block';
@@ -283,7 +323,6 @@ const openCheckinModal = () => {
     checkinModal.classList.add('open');
     checkinModal.classList.remove('invisible');
     
-    // Render Calendar in Modal
     const calendarContainer = document.getElementById('checkin-modal-calendar');
     calendarContainer.innerHTML = '';
     for (let i = -3; i <= 3; i++) {
@@ -312,12 +351,10 @@ const closeCheckinModal = () => {
 };
 
 const handleDailyCheckin = () => {
-    // Update Logic
     state.currentUser.isCheckedInToday = true;
     state.currentUser.checkInStreak++;
     const newTotal = state.currentUser.points + state.checkInReward;
     
-    // Add to history
     state.history.unshift({
         type: 'checkin',
         description: 'Daily Check-in',
@@ -328,7 +365,7 @@ const handleDailyCheckin = () => {
 
     animatePointsUpdate(newTotal);
     closeCheckinModal();
-    renderDashboard(); // Will trigger renderCheckinButtonState
+    renderDashboard();
 };
 
 
@@ -387,13 +424,11 @@ const renderDepartmentLeaderboard = () => {
 const renderStudentLeaderboard = () => {
     const sorted = [...state.leaderboard].sort((a, b) => b.lifetimePoints - a.lifetimePoints);
     
-    // Top 3 Data
     const rank1 = sorted[0];
     const rank2 = sorted[1];
     const rank3 = sorted[2];
     const rest = sorted.slice(3);
 
-    // 1. Render Podium (HTML Structure matches specific design request)
     els.lbPodium.innerHTML = `
         <div class="podium">
             <div class="champ">
@@ -422,10 +457,8 @@ const renderStudentLeaderboard = () => {
         </div>
     `;
 
-    // 2. Render List (Rank 4+)
     els.lbList.innerHTML = '';
     rest.forEach((user) => {
-        // Check if this list item is the current user to highlight
         const isMeClass = user.isCurrentUser ? 'is-me' : '';
         
         els.lbList.innerHTML += `
@@ -466,17 +499,14 @@ els.redeemForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Simulate Processing
     els.redeemBtn.disabled = true;
     els.redeemBtn.textContent = 'Verifying...';
 
     setTimeout(() => {
-        // Success (Demo)
         const bonusPoints = 50;
         const newTotal = state.currentUser.points + bonusPoints;
         state.currentUser.lifetimePoints += bonusPoints;
         
-        // Add to history
         state.history.unshift({
             type: 'ticket',
             description: 'Redeemed Code: ' + code.toUpperCase(),
@@ -502,7 +532,7 @@ els.redeemForm.addEventListener('submit', (e) => {
 
 
 // =========================================
-// 6. STORE & ECOPOINTS (Brief)
+// 6. STORE, CHALLENGES & EVENTS
 // =========================================
 
 const renderRewards = () => {
@@ -510,13 +540,11 @@ const renderRewards = () => {
     let products = [];
     state.stores.forEach(s => s.products.forEach(p => products.push({...p, storeName: s.storeName, storeLogo: s.storeLogo})));
 
-    // Sort (Simple implementation)
     const criteria = els.sortBy.value;
     if(criteria === 'popularity') products.sort((a,b) => b.popularity - a.popularity);
     if(criteria === 'points-lh') products.sort((a,b) => a.cost - b.cost);
     if(criteria === 'points-hl') products.sort((a,b) => b.cost - a.cost);
 
-    // Filter
     const term = els.storeSearch.value.toLowerCase();
     if(term) products = products.filter(p => p.name.toLowerCase().includes(term));
 
@@ -524,22 +552,95 @@ const renderRewards = () => {
 
     products.forEach(p => {
         els.productGrid.innerHTML += `
-            <div class="w-full glass-card rounded-2xl overflow-hidden flex flex-col">
-                <img src="${p.images[0]}" class="w-full h-32 object-cover">
+            <div class="w-full flex-shrink-0 glass-card border border-gray-200/60 dark:border-gray-700/80 rounded-2xl overflow-hidden flex flex-col cursor-pointer">
+                <img src="${p.images[0]}" class="w-full h-40 object-cover">
                 <div class="p-3 flex flex-col flex-grow">
                     <div class="flex items-center mb-1">
-                        <img src="${p.storeLogo}" class="w-4 h-4 rounded-full mr-1">
-                        <span class="text-[10px] text-gray-500 uppercase tracking-wide">${p.storeName}</span>
+                        <img src="${p.storeLogo}" class="w-5 h-5 rounded-full mr-2 border dark:border-gray-600">
+                        <p class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">${p.storeName}</p>
                     </div>
-                    <h4 class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate">${p.name}</h4>
-                    <div class="mt-auto pt-2 flex items-center justify-between">
-                         <span class="text-xs line-through text-gray-400">₹${p.originalPrice}</span>
-                         <div class="flex items-center font-bold text-green-600 dark:text-green-400">
-                            <span class="text-sm mr-1">₹${p.discountedPrice}</span>
-                            <span class="text-xs text-gray-400">+</span>
-                            <i data-lucide="leaf" class="w-3 h-3 mx-1"></i>
-                            <span class="text-sm">${p.cost}</span>
-                         </div>
+                    <p class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate mt-1">${p.name}</p>
+                    <div class="mt-auto pt-2">
+                        <p class="text-xs text-gray-400 dark:text-gray-500 line-through">₹${p.originalPrice}</p>
+                        <div class="flex items-center font-bold text-gray-800 dark:text-gray-100 my-1">
+                            <span class="text-md text-green-700 dark:text-green-400">₹${p.discountedPrice}</span>
+                            <span class="mx-1 text-gray-400 dark:text-gray-500 text-xs">+</span>
+                            <i data-lucide="leaf" class="w-3 h-3 text-green-500 mr-1"></i>
+                            <span class="text-sm text-green-700 dark:text-green-400">${p.cost}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    lucide.createIcons();
+};
+
+const renderChallengesPage = () => {
+    els.challengesList.innerHTML = '';
+    state.dailyChallenges.forEach(c => {
+        let buttonHTML = '';
+        if (c.status === 'active') {
+            const onclick = c.type === 'quiz' ? `alert('Quiz logic here')` : `document.getElementById('challenge-file-input').click()`;
+            buttonHTML = `<button onclick="${onclick}" class="text-xs font-semibold px-3 py-2 rounded-full bg-green-600 text-white">${c.buttonText}</button>`;
+        } else if (c.status === 'pending') {
+            buttonHTML = `<button class="text-xs font-semibold px-3 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300 cursor-not-allowed">Pending Review</button>`;
+        }
+
+        els.challengesList.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl flex items-start">
+                <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3">
+                    <i data-lucide="${c.icon}" class="w-5 h-5 text-green-600 dark:text-green-300"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-900 dark:text-gray-100">${c.title}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${c.description}</p>
+                    <div class="flex items-center justify-between mt-3">
+                        <span class="text-xs font-semibold text-green-700 dark:text-green-300">+${c.points_reward} pts</span>
+                        ${buttonHTML}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    lucide.createIcons();
+};
+
+const renderEventsPage = () => {
+    els.eventsList.innerHTML = '';
+    state.events.forEach(e => {
+        let statusButton = '';
+        let opacity = '';
+        if (e.status === 'upcoming') {
+            statusButton = `
+                <button class="w-full bg-green-600 text-white text-sm font-semibold py-2 rounded-lg flex items-center justify-center space-x-2">
+                    <i data-lucide="ticket" class="w-4 h-4"></i><span>RSVP +${e.points} pts</span>
+                </button>`;
+        } else if (e.status === 'attended') {
+            statusButton = `
+                <div class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i><span>Attended (+${e.points} pts)</span>
+                </div>`;
+            opacity = 'opacity-90';
+        } else if (e.status === 'missed') {
+            statusButton = `
+                <div class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i><span>Missed</span>
+                </div>`;
+            opacity = 'opacity-60';
+        }
+
+        els.eventsList.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl ${opacity}">
+                <div class="flex items-start">
+                    <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg mr-4">
+                        <i data-lucide="calendar" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-xs font-semibold text-purple-600 dark:text-purple-400">${e.date}</p>
+                        <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg">${e.title}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">${e.description}</p>
+                        ${statusButton}
                     </div>
                 </div>
             </div>
@@ -579,7 +680,6 @@ chatbotForm.addEventListener('submit', (e) => {
     const msg = chatbotInput.value.trim();
     if(!msg) return;
 
-    // Add User Msg
     chatbotMessages.innerHTML += `
         <div class="flex justify-end">
             <div class="bg-green-600 text-white p-3 rounded-lg rounded-br-none max-w-xs">
@@ -589,7 +689,6 @@ chatbotForm.addEventListener('submit', (e) => {
     chatbotInput.value = '';
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
 
-    // Simulate Bot Reply
     setTimeout(() => {
         let reply = "I'm EcoBot. I can help with recycling tips or app navigation.";
         if(msg.toLowerCase().includes('code') || msg.toLowerCase().includes('redeem')) {
@@ -614,7 +713,6 @@ chatbotForm.addEventListener('submit', (e) => {
 
 document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
 
-// Profile Rendering (Basic)
 const renderProfile = () => {
     const u = state.currentUser;
     const l = getUserLevel(u.lifetimePoints);
@@ -633,7 +731,6 @@ const renderProfile = () => {
     document.getElementById('profile-email-personal').textContent = u.email;
 };
 
-// EcoPoints Page Rendering
 const renderEcoPointsPage = () => {
     const u = state.currentUser;
     const l = getUserLevel(u.lifetimePoints);
@@ -677,9 +774,7 @@ const renderEcoPointsPage = () => {
     });
 };
 
-// Init
 window.addEventListener('load', () => {
-    // Theme Init
     const saved = localStorage.getItem('eco-theme');
     if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
@@ -698,7 +793,6 @@ window.addEventListener('load', () => {
     renderDashboard();
     renderProfile();
     
-    // Simulate loading finish
     setTimeout(() => {
         document.getElementById('app-loading').classList.add('loaded');
     }, 800);
