@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoBirla App</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 overflow-hidden font-inter">
+
+<div id="app" class="app-container">
+
+    <!-- HEADER -->
+    <header class="p-4 border-b bg-white dark:bg-gray-800 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <button onclick="toggleSidebar()" class="text-gray-700 dark:text-gray-200" id="sidebar-open-btn">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+
+            <h1 class="text-2xl font-extrabold text-green-700 dark:text-green-500">
+                EcoBirla
+            </h1>
+
+            <button onclick="showPage('ecopoints')" class="flex items-center bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
+                <i data-lucide="leaf" class="w-5 h-5 text-green-500 mr-1"></i>
+                <span id="user-points-header" class="font-bold text-gray-800 dark:text-gray-200">0 pts</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="main-content">
+
+        <!-- DASHBOARD PAGE -->
+        <section id="dashboard" class="page active p-6">
+            <h2 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">
+                Hi, <span id="user-name-greeting"></span>!
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Let's make our campus greener today.</p>
+
+            <!-- Daily Checkin Card -->
+            <button id="daily-checkin-button" onclick="openCheckinModal()"
+                class="w-full daily-checkin-card">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Daily Check-in</h3>
+                    <p class="text-sm text-white/90">Tap here to get your daily points!</p>
+                </div>
+                <div class="flex items-center bg-white/25 text-white py-1 px-2 rounded-full">
+                    <i data-lucide="sun" class="w-4 h-4 mr-1"></i>
+                    <span id="dashboard-streak-text" class="text-xs font-semibold">0 Day Streak</span>
+                </div>
+            </button>
+
+            <!-- Impact Stats -->
+            <h3 class="text-xl font-bold mt-6 mb-3 text-gray-900 dark:text-gray-100">Your Impact</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="stat-box">
+                    <i data-lucide="leaf" class="w-7 h-7 text-green-500 mx-auto"></i>
+                    <p id="impact-co2" class="stat-value">0 kg</p>
+                    <p class="stat-label">CO₂ Saved</p>
+                </div>
+
+                <div class="stat-box">
+                    <i data-lucide="recycle" class="w-7 h-7 text-blue-500 mx-auto"></i>
+                    <p id="impact-recycled" class="stat-value">0 kg</p>
+                    <p class="stat-label">Recycled</p>
+                </div>
+
+                <div class="stat-box">
+                    <i data-lucide="users" class="w-7 h-7 text-purple-500 mx-auto"></i>
+                    <p id="impact-events" class="stat-value">0</p>
+                    <p class="stat-label">Events</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- LEADERBOARD PAGE -->
+        <section id="leaderboard" class="page p-6">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4">Eco Hall of Champions</h2>
+
+            <!-- Podium -->
+            <div id="leaderboard-podium" class="podium-container">
+                <div class="podium-item second">
+                    <div class="podium-badge silver">MS</div>
+                    <p class="podium-name">Mike Smith</p>
+                    <p class="podium-class">SYBCOM</p>
+                    <p class="podium-points">410 pts</p>
+                </div>
+
+                <div class="podium-item first">
+                    <div class="podium-badge gold">JD</div>
+                    <p class="podium-name">Jane Doe</p>
+                    <p class="podium-class">FYBCOM</p>
+                    <p class="podium-points">520 pts</p>
+                </div>
+
+                <div class="podium-item third">
+                    <div class="podium-badge bronze">SL</div>
+                    <p class="podium-name">Sarah Lee</p>
+                    <p class="podium-class">TYBCOM</p>
+                    <p class="podium-points">395 pts</p>
+                </div>
+            </div>
+
+            <!-- Full List -->
+            <div id="leaderboard-list" class="space-y-3 mt-6"></div>
+        </section>
+
+        <!-- REDEEM PAGE -->
+        <section id="redeem" class="page p-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Redeem Code</h2>
+
+            <form id="redeem-code-form" class="space-y-4">
+                <input id="redeem-code-input" type="text" maxlength="10" placeholder="ENTER 10-DIGIT CODE"
+                       class="redeem-input" />
+
+                <button class="redeem-btn" type="submit">Redeem Now</button>
+            </form>
+
+            <p id="redeem-code-status" class="text-center text-sm mt-4 hidden"></p>
+        </section>
+
+        <!-- PROFILE PAGE -->
+        <section id="profile" class="page p-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">My Profile</h2>
+
+            <div class="flex items-center space-x-4 mb-4">
+                <img id="user-avatar" class="w-16 h-16 rounded-full border" />
+                <div>
+                    <p id="user-name-profile" class="font-bold text-lg"></p>
+                    <p id="user-points-profile" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="showPage('dashboard')">
+            <i data-lucide="home"></i><span>Home</span>
+        </button>
+        <button class="nav-item" onclick="showPage('leaderboard')">
+            <i data-lucide="trophy"></i><span>Leaderboard</span>
+        </button>
+        <button class="nav-item" onclick="showPage('redeem')">
+            <i data-lucide="ticket"></i><span>Redeem</span>
+        </button>
+        <button class="nav-item" onclick="showPage('profile')">
+            <i data-lucide="user"></i><span>Profile</span>
+        </button>
+    </nav>
+
+</div>
+
+<!-- Floating AI Bot Button -->
+<button id="chatButton" onclick="openChatbot()">
+    <img src="https://i.ibb.co/7xwsMnBc/Pngtree-green-earth-globe-clip-art-16672659-1.png" />
+</button>
+
+<!-- Chatbot Window -->
+<div id="chatWindow">
+    <div id="chatMessages"></div>
+
+    <form id="chatForm">
+        <input id="chatInput" type="text" placeholder="Ask EcoBot..." />
+    </form>
+</div>
+
+<!-- Custom Script -->
+<script src="script.js"></script>
+</body>
+</html>
