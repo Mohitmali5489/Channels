@@ -1,19 +1,37 @@
 /* =========================================
-   1. Global Layout & Reset
+   1. GLOBAL RESET & APP STRUCTURE
    ========================================= */
-   html, body {
+html, body {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; /* Prevent body scroll, handle in .main-content */
+    font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
+/* Remove default shadows to allow custom implementation */
+:root {
+    --tw-shadow: 0 0 #0000 !important;
+    --tw-shadow-colored: 0 0 #0000 !important;
+    
+    /* New Leaderboard Tokens */
+    --radius: 24px;
+    --gold: #D4AF37;
+    --silver: #C0C0C0;
+    --bronze: #CD7F32;
+    --forest-accent: #1e8f4b;
 }
 
-/* Main App Container structure for SPA (Single Page App) */
+*, *::before, *::after {
+    box-shadow: none !important;
+}
+
+/* Re-enable shadows only for specific elements where we manually add them */
+.shadow-lg, .champ, .badge, .list .item, .btn-eco-gradient {
+    /* Shadows defined in their specific classes below */
+}
+
 .app-container {
-    max-width: 480px; /* Mobile width limit */
+    max-width: 420px;
     margin: auto;
     height: 100%;
     display: flex;
@@ -31,16 +49,11 @@ header, nav {
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
-    -ms-overflow-style: none;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
-}
-
-.main-content::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    position: relative; /* Context for absolute positioning */
 }
 
 /* =========================================
-   2. Page Transitions & Animations
+   2. ANIMATIONS & TRANSITIONS
    ========================================= */
 @keyframes slideInRight {
     from { opacity: 0; transform: translateX(20px); }
@@ -51,12 +64,16 @@ header, nav {
     display: none; 
     animation: slideInRight 0.25s ease-out; 
 }
+.page.active { display: block; }
 
-.page.active { 
-    display: block; 
+@keyframes pulse-logo {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+.app-loader-logo {
+    animation: pulse-logo 2s infinite ease-in-out;
 }
 
-/* Pulse animation for EcoPoints update */
 @keyframes pulse-points {
     0% { transform: scale(1); color: #10B981; }
     50% { transform: scale(1.2) rotate(-5deg); color: #34D399; }
@@ -66,43 +83,18 @@ header, nav {
     animation: pulse-points 0.4s ease-out;
 }
 
-/* Logo Loader Pulse */
-@keyframes pulse-logo {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-}
-.app-loader-logo {
-    animation: pulse-logo 2s infinite ease-in-out;
-}
-
-/* Loader Fade Out */
-#app-loading {
-    transition: opacity 0.5s ease-out, visibility 0.5s;
-}
-#app-loading.loaded {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
 /* =========================================
-   3. Sidebar & Navigation
+   3. SIDEBAR & NAVIGATION
    ========================================= */
 #sidebar {
     transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
+#sidebar::-webkit-scrollbar { display: none; }
 
-#sidebar-overlay {
-    transition: opacity 0.3s ease-in-out;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-.no-scrollbar {
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
-}
+#sidebar-overlay { transition: opacity 0.3s ease-in-out; }
 
 /* Active States */
 .sidebar-nav-item.active {
@@ -120,151 +112,115 @@ header, nav {
 
 .nav-item.active { color: #10B981; }
 .nav-item.active svg { color: #10B981; }
-
 .dark .nav-item.active { color: #34D399; }
 .dark .nav-item.active svg { color: #34D399; }
 
+/* Theme Toggle */
+#theme-toggle-btn > span { transition: transform 0.3s ease-in-out; }
+
 /* =========================================
-   4. Glassmorphism & Cards
+   4. GLASSMORPHISM & CARDS
    ========================================= */
 .glass-card {
     background: rgba(255, 255, 255, 0.76);
-    border: 1px solid rgba(148, 163, 184, 0.40);
+    border-radius: 1.25rem;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(148, 163, 184, 0.40);
 }
 .dark .glass-card {
-    background: rgba(31, 41, 55, 0.7);
-    border-color: rgba(55, 65, 81, 0.6);
+    background: rgba(15, 23, 42, 0.80); /* Slightly more opaque for dark mode readability */
+    border-color: rgba(55, 65, 81, 0.9);
 }
 
-/* Special Green Card (Upcoming Event) */
+/* Special green glass card */
 .glass-green-card {
     background: linear-gradient(135deg, rgba(22, 163, 74, 0.95), rgba(5, 150, 105, 0.96));
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     color: #ECFDF5;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid rgba(34, 197, 94, 0.55);
-    box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.3);
 }
 .dark .glass-green-card {
-    background: linear-gradient(135deg, rgba(6, 95, 70, 0.95), rgba(4, 120, 87, 0.95));
-    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(5, 122, 85, 0.96), rgba(6, 95, 70, 0.98));
+    border-color: rgba(45, 212, 191, 0.60);
 }
 
-/* Bottom Navigation Bar */
 .glass-bottom-bar {
-    background: rgba(255, 255, 255, 0.90);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 .dark .glass-bottom-bar {
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(15, 23, 42, 0.98);
 }
 
-/* Gradient Button */
+/* Gradient Buttons */
 .btn-eco-gradient {
     background-image: linear-gradient(135deg, #10B981, #34D399);
-    transition: filter 0.2s, transform 0.1s;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important; /* Force shadow */
 }
-.btn-eco-gradient:active {
-    transform: scale(0.98);
-}
-
-/* =========================================
-   5. Modals
-   ========================================= */
-.modal-base {
-    transition: opacity 0.3s ease-in-out, visibility 0.3s;
-}
-.modal-content-base {
-    transition: transform 0.3s ease-in-out;
-}
-
-#checkin-modal.open, 
-#chatbot-modal.open, 
-#eco-quiz-modal.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-#checkin-modal.open #checkin-modal-content,
-#chatbot-modal.open #chatbot-modal-content,
-#eco-quiz-modal.open #eco-quiz-modal-content {
-    transform: translateY(0);
+.btn-eco-gradient:hover {
+    filter: brightness(1.05);
 }
 
 /* =========================================
-   6. Store & Products
+   5. NEW LEADERBOARD DESIGN (Eco Warriors)
    ========================================= */
-/* Image Slider */
-.slider-container {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-}
-.slider-item {
-    scroll-snap-align: center;
-}
-.slider-dot {
-    transition: all 0.3s ease;
-}
-.slider-dot.active {
-    background-color: #10B981;
-    transform: scale(1.25);
+
+/* Leaf Particles (Overlay) */
+.leaf-layer {
+    position: absolute; /* Changed from fixed to absolute to stay within page container if needed, or stick to main */
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5; 
+    height: 100%;
 }
 
-/* =========================================
-   7. LEADERBOARD (Eco Hall of Champions)
-   ========================================= */
-/* Scoped variables for Leaderboard to support Dark Mode */
-#leaderboard {
-    --radius: 24px;
-    --transition: .35s ease;
-    --gold: #D4AF37;
-    --silver: #C0C0C0;
-    --bronze: #CD7F32;
-    --forest-accent: #1e8f4b;
-    --text-dark: #1a1a1a;
-    --background-white: #ffffff;
+.leaf {
+    position: absolute;
+    top: -10vh;
+    width: 14px;
+    height: 18px;
+    border-radius: 60% 0 60% 0;
+    background: rgba(30, 143, 75, 0.6);
+    box-shadow: 0 0 5px rgba(0,0,0,0.1) !important;
+    animation: leafFall linear infinite;
+}
+.dark .leaf {
+    background: rgba(52, 211, 153, 0.4); /* Lighter green for dark mode */
 }
 
-/* Dark Mode Overrides for Leaderboard Variables */
-.dark #leaderboard {
-    --text-dark: #f3f4f6;
-    --background-white: #111827; /* Gray 900 */
-    --forest-accent: #34d399;
+@keyframes leafFall {
+    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.8; } 
+    100% { transform: translateY(120vh) translateX(40px) rotate(180deg); opacity: 0; }
 }
 
-.container-leaderboard {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-    border-radius: var(--radius);
-    position: relative;
-    z-index: 1;
-}
-
-.container-leaderboard h1 {
-    text-align: center;
-    margin: 0 0 40px;
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--text-dark);
-    letter-spacing: -0.5px;
-}
+/* Leaf timings */
+.leaf:nth-child(1) { left: 5%;  animation-duration: 13s; animation-delay: 0s; }
+.leaf:nth-child(2) { left: 18%; animation-duration: 11s; animation-delay: 2s; }
+.leaf:nth-child(3) { left: 32%; animation-duration: 15s; animation-delay: 1s; }
+.leaf:nth-child(4) { left: 46%; animation-duration: 12s; animation-delay: 3s; }
+.leaf:nth-child(5) { left: 60%; animation-duration: 16s; animation-delay: .5s; }
+.leaf:nth-child(6) { left: 72%; animation-duration: 14s; animation-delay: 4s; }
+.leaf:nth-child(7) { left: 84%; animation-duration: 13s; animation-delay: 1.5s;}
+.leaf:nth-child(8) { left: 92%; animation-duration: 17s; animation-delay: 2.5s;}
 
 /* Podium Section */
 .podium-wrapper {
     position: relative;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     padding-top: 10px;
+    z-index: 10;
 }
 
 .podium {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Reduced gap for mobile */
+    gap: 10px;
     align-items: flex-end;
 }
 
@@ -276,21 +232,22 @@ header, nav {
     opacity: 0;
     animation: raise 0.8s ease forwards;
     background: #f9fdfa;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-    color: #1a1a1a; /* Force dark text on white champ card */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06) !important;
+    color: #1a1a1a;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
-
-/* Dark mode specific for Champ cards */
 .dark .champ {
-    background: #1f2937; /* Gray 800 */
+    background: #1f2937; /* Dark mode bg */
     color: #f3f4f6;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
 }
 
-.champ:nth-child(1) { animation-delay: .1s; height: 160px; } /* 2nd place */
-.champ:nth-child(2) { animation-delay: .2s; height: 190px; z-index: 2; } /* 1st place */
-.champ:nth-child(3) { animation-delay: .3s; height: 140px; } /* 3rd place */
+.champ:nth-child(1) { animation-delay: .1s; height: 140px; } 
+.champ:nth-child(2) { animation-delay: .2s; height: 170px; z-index: 2; } 
+.champ:nth-child(3) { animation-delay: .3s; height: 130px; } 
 
 @keyframes raise {
     0%   { opacity: 0; transform: translateY(40px); }
@@ -301,7 +258,7 @@ header, nav {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    margin: -40px auto 10px auto;
+    margin: -40px auto 10px auto; /* Adjusted for mobile sizing */
     font-weight: 700;
     font-size: 16px;
     display: flex;
@@ -310,12 +267,13 @@ header, nav {
     color: #1a1a1a;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
     border: 3px solid #fff;
+    flex-shrink: 0;
 }
-
 .dark .badge {
     border-color: #374151;
+    color: #000; /* Keep text dark on gold/silver/bronze bg */
 }
 
 .badge::after {
@@ -340,7 +298,7 @@ header, nav {
     100% { left: 120%; }
 }
 
-.champ-name   { font-weight: 700; line-height: 1.2; margin-bottom: 4px; font-size: 13px; }
+.champ-name   { font-weight: 700; line-height: 1.2; margin-bottom: 4px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
 .champ-points { font-size: 12px; font-weight: 600; color: #555; }
 .dark .champ-points { color: #9ca3af; }
 
@@ -348,14 +306,15 @@ header, nav {
     font-size: 10px; 
     color: var(--forest-accent);
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+.dark .champ-class { color: #34d399; }
 
-.rank { font-size: 11px; opacity: .5; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;}
+.rank { font-size: 10px; opacity: .5; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;}
 
-/* Leaderboard List */
+/* List Section */
 .list {
     display: flex;
     flex-direction: column;
@@ -367,45 +326,47 @@ header, nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 12px 16px;
     border-radius: var(--radius);
     transition: transform .2s ease;
     background: #ffffff;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
 }
-
 .dark .list .item {
-    background: #1f2937; /* Gray 800 */
+    background: #1f2937;
     border-color: #374151;
+    box-shadow: none !important;
 }
 
 .list .item:hover {
     transform: translateY(-2px);
     border-color: #e0ffe8;
-    box-shadow: 0 8px 20px rgba(30, 143, 75, 0.08);
+    box-shadow: 0 8px 20px rgba(30, 143, 75, 0.08) !important;
+}
+.dark .list .item:hover {
+    border-color: #065f46;
 }
 
 .user {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .circle {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
     background: #e8f5e9; 
     color: var(--forest-accent);
     flex-shrink: 0;
 }
-
 .dark .circle {
     background: #064e3b;
     color: #a7f3d0;
@@ -418,65 +379,107 @@ header, nav {
 }
 
 .user-info strong {
-    font-size: 16px;
+    font-size: 14px;
     color: #222;
 }
-.dark .user-info strong {
-    color: #f3f4f6;
-}
+.dark .user-info strong { color: #f3f4f6; }
 
 .sub-class {
-    font-size: 12px;
+    font-size: 10px;
     color: var(--forest-accent);
     font-weight: 600;
     display: block;
-    margin-top: 2px;
+    margin-top: 1px;
     text-transform: uppercase;
 }
+.dark .sub-class { color: #34d399; }
 
 .points-display {
     font-weight: 700;
-    font-size: 16px;
-    color: var(--text-dark);
+    font-size: 14px;
+    color: #1a1a1a;
+}
+.dark .points-display { color: #e5e7eb; }
+
+/* Highlight specific rank styling for user if needed */
+.item.is-me {
+    border: 2px solid #10B981;
+    background: #f0fdf4;
+}
+.dark .item.is-me {
+    background: #064e3b;
+    border-color: #34d399;
 }
 
-/* Leaf Particles (Overlay) */
-.leaf-layer {
-    position: absolute; /* Changed from fixed to absolute within .page */
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none; 
-    z-index: 0; 
-    height: 100%;
-    width: 100%;
+
+/* =========================================
+   6. MODALS & UTILITIES
+   ========================================= */
+/* Check-in Completed State */
+.checkin-completed {
+    background: linear-gradient(135deg, #10B981, #059669) !important;
+    cursor: default !important;
+}
+.checkin-completed #checkin-subtext {
+    display: none; /* Hide "Tap here..." */
 }
 
-.leaf {
-    position: absolute;
-    top: -10vh;
-    width: 14px;
-    height: 18px;
-    border-radius: 60% 0 60% 0;
-    background: rgba(30, 143, 75, 0.6);
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    animation: leafFall linear infinite;
+/* Loader */
+#app-loading {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-out;
+}
+#app-loading.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.dark .leaf {
-    background: rgba(52, 211, 153, 0.4);
+/* Modal Transitions */
+#checkin-modal, #chatbot-modal, #eco-quiz-modal, #purchase-modal, #qr-modal {
+    transition: opacity 0.3s ease-in-out, visibility 0.3s;
+}
+#checkin-modal-content, #chatbot-modal-content, #eco-quiz-modal-content {
+    transition: transform 0.3s ease-in-out;
+}
+#checkin-modal.open, #chatbot-modal.open, #eco-quiz-modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+#checkin-modal.open #checkin-modal-content, 
+#chatbot-modal.open #chatbot-modal-content,
+#eco-quiz-modal.open #eco-quiz-modal-content {
+    transform: translateY(0);
 }
 
-@keyframes leafFall {
-    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.8; } 
-    100% { transform: translateY(100vh) translateX(40px) rotate(180deg); opacity: 0; }
+/* Form Inputs */
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25em;
+    padding-right: 2.5rem;
+}
+.dark .custom-select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
-.leaf:nth-child(1)  { left: 5%;  animation-duration: 13s; animation-delay: 0s;  }
-.leaf:nth-child(2)  { left: 18%; animation-duration: 11s; animation-delay: 2s;  }
-.leaf:nth-child(3)  { left: 32%; animation-duration: 15s; animation-delay: 1s;  }
-.leaf:nth-child(4)  { left: 46%; animation-duration: 12s; animation-delay: 3s;  }
-.leaf:nth-child(5)  { left: 60%; animation-duration: 16s; animation-delay: .5s; }
-.leaf:nth-child(6)  { left: 72%; animation-duration: 14s; animation-delay: 4s;  }
-.leaf:nth-child(7)  { left: 84%; animation-duration: 13s; animation-delay: 1.5s;}
-.leaf:nth-child(8)  { left: 92%; animation-duration: 17s; animation-delay: 2.5s;}
+/* Leaderboard Switch */
+.leaderboard-switch { border-radius: 9999px; }
+.leaderboard-tab-btn { 
+    border-radius: 9999px; 
+    transition: all 0.2s ease-in-out;
+}
+.leaderboard-tab-btn.active {
+    background-color: #ffffff;
+    color: #10B981;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+.dark .leaderboard-tab-btn.active {
+    background-color: #1f2937;
+    color: #34D399;
+}
