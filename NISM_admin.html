@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - RSVP List</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo */
+            --bg: #f8fafc;
+            --text: #0f172a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+        .subtitle { color: #64748b; font-size: 0.9rem; margin-top: 4px; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        
+        .row-idx { color: #94a3b8; font-size: 0.85rem; width: 40px; }
+        .mono { font-family: monospace; color: var(--primary); font-weight: 600; }
+
+        .total-count {
+            margin-top: 10px;
+            text-align: right;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>NISM Event List</h1>
+            <div class="subtitle">SY-BAF • Nov 26th • 3D Lab</div>
+        </div>
+        <button class="btn" onclick="downloadPDF()">
+            <span>Download PDF</span>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Registration Time</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="4" style="text-align:center;">Loading data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="total-count" id="totalCount"></div>
+
+    <script>
+        // --- CONFIGURATION (Matches your NISM.html) ---
+        const SUPABASE_URL = 'https://dvytsoipqgawvmqsietk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_amtS4Ifp1I0O8xa4-7qvMQ_0OPk08Xq'; // Using the key from your file
+        // ---------------------
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentData = [];
+
+        // 1. Fetch Data
+        async function fetchList() {
+            const { data, error } = await supabase
+                .from('event_rsvps')
+                .select(`
+                    created_at,
+                    students ( student_id, name )
+                `)
+                .order('created_at', { ascending: true }); // Ordered by who joined first
+
+            if (error) {
+                alert('Error fetching data');
+                console.error(error);
+                return;
+            }
+
+            currentData = data;
+            renderTable(data);
+        }
+
+        // 2. Render HTML Table
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            document.getElementById('totalCount').innerText = `Total Registered: ${data.length}`;
+            tbody.innerHTML = '';
+
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                const date = new Date(row.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                tr.innerHTML = `
+                    <td class="row-idx">${index + 1}</td>
+                    <td class="mono">${row.students.student_id}</td>
+                    <td>${row.students.name}</td>
+                    <td style="color:#64748b; font-size:0.85rem;">${date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 3. Generate PDF
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // -- Brand Colors --
+            const primaryColor = [79, 70, 229]; // #4f46e5
+
+            // -- Header Background --
+            doc.setFillColor(...primaryColor);
+            doc.rect(0, 0, 210, 40, 'F'); // A4 width is 210mm
+
+            // -- Header Text --
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("NISM EVENT REGISTRATION", 14, 20);
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("Class: SY-BAF | Date: Nov 26th | Venue: 3D Lab", 14, 28);
+            
+            doc.text(`Total Students: ${currentData.length}`, 195, 28, { align: 'right' });
+
+            // -- Prepare Table Data --
+            const tableRows = currentData.map((row, i) => [
+                i + 1,
+                row.students.student_id,
+                row.students.name,
+                new Date(row.created_at).toLocaleString()
+            ]);
+
+            // -- Generate Table --
+            doc.autoTable({
+                startY: 45,
+                head: [['#', 'Student ID', 'Name', 'Timestamp']],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: { 
+                    fillColor: primaryColor,
+                    fontSize: 10,
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 4
+                },
+                columnStyles: {
+                    0: { cellWidth: 15 }, // Index
+                    1: { cellWidth: 40, fontStyle: 'bold' }, // ID
+                    2: { cellWidth: 'auto' }, // Name
+                    3: { cellWidth: 50 } // Time
+                },
+                // Add footer to each page
+                didDrawPage: function (data) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text(
+                        'Generated via Event App', 
+                        data.settings.margin.left, 
+                        doc.internal.pageSize.height - 10
+                    );
+                }
+            });
+
+            // -- Save --
+            doc.save('NISM_Event_List.pdf');
+        }
+
+        // Initialize
+        fetchList();
+    </script>
+</body>
+</html>
