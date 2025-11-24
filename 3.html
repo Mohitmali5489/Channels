@@ -3,132 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Student Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <title>ID Text Scanner</title>
+    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #222;
-            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
-        .scanner-wrapper {
-            width: 100%;
-            max-width: 500px;
+        .camera-container {
             position: relative;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: #000;
         }
 
-        #reader {
+        video {
             width: 100%;
-            border: 2px solid #444;
-            border-radius: 8px;
-            background: black;
+            display: block;
+        }
+
+        /* Overlay box to guide user */
+        .overlay {
+            position: absolute;
+            top: 30%;
+            left: 10%;
+            width: 80%;
+            height: 40%; /* Focus on the middle area where ID usually is */
+            border: 2px dashed rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:disabled {
+            background-color: #ccc;
         }
 
         .result-box {
             margin-top: 20px;
-            background: #333;
+            background: white;
             padding: 20px;
-            border-radius: 8px;
-            width: 80%;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             text-align: center;
-            border: 1px solid #555;
         }
 
-        #result-id {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #00ff9d; /* Neon green */
-            font-family: monospace;
-            display: block;
-            margin: 10px 0;
-        }
-
-        .tip {
-            font-size: 0.9rem;
-            color: #aaa;
+        #status {
+            color: #666;
             margin-bottom: 10px;
-        }
-        
-        .instruction {
-            background: #ff9800;
-            color: black;
-            padding: 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-bottom: 15px;
             font-size: 0.9rem;
+        }
+
+        #extracted-id {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #28a745;
+            letter-spacing: 2px;
+            display: block;
+            min-height: 40px;
+        }
+
+        /* Hidden canvas for image processing */
+        canvas {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="instruction">
-        ↻ ROTATE CARD: Barcode lines must be vertical (|||||)
+    <div class="camera-container">
+        <video id="video" autoplay playsinline></video>
+        <div class="overlay"></div>
     </div>
 
-    <div class="scanner-wrapper">
-        <div id="reader"></div>
+    <div class="controls">
+        <button id="scan-btn">📸 SNAP & SCAN</button>
     </div>
 
     <div class="result-box">
-        <div class="tip">Scanned Student ID:</div>
-        <span id="result-id">scanning...</span>
-        <div id="debug-info" style="font-size: 10px; color: #666; margin-top: 5px;"></div>
+        <div id="status">Ready to scan. Align "Student Id" text in box.</div>
+        <span id="extracted-id">-------</span>
     </div>
 
-    <script>
-        const resultElement = document.getElementById('result-id');
-        const debugElement = document.getElementById('debug-info');
-        let lastResult = "";
+    <canvas id="canvas"></canvas>
 
-        function onScanSuccess(decodedText, decodedResult) {
-            if (decodedText !== lastResult) {
-                lastResult = decodedText;
-                
-                // Check if it looks like the 7 digit ID
-                if (/^\d{7}$/.test(decodedText)) {
-                    resultElement.innerText = decodedText;
-                    resultElement.style.color = "#00ff9d"; // Green for success
-                    
-                    // Optional: Stop scanning after success
-                    // html5QrcodeScanner.clear();
-                } else {
-                    // If it scans something else (like a book barcode), show it but in yellow
-                    resultElement.innerText = decodedText;
-                    resultElement.style.color = "#ffeb3b"; 
-                    debugElement.innerText = `Format: ${decodedResult.result.format.formatName}`;
-                }
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const scanBtn = document.getElementById('scan-btn');
+        const statusText = document.getElementById('status');
+        const resultText = document.getElementById('extracted-id');
+
+        // 1. Start Camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } // Use back camera
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                statusText.innerText = "Error accessing camera: " + err;
             }
         }
 
-        // Config specifically for 1D barcodes (The lines on the ID card)
-        let config = { 
-            fps: 15, // Higher FPS for faster scanning
-            qrbox: { width: 300, height: 150 }, // Wide box for barcodes
-            aspectRatio: 1.0,
-            // IMPORTANT: Focus on 1D barcodes
-            formatsToSupport: [
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.CODE_93,
-                Html5QrcodeSupportedFormats.EAN_13,
-            ],
-            experimentalFeatures: {
-                useBarCodeDetectorIfSupported: true
-            }
-        };
+        startCamera();
 
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", config, /* verbose= */ false);
-            
-        html5QrcodeScanner.render(onScanSuccess);
+        // 2. Capture and Process
+        scanBtn.addEventListener('click', () => {
+            // UI Updates
+            scanBtn.disabled = true;
+            scanBtn.innerText = "Processing...";
+            statusText.innerText = "Reading text...";
+            resultText.innerText = "-------";
+
+            // Draw video frame to canvas
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Get image data URL
+            const imageSrc = canvas.toDataURL('image/png');
+
+            // 3. Run Tesseract OCR
+            Tesseract.recognize(
+                imageSrc,
+                'eng',
+                { logger: m => console.log(m) } // Optional: log progress
+            ).then(({ data: { text } }) => {
+                console.log("Raw Text:", text);
+                findStudentId(text);
+                
+                // Reset Button
+                scanBtn.disabled = false;
+                scanBtn.innerText = "📸 SNAP & SCAN";
+            });
+        });
+
+        // 4. Logic to find the specific 7-digit ID
+        function findStudentId(text) {
+            // Strategy 1: Look for "Student Id" keyword followed by digits
+            // Matches: "Student Id : 5207872" or "Student Id 5207872"
+            const keywordRegex = /Student\s*I[dD]\s*[:.]?\s*(\d{7})/i;
+            const keywordMatch = text.match(keywordRegex);
+
+            if (keywordMatch && keywordMatch[1]) {
+                displaySuccess(keywordMatch[1]);
+                return;
+            }
+
+            // Strategy 2: If keyword fails, look for ANY standalone 7-digit number
+            // We use \b boundary to make sure it's not part of a phone number
+            const looseRegex = /\b(\d{7})\b/;
+            const looseMatch = text.match(looseRegex);
+
+            if (looseMatch && looseMatch[1]) {
+                // Double check it's not the Contact No (which is usually 10 digits, but let's be safe)
+                // The regex \b\d{7}\b forces exactly 7 digits, so 10 digit phone numbers won't match.
+                displaySuccess(looseMatch[1]);
+                return;
+            }
+
+            // Failure
+            statusText.innerText = "Could not find 7-digit ID. Try getting closer.";
+            statusText.style.color = "red";
+        }
+
+        function displaySuccess(id) {
+            resultText.innerText = id;
+            statusText.innerText = "ID Found Successfully!";
+            statusText.style.color = "green";
+        }
     </script>
 
 </body>
