@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event RSVP</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 { margin-top: 0; font-size: 1.5rem; text-align: center; }
+
+        .status-bar {
+            background: #e2e8f0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status-bar.full {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .list-header {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+
+        li::before {
+            content: "✓";
+            color: #16a34a;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .msg {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+        .error { color: #dc2626; }
+        .success { color: #16a34a; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Event Registration</h1>
+        
+        <div id="counterBox" class="status-bar">
+            Seats Filled: <span id="count">0</span> / 40
+        </div>
+
+        <div class="msg" id="message"></div>
+
+        <div class="input-group">
+            <input type="text" id="studentId" placeholder="Enter Student ID (e.g., S001)">
+            <button id="submitBtn" onclick="handleRSVP()">Join</button>
+        </div>
+
+        <div class="list-header">Registered Students</div>
+        <ul id="rsvpList">
+            </ul>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // ---------------------
+
+        const supabase = updateSupabaseClient(SUPABASE_URL, SUPABASE_KEY);
+        const MAX_SEATS = 40;
+
+        // DOM Elements
+        const countEl = document.getElementById('count');
+        const listEl = document.getElementById('rsvpList');
+        const inputEl = document.getElementById('studentId');
+        const msgEl = document.getElementById('message');
+        const btnEl = document.getElementById('submitBtn');
+        const counterBox = document.getElementById('counterBox');
+
+        // Initialize
+        fetchRSVPs();
+
+        async function fetchRSVPs() {
+            // 1. Get all RSVPs joined with Student Names
+            const { data, error } = await supabase
+                .from('event_rsvps')
+                .select(`
+                    created_at,
+                    students ( name )
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            // 2. Update UI
+            updateList(data);
+        }
+
+        function updateList(data) {
+            const count = data.length;
+            countEl.innerText = count;
+            listEl.innerHTML = '';
+
+            // Check Limit
+            if (count >= MAX_SEATS) {
+                btnEl.disabled = true;
+                btnEl.innerText = "Full";
+                inputEl.disabled = true;
+                counterBox.classList.add('full');
+                msgEl.innerHTML = '<span class="error">Registration Closed: Event Full</span>';
+            } else {
+                btnEl.disabled = false;
+                btnEl.innerText = "Join";
+                inputEl.disabled = false;
+                counterBox.classList.remove('full');
+            }
+
+            // Render List
+            data.forEach(row => {
+                const li = document.createElement('li');
+                // Access nested data from join
+                li.innerText = row.students ? row.students.name : 'Unknown ID';
+                listEl.appendChild(li);
+            });
+        }
+
+        async function handleRSVP() {
+            const sid = inputEl.value.trim();
+            if (!sid) return;
+
+            setLoading(true);
+            msgEl.innerHTML = '';
+
+            try {
+                // 1. Check current count again (race condition safety)
+                const { count } = await supabase
+                    .from('event_rsvps')
+                    .select('*', { count: 'exact', head: true });
+
+                if (count >= MAX_SEATS) {
+                    throw new Error("Sorry, seats just filled up!");
+                }
+
+                // 2. Check if student exists
+                const { data: studentData, error: studentError } = await supabase
+                    .from('students')
+                    .select('student_id')
+                    .eq('student_id', sid)
+                    .single();
+
+                if (!studentData) throw new Error("Invalid Student ID");
+
+                // 3. Insert RSVP
+                const { error: insertError } = await supabase
+                    .from('event_rsvps')
+                    .insert([{ student_id: sid }]);
+
+                if (insertError) {
+                    if (insertError.code === '23505') throw new Error("You have already registered.");
+                    throw insertError;
+                }
+
+                // Success
+                inputEl.value = '';
+                msgEl.innerHTML = '<span class="success">Registered successfully!</span>';
+                fetchRSVPs(); // Refresh list
+
+            } catch (err) {
+                msgEl.innerHTML = `<span class="error">${err.message}</span>`;
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                btnEl.innerText = "...";
+                btnEl.disabled = true;
+            } else {
+                // State will be reset by updateList based on count
+                btnEl.innerText = "Join"; 
+                btnEl.disabled = false;
+            }
+        }
+
+        function updateSupabaseClient(url, key) {
+            if(!window.supabase) return null;
+            return window.supabase.createClient(url, key);
+        }
+    </script>
+</body>
+</html>
