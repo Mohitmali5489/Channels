@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student ID Scanner</title>
+    <title>Pro Student Scanner</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            font-family: sans-serif;
+            background-color: #222;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,141 +18,117 @@
             margin: 0;
         }
 
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
+        .scanner-wrapper {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
         }
 
         #reader {
             width: 100%;
+            border: 2px solid #444;
             border-radius: 8px;
-            overflow: hidden;
-            background: #000;
+            background: black;
         }
 
-        .result-container {
+        .result-box {
             margin-top: 20px;
-            padding: 15px;
-            border: 2px dashed #ccc;
+            background: #333;
+            padding: 20px;
             border-radius: 8px;
-            min-height: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 80%;
+            text-align: center;
+            border: 1px solid #555;
         }
 
-        .result-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        #result-text {
-            font-size: 1.5rem;
+        #result-id {
+            font-size: 2rem;
             font-weight: bold;
-            color: #2ecc71;
-            letter-spacing: 2px;
+            color: #00ff9d; /* Neon green */
+            font-family: monospace;
+            display: block;
+            margin: 10px 0;
         }
 
-        .status {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: #888;
+        .tip {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
         }
-
-        /* Button Styling */
-        #reset-btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none; /* Hidden by default */
+        
+        .instruction {
+            background: #ff9800;
+            color: black;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>🆔 Student ID Scanner</h2>
-        
+    <div class="instruction">
+        ↻ ROTATE CARD: Barcode lines must be vertical (|||||)
+    </div>
+
+    <div class="scanner-wrapper">
         <div id="reader"></div>
+    </div>
 
-        <div class="status" id="status-msg">Waiting for camera permission...</div>
-
-        <div class="result-container">
-            <span class="result-label">Scanned ID:</span>
-            <span id="result-text">---</span>
-        </div>
-
-        <button id="reset-btn" onclick="startScanner()">Scan Another</button>
+    <div class="result-box">
+        <div class="tip">Scanned Student ID:</div>
+        <span id="result-id">scanning...</span>
+        <div id="debug-info" style="font-size: 10px; color: #666; margin-top: 5px;"></div>
     </div>
 
     <script>
-        let html5QrcodeScanner;
+        const resultElement = document.getElementById('result-id');
+        const debugElement = document.getElementById('debug-info');
+        let lastResult = "";
 
         function onScanSuccess(decodedText, decodedResult) {
-            // Regex to check if the scanned text is exactly 7 digits
-            // The ID on your card is 5207872 (7 digits)
-            const sevenDigitRegex = /^\d{7}$/;
-
-            if (sevenDigitRegex.test(decodedText)) {
-                // Success!
-                document.getElementById('result-text').innerText = decodedText;
-                document.getElementById('status-msg').innerText = "ID Verified Successfully";
-                document.getElementById('status-msg').style.color = "green";
+            if (decodedText !== lastResult) {
+                lastResult = decodedText;
                 
-                // Stop scanning to save battery and freeze the result
-                html5QrcodeScanner.clear();
-                
-                // Show reset button
-                document.getElementById('reset-btn').style.display = "inline-block";
-            } else {
-                // If scan happened but it wasn't a 7 digit ID
-                console.log(`Scanned code ${decodedText} is not a valid 7-digit ID.`);
-                document.getElementById('status-msg').innerText = "Scanned code is not a 7-digit ID. Try again.";
+                // Check if it looks like the 7 digit ID
+                if (/^\d{7}$/.test(decodedText)) {
+                    resultElement.innerText = decodedText;
+                    resultElement.style.color = "#00ff9d"; // Green for success
+                    
+                    // Optional: Stop scanning after success
+                    // html5QrcodeScanner.clear();
+                } else {
+                    // If it scans something else (like a book barcode), show it but in yellow
+                    resultElement.innerText = decodedText;
+                    resultElement.style.color = "#ffeb3b"; 
+                    debugElement.innerText = `Format: ${decodedResult.result.format.formatName}`;
+                }
             }
         }
 
-        function onScanFailure(error) {
-            // handle scan failure, usually better to ignore and keep scanning.
-            // console.warn(`Code scan error = ${error}`);
-        }
+        // Config specifically for 1D barcodes (The lines on the ID card)
+        let config = { 
+            fps: 15, // Higher FPS for faster scanning
+            qrbox: { width: 300, height: 150 }, // Wide box for barcodes
+            aspectRatio: 1.0,
+            // IMPORTANT: Focus on 1D barcodes
+            formatsToSupport: [
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.CODE_93,
+                Html5QrcodeSupportedFormats.EAN_13,
+            ],
+            experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true
+            }
+        };
 
-        function startScanner() {
-            document.getElementById('result-text').innerText = "---";
-            document.getElementById('reset-btn').style.display = "none";
-            document.getElementById('status-msg').innerText = "Point camera at barcode...";
-            document.getElementById('status-msg').style.color = "#888";
-
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { 
-                    fps: 10, 
-                    qrbox: { width: 250, height: 150 }, // Rectangular box for barcodes
-                    aspectRatio: 1.0
-                },
-                /* verbose= */ false
-            );
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", config, /* verbose= */ false);
             
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-        }
-
-        // Initialize scanner on load
-        startScanner();
+        html5QrcodeScanner.render(onScanSuccess);
     </script>
 
 </body>
