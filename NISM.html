@@ -237,7 +237,7 @@
         <div class="stats-card">
             <div class="seats-text">
                 <span>Seats Filled</span>
-                <span id="countDisplay">0 / 40</span>
+                <span id="countDisplay">0 / 45</span>
             </div>
             <div class="progress-track">
                 <div class="progress-fill" id="progressBar"></div>
@@ -269,7 +269,7 @@
         // ---------------------
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const MAX_SEATS = 40;
+        const MAX_SEATS = 45;
 
         const listEl = document.getElementById('rsvpList');
         const countDisplay = document.getElementById('countDisplay');
