@@ -3,257 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast ID Reader</title>
-    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+    <title>App Onboarding</title>
     <style>
-        body {
-            background-color: #111;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+        /* --- CSS Styles --- */
+        :root {
+            --primary-color: #0d9488;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --bg-color: #f3f4f6;
+            --white: #ffffff;
         }
 
-        /* The Camera View */
-        .camera-wrapper {
-            position: relative;
-            width: 100%;
-            height: 60vh;
-            background: #000;
-            overflow: hidden;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
         }
 
-        video {
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            background-color: var(--white);
+            height: 100vh;
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Image Section - Stacked Images */
+        .image-area {
+            flex: 2;
+            position: relative; /* Needed for absolute positioning of images */
+            background: linear-gradient(180deg, #e6fffa 0%, #ffffff 100%);
+            overflow: hidden;
+        }
+
+        .slide-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            opacity: 0.6; /* Dim the background to highlight the scan box */
+            object-fit: contain;
+            padding: 20px;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.4s ease-in-out; /* Smooth fade */
+            pointer-events: none;
         }
 
-        /* The "Scan Zone" Box */
-        .scan-box {
-            position: absolute;
-            width: 80%;
-            height: 60px; /* Small height = Faster processing */
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7); /* Darken everything else */
+        /* The class that makes an image visible */
+        .slide-image.active {
+            opacity: 1;
             z-index: 10;
-            border-radius: 8px;
-        }
-        
-        .scan-line {
-            width: 100%;
-            height: 2px;
-            background: #00ff00;
-            position: absolute;
-            top: 50%;
-            animation: scanMove 2s infinite;
         }
 
-        @keyframes scanMove {
-            0% { top: 10%; opacity: 0; }
-            50% { opacity: 1; }
-            100% { top: 90%; opacity: 0; }
-        }
-
-        .instructions {
-            padding: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-
-        /* Result Area */
-        .result-area {
+        /* Content Section */
+        .content-area {
             flex: 1;
-            width: 100%;
-            background: #222;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-top: 1px solid #444;
+            justify-content: space-between;
+            text-align: center;
+            z-index: 20;
+            background-color: #fff;
         }
 
-        #detected-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #00ff00;
-            font-family: monospace;
-            letter-spacing: 3px;
+        .text-wrapper { min-height: 100px; } /* Prevent jumping text height */
+        
+        .text-wrapper h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
         }
 
-        .status {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 5px;
+        .text-wrapper p {
+            font-size: 16px;
+            color: var(--text-sub);
+            line-height: 1.5;
         }
 
-        /* Manual Override */
-        .manual-btn {
-            margin-top: 10px;
-            padding: 8px 20px;
-            background: #444;
-            border: 1px solid #666;
+        /* Dots */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #d1d5db; transition: all 0.3s ease; }
+        .dot.active { background-color: var(--primary-color); width: 24px; border-radius: 4px; }
+
+        /* Button */
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--primary-color);
             color: white;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn.download-mode { background-color: #1f2937; }
+
+        @media (min-width: 450px) {
+            .app-container { height: 90vh; border-radius: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="camera-wrapper">
-        <video id="video" autoplay playsinline></video>
-        <div class="scan-box">
-            <div class="scan-line"></div>
+    <div class="app-container">
+        <div class="image-area" id="image-container">
+            <img src="https://i.ibb.co/Fk6tcrsK/image.png" class="slide-image active" data-index="0">
+            <img src="https://i.ibb.co/pvcc3xpM/image.png" class="slide-image" data-index="1">
+            <img src="https://i.ibb.co/GvCzkL2w/image.png" class="slide-image" data-index="2">
+            <img src="https://i.ibb.co/wh174k1h/image.png" class="slide-image" data-index="3">
+            <img src="https://i.ibb.co/PvjXCkBf/image.png" class="slide-image" data-index="4">
+            <img src="https://i.ibb.co/zhj9y5fG/image.png" class="slide-image" data-index="5">
+            <img src="https://i.ibb.co/kgL27xzw/image.png" class="slide-image" data-index="6">
+        </div>
+
+        <div class="content-area">
+            <div class="pagination" id="pagination"></div>
+
+            <div class="text-wrapper">
+                <h2 id="title">Plastic Recycling</h2>
+                <p id="description">Collect and recycle plastic waste for rewards.</p>
+            </div>
+
+            <div class="btn-container">
+                <button id="next-btn" class="action-btn">Next</button>
+            </div>
         </div>
     </div>
 
-    <div class="instructions">
-        Align <b>Student Id : 5207872</b> inside the box.
-    </div>
-
-    <div class="result-area">
-        <div id="detected-text">-------</div>
-        <div class="status" id="status-msg">Initializing engine...</div>
-        <button class="manual-btn" onclick="askManual()">Scanner Stuck? Type ID</button>
-    </div>
-
-    <canvas id="hiddenCanvas"></canvas>
-
     <script>
-        const video = document.getElementById('video');
-        const statusMsg = document.getElementById('status-msg');
-        const resultDisplay = document.getElementById('detected-text');
-        const canvas = document.getElementById('hiddenCanvas');
-        const ctx = canvas.getContext('2d');
+        // --- DATA CONFIGURATION ---
+        const contentData = [
+            { title: "Plastic Recycling", desc: "Collect and recycle plastic waste for rewards." },
+            { title: "Eco Challenges & Tasks", desc: "Participate in environmental activities and track your daily green progress." },
+            { title: "Quizzes & Learning", desc: "Answer questions and learn." },
+            { title: "Earn Points", desc: "Get points for every kg of plastic recycled." },
+            { title: "Leaderboard & Rankings", desc: "See your rank and compare progress with others." },         
+            { title: "Events & Workshops", desc: "Attend environmental seminars." },
+            { title: "Get Started", desc: "Download the app now to start your green journey." }
+        ];
+
+        const APK_DOWNLOAD_URL = "https://dvytsoipqgawvmqsietk.supabase.co/storage/v1/object/public/App/EcoCampus.apk"; // REPLACE THIS
+
+        // --- LOGIC ---
+        let currentIndex = 0;
+        const totalSlides = contentData.length;
         
-        let isScanning = false;
-        let worker = null;
+        const titleEl = document.getElementById('title');
+        const descEl = document.getElementById('description');
+        const btnEl = document.getElementById('next-btn');
+        const paginationEl = document.getElementById('pagination');
+        const images = document.querySelectorAll('.slide-image');
 
-        // 1. Initialize Camera
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(stream => {
-                video.srcObject = stream;
-                video.play();
-                initTesseract();
-            })
-            .catch(err => {
-                statusMsg.innerText = "Camera Error: " + err.message;
-            });
-
-        // 2. Initialize Tesseract Worker
-        async function initTesseract() {
-            worker = Tesseract.createWorker({
-                logger: m => {
-                    if(m.status === 'recognizing text') {
-                        statusMsg.innerText = `Scanning... ${(m.progress * 100).toFixed(0)}%`;
-                    }
-                }
-            });
-            
-            await worker.load();
-            await worker.loadLanguage('eng');
-            await worker.initialize('eng');
-            
-            // OPTIMIZATION: Tell Tesseract to only look for numbers and simple text
-            await worker.setParameters({
-                tessedit_char_whitelist: '0123456789StudentId:. ' 
-            });
-
-            statusMsg.innerText = "Ready. Hold steady.";
-            startLoop();
-        }
-
-        // 3. The Scan Loop
-        async function startLoop() {
-            if(isScanning) return;
-            
-            // Scan interval: Every 800ms
-            setInterval(async () => {
-                if (isScanning) return;
-                isScanning = true;
-
-                try {
-                    // Capture ONLY the center strip (The green box area)
-                    // The box is roughly middle 15% of height
-                    const w = video.videoWidth;
-                    const h = video.videoHeight;
-                    
-                    if (w && h) {
-                        canvas.width = w;
-                        canvas.height = h * 0.2; // Capture 20% strip height
-                        
-                        // Draw the center slice of video onto canvas
-                        // sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight
-                        ctx.drawImage(video, 0, h * 0.4, w, h * 0.2, 0, 0, canvas.width, canvas.height);
-                        
-                        // PRE-PROCESSING: Increase Contrast (Optional but helpful)
-                        // This makes grey text black and background white
-                        enhanceImage(ctx, canvas.width, canvas.height);
-
-                        const { data: { text } } = await worker.recognize(canvas);
-                        
-                        console.log("Saw:", text);
-                        
-                        // Check for 7 digits
-                        const match = text.match(/(\d{7})/);
-                        if (match) {
-                            foundId(match[0]);
-                        } else {
-                            isScanning = false;
-                        }
-                    } else {
-                        isScanning = false;
-                    }
-                } catch (e) {
-                    console.error(e);
-                    isScanning = false;
-                }
-            }, 1000);
-        }
-
-        // Helper: Simple high contrast filter
-        function enhanceImage(ctx, w, h) {
-            const imageData = ctx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                // Grayscale
-                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                // Threshold (Binary Black/White)
-                const color = avg > 100 ? 255 : 0; 
-                data[i] = color;
-                data[i + 1] = color;
-                data[i + 2] = color;
+        function init() {
+            // Create dots
+            for(let i=0; i<totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if(i === 0) dot.classList.add('active');
+                paginationEl.appendChild(dot);
             }
-            ctx.putImageData(imageData, 0, 0);
         }
 
-        function foundId(id) {
-            resultDisplay.innerText = id;
-            statusMsg.innerText = "SUCCESS!";
-            statusMsg.style.color = "#00ff00";
-            // Stop scanning loop by NOT setting isScanning back to false immediately
-            
-            // Vibration feedback
-            if (navigator.vibrate) navigator.vibrate(200);
-            
-            alert("ID FOUND: " + id);
+        function updateUI(index) {
+            // 1. Switch Image (Using CSS classes for instant/smooth transition)
+            images.forEach(img => {
+                if(parseInt(img.dataset.index) === index) {
+                    img.classList.add('active');
+                } else {
+                    img.classList.remove('active');
+                }
+            });
+
+            // 2. Switch Text
+            titleEl.textContent = contentData[index].title;
+            descEl.textContent = contentData[index].desc;
+
+            // 3. Update Dots
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                if (i === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+
+            // 4. Update Button
+            if (index === totalSlides - 1) {
+                btnEl.textContent = "Download APK";
+                btnEl.classList.add('download-mode');
+            } else {
+                btnEl.textContent = "Next";
+                btnEl.classList.remove('download-mode');
+            }
         }
-        
-        function askManual() {
-            let id = prompt("Enter the 7-digit ID manually:");
-            if(id) foundId(id);
-        }
+
+        btnEl.addEventListener('click', () => {
+            if (currentIndex < totalSlides - 1) {
+                currentIndex++;
+                updateUI(currentIndex);
+            } else {
+                // Download Logic
+                const link = document.createElement('a');
+                link.href = APK_DOWNLOAD_URL;
+                link.download = 'app-release.apk';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert("Downloading...");
+            }
+        });
+
+        init();
     </script>
 </body>
 </html>
