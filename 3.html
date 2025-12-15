@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>App Onboarding</title>
     <style>
         /* --- CSS Styles --- */
@@ -16,32 +16,39 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
+        /* FIX: Lock the body to prevent scrolling on mobile */
         body {
             background-color: var(--bg-color);
+            position: fixed; /* Locks viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
         .app-container {
             width: 100%;
-            max-width: 420px;
+            height: 100%; /* Full height of parent */
             background-color: var(--white);
-            height: 100vh;
-            max-height: 900px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        /* Image Section - Stacked Images */
+        /* Image Section - Flexible height to fill space */
         .image-area {
-            flex: 2;
-            position: relative; /* Needed for absolute positioning of images */
+            flex-grow: 1; /* Takes up all remaining space */
+            position: relative;
             background: linear-gradient(180deg, #e6fffa 0%, #ffffff 100%);
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .slide-image {
@@ -51,68 +58,85 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            padding: 20px;
-            opacity: 0; /* Hidden by default */
-            transition: opacity 0.4s ease-in-out; /* Smooth fade */
+            padding: 40px 20px 0 20px; /* Added top padding so image isn't cut off */
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
             pointer-events: none;
         }
 
-        /* The class that makes an image visible */
         .slide-image.active {
             opacity: 1;
             z-index: 10;
         }
 
-        /* Content Section */
+        /* Content Section - Fixed height area at bottom */
         .content-area {
-            flex: 1;
-            padding: 24px;
+            flex-shrink: 0; /* Prevents shrinking */
+            padding: 24px 24px 40px 24px; /* Extra bottom padding for mobile safe area */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-end;
             text-align: center;
             z-index: 20;
             background-color: #fff;
+            min-height: 280px; /* Ensure space for text and buttons */
         }
 
-        .text-wrapper { min-height: 100px; } /* Prevent jumping text height */
+        .text-wrapper { 
+            margin-bottom: 24px;
+        }
         
         .text-wrapper h2 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .text-wrapper p {
             font-size: 16px;
             color: var(--text-sub);
             line-height: 1.5;
+            padding: 0 10px;
         }
 
         /* Dots */
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #d1d5db; transition: all 0.3s ease; }
         .dot.active { background-color: var(--primary-color); width: 24px; border-radius: 4px; }
 
         /* Button */
         .action-btn {
             width: 100%;
-            padding: 16px;
+            padding: 18px; /* Slightly taller for easy tapping */
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             background-color: var(--primary-color);
             color: white;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        .action-btn:active { transform: scale(0.98); }
         .action-btn.download-mode { background-color: #1f2937; }
 
-        @media (min-width: 450px) {
-            .app-container { height: 90vh; border-radius: 20px; }
+        /* Desktop Mode: If screen is wide, look like a phone */
+        @media (min-width: 480px) {
+            body {
+                background-color: #e5e7eb; /* Grey background outside phone */
+            }
+            .app-container { 
+                max-width: 400px;
+                height: 85vh; 
+                max-height: 850px;
+                border-radius: 24px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            }
+            .slide-image { padding: 20px; }
+            .content-area { padding-bottom: 24px; min-height: auto; }
         }
     </style>
 </head>
@@ -155,7 +179,7 @@
             { title: "Get Started", desc: "Download the app now to start your green journey." }
         ];
 
-        const APK_DOWNLOAD_URL = "https://dvytsoipqgawvmqsietk.supabase.co/storage/v1/object/public/App/EcoCampus.apk"; // REPLACE THIS
+        const APK_DOWNLOAD_URL = "https://dvytsoipqgawvmqsietk.supabase.co/storage/v1/object/public/App/EcoCampus.apk"; 
 
         // --- LOGIC ---
         let currentIndex = 0;
@@ -178,7 +202,7 @@
         }
 
         function updateUI(index) {
-            // 1. Switch Image (Using CSS classes for instant/smooth transition)
+            // 1. Switch Image
             images.forEach(img => {
                 if(parseInt(img.dataset.index) === index) {
                     img.classList.add('active');
@@ -220,7 +244,9 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                alert("Downloading...");
+                
+                // Optional: Change button text to indicate action taken
+                btnEl.textContent = "Starting Download...";
             }
         });
 
