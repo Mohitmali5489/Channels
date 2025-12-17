@@ -1,221 +1,191 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bigg Boss Style Voting</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>EcoCampus Reality Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- BIGG BOSS THEME --- */
+        /* --- CSS VARIABLES (THEMING) --- */
         :root {
-            --bg-dark: #0F172A;
-            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            --neon-gold: #FFD700;
-            --neon-pink: #FF007F;
-            --text-white: #FFFFFF;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            /* Core Gradients (Like the 'Done' button in your image) */
+            --gradient-primary: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #DB2777 100%);
+            --gradient-glow: linear-gradient(135deg, #60A5FA, #A78BFA, #F472B6);
+            
+            /* Dark Mode (Default) */
+            --bg-body: #0F172A;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --glass-card: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --avatar-bg: #1E293B;
+            --avatar-border-inactive: rgba(255,255,255,0.1);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* Light Mode Overrides */
+        [data-theme="light"] {
+            --bg-body: #F1F5F9;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --glass-card: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --avatar-bg: #E2E8F0;
+            --avatar-border-inactive: rgba(0,0,0,0.1);
+        }
 
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-white);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 100px; /* Space for vote button */
-            background-attachment: fixed;
+            padding-bottom: 100px; /* Space for fixed button */
+            transition: background 0.3s ease;
         }
 
-        /* --- HEADER --- */
+        /* --- GLASS HEADER --- */
         header {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky; top: 0; z-index: 50;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.8); /* Dark glass */
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
         }
+        [data-theme="light"] header { background: rgba(255, 255, 255, 0.8); }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, #FFD700, #FF8C00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-        
-        .sub-header { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
-
-        /* --- SECTION TITLES --- */
-        .category-title {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 30px 0 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .category-title::before, .category-title::after {
-            content: "";
-            height: 2px;
-            width: 30px;
-            background: var(--neon-gold);
-            display: block;
-        }
+        .brand { font-size: 1.1rem; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; }
+        .user-pill { font-size: 0.8rem; background: var(--glass-card); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--glass-border); color: var(--text-muted); }
 
         /* --- GRID LAYOUT --- */
+        .container { max-width: 600px; margin: 0 auto; padding: 20px 15px; }
+
+        .section-header {
+            text-align: center; margin: 30px 0 20px;
+            position: relative;
+        }
+        .section-title { font-size: 1rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+
+        /* The 3-Column Grid */
         .contestant-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 items per row like Bigg Boss */
-            gap: 15px 10px;
-            padding: 0 15px;
-            max-width: 500px;
-            margin: 0 auto;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px 10px;
+            justify-items: center;
         }
 
-        /* --- CONTESTANT CARD --- */
-        .contestant {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
+        /* --- AVATAR CARD --- */
+        .contestant-label {
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; position: relative; width: 100%;
         }
+        .contestant-label input { display: none; }
 
-        /* The Circular Image Wrapper */
-        .avatar-circle {
-            width: 85px;
-            height: 85px;
+        /* Circle Image Container */
+        .avatar-wrapper {
+            width: 85px; height: 85px;
             border-radius: 50%;
-            background: #333;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: var(--avatar-bg);
+            border: 3px solid var(--avatar-border-inactive);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .avatar-circle img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-        
-        /* Placeholder Icon style */
-        .avatar-icon {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: #aaa; background: #222;
-        }
-
-        /* Name & Emoji */
-        .name-plate {
-            margin-top: 8px;
-            text-align: center;
-        }
-        
-        .c-name {
-            font-size: 0.75rem;
-            font-weight: 700;
+        /* The Name */
+        .name-tag {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            color: #ddd;
+            color: var(--text-muted);
+            text-align: center;
+            transition: color 0.3s;
         }
+
+        /* --- SELECTED STATE (Magic Happens Here) --- */
         
-        .c-emoji { font-size: 1rem; margin-left: 3px; }
-
-        /* --- SELECTION STATE (The "Glow") --- */
-        /* Hidden Radio */
-        input[type="radio"] { display: none; }
-
-        /* When Selected */
-        input[type="radio"]:checked + .contestant-visual .avatar-circle {
-            border-color: var(--neon-gold);
-            box-shadow: 0 0 20px var(--neon-gold), inset 0 0 10px var(--neon-gold);
-            transform: scale(1.1);
+        /* 1. The Border Glow */
+        .contestant-label input:checked + .visual .avatar-wrapper {
+            border: 3px solid transparent; /* Prepare for gradient border */
+            background-image: linear-gradient(var(--bg-body), var(--bg-body)), var(--gradient-glow);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); /* Purple glow */
+            transform: scale(1.05);
         }
 
-        input[type="radio"]:checked + .contestant-visual .c-name {
-            color: var(--neon-gold);
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        /* 2. The Text Highlight */
+        .contestant-label input:checked + .visual .name-tag {
+            color: var(--text-main);
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
 
-        /* Checkmark Badge */
-        .check-badge {
+        /* 3. The "Badge" (like the '99' or Checkmark in your image) */
+        .badge {
             position: absolute;
-            bottom: 0; right: 0;
-            background: var(--neon-gold);
-            color: black;
+            top: 0; right: 0;
             width: 24px; height: 24px;
+            background: #2563EB; /* Bright Blue */
+            color: white;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px;
+            font-size: 0.7rem;
+            border: 2px solid var(--bg-body);
             opacity: 0; transform: scale(0);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #000;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
         }
-
-        input[type="radio"]:checked + .contestant-visual .check-badge {
+        
+        .contestant-label input:checked + .visual .badge {
             opacity: 1; transform: scale(1);
         }
 
-        /* --- BOTTOM ACTION BAR --- */
+        /* --- FLOATING BUTTON --- */
         .vote-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
             padding: 15px 20px 25px;
-            background: linear-gradient(to top, #000 20%, transparent);
-            display: flex; justify-content: center;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--glass-border);
             z-index: 100;
-            pointer-events: none; /* Let clicks pass through gradient area */
+            display: flex; justify-content: center;
         }
+        [data-theme="light"] .vote-bar { background: rgba(255,255,255,0.9); }
 
-        .vote-btn {
-            pointer-events: auto;
-            background: linear-gradient(90deg, #FF512F 0%, #DD2476 100%);
+        .btn-vote {
+            width: 100%; max-width: 500px;
+            padding: 16px;
+            border: none; border-radius: 12px;
+            background: var(--gradient-primary); /* The Gradient from your image */
             color: white;
-            border: none;
-            padding: 15px 50px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 25px rgba(221, 36, 118, 0.6);
+            font-size: 1rem; font-weight: 600; letter-spacing: 0.5px;
             cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
             transition: transform 0.2s;
-            display: flex; align-items: center; gap: 10px;
         }
+        .btn-vote:active { transform: scale(0.98); }
 
-        .vote-btn:active { transform: scale(0.95); }
-
-        /* Loading Overlay */
+        /* Loading Screen */
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 999;
+            background: var(--bg-body); z-index: 1000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .spinner {
-            width: 50px; height: 50px;
-            border: 5px solid rgba(255,215,0,0.3);
-            border-top: 5px solid var(--neon-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #7C3AED; border-radius: 50%;
+            animation: spin 1s infinite linear; margin-bottom: 15px;
         }
-        @keyframes spin { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
@@ -223,190 +193,163 @@
 
     <div id="authOverlay">
         <div class="spinner"></div>
-        <div style="text-transform:uppercase; letter-spacing:2px; font-size:0.8rem;">Accessing Voting Lines...</div>
+        <p style="font-size: 0.85rem; opacity: 0.7;">Verifying ID...</p>
     </div>
 
     <header>
-        <div class="logo">EcoCampus Voting</div>
-        <div class="sub-header" id="userWelcome">Guest Voter</div>
+        <div class="brand">EcoCampus Live</div>
+        <div class="header-right" style="display:flex; align-items:center; gap:10px;">
+            <div class="user-pill" id="userName">Guest</div>
+            <i class="fas fa-moon" onclick="toggleTheme()" style="cursor:pointer; opacity:0.7;"></i>
+        </div>
     </header>
 
-    <form id="votingForm">
+    <div class="container">
         
-        <div class="category-title">Mr. Birla</div>
-        
-        <div class="contestant-grid">
-            <label class="contestant">
-                <input type="radio" name="mr_birla" value="Aashish Santosh Yadav">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Aashish</span>
-                        <span class="c-emoji">😎</span>
-                    </div>
-                </div>
-            </label>
+        <form id="votingForm">
+            <div class="section-header">
+                <div class="section-title">Mr. Birla Nominees</div>
+            </div>
 
-            <label class="contestant">
-                <input type="radio" name="mr_birla" value="Krushnakant Pal">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
+            <div class="contestant-grid">
+                <label class="contestant-label">
+                    <input type="radio" name="mr_birla" value="Aashish Santosh Yadav">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-user-tie"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Aashish</div>
                     </div>
-                    <div class="name-plate">
-                        <span class="c-name">Krushna</span>
-                        <span class="c-emoji">🔥</span>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="mr_birla" value="Krushnakant Pal">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-laptop-code"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Krushna</div>
                     </div>
-                </div>
-            </label>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="mr_birla" value="Suraj Ramsudhakar Yadav">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-user"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Suraj</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="mr_birla" value="Yashraj Dattatray Gaikwad">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-user"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Yashraj</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="mr_birla" value="Prasad Pankaj Jawale">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-user"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Prasad</div>
+                    </div>
+                </label>
+            </div>
 
-            <label class="contestant">
-                <input type="radio" name="mr_birla" value="Suraj Ramsudhakar Yadav">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Suraj</span>
-                        <span class="c-emoji">🦁</span>
-                    </div>
-                </div>
-            </label>
-            
-             <label class="contestant">
-                <input type="radio" name="mr_birla" value="Yashraj Dattatray Gaikwad">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Yashraj</span>
-                        <span class="c-emoji">💪</span>
-                    </div>
-                </div>
-            </label>
-            
-             <label class="contestant">
-                <input type="radio" name="mr_birla" value="Prasad Pankaj Jawale">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Prasad</span>
-                        <span class="c-emoji">🌟</span>
-                    </div>
-                </div>
-            </label>
-        </div>
+            <div class="section-header">
+                <div class="section-title">Miss. Birla Nominees</div>
+            </div>
 
-        <div class="category-title" style="margin-top: 50px;">Miss. Birla</div>
+            <div class="contestant-grid">
+                <label class="contestant-label">
+                    <input type="radio" name="miss_birla" value="Vaidehi Balu Gund">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-crown"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Vaidehi</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="miss_birla" value="Ekta Mukesh Dixit">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-star"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Ekta</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="miss_birla" value="Divya Anand Nair">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-heart"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Divya</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="miss_birla" value="Dharani Shankar Mudaliyar">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-music"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Dharani</div>
+                    </div>
+                </label>
+                <label class="contestant-label">
+                    <input type="radio" name="miss_birla" value="Kaustubhi Chavan">
+                    <div class="visual">
+                        <div class="avatar-wrapper">
+                            <i class="fas fa-camera"></i>
+                            <div class="badge"><i class="fas fa-check"></i></div>
+                        </div>
+                        <div class="name-tag">Kaustubhi</div>
+                    </div>
+                </label>
+            </div>
 
-        <div class="contestant-grid">
-            <label class="contestant">
-                <input type="radio" name="miss_birla" value="Vaidehi Balu Gund">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Vaidehi</span>
-                        <span class="c-emoji">👑</span>
-                    </div>
-                </div>
-            </label>
-
-            <label class="contestant">
-                <input type="radio" name="miss_birla" value="Ekta Mukesh Dixit">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Ekta</span>
-                        <span class="c-emoji">✨</span>
-                    </div>
-                </div>
-            </label>
-
-            <label class="contestant">
-                <input type="radio" name="miss_birla" value="Divya Anand Nair">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Divya</span>
-                        <span class="c-emoji">💖</span>
-                    </div>
-                </div>
-            </label>
-            
-            <label class="contestant">
-                <input type="radio" name="miss_birla" value="Dharani Shankar Mudaliyar">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Dharani</span>
-                        <span class="c-emoji">🦋</span>
-                    </div>
-                </div>
-            </label>
-            
-            <label class="contestant">
-                <input type="radio" name="miss_birla" value="Kaustubhi Chavan">
-                <div class="contestant-visual">
-                    <div class="avatar-circle">
-                        <div class="avatar-icon"><i class="fas fa-user-graduate"></i></div>
-                        <div class="check-badge"><i class="fas fa-check"></i></div>
-                    </div>
-                    <div class="name-plate">
-                        <span class="c-name">Kaustubhi</span>
-                        <span class="c-emoji">🌸</span>
-                    </div>
-                </div>
-            </label>
-        </div>
-
-    </form>
+        </form>
+    </div>
 
     <div class="vote-bar">
-        <button class="vote-btn" onclick="submitVote()">
-            VOTE NOW <i class="fas fa-bolt"></i>
+        <button class="btn-vote" onclick="submitVote()">
+            Vote Now
         </button>
     </div>
 
     <script>
-        // CONFIG
+        /* --- 1. SETUP --- */
         const SUPABASE_URL = 'https://uvlwqlddmanuzeuqtjxp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
         let currentStudentId = null;
 
-        // AUTH
+        /* --- 2. AUTH CHECK --- */
         window.onload = async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const studentId = urlParams.get('id');
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('id');
 
             if (!studentId) {
+                // Deny
                 Swal.fire({
-                    icon: 'error', title: 'ACCESS DENIED',
-                    text: 'Invalid Voting Link',
-                    background: '#222', color: '#fff', confirmButtonColor: '#FFD700'
+                    icon: 'error',
+                    title: 'Authentication Failed',
+                    text: 'Please use your secure voting link.',
+                    background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                    color: getComputedStyle(document.body).getPropertyValue('--text-main')
                 });
                 return;
             }
@@ -419,94 +362,108 @@
 
             if (error || !data) {
                 Swal.fire({
-                    icon: 'error', title: 'INVALID ID',
-                    background: '#222', color: '#fff', confirmButtonColor: '#FFD700'
+                    icon: 'error', title: 'Invalid Student ID',
+                    background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                    color: getComputedStyle(document.body).getPropertyValue('--text-main')
                 });
             } else {
                 currentStudentId = studentId;
                 document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('userWelcome').innerText = `Welcome, ${data.full_name}`;
+                document.getElementById('userName').innerText = data.full_name;
             }
         };
 
-        // FINGERPRINT & VOTE (Same Secure Logic)
+        /* --- 3. FINGERPRINTING --- */
         async function getDeviceFingerprint() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             ctx.textBaseline = "top"; ctx.font = "14px 'Arial'";
             ctx.fillStyle = "#f60"; ctx.fillRect(125,1,62,20);
             ctx.fillStyle = "#069"; ctx.fillText("EcoCampusVote", 2, 15);
-            const canvasHash = canvas.toDataURL();
-            const components = [navigator.userAgent, window.screen.width + 'x' + window.screen.height, new Date().getTimezoneOffset(), canvasHash].join('||');
-            const msgBuffer = new TextEncoder().encode(components);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const components = [navigator.userAgent, window.screen.width, new Date().getTimezoneOffset(), canvas.toDataURL()].join('||');
+            const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(components));
             return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
+        /* --- 4. SUBMIT VOTE --- */
         async function submitVote() {
             const mr = document.querySelector('input[name="mr_birla"]:checked');
             const miss = document.querySelector('input[name="miss_birla"]:checked');
 
             if (!mr || !miss) {
                 Swal.fire({
-                    title: 'INCOMPLETE!',
-                    text: 'You must select one contestant from each category.',
+                    title: 'Selection Incomplete',
+                    text: 'Please select one nominee from each category.',
                     icon: 'warning',
-                    background: '#222', color: '#fff', confirmButtonColor: '#FFD700'
+                    background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                    color: getComputedStyle(document.body).getPropertyValue('--text-main')
                 });
                 return;
             }
 
-            Swal.showLoading();
+            // Show Processing
+            Swal.fire({
+                title: 'Securing Vote...',
+                text: 'Verifying location and device integrity.',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                color: getComputedStyle(document.body).getPropertyValue('--text-main')
+            });
 
             try {
-                if (!navigator.geolocation) throw new Error("GPS Required");
-                
+                // Get Fingerprint
                 const fingerprint = await getDeviceFingerprint();
 
-                navigator.geolocation.getCurrentPosition(
-                    async (pos) => {
-                        const { data, error } = await supabase.rpc('submit_secure_vote', {
-                            vote_mr: mr.value,
-                            vote_miss: miss.value,
-                            client_device_hash: fingerprint,
-                            lat: pos.coords.latitude,
-                            lng: pos.coords.longitude,
-                            p_student_id: currentStudentId
-                        });
+                // Get Geo
+                if (!navigator.geolocation) throw new Error("GPS not supported");
+                
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    // Send to Backend
+                    const { data, error } = await supabase.rpc('submit_secure_vote', {
+                        vote_mr: mr.value,
+                        vote_miss: miss.value,
+                        client_device_hash: fingerprint,
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        p_student_id: currentStudentId
+                    });
 
-                        if (data && data.success) {
-                            Swal.fire({
-                                icon: 'success', title: 'VOTE SAVED!',
-                                text: 'Your vote has been locked securely.',
-                                background: '#222', color: '#fff', confirmButtonColor: '#FFD700'
-                            });
-                        } else {
-                            let msg = "Validation Failed";
-                            if (data.error === 'OUTSIDE_RADIUS') msg = "You are outside the campus zone.";
-                            if (data.error === 'DEVICE_ALREADY_VOTED') msg = "Device already voted.";
-                            if (data.error === 'STUDENT_ALREADY_VOTED') msg = "You have already voted.";
-                            
-                            Swal.fire({
-                                icon: 'error', title: 'VOTE REJECTED',
-                                text: msg,
-                                background: '#222', color: '#fff', confirmButtonColor: '#d33'
-                            });
-                        }
-                    },
-                    (err) => {
+                    if (data && data.success) {
                         Swal.fire({
-                            icon: 'error', title: 'GPS ERROR',
-                            text: 'Please allow location access to vote.',
-                            background: '#222', color: '#fff'
+                            icon: 'success',
+                            title: 'Vote Cast Successfully!',
+                            text: 'Your voice has been recorded.',
+                            confirmButtonColor: '#7C3AED',
+                            background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                            color: getComputedStyle(document.body).getPropertyValue('--text-main')
                         });
-                    },
-                    { enableHighAccuracy: true }
-                );
+                    } else {
+                        // Handle Errors
+                        let msg = "Verification Failed.";
+                        if (data.error === 'OUTSIDE_RADIUS') msg = "You are outside the campus.";
+                        if (data.error === 'DEVICE_ALREADY_VOTED') msg = "Device already used.";
+                        if (data.error === 'STUDENT_ALREADY_VOTED') msg = "You have already voted.";
+                        
+                        Swal.fire({
+                            icon: 'error', title: 'Vote Rejected', text: msg,
+                            background: getComputedStyle(document.body).getPropertyValue('--bg-body'),
+                            color: getComputedStyle(document.body).getPropertyValue('--text-main')
+                        });
+                    }
+                }, (err) => {
+                    Swal.fire({ icon: 'error', title: 'GPS Error', text: 'Location access is required.' });
+                }, { enableHighAccuracy: true });
 
             } catch (err) {
                 console.error(err);
             }
+        }
+
+        /* --- 5. THEME TOGGLE --- */
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
     </script>
 </body>
