@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoCampus | Secure Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary: #10B981;       
+            --bg-body: #f0fdf4;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --text-main: #1F2937;
+            --text-sub: #6B7280;
+            --selected-border: #10B981;
+            --selected-bg: rgba(16, 185, 129, 0.15);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #F9FAFB;
+            --text-sub: #9CA3AF;
+            --selected-bg: rgba(16, 185, 129, 0.25);
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s; }
+        
+        /* Glass Header */
+        header {
+            position: sticky; top: 0; z-index: 50; padding: 16px 20px;
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .theme-btn { background: none; border: none; color: var(--text-main); font-size: 1.2rem; cursor: pointer; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* Timer Card */
+        .timer-card {
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            border-radius: 20px; padding: 20px; color: white;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+        .timer-text h2 { margin: 0 0 4px; font-size: 1.1rem; }
+        .timer-text p { margin: 0; font-size: 0.9rem; opacity: 0.9; }
+        .countdown { font-size: 1.4rem; font-weight: 800; background: rgba(255,255,255,0.25); padding: 8px 12px; border-radius: 12px; }
+
+        /* List Styling */
+        .section-title { margin: 24px 0 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+
+        .nominee-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .nominee-label { display: block; position: relative; cursor: pointer; }
+        .nominee-label input { display: none; }
+        
+        .nominee-card {
+            display: flex; align-items: center; padding: 14px; border-radius: 16px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            backdrop-filter: blur(4px); transition: all 0.2s;
+        }
+        
+        .avatar { width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; margin-right: 14px; }
+        .girls-sec .avatar { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
+        
+        .info { flex: 1; }
+        .name { font-weight: 700; margin-bottom: 2px; }
+        .meta { font-size: 0.8rem; color: var(--text-sub); }
+        
+        .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-sub); opacity: 0.3; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
+        .check i { transform: scale(0); color: white; font-size: 12px; }
+
+        /* Selected State */
+        .nominee-label input:checked + .nominee-card { background: var(--selected-bg); border-color: var(--selected-border); }
+        .nominee-label input:checked + .nominee-card .check { background: var(--primary); border-color: var(--primary); opacity: 1; }
+        .nominee-label input:checked + .nominee-card .check i { transform: scale(1); }
+
+        /* Bottom Bar */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: center; z-index: 100; }
+        .vote-btn { width: 100%; max-width: 500px; padding: 16px; border-radius: 50px; border: none; background: var(--primary); color: white; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+        .vote-btn:disabled { background: #9CA3AF; cursor: not-allowed; box-shadow: none; }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 999; display: none;
+            flex-direction: column; justify-content: center; align-items: center; color: white;
+        }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand"><i class="fas fa-leaf"></i> EcoCampus</div>
+        <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+    </header>
+
+    <div class="container">
+        <div class="timer-card">
+            <div class="timer-text">
+                <h2>Voting Live</h2>
+                <p>Location restricted: B.K. Birla Campus</p>
+            </div>
+            <div class="countdown" id="countdown">23:59:59</div>
+        </div>
+
+        <form id="votingForm">
+            <div class="section-title">Mr. Birla Nominees <span class="badge">Select 1</span></div>
+            <div class="nominee-list">
+                <label class="nominee-label">
+                    <input type="radio" name="mr_birla" value="Aashish Santosh Yadav">
+                    <div class="nominee-card">
+                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="info"><div class="name">Aashish Santosh Yadav</div><div class="meta">TYBCOM</div></div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                </label>
+                <label class="nominee-label">
+                    <input type="radio" name="mr_birla" value="Krushnakant Pal">
+                    <div class="nominee-card">
+                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
+                        <div class="info"><div class="name">Krushnakant Pal</div><div class="meta">TYBSC CS</div></div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="section-title" style="margin-top: 30px;">Miss. Birla Nominees <span class="badge" style="color:#EC4899; background:rgba(236,72,153,0.1)">Select 1</span></div>
+            <div class="nominee-list girls-sec">
+                <label class="nominee-label">
+                    <input type="radio" name="miss_birla" value="Vaidehi Balu Gund">
+                    <div class="nominee-card">
+                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
+                        <div class="info"><div class="name">Vaidehi Balu Gund</div><div class="meta">TYBMS</div></div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                </label>
+                <label class="nominee-label">
+                    <input type="radio" name="miss_birla" value="Ekta Mukesh Dixit">
+                    <div class="nominee-card">
+                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
+                        <div class="info"><div class="name">Ekta Mukesh Dixit</div><div class="meta">TYBSC CS</div></div>
+                        <div class="check"><i class="fas fa-check"></i></div>
+                    </div>
+                </label>
+            </div>
+        </form>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="vote-btn" onclick="initiateVote()">
+            <i class="fas fa-location-dot"></i> Verify Location & Vote
+        </button>
+    </div>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <h3 id="loadingText">Acquiring GPS Signal...</h3>
+        <p style="font-size: 0.8rem; color: #ccc;">Please allow location access</p>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const SUPABASE_URL = 'https://uvlwqlddmanuzeuqtjxp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- 2. DEVICE FINGERPRINTING ---
+        async function getDeviceFingerprint() {
+            // A privacy-preserving fingerprint: User Agent + Screen Res + Timezone + Canvas Hash
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = "top";
+            ctx.font = "14px 'Arial'";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125,1,62,20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("EcoCampusVote", 2, 15);
+            const canvasHash = canvas.toDataURL();
+
+            const components = [
+                navigator.userAgent,
+                window.screen.width + 'x' + window.screen.height,
+                new Date().getTimezoneOffset(),
+                canvasHash
+            ].join('||');
+
+            // Hash it using SHA-256
+            const msgBuffer = new TextEncoder().encode(components);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // --- 3. VOTE LOGIC ---
+        async function initiateVote() {
+            const mrVote = document.querySelector('input[name="mr_birla"]:checked');
+            const missVote = document.querySelector('input[name="miss_birla"]:checked');
+
+            if (!mrVote || !missVote) {
+                Swal.fire({ icon: 'warning', title: 'Incomplete', text: 'Please select one candidate from each category.', confirmButtonColor: '#10B981' });
+                return;
+            }
+
+            // Show Loading
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            overlay.style.display = 'flex';
+
+            try {
+                // Step A: Get Fingerprint
+                loadingText.innerText = "Verifying Device...";
+                const deviceHash = await getDeviceFingerprint();
+
+                // Step B: Get Geolocation
+                loadingText.innerText = "Verifying Location (GPS)...";
+                if (!navigator.geolocation) throw new Error("Geolocation not supported");
+
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        // Success Callback
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Step C: Send to Backend
+                        loadingText.innerText = "Submitting securely...";
+                        
+                        const { data, error } = await supabase.rpc('submit_secure_vote', {
+                            vote_mr: mrVote.value,
+                            vote_miss: missVote.value,
+                            client_device_hash: deviceHash,
+                            lat: lat,
+                            lng: lng
+                        });
+
+                        overlay.style.display = 'none';
+
+                        if (error) {
+                            console.error(error);
+                            Swal.fire({ icon: 'error', title: 'System Error', text: error.message });
+                        } else if (data.success) {
+                            Swal.fire({ 
+                                icon: 'success', 
+                                title: 'Vote Recorded!', 
+                                text: `You are ${(data.distance).toFixed(1)}m from center. Vote saved.`, 
+                                confirmButtonColor: '#10B981' 
+                            });
+                        } else {
+                            // Backend Logic Rejections
+                            let msg = "Vote failed.";
+                            if (data.error === 'OUTSIDE_RADIUS') msg = `You are outside the campus area (${data.distance.toFixed(0)}m away). Max allowed is 100m.`;
+                            if (data.error === 'DEVICE_ALREADY_VOTED') msg = "This device has already cast a vote.";
+                            
+                            Swal.fire({ icon: 'error', title: 'Validation Failed', text: msg });
+                        }
+                    },
+                    (error) => {
+                        // Error Callback
+                        overlay.style.display = 'none';
+                        let errMsg = "Location access denied.";
+                        if (error.code === 1) errMsg = "You must allow location access to vote.";
+                        else if (error.code === 2) errMsg = "GPS signal lost. Please go outside.";
+                        Swal.fire({ icon: 'error', title: 'GPS Error', text: errMsg });
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+
+            } catch (err) {
+                overlay.style.display = 'none';
+                Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.getAttribute('data-theme') === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-moon';
+            }
+        }
+        
+        // Simple Countdown
+        setInterval(() => {
+            const d = new Date();
+            const h = 23 - d.getHours();
+            const m = 59 - d.getMinutes();
+            const s = 59 - d.getSeconds();
+            document.getElementById('countdown').innerText = `${h}:${m}:${s}`;
+        }, 1000);
+    </script>
+</body>
+</html>
