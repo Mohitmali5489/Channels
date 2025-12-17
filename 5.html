@@ -1,212 +1,239 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EcoCampus Reality Vote</title>
+    <title>Vote: Mr. & Miss. Birla</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* --- THEME CONFIGURATION --- */
         :root {
-            /* Bigg Boss / Reality Show Theme Colors */
-            --bg-body: #0F172A; /* Deep Dark Blue */
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
+            --bg-deep: #0B1120;
+            --text-white: #FFFFFF;
+            --text-gray: #64748B;
             
-            /* The "Selected" Gradient Glow (Blue -> Purple -> Pink) */
-            --glow-gradient: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+            /* The Glowing Gradient Ring */
+            --gradient-glow: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
             
             /* The "Done" Button Gradient */
-            --btn-gradient: linear-gradient(90deg, #2563EB 0%, #DB2777 100%);
+            --btn-gradient: linear-gradient(to right, #2563EB, #DB2777);
             
-            --avatar-bg: #1E293B;
-            --badge-color: #3B82F6; /* The bright blue tick background */
+            /* Badge Color */
+            --badge-blue: #3B82F6;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+
         body {
             margin: 0;
+            background-color: var(--bg-deep);
+            color: var(--text-white);
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 100px;
+            padding-bottom: 120px; /* Space for footer */
         }
 
-        /* --- Header --- */
+        /* --- HEADER --- */
         header {
-            text-align: center; padding: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            padding: 25px 20px;
+            background: rgba(11, 17, 32, 0.95);
             position: sticky; top: 0; z-index: 50;
-        }
-        .title { font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; color: #cbd5e1; text-transform: uppercase; }
-
-        /* --- Grid System --- */
-        .container { max-width: 500px; margin: 0 auto; padding: 20px 15px; }
-        
-        .section-label {
-            text-align: center; margin: 30px 0 20px;
-            font-size: 0.85rem; font-weight: 700; color: #64748B;
-            text-transform: uppercase; letter-spacing: 1.5px;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
+        .header-title {
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #E2E8F0;
+        }
+
+        /* --- GRID CONTAINER --- */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 30px 0 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 3-Column Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columns */
-            gap: 25px 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px 15px;
             justify-items: center;
         }
 
-        /* --- Candidate Node --- */
-        .candidate {
+        /* --- CANDIDATE CARD UI --- */
+        .candidate-card {
             display: flex; flex-direction: column; align-items: center;
             cursor: pointer; position: relative; width: 100%;
         }
-        .candidate input { display: none; }
+        .candidate-card input { display: none; }
 
-        /* The Circular Wrapper */
-        .circle-wrapper {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            background: var(--avatar-bg);
-            /* Default Border */
-            border: 3px solid rgba(255,255,255,0.1); 
-            display: flex; align-items: center; justify-content: center;
+        /* Container for Circle + Badge */
+        .visual-wrapper {
             position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 85px; height: 85px;
         }
 
-        /* Image Handling */
-        .circle-wrapper img {
-            width: 100%; height: 100%; 
-            border-radius: 50%; 
+        /* The Circle (Border & Image) */
+        .circle-base {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            background: #1E293B; /* Dark background */
+            /* Default Unselected Border */
+            border: 3px solid #334155; 
+            padding: 3px; /* Space between border and image */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden; /* Clips the image to circle */
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Image / Icon Styling */
+        .circle-base img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
             object-fit: cover;
-            display: block;
         }
-        
-        .circle-wrapper i { font-size: 2rem; color: #475569; }
+        .circle-base i { font-size: 2rem; color: #475569; }
 
-        /* Name Tag */
-        .name {
+        /* The Name */
+        .name-label {
             margin-top: 10px;
             font-size: 0.75rem;
             font-weight: 700;
+            color: var(--text-gray);
             text-transform: uppercase;
-            color: #94A3B8;
             letter-spacing: 0.5px;
             text-align: center;
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
 
-        /* --- SELECTION STATES (The "Bigg Boss" Effect) --- */
+        /* The "Tick" Badge (Notification Style) */
+        .check-badge {
+            position: absolute;
+            top: 0; right: 0; /* Floats on top right edge */
+            width: 26px; height: 26px;
+            background: var(--badge-blue);
+            border: 2px solid var(--bg-deep); /* Cutout effect */
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 12px;
+            z-index: 20;
+            
+            /* Hidden by default */
+            opacity: 0; transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- SELECTED STATE --- */
         
-        /* 1. The Gradient Ring Glow */
-        .candidate input:checked + .visual .circle-wrapper {
-            border: 3px solid transparent; /* Hide solid border */
-            background-image: linear-gradient(var(--bg-body), var(--bg-body)), var(--glow-gradient);
-            background-origin: border-box;
-            background-clip: content-box, border-box;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); /* Soft purple glow */
+        /* 1. Gradient Border Glow */
+        .candidate-card input:checked + .visual .circle-base {
+            border-color: transparent; /* Hide solid border */
+            background: var(--gradient-glow); /* The gradient ring */
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); /* Outer Glow */
             transform: scale(1.05);
         }
 
-        /* 2. The Name Highlight */
-        .candidate input:checked + .visual .name {
-            color: white;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-
-        /* 3. The Tick Badge (Fixed Position) */
-        .badge {
-            position: absolute;
-            top: -2px; right: -2px; /* Overlaps the border slightly */
-            width: 24px; height: 24px;
-            background: var(--badge-color);
-            border: 2px solid var(--bg-body); /* Creates that "cutout" look */
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 10px;
-            opacity: 0; transform: scale(0);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10;
-        }
-
-        .candidate input:checked + .visual .badge {
+        /* 2. Show the Tick */
+        .candidate-card input:checked + .visual .check-badge {
             opacity: 1; transform: scale(1);
         }
 
-        /* --- Footer Button --- */
-        .footer-bar {
+        /* 3. Highlight Name */
+        .candidate-card input:checked + .visual .name-label {
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        /* --- FOOTER BUTTON --- */
+        .footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            padding: 15px 20px 25px;
-            background: rgba(15, 23, 42, 0.95);
+            padding: 20px;
+            background: rgba(11, 17, 32, 0.95);
             border-top: 1px solid rgba(255,255,255,0.05);
             z-index: 100;
         }
 
-        .btn-done {
+        .btn-vote {
             width: 100%;
             padding: 16px;
-            border: none; border-radius: 12px;
-            background: var(--btn-gradient); /* Blue to Pink Gradient */
+            border-radius: 12px;
+            border: none;
+            background: var(--btn-gradient);
             color: white;
-            font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 1rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+            box-shadow: 0 5px 20px rgba(219, 39, 119, 0.4);
             transition: transform 0.2s;
         }
-        .btn-done:active { transform: scale(0.98); }
+        .btn-vote:active { transform: scale(0.98); }
 
-        /* Loader */
-        #loader {
-            position: fixed; inset: 0; background: var(--bg-body); z-index: 999;
+        /* --- LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed; inset: 0; background: var(--bg-deep); z-index: 1000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .spin {
-            width: 40px; height: 40px; border: 4px solid #333; 
-            border-top: 4px solid #3B82F6; border-radius: 50%; 
-            animation: s 1s infinite linear;
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #3B82F6; border-radius: 50%;
+            animation: spin 1s infinite linear;
         }
-        @keyframes s { to { transform: rotate(360deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spin"></div>
-        <p style="margin-top:15px; font-size:0.8rem; color:#666;">LOADING CAMPUS DATA...</p>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-size:0.8rem; color:#64748B;">VERIFYING IDENTITY...</p>
     </div>
 
     <header>
-        <div class="title" id="headerText">Mr. & Miss. Birla</div>
+        <div class="header-title" id="welcome-text">EcoCampus Vote</div>
     </header>
 
     <div class="container">
-        <form id="voteForm">
-            
-            <div id="dynamicGrid"></div>
-
+        <form id="votingForm">
+            <div id="grid-container"></div>
         </form>
     </div>
 
-    <div class="footer-bar">
-        <button class="btn-done" onclick="submitVote()">Done</button>
+    <div class="footer">
+        <button class="btn-vote" onclick="submitVote()">Done</button>
     </div>
 
     <script>
-        /* =========================================
-           1. CANDIDATE CONFIGURATION (EDIT THIS!)
-           Paste image URLs inside the quotes.
-           If url is empty "", it shows the icon.
-        ========================================= */
-        const candidates = {
+        /* ==========================================================
+           1. CANDIDATE CONFIGURATION
+           Paste image URLs inside the "img": "" quotes.
+           Example: img: "https://mysite.com/photo.jpg"
+           If empty, it shows the icon.
+        ========================================================== */
+        const CANDIDATE_DATA = {
             boys: [
                 { id: "Aashish Santosh Yadav", name: "Aashish", icon: "fa-user-tie", img: "" },
                 { id: "Krushnakant Pal", name: "Krushna", icon: "fa-laptop-code", img: "" },
@@ -223,63 +250,64 @@
             ]
         };
 
-        // --- SUPABASE CONFIG ---
+        /* ==========================================================
+           2. SUPABASE SETUP
+        ========================================================== */
         const SUPABASE_URL = 'https://uvlwqlddmanuzeuqtjxp.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentStudentId = null;
 
-        /* =========================================
-           2. RENDER LOGIC (Generates the UI)
-        ========================================= */
-        function renderGrid() {
-            const container = document.getElementById('dynamicGrid');
-            let html = '';
+        /* ==========================================================
+           3. RENDER FUNCTION
+        ========================================================== */
+        function renderUI() {
+            const container = document.getElementById('grid-container');
+            let content = '';
 
             // Render Boys
-            html += `<div class="section-label">Mr. Birla Nominees</div><div class="grid">`;
-            candidates.boys.forEach(c => html += createCard(c, 'mr_birla'));
-            html += `</div>`;
+            content += `<div class="section-title">Mr. Birla Nominees</div><div class="grid">`;
+            CANDIDATE_DATA.boys.forEach(c => content += generateCard(c, 'mr_birla'));
+            content += `</div>`;
 
             // Render Girls
-            html += `<div class="section-label">Miss. Birla Nominees</div><div class="grid">`;
-            candidates.girls.forEach(c => html += createCard(c, 'miss_birla'));
-            html += `</div>`;
+            content += `<div class="section-title">Miss. Birla Nominees</div><div class="grid">`;
+            CANDIDATE_DATA.girls.forEach(c => content += generateCard(c, 'miss_birla'));
+            content += `</div>`;
 
-            container.innerHTML = html;
+            container.innerHTML = content;
         }
 
-        function createCard(c, groupName) {
-            // Check if image URL exists, otherwise use Icon
-            const visualContent = c.img 
-                ? `<img src="${c.img}" alt="${c.name}">` 
-                : `<i class="fas ${c.icon}"></i>`;
+        function generateCard(candidate, groupName) {
+            // Determine visuals (Image or Icon)
+            const visual = candidate.img 
+                ? `<img src="${candidate.img}" alt="${candidate.name}">`
+                : `<i class="fas ${candidate.icon}"></i>`;
 
             return `
-            <label class="candidate">
-                <input type="radio" name="${groupName}" value="${c.id}">
+            <label class="candidate-card">
+                <input type="radio" name="${groupName}" value="${candidate.id}">
                 <div class="visual">
-                    <div class="circle-wrapper">
-                        ${visualContent}
-                        <div class="badge"><i class="fas fa-check"></i></div>
+                    <div class="visual-wrapper">
+                        <div class="circle-base">${visual}</div>
+                        <div class="check-badge"><i class="fas fa-check"></i></div>
                     </div>
-                    <div class="name">${c.name}</div>
+                    <div class="name-label">${candidate.name}</div>
                 </div>
-            </label>
-            `;
+            </label>`;
         }
 
-        /* =========================================
-           3. AUTH & LOGIC
-        ========================================= */
+        /* ==========================================================
+           4. AUTH & INIT
+        ========================================================== */
         window.onload = async function() {
-            renderGrid(); // Build the UI first
+            renderUI(); // Draw the grid
 
             const params = new URLSearchParams(window.location.search);
             const studentId = params.get('id');
 
             if (!studentId) {
-                alertAccessDenied("No Voting Link Detected");
+                showAlert('Access Denied', 'No voting link detected.');
                 return;
             }
 
@@ -290,28 +318,30 @@
                 .single();
 
             if (error || !data) {
-                alertAccessDenied("Invalid Student ID");
+                showAlert('Invalid ID', 'Student ID not found in database.');
             } else {
                 currentStudentId = studentId;
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('headerText').innerText = `Hi, ${data.full_name.split(' ')[0]}`; // Show First Name
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('welcome-text').innerText = `Hi, ${data.full_name.split(' ')[0]}`;
             }
         };
 
-        function alertAccessDenied(msg) {
-            Swal.fire({
-                icon: 'error', title: 'Access Denied', text: msg,
-                background: '#0F172A', color: '#fff',
-                allowOutsideClick: false, showConfirmButton: false
-            });
-        }
-
+        /* ==========================================================
+           5. VOTING LOGIC
+        ========================================================== */
         async function getFingerprint() {
-            // Simple canvas fingerprint for demo
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            ctx.fillText("vote", 10, 10);
-            return canvas.toDataURL(); 
+            ctx.textBaseline = "top"; ctx.fillText("vote", 2, 2);
+            return canvas.toDataURL();
+        }
+
+        function showAlert(title, msg, type='error') {
+            Swal.fire({
+                icon: type, title: title, text: msg,
+                background: '#0B1120', color: '#fff',
+                confirmButtonColor: '#2563EB', allowOutsideClick: false
+            });
         }
 
         async function submitVote() {
@@ -320,22 +350,23 @@
 
             if (!mr || !miss) {
                 Swal.fire({
-                    icon: 'warning', title: 'Select Nominees', 
-                    text: 'Please select one from each category.',
-                    background: '#0F172A', color: '#fff', confirmButtonColor: '#DB2777'
+                    title: 'Selection Required',
+                    text: 'Please choose 1 Boy and 1 Girl.',
+                    icon: 'warning',
+                    background: '#0B1120', color: '#fff', confirmButtonColor: '#DB2777'
                 });
                 return;
             }
 
             Swal.fire({
-                title: 'Securing...',
-                didOpen: () => Swal.showLoading(),
-                background: '#0F172A', color: '#fff'
+                title: 'Securing Vote...',
+                text: 'Do not close the app.',
+                background: '#0B1120', color: '#fff',
+                didOpen: () => Swal.showLoading()
             });
 
             try {
                 if (!navigator.geolocation) throw new Error("GPS Required");
-                
                 const fingerprint = await getFingerprint();
 
                 navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -350,23 +381,23 @@
 
                     if (data && data.success) {
                         Swal.fire({
-                            icon: 'success', title: 'Done!', text: 'Vote Recorded.',
-                            background: '#0F172A', color: '#fff', confirmButtonColor: '#2563EB'
+                            icon: 'success', title: 'Vote Locked!',
+                            text: 'Your selection has been recorded.',
+                            background: '#0B1120', color: '#fff', confirmButtonColor: '#2563EB'
                         });
                     } else {
-                        let msg = "Verification Failed";
-                        if(data.error === 'OUTSIDE_RADIUS') msg = "You are outside campus.";
-                        if(data.error === 'STUDENT_ALREADY_VOTED') msg = "You already voted.";
-                        Swal.fire({
-                            icon: 'error', title: 'Error', text: msg,
-                            background: '#0F172A', color: '#fff'
-                        });
+                        let msg = "Validation Failed";
+                        if (data.error === 'OUTSIDE_RADIUS') msg = "You are outside the campus.";
+                        if (data.error === 'STUDENT_ALREADY_VOTED') msg = "You have already voted.";
+                        showAlert('Error', msg);
                     }
                 }, () => {
-                    Swal.fire({icon:'error', title:'GPS Error', text:'Location required.', background:'#0F172A', color:'#fff'});
+                    showAlert('GPS Error', 'Location access is required to vote.');
                 }, { enableHighAccuracy: true });
 
-            } catch (e) { console.log(e); }
+            } catch (err) {
+                console.error(err);
+            }
         }
     </script>
 </body>
