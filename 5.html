@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Trends | EcoCampus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* --- THEME CONFIG --- */
+        :root {
+            --primary: #10B981;
+            --bg-dark: #111827; /* Matching the dark bg in your image */
+            --bg-card: #1F2937;
+            --text-white: #F9FAFB;
+            --glass-panel: rgba(31, 41, 55, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            margin: 0; 
+            background-color: var(--bg-dark); 
+            color: var(--text-white);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 0; z-index: 50; padding: 16px 20px;
+            background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .user-badge { font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 20px; }
+
+        /* --- GRID LAYOUT (The "Image" Style) --- */
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #6B7280; /* Gray text like "REALITY RUSH NEWS" */
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .avatar-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* The Avatar Circle */
+        .candidate-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px; /* Adjust size based on screen */
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .candidate-node:active { transform: scale(0.95); }
+
+        .img-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #374151; /* Placeholder gray */
+            border: 3px solid transparent; /* Default border */
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #9CA3AF;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .img-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* Hover/Select Effects */
+        .candidate-node:hover .img-wrapper { border-color: var(--primary); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .candidate-node.selected .img-wrapper { border-color: #F59E0B; box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
+
+        .name-tag {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reaction { font-size: 1.1rem; }
+
+        /* Specific Colors for Candidates (like the image) */
+        .c-1 .img-wrapper { background: #E0E7FF; color: #4F46E5; }
+        .c-2 .img-wrapper { background: #FAE8FF; color: #D946EF; }
+        .c-3 .img-wrapper { background: #DCFCE7; color: #16A34A; }
+        
+        /* --- AUTH OVERLAY --- */
+        #authOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 2000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div id="authOverlay">
+        <div class="spinner"></div>
+        <div style="font-size: 0.9rem; opacity: 0.7;">Verifying ID...</div>
+    </div>
+
+    <header>
+        <div class="brand"><i class="fas fa-chart-pie"></i> EcoCampus Trends</div>
+        <div class="user-badge" id="userBadge">Guest</div>
+    </header>
+
+    <div class="container">
+        
+        <div class="page-title">Mr. Birla Favorites</div>
+
+        <div class="avatar-grid">
+            <div class="candidate-node c-1" onclick="vote('Aashish Santosh Yadav')">
+                <div class="img-wrapper"><i class="fas fa-user-tie"></i></div>
+                <div class="name-tag">Aashish <span class="reaction">👍</span></div>
+            </div>
+
+            <div class="candidate-node c-3" onclick="vote('Krushnakant Pal')">
+                <div class="img-wrapper"><i class="fas fa-laptop-code"></i></div>
+                <div class="name-tag">Krushna <span class="reaction">❤️</span></div>
+            </div>
+
+            <div class="candidate-node c-1" onclick="vote('Suraj Ramsudhakar Yadav')">
+                <div class="img-wrapper"><i class="fas fa-user-graduate"></i></div>
+                <div class="name-tag">Suraj <span class="reaction">🥰</span></div>
+            </div>
+        </div>
+
+        <div class="page-title" style="margin-top: 40px;">Miss. Birla Favorites</div>
+
+        <div class="avatar-grid">
+            <div class="candidate-node c-2" onclick="vote('Vaidehi Balu Gund')">
+                <div class="img-wrapper"><i class="fas fa-crown"></i></div>
+                <div class="name-tag">Vaidehi <span class="reaction">😂</span></div>
+            </div>
+
+            <div class="candidate-node c-2" onclick="vote('Ekta Mukesh Dixit')">
+                <div class="img-wrapper"><i class="fas fa-star"></i></div>
+                <div class="name-tag">Ekta <span class="reaction">🤩</span></div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const SUPABASE_URL = 'https://uvlwqlddmanuzeuqtjxp.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let studentId = null;
+
+        // --- 2. AUTH LOGIC ---
+        window.onload = async function() {
+            const params = new URLSearchParams(window.location.search);
+            studentId = params.get('id');
+
+            if (!studentId) {
+                // Block Access
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Access Denied', 
+                    text: 'Missing Student ID link.', 
+                    background: '#1F2937', color: '#fff', 
+                    showConfirmButton: false 
+                });
+                return;
+            }
+
+            // Check Database
+            const { data, error } = await supabase
+                .from('allowed_students')
+                .select('full_name')
+                .eq('student_id', studentId)
+                .single();
+
+            if (error || !data) {
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Invalid ID', 
+                    background: '#1F2937', color: '#fff', 
+                    showConfirmButton: false 
+                });
+            } else {
+                // Success
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('userBadge').innerText = data.full_name;
+            }
+        };
+
+        // --- 3. VOTE FUNCTION (Simplified for this view) ---
+        function vote(name) {
+            Swal.fire({
+                title: `Vote for ${name}?`,
+                text: "Confirm your selection for the leaderboard.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10B981',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Vote!',
+                background: '#1F2937',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Here you would call the secure backend function
+                    // keeping the UI interaction simple for this demo page
+                    Swal.fire({
+                        title: 'Voted!',
+                        text: 'Your reaction has been recorded.',
+                        icon: 'success',
+                        background: '#1F2937',
+                        color: '#fff',
+                        confirmButtonColor: '#10B981'
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
