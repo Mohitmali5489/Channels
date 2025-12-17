@@ -3,306 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium Ballot</title>
+    <title>Dynamic Sort Ballot</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* --- THEME ENGINE --- */
+        /* --- THEME VARIABLES --- */
         :root {
-            /* Dark Mode (Default) */
+            /* Dark Mode */
             --bg-body: #050505;
-            --bg-hud: rgba(20, 20, 20, 0.85);
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-active: rgba(255, 255, 255, 0.12);
-            --bg-slot: rgba(255, 255, 255, 0.08);
-            
+            --bg-zone: rgba(255, 255, 255, 0.03);
+            --bg-card: #151515;
             --text-main: #ffffff;
-            --text-muted: #888888;
-            --border-subtle: rgba(255,255,255,0.08);
+            --text-muted: #888;
+            --border-subtle: rgba(255,255,255,0.1);
             
-            --shadow-card: none;
-            --glow-selected: 0 0 20px rgba(255, 255, 255, 0.1);
-            
-            /* Action Bar */
-            --bar-bg: rgba(30, 30, 30, 0.95);
-            --bar-border: rgba(255,255,255,0.15);
-            --btn-bg: #ffffff;
-            --btn-text: #000000;
-
             /* Ranks */
             --gold: #FFD700;
             --silver: #C0C0C0;
             --bronze: #CD7F32;
             --rank-other: #3b82f6;
+
+            /* Button */
+            --btn-bg: #fff;
+            --btn-text: #000;
         }
 
         body.light-mode {
-            /* Light Mode Overrides */
-            --bg-body: #F2F4F8;
-            --bg-hud: rgba(255, 255, 255, 0.85);
+            --bg-body: #F0F2F5;
+            --bg-zone: rgba(0, 0, 0, 0.03);
             --bg-card: #FFFFFF;
-            --bg-card-active: #F8FAFC;
-            --bg-slot: #E2E8F0;
-            
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --border-subtle: rgba(0,0,0,0.05);
-            
-            --shadow-card: 0 4px 15px rgba(0,0,0,0.05);
-            --glow-selected: 0 10px 25px rgba(59, 130, 246, 0.15);
-            
-            /* Action Bar Light */
-            --bar-bg: rgba(255, 255, 255, 0.95);
-            --bar-border: rgba(0,0,0,0.1);
-            --btn-bg: #000000;
-            --btn-text: #ffffff;
+            --border-subtle: rgba(0,0,0,0.1);
+            --btn-bg: #000;
+            --btn-text: #fff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            margin: 0;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px;
-            transition: background-color 0.4s ease, color 0.4s ease;
+            margin: 0; background-color: var(--bg-body);
+            color: var(--text-main); font-family: 'Outfit', sans-serif;
+            padding-bottom: 120px; transition: 0.3s;
         }
 
-        /* --- CENTERED HEADER --- */
-        .hud-container {
-            position: sticky; top: 0; z-index: 100;
-            background: var(--bg-hud);
-            backdrop-filter: blur(20px);
+        /* --- HEADER --- */
+        header {
+            padding: 20px; text-align: center;
+            background: var(--bg-body); position: sticky; top: 0; z-index: 50;
             border-bottom: 1px solid var(--border-subtle);
-            padding: 15px 20px;
-            text-align: center;
-            transition: background 0.4s;
+            backdrop-filter: blur(10px);
         }
-
-        .header-top {
-            display: flex; justify-content: center; align-items: center;
-            position: relative; margin-bottom: 15px;
-        }
-
-        .brand-logo { font-weight: 800; letter-spacing: 2px; font-size: 1.2rem; }
-        .brand-subtitle { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 3px; margin-top: 2px; text-transform: uppercase;}
-
-        /* Theme Toggle (Absolute Positioned) */
-        .theme-btn {
-            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-            background: transparent; border: none;
-            color: var(--text-main); font-size: 1.2rem;
-            cursor: pointer; opacity: 0.7;
-            transition: transform 0.3s;
-        }
-        .theme-btn:active { transform: translateY(-50%) rotate(45deg); }
-
-        /* --- HUD STRIP --- */
-        .ballot-strip {
-            display: flex; justify-content: center; gap: 10px;
-            flex-wrap: wrap; /* Allows wrapping on very small screens, or keeps centered */
-            min-height: 45px;
-        }
-
-        .mini-slot {
-            width: 42px; height: 42px; border-radius: 50%;
-            background: var(--bg-slot);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; color: var(--text-muted);
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: scale(0.9);
-        }
-        .mini-slot.active { transform: scale(1); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
-        .mini-slot img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .logo { font-weight: 800; letter-spacing: 2px; font-size: 1.1rem; text-transform: uppercase; }
+        .sub-logo { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 5px; }
         
-        .rank-dot {
-            position: absolute; bottom: -2px; right: -2px;
-            width: 16px; height: 16px; border-radius: 50%;
-            font-size: 9px; font-weight: 800; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 2; border: 2px solid var(--bg-body);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .theme-btn {
+            position: absolute; right: 20px; top: 25px;
+            background: none; border: none; color: var(--text-main);
+            font-size: 1.2rem; cursor: pointer;
         }
 
-        /* --- MAIN LAYOUT --- */
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; }
+        /* --- LAYOUT --- */
+        .container { max-width: 500px; margin: 0 auto; padding: 20px 15px; }
 
-        .section-divider {
-            display: flex; align-items: center; justify-content: center;
-            gap: 15px; margin: 40px 0 25px; opacity: 0.6;
-        }
-        .line { width: 30px; height: 1px; background: var(--text-muted); }
-        .section-title { 
-            font-size: 0.85rem; font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); 
+        .category-block { margin-bottom: 50px; }
+        
+        .cat-title {
+            text-align: center; font-size: 0.9rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted);
+            margin-bottom: 15px;
         }
 
-        /* --- GRID --- */
-        .grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+        /* --- ZONES --- */
+        .rank-zone {
+            min-height: 90px;
+            background: var(--bg-zone);
+            border: 1px dashed var(--border-subtle);
+            border-radius: 16px;
+            padding: 10px;
+            display: flex; gap: 10px; overflow-x: auto;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .rank-zone::before {
+            content: 'Tap candidates below to rank them';
+            position: absolute; width: 100%; text-align: center;
+            font-size: 0.7rem; color: var(--text-muted); opacity: 0.5;
+            pointer-events: none;
+        }
+        .rank-zone:not(:empty)::before { display: none; }
+
+        .pool-zone {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
         }
 
-        /* --- CARD DESIGN --- */
+        /* --- CARD --- */
         .card {
             background: var(--bg-card);
-            border-radius: 20px;
-            padding: 18px 10px;
+            border-radius: 12px;
+            padding: 10px;
             display: flex; flex-direction: column; align-items: center;
-            position: relative; cursor: pointer;
-            box-shadow: var(--shadow-card);
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
+            cursor: pointer; position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeIn 0.4s;
+            border: 1px solid var(--border-subtle);
         }
-        
-        .card:active { transform: scale(0.96); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        .img-container {
-            width: 75px; height: 75px; /* Fixed square for container */
-            border-radius: 50%;
-            padding: 3px;
-            margin-bottom: 12px;
-            position: relative;
-            background: transparent;
-            transition: all 0.3s;
+        .card:active { transform: scale(0.95); }
+
+        .img-wrap {
+            width: 55px; height: 55px; border-radius: 50%;
+            overflow: hidden; margin-bottom: 8px;
+            position: relative; border: 2px solid transparent;
+        }
+        .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .img-wrap i { 
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            background: #222; color: #fff; font-size: 1.2rem;
         }
 
-        .avatar {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            object-fit: cover; /* Strict Image Cropping */
-            display: block;
-            background-color: #888;
+        .name { font-size: 0.65rem; font-weight: 600; text-align: center; text-transform: uppercase; }
+
+        /* --- RANKED STATE (When inside Top Zone) --- */
+        .rank-zone .card {
+            min-width: 80px; /* Horizontal strip sizing */
+            background: var(--bg-body);
+            border-color: var(--gold); /* Default rank color, JS overrides */
         }
-        
-        .placeholder-icon {
-            width: 100%; height: 100%; border-radius: 50%;
+
+        .rank-badge {
+            position: absolute; top: -5px; right: -5px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #fff; color: #000;
+            font-size: 10px; font-weight: 800;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: #fff; background: #ccc;
+            display: none; /* Hidden in pool */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
-        .name {
-            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
-            transition: color 0.3s;
-        }
-
-        /* SELECTED STATES */
-        .card.selected {
-            background: var(--bg-card-active);
-            box-shadow: var(--glow-selected);
-            border-color: var(--border-subtle);
-        }
-        .card.selected .name { color: var(--text-main); }
+        .rank-zone .card .rank-badge { display: flex; } /* Show in ranking */
         
         /* Rank Colors */
-        .card[data-rank="1"] .img-container { background: var(--gold); }
         .card[data-rank="1"] .rank-badge { background: var(--gold); }
+        .card[data-rank="1"] .img-wrap { border-color: var(--gold); }
         
-        .card[data-rank="2"] .img-container { background: var(--silver); }
         .card[data-rank="2"] .rank-badge { background: var(--silver); }
+        .card[data-rank="2"] .img-wrap { border-color: var(--silver); }
         
-        .card[data-rank="3"] .img-container { background: var(--bronze); }
         .card[data-rank="3"] .rank-badge { background: var(--bronze); }
+        .card[data-rank="3"] .img-wrap { border-color: var(--bronze); }
 
-        .card[data-rank="4"] .img-container, .card[data-rank="5"] .img-container { background: var(--rank-other); }
-        .card[data-rank="4"] .rank-badge, .card[data-rank="5"] .rank-badge { background: var(--rank-other); }
+        .card[data-rank="4"] .rank-badge, .card[data-rank="5"] .rank-badge { background: var(--rank-other); color: #fff; }
+        .card[data-rank="4"] .img-wrap, .card[data-rank="5"] .img-wrap { border-color: var(--rank-other); }
 
-        /* Floating Rank Badge */
-        .rank-badge {
-            position: absolute; top: 10px; right: 10px;
-            width: 20px; height: 20px; border-radius: 50%;
-            font-size: 10px; font-weight: 800; color: #000;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transform: scale(0); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .card.selected .rank-badge { opacity: 1; transform: scale(1); }
-
-
-        /* --- FLOATING ACTION BAR --- */
-        .action-bar-wrapper {
-            position: fixed; bottom: 25px; width: 100%;
-            display: flex; justify-content: center; pointer-events: none; /* Let clicks pass through sides */
-            z-index: 200;
-        }
-
-        .action-bar {
-            pointer-events: auto;
-            background: var(--bar-bg);
+        /* --- FOOTER --- */
+        .footer-bar {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px;
+            background: rgba(20,20,20,0.95);
             backdrop-filter: blur(15px);
-            padding: 8px 10px 8px 25px;
+            border: 1px solid var(--border-subtle);
             border-radius: 50px;
-            border: 1px solid var(--bar-border);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex; align-items: center; gap: 20px;
-            transition: background 0.4s;
+            padding: 10px 10px 10px 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 100;
         }
+        body.light-mode .footer-bar { background: rgba(255,255,255,0.95); }
 
-        .status-text { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
-        .status-text b { color: var(--text-main); }
+        .status { font-size: 0.75rem; color: var(--text-muted); }
+        .status b { color: var(--text-main); }
 
-        .btn-submit {
+        .submit-btn {
             background: var(--btn-bg); color: var(--btn-text);
-            border: none; padding: 14px 28px;
-            border-radius: 40px;
+            border: none; padding: 12px 24px; border-radius: 30px;
             font-weight: 700; font-family: 'Outfit', sans-serif;
-            cursor: pointer; letter-spacing: 0.5px;
-            transition: transform 0.2s;
+            cursor: pointer; opacity: 0.5; pointer-events: none;
+            transition: all 0.3s;
         }
-        .btn-submit:active { transform: scale(0.95); }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .submit-btn.ready { opacity: 1; pointer-events: auto; }
 
     </style>
 </head>
-<body class=""> <div class="hud-container">
-        <div class="header-top">
-            <div>
-                <div class="brand-logo">ECO CAMPUS</div>
-                <div class="brand-subtitle">Preference Vote</div>
-            </div>
-            <button class="theme-btn" onclick="toggleTheme()">
-                <i class="fas fa-adjust"></i>
-            </button>
-        </div>
-        
-        <div class="ballot-strip" id="hud-strip"></div>
-    </div>
+<body>
+
+    <header>
+        <div class="logo">Eco Campus</div>
+        <div class="sub-logo">Ranked Preference Ballot</div>
+        <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+    </header>
 
     <div class="container">
-        
-        <div class="section-divider">
-            <div class="line"></div>
-            <span class="section-title">Mr. Birla</span>
-            <div class="line"></div>
-        </div>
-        <div class="grid" id="boys-grid"></div>
 
-        <div class="section-divider">
-            <div class="line"></div>
-            <span class="section-title">Miss. Birla</span>
-            <div class="line"></div>
+        <div class="category-block">
+            <div class="cat-title">Mr. Birla Ranking</div>
+            
+            <div class="rank-zone" id="boys-rank"></div>
+            
+            <div class="pool-zone" id="boys-pool"></div>
         </div>
-        <div class="grid" id="girls-grid"></div>
+
+        <div class="category-block">
+            <div class="cat-title">Miss. Birla Ranking</div>
+            
+            <div class="rank-zone" id="girls-rank"></div>
+            
+            <div class="pool-zone" id="girls-pool"></div>
+        </div>
 
     </div>
 
-    <div class="action-bar-wrapper">
-        <div class="action-bar">
-            <div class="status-text" id="status-text">
-                Start selecting...
-            </div>
-            <button class="btn-submit" id="submitBtn" onclick="submitVote()">CONFIRM</button>
-        </div>
+    <div class="footer-bar">
+        <div class="status" id="status-text">Select candidates...</div>
+        <button class="submit-btn" id="submitBtn" onclick="confirmVote()">CONFIRM</button>
     </div>
 
     <script>
-        // --- DATA ---
-        const CANDIDATE_DATA = {
+        // DATA
+        const DATA = {
             boys: [
                 { id: "b1", name: "Aashish", icon: "fa-user-tie", img: "" },
                 { id: "b2", name: "Krushna", icon: "fa-laptop-code", img: "" },
@@ -319,183 +245,126 @@
             ]
         };
 
-        // --- STATE ---
-        let selections = { boys: [], girls: [] };
-        const LIMIT = 5;
-
         // --- INIT ---
         window.onload = function() {
             if(localStorage.getItem('voteLocked') === 'true') {
-                lockApp();
+                document.body.innerHTML = "<div style='display:flex; height:100vh; align-items:center; justify-content:center; flex-direction:column;'><h2>Vote Locked</h2><p>Thank you for voting.</p></div>";
+                return;
             }
-            renderGrids();
-            updateHUD();
+
+            // Shuffle and Render Pool
+            shuffle(DATA.boys);
+            shuffle(DATA.girls);
+            
+            renderPool('boys', DATA.boys);
+            renderPool('girls', DATA.girls);
         };
 
-        function renderGrids() {
-            document.getElementById('boys-grid').innerHTML = CANDIDATE_DATA.boys.map(c => createCard(c, 'boys')).join('');
-            document.getElementById('girls-grid').innerHTML = CANDIDATE_DATA.girls.map(c => createCard(c, 'girls')).join('');
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
 
-        function createCard(c, type) {
-            const visual = c.img 
-                ? `<img src="${c.img}" class="avatar" alt="${c.name}">` 
-                : `<div class="placeholder-icon"><i class="fas ${c.icon}"></i></div>`;
+        function renderPool(type, candidates) {
+            const pool = document.getElementById(`${type}-pool`);
+            candidates.forEach(c => {
+                pool.appendChild(createCardElement(c, type));
+            });
+        }
 
-            return `
-            <div class="card" id="card-${c.id}" onclick="handleVote('${c.id}', '${type}')">
-                <div class="rank-badge" id="badge-${c.id}"></div>
-                <div class="img-container">
-                    ${visual}
-                </div>
+        function createCardElement(c, type) {
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.id = c.id;
+            el.onclick = () => moveCard(c.id, type);
+
+            const visual = c.img 
+                ? `<img src="${c.img}" alt="${c.name}">` 
+                : `<i class="fas ${c.icon}"></i>`;
+
+            el.innerHTML = `
+                <div class="rank-badge"></div>
+                <div class="img-wrap">${visual}</div>
                 <div class="name">${c.name}</div>
-            </div>`;
+            `;
+            return el;
         }
 
         // --- LOGIC ---
-        function handleVote(id, type) {
-            if(localStorage.getItem('voteLocked') === 'true') return;
+        function moveCard(id, type) {
+            const card = document.getElementById(id);
+            const rankZone = document.getElementById(`${type}-rank`);
+            const poolZone = document.getElementById(`${type}-pool`);
 
-            const list = selections[type];
-            const index = list.indexOf(id);
-
-            // Toggle logic
-            if (index > -1) {
-                list.splice(index, 1);
+            // Check parent to see where it currently is
+            if (card.parentElement === poolZone) {
+                // MOVE TO RANK
+                // Check limit (technically limit is 5, which is all of them)
+                // Just append to rank zone
+                rankZone.appendChild(card);
             } else {
-                if (list.length < LIMIT) {
-                    list.push(id);
-                } else {
-                    return; // Max reached
-                }
-            }
-            
-            refreshUI();
-        }
-
-        function refreshUI() {
-            // Reset Grid
-            document.querySelectorAll('.card').forEach(c => {
-                c.className = 'card';
-                c.removeAttribute('data-rank');
-                c.querySelector('.rank-badge').innerText = '';
-            });
-
-            // Apply Selections
-            ['boys', 'girls'].forEach(type => {
-                selections[type].forEach((id, idx) => {
-                    const rank = idx + 1;
-                    const el = document.getElementById(`card-${id}`);
-                    const badge = document.getElementById(`badge-${id}`);
-                    
-                    if(el) {
-                        el.classList.add('selected');
-                        el.setAttribute('data-rank', rank);
-                        badge.innerText = rank;
-                    }
-                });
-            });
-
-            // Update Text
-            const count = selections.boys.length + selections.girls.length;
-            const txt = document.getElementById('status-text');
-            txt.innerHTML = count === 0 ? "Tap to select" : `<b>${count}</b> candidates chosen`;
-
-            updateHUD();
-        }
-
-        function updateHUD() {
-            const hud = document.getElementById('hud-strip');
-            let html = '';
-
-            const makeSlot = (rank, id) => {
-                let inner = rank;
-                let activeClass = '';
-                let dotColor = '#333';
-                
-                if (id) {
-                    const c = [...CANDIDATE_DATA.boys, ...CANDIDATE_DATA.girls].find(x => x.id === id);
-                    const visual = c.img ? `<img src="${c.img}">` : `<i class="fas ${c.icon}"></i>`;
-                    
-                    // Rank Colors
-                    if(rank===1) dotColor='var(--gold)';
-                    else if(rank===2) dotColor='var(--silver)';
-                    else if(rank===3) dotColor='var(--bronze)';
-                    else dotColor='var(--rank-other)';
-
-                    inner = `${visual}<div class="rank-dot" style="background:${dotColor}">${rank}</div>`;
-                    activeClass = 'active';
-                }
-
-                return `<div class="mini-slot ${activeClass}">${inner}</div>`;
-            };
-
-            // We show 5 slots for boys, 5 for girls? Or just the ones selected?
-            // "Live Stream" style: Just show the selected ones in order.
-            
-            // Boys Stream
-            selections.boys.forEach((id, i) => html += makeSlot(i+1, id));
-            
-            // Spacer if needed
-            if(selections.boys.length > 0 && selections.girls.length > 0) {
-                html += `<div style="width:1px; height:20px; background:var(--border-subtle); margin-top:10px;"></div>`;
+                // MOVE BACK TO POOL
+                poolZone.appendChild(card);
             }
 
-            // Girls Stream
-            selections.girls.forEach((id, i) => html += makeSlot(i+1, id));
+            updateRanks(type);
+            checkStatus();
+        }
 
-            if(html === '') html = `<span style="font-size:0.7rem; color:var(--text-muted); opacity:0.5;">Empty Ballot</span>`;
+        function updateRanks(type) {
+            const rankZone = document.getElementById(`${type}-rank`);
+            const cards = rankZone.querySelectorAll('.card');
 
-            hud.innerHTML = html;
+            cards.forEach((card, index) => {
+                const rank = index + 1;
+                card.setAttribute('data-rank', rank);
+                card.querySelector('.rank-badge').innerText = rank;
+            });
+        }
+
+        function checkStatus() {
+            const bCount = document.getElementById('boys-rank').children.length;
+            const gCount = document.getElementById('girls-rank').children.length;
+            const total = bCount + gCount;
+            const required = 10;
+
+            const statusTxt = document.getElementById('status-text');
+            const btn = document.getElementById('submitBtn');
+
+            if (total === required) {
+                statusTxt.innerHTML = `<span style="color:var(--gold); font-weight:800;">Ready to Confirm</span>`;
+                btn.classList.add('ready');
+            } else {
+                statusTxt.innerHTML = `Ranked <b>${total}</b> / ${required}`;
+                btn.classList.remove('ready');
+            }
         }
 
         // --- ACTIONS ---
+        function confirmVote() {
+            Swal.fire({
+                title: 'Confirm Ranking?',
+                text: "Your order: 1st (Gold) to 5th.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Lock Vote',
+                confirmButtonColor: document.body.classList.contains('light-mode') ? '#000' : '#fff',
+                background: document.body.classList.contains('light-mode') ? '#fff' : '#111',
+                color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    localStorage.setItem('voteLocked', 'true');
+                    location.reload();
+                }
+            });
+        }
+
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
         }
 
-        function submitVote() {
-            if(selections.boys.length === 0 && selections.girls.length === 0) {
-                Swal.fire({
-                    toast: true, position: 'bottom', icon: 'warning', title: 'Ballot is empty',
-                    showConfirmButton: false, timer: 2000,
-                    background: document.body.classList.contains('light-mode') ? '#fff' : '#222',
-                    color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: 'Lock Vote?',
-                text: "You cannot change this later.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Lock',
-                confirmButtonColor: document.body.classList.contains('light-mode') ? '#000' : '#fff',
-                cancelButtonColor: '#d33',
-                background: document.body.classList.contains('light-mode') ? '#fff' : '#111',
-                color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.setItem('voteLocked', 'true');
-                    lockApp();
-                    Swal.fire({
-                        title: 'Success', icon: 'success', showConfirmButton: false, timer: 1500,
-                        background: document.body.classList.contains('light-mode') ? '#fff' : '#111',
-                        color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
-                    });
-                }
-            });
-        }
-
-        function lockApp() {
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "LOCKED";
-            btn.disabled = true;
-            document.getElementById('status-text').innerText = "Vote Recorded";
-            document.querySelector('.grid').style.pointerEvents = "none";
-            document.body.style.opacity = "0.8";
-        }
     </script>
 </body>
 </html>
