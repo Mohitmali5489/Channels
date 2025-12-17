@@ -3,37 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Rank Ballot</title>
+    <title>EcoCampus Ballot</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* --- THEME --- */
+        /* --- THEME PALETTE --- */
         :root {
-            --bg-body: #0a0a0a;
-            --bg-card: #161616;
-            --bg-card-active: #202020;
-            --text-main: #ffffff;
-            --text-sub: #888;
+            /* DARK MODE (Default) */
+            --bg-body: #0f172a;       
+            --bg-header: rgba(15, 23, 42, 0.85);
+            --bg-card: #1e293b;       
+            --bg-card-active: #334155;
+            
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
             --border: rgba(255,255,255,0.08);
             
-            /* Ranks */
-            --gold: #FFD700;
-            --silver: #C0C0C0;
-            --bronze: #CD7F32;
-            --blue: #3b82f6;
-            --purple: #8b5cf6;
+            --brand-gradient: linear-gradient(135deg, #2dd4bf, #3b82f6);
+            
+            /* Solid Colors for Left Strip */
+            --col-gold: #F59E0B;
+            --col-silver: #94A3B8;
+            --col-bronze: #B45309;
+            --col-blue: #3b82f6;
+            --col-purple: #8b5cf6;
+            --col-default: #475569; /* Unranked Strip Color */
         }
 
         body.light-mode {
-            --bg-body: #f5f5f7;
+            /* LIGHT MODE */
+            --bg-body: #f1f5f9;       
+            --bg-header: rgba(241, 245, 249, 0.85);
             --bg-card: #ffffff;
-            --bg-card-active: #fafafa;
-            --text-main: #1d1d1f;
-            --text-sub: #86868b;
-            --border: rgba(0,0,0,0.05);
+            --bg-card-active: #e2e8f0;
+            
+            --text-main: #0f172a;     
+            --text-sub: #64748b;
+            --border: rgba(0,0,0,0.06);
+            --col-default: #cbd5e1;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -41,152 +51,190 @@
         body {
             margin: 0; background-color: var(--bg-body);
             color: var(--text-main); font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px; transition: 0.3s;
+            padding-bottom: 140px; transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* --- HEADER --- */
+        /* --- CENTERED HEADER --- */
         header {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(10,10,10,0.8);
-            backdrop-filter: blur(20px);
-            padding: 15px 20px;
+            background: var(--bg-header);
+            backdrop-filter: blur(15px);
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
+            /* Center Alignment Logic */
+            display: flex; justify-content: center; align-items: center;
+            position: relative; /* For absolute positioning of toggle */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        body.light-mode header { background: rgba(245,245,247,0.8); }
 
-        .logo { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; }
-        .theme-toggle { background: none; border: none; color: var(--text-main); font-size: 1.1rem; }
+        .logo { 
+            font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px;
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        
+        /* Absolute Position for Toggle to keep Logo centered */
+        .theme-toggle { 
+            position: absolute; right: 20px;
+            background: rgba(125,125,125,0.1); 
+            border: none; width: 40px; height: 40px; border-radius: 50%;
+            color: var(--text-main); font-size: 1rem; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .theme-toggle:active { transform: scale(0.9); }
 
-        /* --- LIST CONTAINER --- */
+        /* --- CONTAINER --- */
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
 
         .section-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin: 30px 0 15px;
+            margin: 35px 0 15px;
         }
-        .sec-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub); }
-        .sec-count { font-size: 0.75rem; font-weight: 600; background: var(--border); padding: 4px 10px; border-radius: 20px; }
-
-        /* --- CARD LIST (Vertical Stack) --- */
-        .rank-list {
-            display: flex; flex-direction: column; gap: 10px;
-            position: relative;
+        
+        .sec-title { 
+            font-size: 0.8rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 1.5px; 
+            color: var(--text-sub); 
+        }
+        
+        .sec-count { 
+            font-size: 0.75rem; font-weight: 700; 
+            color: var(--text-main);
+            background: var(--bg-card); 
+            border: 1px solid var(--border);
+            padding: 4px 12px; border-radius: 20px; 
         }
 
-        /* --- THE CARD --- */
+        /* --- CARD LIST --- */
+        .rank-list { display: flex; flex-direction: column; gap: 12px; }
+
         .card {
             display: flex; align-items: center;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 12px; /* Slightly squarer for professional look */
+            padding: 14px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative;
-            /* For Shuffle Animation */
-            transform: translateZ(0); 
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative; overflow: hidden;
+            
+            /* THE LEFT COLOR STRIP */
+            border-left: 5px solid var(--col-default);
         }
 
-        /* Unranked State (Faded) */
-        .card:not(.ranked) { opacity: 0.6; transform: scale(0.98); }
-        .card:not(.ranked):hover { opacity: 0.8; }
+        /* Interaction States */
+        .card:active { transform: scale(0.98); }
 
-        /* Ranked State (Active) */
+        /* Unranked: Slightly transparent */
+        .card:not(.ranked) { opacity: 0.8; }
+        .card:not(.ranked):hover { opacity: 1; border-color: rgba(100,100,100,0.3); border-left-color: var(--col-default); }
+
+        /* Ranked: Active Look */
         .card.ranked {
-            opacity: 1; transform: scale(1);
+            opacity: 1; 
             background: var(--bg-card-active);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-color: rgba(255,255,255,0.1);
-            z-index: 10;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            /* Border-left is set via specific rank rules below */
         }
-        body.light-mode .card.ranked { border-color: rgba(0,0,0,0.1); }
+        
+        /* Rank Colors for Left Strip */
+        .card[data-rank="1"] { border-left-color: var(--col-gold); }
+        .card[data-rank="2"] { border-left-color: var(--col-silver); }
+        .card[data-rank="3"] { border-left-color: var(--col-bronze); }
+        .card[data-rank="4"] { border-left-color: var(--col-blue); }
+        .card[data-rank="5"] { border-left-color: var(--col-purple); }
 
-        /* Image */
+        /* Avatar */
         .avatar {
-            width: 50px; height: 50px; border-radius: 50%;
-            object-fit: cover; margin-right: 15px;
-            background: #333; flex-shrink: 0;
-            border: 2px solid transparent;
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; margin-right: 16px;
+            background: #334155; flex-shrink: 0;
+            border: 2px solid transparent; 
             transition: 0.3s;
         }
         
         .info { flex-grow: 1; }
-        .name { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
-        .role { font-size: 0.7rem; color: var(--text-sub); }
+        .name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
+        .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; }
 
-        /* Rank Indicator (Right Side) */
+        /* Rank Badge (Right Side) */
         .rank-indicator {
             width: 32px; height: 32px; border-radius: 50%;
-            background: var(--border);
+            background: var(--bg-body); 
+            border: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.8rem;
+            font-weight: 800; font-size: 0.75rem;
             color: var(--text-sub);
-            transition: 0.3s;
+            transition: 0.4s;
         }
+        .rank-indicator i { opacity: 0.5; }
 
-        /* Active Rank Styling */
-        .card[data-rank="1"] .rank-indicator { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-        .card[data-rank="1"] .avatar { border-color: var(--gold); }
-        
-        .card[data-rank="2"] .rank-indicator { background: var(--silver); color: #000; }
-        .card[data-rank="2"] .avatar { border-color: var(--silver); }
-        
-        .card[data-rank="3"] .rank-indicator { background: var(--bronze); color: #000; }
-        .card[data-rank="3"] .avatar { border-color: var(--bronze); }
-        
-        .card[data-rank="4"] .rank-indicator { background: var(--blue); color: #fff; }
-        .card[data-rank="5"] .rank-indicator { background: var(--purple); color: #fff; }
+        /* Active Rank Styles for Badge */
+        .card[data-rank="1"] .rank-indicator { background: var(--col-gold); border:none; color: #fff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); }
+        .card[data-rank="2"] .rank-indicator { background: var(--col-silver); border:none; color: #fff; }
+        .card[data-rank="3"] .rank-indicator { background: var(--col-bronze); border:none; color: #fff; }
+        .card[data-rank="4"] .rank-indicator { background: var(--col-blue); border:none; color: #fff; }
+        .card[data-rank="5"] .rank-indicator { background: var(--col-purple); border:none; color: #fff; }
 
         /* --- FOOTER --- */
         .footer {
-            position: fixed; bottom: 20px; left: 0; width: 100%;
+            position: fixed; bottom: 30px; left: 0; width: 100%;
             padding: 0 20px; pointer-events: none; z-index: 200;
+            display: flex; justify-content: center;
         }
         
         .btn-main {
-            width: 100%; max-width: 500px; margin: 0 auto;
+            width: 100%; max-width: 400px;
             background: var(--text-main); color: var(--bg-body);
-            border: none; padding: 18px; border-radius: 18px;
-            font-size: 1rem; font-weight: 800; letter-spacing: 1px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            pointer-events: auto; cursor: pointer;
-            transition: 0.3s; opacity: 0.5; transform: translateY(10px);
+            border: none; padding: 16px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 800; letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            pointer-events: auto; cursor: not-allowed;
+            transition: 0.3s; opacity: 0.4; transform: translateY(10px);
+            filter: grayscale(1);
         }
         
-        .btn-main.active { opacity: 1; transform: translateY(0); }
-        .btn-main span { font-weight: 400; font-size: 0.8rem; margin-left: 10px; opacity: 0.7; }
+        .btn-main.active { 
+            opacity: 1; transform: translateY(0); cursor: pointer;
+            background: var(--brand-gradient); color: #fff;
+            filter: grayscale(0);
+        }
 
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">SmartRank</div>
-        <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+        <div class="logo">EcoCampus</div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-sun" id="theme-icon"></i> </button>
     </header>
 
     <div class="container">
 
         <div class="section-header">
-            <span class="sec-title">Mr. Birla Ranking</span>
+            <span class="sec-title">Mr. Birla Nominees</span>
             <span class="sec-count" id="count-boys">0/5</span>
         </div>
-        <div class="rank-list" id="list-boys">
-            </div>
+        <div class="rank-list" id="list-boys"></div>
 
         <div class="section-header">
-            <span class="sec-title">Miss. Birla Ranking</span>
+            <span class="sec-title">Miss. Birla Nominees</span>
             <span class="sec-count" id="count-girls">0/5</span>
         </div>
-        <div class="rank-list" id="list-girls">
-            </div>
+        <div class="rank-list" id="list-girls"></div>
 
     </div>
 
     <div class="footer">
         <button class="btn-main" id="submitBtn" onclick="submitVote()">
-            Confirm Vote <span id="btn-status">(Select 10)</span>
+            Confirm Selection
         </button>
     </div>
 
@@ -209,16 +257,23 @@
             ]
         };
 
+        let isDarkMode = true;
+
         // --- INIT ---
         window.onload = function() {
+            // Ensure icon matches default theme
+            updateThemeIcon();
+
             if(localStorage.getItem('voteLocked') === 'true') {
-                document.getElementById('submitBtn').innerText = "VOTE LOCKED";
+                const btn = document.getElementById('submitBtn');
+                btn.innerText = "VOTE SUBMITTED";
                 return;
             }
-            // Shuffle
+            
+            // Randomize order on load
             shuffle(DATA.boys);
             shuffle(DATA.girls);
-            // Render
+            
             renderList('boys', DATA.boys);
             renderList('girls', DATA.girls);
         };
@@ -239,9 +294,8 @@
                 card.id = c.id;
                 card.onclick = () => toggleRank(c.id, type);
                 
-                // Placeholder logic for img
+                // Placeholder image logic
                 const imgSrc = c.img ? c.img : "https://cdn-icons-png.flaticon.com/512/847/847969.png"; 
-                // Using a generic placeholder icon URL for the prototype visual
 
                 card.innerHTML = `
                     <img src="${imgSrc}" class="avatar">
@@ -249,13 +303,13 @@
                         <div class="name">${c.name}</div>
                         <div class="role">Tap to Rank</div>
                     </div>
-                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.7rem"></i></div>
+                    <div class="rank-indicator"><i class="fas fa-plus"></i></div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // --- LOGIC: THE REORDERING ---
+        // --- LOGIC: TAP TO RANK ---
         function toggleRank(id, type) {
             if(localStorage.getItem('voteLocked') === 'true') return;
 
@@ -264,28 +318,25 @@
             const isRanked = card.classList.contains('ranked');
 
             if (isRanked) {
-                // DEMOTE: Move to bottom (Unranked)
+                // DEMOTE
                 card.classList.remove('ranked');
                 card.removeAttribute('data-rank');
                 card.querySelector('.role').innerText = "Tap to Rank";
-                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.7rem"></i>';
-                container.appendChild(card); // Moves DOM element to end
+                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus"></i>';
+                container.appendChild(card); 
             } else {
-                // PROMOTE: Move to bottom of RANKED section (Top of visual list)
-                // We need to find the last ranked card to insert after, or insert at top
+                // PROMOTE
                 const rankedCards = container.querySelectorAll('.card.ranked');
                 
                 if (rankedCards.length === 0) {
-                    container.prepend(card); // First one ranked
+                    container.prepend(card);
                 } else {
-                    // Insert after the last ranked card
                     rankedCards[rankedCards.length - 1].after(card);
                 }
                 
                 card.classList.add('ranked');
             }
 
-            // RE-CALCULATE VISUALS FOR EVERYONE IN LIST
             updateVisuals(type);
         }
 
@@ -299,39 +350,47 @@
             allCards.forEach(card => {
                 if(card.classList.contains('ranked')) {
                     rankedCount++;
-                    // Update Rank Number
+                    
+                    // Assign Rank Data
                     card.setAttribute('data-rank', rankCounter);
                     card.querySelector('.rank-indicator').innerText = rankCounter;
-                    card.querySelector('.role').innerText = getOrdinal(rankCounter) + " Preference";
+                    
+                    // Ordinal Suffix logic
+                    const suffix = ["th","st","nd","rd"];
+                    const v = rankCounter % 100;
+                    const ord = rankCounter + (suffix[(v-20)%10] || suffix[v] || suffix[0]);
+                    
+                    card.querySelector('.role').innerText = `${ord} Choice`;
                     rankCounter++;
                 }
             });
 
-            // Update Header Count
-            document.getElementById(`count-${type}`).innerText = `${rankedCount}/5`;
+            // Update Counter UI
+            const countEl = document.getElementById(`count-${type}`);
+            countEl.innerText = `${rankedCount}/5`;
+            
+            if(rankedCount === 5) {
+                countEl.style.background = "var(--brand-gradient)";
+                countEl.style.color = "#fff";
+                countEl.style.border = "none";
+            } else {
+                countEl.style.background = "";
+                countEl.style.color = "";
+                countEl.style.border = "";
+            }
 
-            // Check Global Status
-            checkTotal();
+            checkGlobalStatus();
         }
 
-        function getOrdinal(n) {
-            const s = ["th", "st", "nd", "rd"];
-            const v = n % 100;
-            return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        }
-
-        function checkTotal() {
+        function checkGlobalStatus() {
             const b = document.getElementById('list-boys').querySelectorAll('.ranked').length;
             const g = document.getElementById('list-girls').querySelectorAll('.ranked').length;
             const btn = document.getElementById('submitBtn');
-            const status = document.getElementById('btn-status');
 
             if (b === 5 && g === 5) {
                 btn.classList.add('active');
-                status.innerText = "(Ready)";
             } else {
                 btn.classList.remove('active');
-                status.innerText = `(${b+g}/10 Selected)`;
             }
         }
 
@@ -340,40 +399,50 @@
             const btn = document.getElementById('submitBtn');
             if (!btn.classList.contains('active')) return;
 
-            // Gather Data
-            const getOrder = (type) => {
-                const ranks = [];
-                document.getElementById(`list-${type}`).querySelectorAll('.ranked').forEach(c => {
-                    ranks.push(`${c.querySelector('.name').innerText} (#${c.getAttribute('data-rank')})`);
-                });
-                return ranks;
-            };
-
-            console.log("Boys:", getOrder('boys'));
-            console.log("Girls:", getOrder('girls'));
+            const isLight = document.body.classList.contains('light-mode');
+            const bg = isLight ? '#fff' : '#1e293b';
+            const color = isLight ? '#0f172a' : '#fff';
 
             Swal.fire({
-                title: 'Confirm Rankings',
-                text: "Top preferences are Gold and Silver. Confirm?",
+                title: 'Lock Preferences?',
+                text: "You cannot change your vote after confirming.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Lock Vote',
-                confirmButtonColor: document.body.classList.contains('light-mode') ? '#000' : '#fff',
-                background: document.body.classList.contains('light-mode') ? '#fff' : '#111',
-                color: document.body.classList.contains('light-mode') ? '#000' : '#fff'
+                confirmButtonText: 'Submit Vote',
+                confirmButtonColor: '#3b82f6',
+                background: bg, color: color
             }).then((res) => {
                 if(res.isConfirmed) {
                     localStorage.setItem('voteLocked', 'true');
-                    btn.innerText = "VOTE RECORDED";
+                    btn.innerText = "VOTE LOCKED";
                     btn.classList.remove('active');
                     btn.style.opacity = "1";
-                    document.querySelectorAll('.card').forEach(c => c.style.pointerEvents = 'none');
+                    btn.style.filter = "grayscale(1)";
+                    document.body.style.pointerEvents = "none";
+                    
+                    Swal.fire({
+                        title: 'Success!', icon: 'success', 
+                        showConfirmButton: false, timer: 1500,
+                        background: bg, color: color
+                    });
                 }
             });
         }
 
+        // --- THEME TOGGLE ---
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
+            isDarkMode = !isDarkMode;
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('theme-icon');
+            if (document.body.classList.contains('light-mode')) {
+                icon.className = "fas fa-moon";
+            } else {
+                icon.className = "fas fa-sun";
+            }
         }
 
     </script>
