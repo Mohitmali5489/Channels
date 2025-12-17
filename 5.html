@@ -24,13 +24,13 @@
             
             --brand-gradient: linear-gradient(135deg, #2dd4bf, #3b82f6);
             
-            /* Solid Colors for Left Strip */
+            /* Left Strip Colors */
             --col-gold: #F59E0B;
             --col-silver: #94A3B8;
             --col-bronze: #B45309;
             --col-blue: #3b82f6;
             --col-purple: #8b5cf6;
-            --col-default: #475569; /* Unranked Strip Color */
+            --col-default: #475569; 
         }
 
         body.light-mode {
@@ -54,16 +54,15 @@
             padding-bottom: 140px; transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* --- CENTERED HEADER --- */
+        /* --- HEADER --- */
         header {
             position: sticky; top: 0; z-index: 100;
             background: var(--bg-header);
             backdrop-filter: blur(15px);
             padding: 16px 20px;
             border-bottom: 1px solid var(--border);
-            /* Center Alignment Logic */
             display: flex; justify-content: center; align-items: center;
-            position: relative; /* For absolute positioning of toggle */
+            position: relative;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
@@ -75,7 +74,6 @@
             text-transform: uppercase;
         }
         
-        /* Absolute Position for Toggle to keep Logo centered */
         .theme-toggle { 
             position: absolute; right: 20px;
             background: rgba(125,125,125,0.1); 
@@ -114,24 +112,18 @@
             display: flex; align-items: center;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px; /* Slightly squarer for professional look */
+            border-radius: 12px;
             padding: 14px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
             position: relative; overflow: hidden;
-            
-            /* THE LEFT COLOR STRIP */
             border-left: 5px solid var(--col-default);
         }
 
-        /* Interaction States */
         .card:active { transform: scale(0.98); }
+        .card:not(.ranked) { opacity: 0.9; }
+        .card:not(.ranked):hover { opacity: 1; border-color: rgba(100,100,100,0.3); }
 
-        /* Unranked: Slightly transparent */
-        .card:not(.ranked) { opacity: 0.8; }
-        .card:not(.ranked):hover { opacity: 1; border-color: rgba(100,100,100,0.3); border-left-color: var(--col-default); }
-
-        /* Ranked: Active Look */
         .card.ranked {
             opacity: 1; 
             background: var(--bg-card-active);
@@ -139,10 +131,9 @@
             border-top-color: transparent;
             border-right-color: transparent;
             border-bottom-color: transparent;
-            /* Border-left is set via specific rank rules below */
         }
         
-        /* Rank Colors for Left Strip */
+        /* Rank Colors */
         .card[data-rank="1"] { border-left-color: var(--col-gold); }
         .card[data-rank="2"] { border-left-color: var(--col-silver); }
         .card[data-rank="3"] { border-left-color: var(--col-bronze); }
@@ -160,9 +151,12 @@
         
         .info { flex-grow: 1; }
         .name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
-        .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; }
+        .role { font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
+        
+        /* Highlighted text in role when ranked */
+        .rank-text { color: var(--brand-gradient); font-weight: 700; margin-right: 5px; }
 
-        /* Rank Badge (Right Side) */
+        /* Rank Badge */
         .rank-indicator {
             width: 32px; height: 32px; border-radius: 50%;
             background: var(--bg-body); 
@@ -172,9 +166,7 @@
             color: var(--text-sub);
             transition: 0.4s;
         }
-        .rank-indicator i { opacity: 0.5; }
 
-        /* Active Rank Styles for Badge */
         .card[data-rank="1"] .rank-indicator { background: var(--col-gold); border:none; color: #fff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); }
         .card[data-rank="2"] .rank-indicator { background: var(--col-silver); border:none; color: #fff; }
         .card[data-rank="3"] .rank-indicator { background: var(--col-bronze); border:none; color: #fff; }
@@ -213,7 +205,8 @@
     <header>
         <div class="logo">EcoCampus</div>
         <button class="theme-toggle" onclick="toggleTheme()">
-            <i class="fas fa-sun" id="theme-icon"></i> </button>
+            <i class="fas fa-sun" id="theme-icon"></i>
+        </button>
     </header>
 
     <div class="container">
@@ -242,31 +235,27 @@
         // DATA
         const DATA = {
             boys: [
-                { id: "b1", name: "Aashish", role: "SYBAF", img: "" },
-                { id: "b2", name: "Krushna", role: "SYBCOM", img: "" },
-                { id: "b3", name: "Suraj", role: "TYBCOM", img: "" },
-                { id: "b4", name: "Yashraj", role: "FYBAF", img: "" },
-                { id: "b5", name: "Prasad", role: "SYBMS", img: "" }
+                { id: "b1", name: "Aashish Yadav", role: "TYBCOM", img: "" },
+                { id: "b2", name: "Krushnakant Pal", role: "TYBSC CS", img: "" },
+                { id: "b3", name: "Suraj Yadav", role: "TYBSC CS", img: "" },
+                { id: "b4", name: "Yashraj Gaikwad", role: "TYBSC CS", img: "https://i.ibb.co/Zz9Nhdnv/image.png" },
+                { id: "b5", name: "Prasad Jawale", role: "SYBSC CS", img: "https://i.ibb.co/F4fWpF2d/image.png" }
             ],
             girls: [
-                { id: "g1", name: "Vaidehi", role: "TYBAF", img: "" },
-                { id: "g2", name: "Ekta", role: "SYBCOM", img: "" },
-                { id: "g3", name: "Divya", role: "FYBMS", img: "" },
-                { id: "g4", name: "Dharani", role: "TYBCOM", img: "" },
-                { id: "g5", name: "Kaustubhi", role: "SYBAF", img: "" }
+                { id: "g1", name: "Vaidehi Gund", role: "TYBMS", img: "" },
+                { id: "g2", name: "Ekta Dixit", role: "TYBSC CS", img: "" },
+                { id: "g3", name: "Divya Nair", role: "SYBSC CS", img: "" },
+                { id: "g4", name: "Dharani Mudaliyar", role: "TYBSC CS", img: "https://i.ibb.co/VcnPCMq7/image.png" },
+                { id: "g5", name: "Kaustubhi Chavan", role: "TYBSC CS", img: "" }
             ]
         };
 
         let isDarkMode = true;
 
-        // --- INIT ---
         window.onload = function() {
-            // Ensure icon matches default theme
             updateThemeIcon();
-
             if(localStorage.getItem('voteLocked') === 'true') {
-                const btn = document.getElementById('submitBtn');
-                btn.innerText = "VOTE SUBMITTED";
+                document.getElementById('submitBtn').innerText = "VOTE SUBMITTED";
                 return;
             }
             
@@ -292,48 +281,50 @@
                 const card = document.createElement('div');
                 card.className = "card";
                 card.id = c.id;
+                // Store the original class name in a data attribute for easy retrieval
+                card.setAttribute('data-role', c.role);
                 card.onclick = () => toggleRank(c.id, type);
                 
-                // Placeholder image logic
                 const imgSrc = c.img ? c.img : "https://cdn-icons-png.flaticon.com/512/847/847969.png"; 
 
                 card.innerHTML = `
                     <img src="${imgSrc}" class="avatar">
                     <div class="info">
                         <div class="name">${c.name}</div>
-                        <div class="role">Tap to Rank</div>
+                        <div class="role">${c.role}</div>
                     </div>
-                    <div class="rank-indicator"><i class="fas fa-plus"></i></div>
+                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.5;"></i></div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // --- LOGIC: TAP TO RANK ---
         function toggleRank(id, type) {
             if(localStorage.getItem('voteLocked') === 'true') return;
 
             const container = document.getElementById(`list-${type}`);
             const card = document.getElementById(id);
             const isRanked = card.classList.contains('ranked');
+            const originalRole = card.getAttribute('data-role');
 
             if (isRanked) {
                 // DEMOTE
                 card.classList.remove('ranked');
                 card.removeAttribute('data-rank');
-                card.querySelector('.role').innerText = "Tap to Rank";
-                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus"></i>';
+                
+                // Reset text to just the Class
+                card.querySelector('.role').innerHTML = originalRole;
+                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.5;"></i>';
+                
                 container.appendChild(card); 
             } else {
                 // PROMOTE
                 const rankedCards = container.querySelectorAll('.card.ranked');
-                
                 if (rankedCards.length === 0) {
                     container.prepend(card);
                 } else {
                     rankedCards[rankedCards.length - 1].after(card);
                 }
-                
                 card.classList.add('ranked');
             }
 
@@ -350,22 +341,26 @@
             allCards.forEach(card => {
                 if(card.classList.contains('ranked')) {
                     rankedCount++;
+                    const originalRole = card.getAttribute('data-role');
                     
-                    // Assign Rank Data
                     card.setAttribute('data-rank', rankCounter);
                     card.querySelector('.rank-indicator').innerText = rankCounter;
                     
-                    // Ordinal Suffix logic
+                    // Ordinal logic
                     const suffix = ["th","st","nd","rd"];
                     const v = rankCounter % 100;
                     const ord = rankCounter + (suffix[(v-20)%10] || suffix[v] || suffix[0]);
                     
-                    card.querySelector('.role').innerText = `${ord} Choice`;
+                    // Combine Rank + Class
+                    // e.g. "1st Choice • TYBSC CS"
+                    // We use a span for color styling if needed
+                    card.querySelector('.role').innerHTML = `<span style="color:var(--text-main); font-weight:700;">${ord} Choice</span> • ${originalRole}`;
+                    
                     rankCounter++;
                 }
             });
 
-            // Update Counter UI
+            // Update Header Count
             const countEl = document.getElementById(`count-${type}`);
             countEl.innerText = `${rankedCount}/5`;
             
@@ -394,7 +389,6 @@
             }
         }
 
-        // --- SUBMIT ---
         function submitVote() {
             const btn = document.getElementById('submitBtn');
             if (!btn.classList.contains('active')) return;
@@ -404,11 +398,11 @@
             const color = isLight ? '#0f172a' : '#fff';
 
             Swal.fire({
-                title: 'Lock Preferences?',
-                text: "You cannot change your vote after confirming.",
+                title: 'Confirm Vote?',
+                text: "Rankings cannot be changed after submission.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Submit Vote',
+                confirmButtonText: 'Lock Vote',
                 confirmButtonColor: '#3b82f6',
                 background: bg, color: color
             }).then((res) => {
@@ -429,7 +423,6 @@
             });
         }
 
-        // --- THEME TOGGLE ---
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             isDarkMode = !isDarkMode;
