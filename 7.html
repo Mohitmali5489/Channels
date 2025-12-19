@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoCampus Ballot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { 
+            --bg:#0a0a0b; --card:#161618; --gold:#D4AF37; 
+            --grad:linear-gradient(135deg,#BF953F,#FCF6BA,#B38728,#FBF5B7); 
+            /* Rank Colors */
+            --r1:#FFD700; --r2:#C0C0C0; --r3:#CD7F32; --r4:#4A90E2; --r5:#9B51E0; --r6:#E91E63;
+        }
+        body { margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; padding-bottom:120px; user-select:none; }
+        header { position:sticky; top:0; z-index:100; background:rgba(10,10,11,0.95); backdrop-filter:blur(20px); padding:15px; border-bottom:1px solid rgba(212,175,55,0.15); text-align:center; }
+        .logo { font-weight:800; font-size:1.1rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        
+        #timer { font-size:0.9rem; font-weight:700; color:var(--gold); margin-top:5px; letter-spacing:1px; font-variant-numeric: tabular-nums; }
+        
+        .container { max-width:500px; margin:0 auto; padding:20px; transition:0.3s; }
+        
+        /* Card Styles */
+        .card { display:flex; align-items:center; background:var(--card); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:12px; margin-bottom:10px; cursor:pointer; position:relative; transition:0.2s; }
+        .avatar { width:45px; height:45px; border-radius:50%; object-fit:cover; margin-right:15px; background:#333; }
+        .info { flex:1; } .name { font-weight:600; font-size:0.95rem; } .role { font-size:0.7rem; color:#aaa; font-weight:600; }
+        .rank-badge { width:28px; height:28px; border-radius:50%; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; }
+        
+        /* Rank Colors */
+        .card[data-r="1"]{border-color:var(--r1); box-shadow:0 0 10px rgba(255,215,0,0.1);} .card[data-r="1"] .rank-badge{background:var(--r1); color:#000; border:none;}
+        .card[data-r="2"]{border-color:var(--r2);} .card[data-r="2"] .rank-badge{background:var(--r2); color:#000; border:none;}
+        .card[data-r="3"]{border-color:var(--r3);} .card[data-r="3"] .rank-badge{background:var(--r3); color:#fff; border:none;}
+        .card[data-r="4"]{border-color:var(--r4);} .card[data-r="4"] .rank-badge{background:var(--r4); color:#fff; border:none;}
+        .card[data-r="5"]{border-color:var(--r5);} .card[data-r="5"] .rank-badge{background:var(--r5); color:#fff; border:none;}
+        .card[data-r="6"]{border-color:var(--r6);} .card[data-r="6"] .rank-badge{background:var(--r6); color:#fff; border:none;}
+        
+        .card.ranked { background:#1c1c1e; }
+        
+        /* Overlay & Button */
+        #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,10,11,0.98); z-index:999; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+        .btn { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; padding:16px; background:#27272a; color:#555; border-radius:12px; border:none; font-weight:800; cursor:not-allowed; text-transform:uppercase; z-index:200; transition:0.3s; }
+        .btn.active { background:var(--grad); color:#000; cursor:pointer; box-shadow:0 10px 30px rgba(179,135,40,0.3); }
+        .blur { filter:blur(10px); pointer-events:none; opacity:0.4; }
+
+        /* DEV RESET BUTTON */
+        #dev-reset { position:fixed; top:10px; left:10px; z-index:10000; background:red; color:white; padding:8px 12px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; font-size:0.7rem; }
+    </style>
+</head>
+<body>
+    
+    <button id="dev-reset" onclick="resetDevice()">RESET DEVICE</button>
+
+    <div id="overlay">
+        <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:2rem; margin-bottom:10px;" id="ov-title">LOCKED</h1>
+        <p style="color:#888; font-size:1.1rem;" id="ov-msg">Access Restricted</p>
+    </div>
+
+    <header>
+        <div class="logo">Mr. & Miss BKBNC</div>
+        <div id="timer">00:00:00</div>
+    </header>
+    
+    <div class="container blur" id="app">
+        <h4 style="color:var(--gold); margin:20px 0 10px; font-size:0.8rem; letter-spacing:1px;">MR. NOMINEES <span id="c-boys" style="float:right; font-size:0.7rem; color:#fff; background:#333; padding:2px 8px; border-radius:4px;">0/6</span></h4>
+        <div id="l-boys"></div>
+        <h4 style="color:var(--gold); margin:30px 0 10px; font-size:0.8rem; letter-spacing:1px;">MISS. NOMINEES <span id="c-girls" style="float:right; font-size:0.7rem; color:#fff; background:#333; padding:2px 8px; border-radius:4px;">0/6</span></h4>
+        <div id="l-girls"></div>
+    </div>
+    
+    <button class="btn" id="sub" onclick="vote()">Select All 12</button>
+
+    <script>
+        // CONFIGURATION
+        const START = new Date("2025-12-19T18:30:00").getTime();
+        const END = new Date("2025-12-19T23:59:59").getTime(); 
+        const sb = supabase.createClient("https://uvlwqlddmanuzeuqtjxp.supabase.co", "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA");
+        const uid = new URLSearchParams(location.search).get('id');
+        const COLORS = ["", "#FFD700", "#C0C0C0", "#CD7F32", "#4A90E2", "#9B51E0", "#E91E63"];
+        
+        const DATA={boys:[{id:"b1",name:"Aashish Yadav",role:"TYBCOM"},{id:"b2",name:"Krushnakant Pal",role:"TYBSC CS"},{id:"b3",name:"Suraj Yadav",role:"TYBSC CS"},{id:"b4",name:"Yashraj Gaikwad",role:"TYBSC CS",img:"https://i.ibb.co/Zz9Nhdnv/image.png"},{id:"b5",name:"Prasad Jawale",role:"SYBSC CS",img:"https://i.ibb.co/F4fWpF2d/image.png"},{id:"b6",name:"Dhananjay Gupta",role:"TYBSC"}],girls:[{id:"g1",name:"Vaidehi Gund",role:"TYBMS"},{id:"g2",name:"Ekta Dixit",role:"TYBSC CS"},{id:"g3",name:"Divya Nair",role:"SYBSC CS"},{id:"g4",name:"Dharani Mudaliyar",role:"TYBSC CS",img:"https://i.ibb.co/VcnPCMq7/image.png"},{id:"g5",name:"Kaustubhi Chavan",role:"TYBSC CS"},{id:"g6",name:"Dhani Singh",role:"SYBMS"}]};
+
+        // --- DEV RESET FUNCTION ---
+        function resetDevice() {
+            localStorage.removeItem('voted');
+            alert("Device Unlocked! (Ensure DB is also cleared)");
+            location.reload();
+        }
+
+        window.onload = async () => {
+            // 1. INSTANT CHECK
+            if(localStorage.getItem('voted')) return lock('DEVICE LOCKED', 'You have already voted from this device.');
+            if(!uid) return lock('ACCESS DENIED', 'No Student ID provided.');
+
+            // 2. FAST CHECK
+            try {
+                const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
+                const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
+                
+                const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
+
+                const { data: isUsed } = await sb.rpc('check_device_status', { p_ip: ipData.ip });
+                if(isUsed) { localStorage.setItem('voted', 'true'); return lock('DEVICE LOCKED', 'This device has already been used.'); }
+                if(usrRes.data?.has_voted) return lock('ALREADY VOTED', 'Your vote has already been recorded.');
+
+            } catch(e) { console.error(e); }
+
+            // 3. Render
+            initList('boys', DATA.boys); initList('girls', DATA.girls);
+            setInterval(tick, 1000); tick();
+        };
+
+        function initList(t, d) {
+            d.sort(()=>Math.random()-0.5).forEach(c => {
+                const el = document.createElement('div'); el.className = 'card'; el.id = c.id;
+                el.onclick = () => toggle(c.id, t, c.role);
+                el.innerHTML = `<img src="${c.img||'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
+                <div class="info"><div class="name">${c.name}</div><div class="role">${c.role}</div></div><div class="rank-badge">+</div>`;
+                document.getElementById(`l-${t}`).appendChild(el);
+            });
+        }
+
+        function toggle(id, t, role) {
+            const el = document.getElementById(id), box = document.getElementById(`l-${t}`);
+            const isRanked = el.classList.contains('ranked');
+            if(isRanked) {
+                el.classList.remove('ranked'); el.querySelector('.role').innerText = role; el.removeAttribute('data-r');
+                box.appendChild(el); 
+            } else {
+                const r = box.querySelectorAll('.ranked');
+                if(r.length >= 6) return;
+                el.classList.add('ranked');
+                r.length > 0 ? r[r.length-1].after(el) : box.prepend(el); 
+            }
+            sync(t);
+        }
+
+        function sync(t) {
+            const r = document.getElementById(`l-${t}`).querySelectorAll('.ranked');
+            r.forEach((el, i) => {
+                const rank = i+1;
+                el.setAttribute('data-r', rank); 
+                el.querySelector('.rank-badge').innerText = rank;
+                el.querySelector('.role').innerHTML = `<span style="color:${COLORS[rank]}">${rank}${ord(rank)} Choice</span>`;
+            });
+            document.getElementById(`c-${t}`).innerText = `${r.length}/6`;
+            const all = document.querySelectorAll('.ranked').length;
+            const btn = document.getElementById('sub');
+            btn.className = all===12 ? 'btn active' : 'btn'; 
+            btn.innerText = all===12 ? 'CONFIRM VOTE' : `SELECT ALL 12 (${all}/12)`;
+        }
+
+        async function vote() {
+            if(!document.getElementById('sub').classList.contains('active')) return;
+            const { isConfirmed } = await Swal.fire({title:'Submit?', text:'You cannot change this later.', icon:'warning', showCancelButton:true, confirmButtonColor:'#D4AF37', background:'#111', color:'#fff'});
+            if(!isConfirmed) return;
+            
+            Swal.fire({title:'Submitting...', didOpen:()=>Swal.showLoading(), background:'#111', color:'#fff'});
+            
+            try {
+                const get = t => [...document.getElementById(`l-${t}`).querySelectorAll('.ranked')].map(e=>({id:e.id, rank:parseInt(e.getAttribute('data-r'))}));
+                const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json());
+
+                const { error } = await sb.rpc('cast_preferential_vote', { p_student_id:uid, p_boy_ranks:get('boys'), p_girl_ranks:get('girls'), p_ip_address:ip.ip, p_user_agent:navigator.userAgent });
+                
+                if(error) {
+                    if(error.message.includes('Device')) localStorage.setItem('voted', 'true');
+                    throw error;
+                }
+
+                localStorage.setItem('voted', 'true');
+                await Swal.fire({title: 'Thanks for voting!', text: 'Your vote has been securely recorded.', icon: 'success', confirmButtonColor: '#D4AF37', background: '#111', color: '#fff'});
+                location.reload(); 
+
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        }
+
+        function tick() {
+            const now = Date.now(), el = document.getElementById('app'), tm = document.getElementById('timer');
+            if(now < START) { 
+                tm.innerText = "STARTS SOON"; el.classList.add('blur'); 
+            } else if(now > END) { 
+                lock('VOTING CLOSED', 'The voting window has ended.'); 
+            } else { 
+                const d = END - now;
+                const h = Math.floor(d / 3600000).toString().padStart(2, '0');
+                const m = Math.floor((d % 3600000) / 60000).toString().padStart(2, '0');
+                const s = Math.floor((d % 60000) / 1000).toString().padStart(2, '0');
+                tm.innerText = `CLOSING IN: ${h}:${m}:${s}`; 
+                el.classList.remove('blur'); 
+            }
+        }
+
+        function lock(title, msg) {
+            const ov = document.getElementById('overlay');
+            ov.style.display = 'flex';
+            document.getElementById('ov-title').innerText = title;
+            document.getElementById('ov-msg').innerText = msg;
+            document.getElementById('app').classList.add('blur');
+        }
+        
+        function ord(n){return["st","nd","rd"][((n+90)%100-10)%10-1]||"th"}
+    </script>
+</body>
+</html>
