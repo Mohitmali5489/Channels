@@ -12,22 +12,29 @@
 
     <style>
         :root {
+            /* FIXED DARK THEME FROM PROTOTYPE */
             --bg-body: #0a0a0b;       
             --bg-header: rgba(10, 10, 11, 0.95);
             --bg-card: #161618;       
+            --bg-card-active: #1c1c1e;
             --text-main: #ffffff;
             --text-sub: #a1a1aa;
             --border: rgba(212, 175, 55, 0.15);
+            
             --brand-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             --gold-solid: #D4AF37;
+
+            /* Rank Specific Colors */
             --rank-1: #FFD700; --rank-2: #C0C0C0; --rank-3: #CD7F32;
             --rank-4: #4A90E2; --rank-5: #9B51E0; --rank-6: #E91E63;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             margin: 0; background-color: var(--bg-body);
             color: var(--text-main); font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px; overflow-x: hidden;
+            padding-bottom: 140px;
         }
 
         header {
@@ -43,73 +50,125 @@
             -webkit-text-fill-color: transparent; text-transform: uppercase;
         }
 
-        #countdown-timer {
-            font-size: 0.8rem; margin-top: 5px; color: var(--gold-solid); font-weight: 600;
+        #timer-display {
+            font-size: 0.75rem; margin-top: 4px; font-weight: 700;
+            color: var(--gold-solid); letter-spacing: 1px;
         }
 
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; transition: 0.5s; }
-
-        /* BLUR STATE */
-        .locked-state { filter: blur(12px); pointer-events: none; user-select: none; opacity: 0.3; }
-
-        /* OVERLAY SCREEN */
+        /* BLUR & OVERLAY LOGIC */
+        .locked-content { filter: blur(10px); pointer-events: none; opacity: 0.4; transition: 0.5s; }
+        
         #status-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 11, 0.95); z-index: 1000;
+            background: rgba(10, 10, 11, 0.9); z-index: 1000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
+            text-align: center; padding: 30px;
         }
 
-        .section-header { display: flex; align-items: center; justify-content: space-between; margin: 40px 0 15px; }
-        .sec-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--gold-solid); }
-        .sec-count { font-size: 0.7rem; font-weight: 800; background: rgba(212, 175, 55, 0.1); padding: 4px 10px; border-radius: 6px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin: 40px 0 15px;
+        }
+        
+        .sec-title { 
+            font-size: 0.75rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 2px; 
+            color: var(--gold-solid); 
+        }
+        
+        .sec-count { 
+            font-size: 0.7rem; font-weight: 800; 
+            color: var(--text-main);
+            background: rgba(212, 175, 55, 0.1); 
+            border: 1px solid var(--border);
+            padding: 4px 10px; border-radius: 6px; 
+        }
 
         .rank-list { display: flex; flex-direction: column; gap: 14px; }
+
         .card {
-            display: flex; align-items: center; background: var(--bg-card);
-            border: 1px solid var(--border); border-radius: 16px; padding: 14px;
-            cursor: pointer; transition: 0.3s; position: relative;
+            display: flex; align-items: center;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 14px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
-        
-        /* Rank Specific Highlights */
-        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
+
+        .card:active { transform: scale(0.97); }
+
+        /* Dynamic Ranking Borders from Prototype */
+        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
         .card[data-rank="2"] { border-color: var(--rank-2); }
         .card[data-rank="3"] { border-color: var(--rank-3); }
+        .card[data-rank="4"] { border-color: var(--rank-4); }
+        .card[data-rank="5"] { border-color: var(--rank-5); }
+        .card[data-rank="6"] { border-color: var(--rank-6); }
 
-        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-right: 16px; border: 2px solid var(--border); }
+        .card.ranked { background: var(--bg-card-active); }
+
+        .avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            object-fit: cover; margin-right: 16px;
+            background: #27272a; flex-shrink: 0;
+            border: 2px solid var(--border);
+        }
+
         .info { flex-grow: 1; }
         .name { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
-        .role { font-size: 0.7rem; color: var(--text-sub); }
-        
-        .rank-indicator { 
-            width: 30px; height: 30px; border-radius: 50%; 
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border); 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: 800; font-size: 0.8rem;
+        .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; letter-spacing: 0.5px; }
+        .choice-label { font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
+
+        .rank-indicator {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
         }
 
-        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 200; display: flex; justify-content: center; background: linear-gradient(transparent, var(--bg-body)); }
-        .btn-main {
-            width: 100%; max-width: 400px; background: #27272a; color: #52525b;
-            border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
-            font-size: 0.85rem; font-weight: 800; text-transform: uppercase; cursor: not-allowed; transition: 0.3s;
+        /* Indicator Backgrounds from Prototype */
+        .card[data-rank="1"] .rank-indicator { background: var(--rank-1); color: #000; border: none; }
+        .card[data-rank="2"] .rank-indicator { background: var(--rank-2); color: #000; border: none; }
+        .card[data-rank="3"] .rank-indicator { background: var(--rank-3); color: #fff; border: none; }
+        .card[data-rank="4"] .rank-indicator { background: var(--rank-4); color: #fff; border: none; }
+        .card[data-rank="5"] .rank-indicator { background: var(--rank-5); color: #fff; border: none; }
+        .card[data-rank="6"] .rank-indicator { background: var(--rank-6); color: #fff; border: none; }
+
+        .footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            padding: 20px; z-index: 200;
+            background: linear-gradient(to top, var(--bg-body) 70%, transparent);
+            display: flex; justify-content: center;
         }
-        .btn-main.active { cursor: pointer; background: var(--brand-gradient); color: #000; border: none; box-shadow: 0 5px 20px rgba(179, 135, 40, 0.4); }
+        
+        .btn-main {
+            width: 100%; max-width: 400px;
+            background: #27272a; color: #52525b;
+            border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
+            font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;
+            text-transform: uppercase; cursor: not-allowed; transition: 0.4s;
+        }
+        
+        .btn-main.active { 
+            cursor: pointer; background: var(--brand-gradient); color: #000; border: none;
+            box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div id="status-overlay">
-        <h1 id="overlay-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; margin-bottom: 10px;">VOTING CLOSED</h1>
-        <p id="overlay-msg" style="color: var(--text-sub); font-size: 1rem;">Please wait for the official results announcement.</p>
+        <h1 id="ov-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">VOTING CLOSED</h1>
+        <p id="ov-msg" style="color: var(--text-sub);">The voting window has ended.</p>
     </div>
 
     <header>
         <div class="logo">Mr. & Miss BKBNC 2025</div>
-        <div id="countdown-timer">Checking Session...</div>
+        <div id="timer-display">SYNCING TIME...</div>
     </header>
 
-    <div class="container locked-state" id="main-content">
+    <div class="container locked-content" id="main-ballot">
         <div class="section-header">
             <span class="sec-title">Mr. BKBNC Nominees</span>
             <span class="sec-count" id="count-boys">0/6</span>
@@ -124,19 +183,21 @@
     </div>
 
     <div class="footer">
-        <button class="btn-main" id="submitBtn" onclick="submitVote()">Confirm Selection</button>
+        <button class="btn-main" id="submitBtn" onclick="submitVote()">
+            Confirm Selection
+        </button>
     </div>
 
     <script>
-        // Use the global 'supabase' object directly to avoid 'already declared' error
+        // Supabase Initialization
         const _supabase = supabase.createClient(
             "https://uvlwqlddmanuzeuqtjxp.supabase.co", 
             "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA"
         );
 
-        // VOTING WINDOW: Dec 19, 2025, 6:30 PM to 6:40 PM
-        const VOTING_START = new Date("2025-12-19T18:30:00").getTime();
-        const VOTING_END = new Date("2025-12-19T18:40:00").getTime();
+        // CONFIG: Dec 19, 2025, 6:30 PM - 6:40 PM
+        const START_TIME = new Date("2025-12-19T18:30:00").getTime();
+        const END_TIME = new Date("2025-12-19T18:40:00").getTime();
         
         const studentId = new URLSearchParams(window.location.search).get('id');
 
@@ -159,160 +220,128 @@
             ]
         };
 
-        function updateTimer() {
+        function updateClock() {
             const now = Date.now();
-            const timerEl = document.getElementById('countdown-timer');
-            const content = document.getElementById('main-content');
+            const timer = document.getElementById('timer-display');
+            const ballot = document.getElementById('main-ballot');
             const overlay = document.getElementById('status-overlay');
 
-            if (now < VOTING_START) {
-                const diff = VOTING_START - now;
-                const mins = Math.floor(diff / 60000);
-                const secs = Math.floor((diff % 60000) / 1000);
-                timerEl.innerText = `VOTING STARTS IN: ${mins}m ${secs}s`;
-                content.classList.add('locked-state');
+            if (now < START_TIME) {
+                const d = START_TIME - now;
+                timer.innerText = `STARTS IN: ${Math.floor(d/60000)}m ${Math.floor((d%60000)/1000)}s`;
+                ballot.classList.add('locked-content');
+            } else if (now >= START_TIME && now <= END_TIME) {
+                const d = END_TIME - now;
+                timer.innerText = `CLOSES IN: ${Math.floor(d/60000)}m ${Math.floor((d%60000)/1000)}s`;
+                ballot.classList.remove('locked-content');
                 overlay.style.display = "none";
-            } 
-            else if (now >= VOTING_START && now <= VOTING_END) {
-                const diff = VOTING_END - now;
-                const mins = Math.floor(diff / 60000);
-                const secs = Math.floor((diff % 60000) / 1000);
-                timerEl.innerText = `TIME REMAINING: ${mins}m ${secs}s`;
-                content.classList.remove('locked-state');
-                overlay.style.display = "none";
-            } 
-            else {
-                timerEl.innerText = "VOTING PERIOD ENDED";
+            } else {
+                timer.innerText = "VOTING CLOSED";
+                ballot.classList.add('locked-content');
                 overlay.style.display = "flex";
-                document.getElementById('overlay-title').innerText = "VOTING CLOSED";
-                document.getElementById('overlay-msg').innerText = "The line is closed. Thank you for voting!";
-                content.classList.add('locked-state');
             }
         }
 
         window.onload = async function() {
             if (!studentId) {
-                Swal.fire('Identity Error', 'Valid Student ID is required to vote.', 'error');
+                Swal.fire('Error', 'Invalid link. Missing Student ID.', 'error');
                 return;
             }
 
-            // Verify if already voted
-            const { data, error } = await _supabase
-                .from('voter_list')
-                .select('has_voted')
-                .eq('student_id', studentId)
-                .single();
-
+            // Database Check
+            const { data } = await _supabase.from('voter_list').select('has_voted').eq('student_id', studentId).single();
             if (data?.has_voted) {
                 document.getElementById('status-overlay').style.display = "flex";
-                document.getElementById('overlay-title').innerText = "VOTE RECORDED";
-                document.getElementById('overlay-msg').innerText = "Your rankings have already been submitted.";
+                document.getElementById('ov-title').innerText = "VOTE RECORDED";
+                document.getElementById('ov-msg').innerText = "You have already cast your preferential vote.";
                 return;
             }
 
             shuffle(DATA.boys);
             shuffle(DATA.girls);
-            renderList('boys', DATA.boys);
-            renderList('girls', DATA.girls);
+            render('boys', DATA.boys);
+            render('girls', DATA.girls);
             
-            setInterval(updateTimer, 1000);
-            updateTimer();
+            setInterval(updateClock, 1000);
+            updateClock();
         };
 
-        function shuffle(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-        }
+        function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
 
-        function renderList(type, items) {
+        function render(type, items) {
             const container = document.getElementById(`list-${type}`);
-            items.forEach(item => {
+            items.forEach(c => {
                 const card = document.createElement('div');
-                card.className = 'card';
-                card.id = item.id;
-                card.onclick = () => toggleRank(item.id, type);
+                card.className = "card"; card.id = c.id; card.setAttribute('data-role', c.role);
+                card.onclick = () => handleToggle(c.id, type);
                 card.innerHTML = `
-                    <img src="${item.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
-                    <div class="info"><div class="name">${item.name}</div><div class="role" data-orig="${item.role}">${item.role}</div></div>
-                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i></div>
-                `;
+                    <img src="${c.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
+                    <div class="info"><div class="name">${c.name}</div><div class="role">${c.role}</div></div>
+                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i></div>`;
                 container.appendChild(card);
             });
         }
 
-        function toggleRank(id, type) {
+        function handleToggle(id, type) {
             const card = document.getElementById(id);
             const container = document.getElementById(`list-${type}`);
             if (card.classList.contains('ranked')) {
-                card.classList.remove('ranked');
-                card.removeAttribute('data-rank');
-                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>';
+                card.classList.remove('ranked'); card.removeAttribute('data-rank');
                 container.appendChild(card);
             } else {
                 if (container.querySelectorAll('.card.ranked').length >= 6) return;
                 card.classList.add('ranked');
-                const lastRanked = Array.from(container.querySelectorAll('.card.ranked')).pop();
-                if(lastRanked) lastRanked.after(card);
+                const rankedArr = Array.from(container.querySelectorAll('.card.ranked'));
+                rankedArr[rankedArr.length-1].after(card);
             }
-            updateVisuals(type);
+            sync(type);
         }
 
-        function updateVisuals(type) {
+        function sync(type) {
             const container = document.getElementById(`list-${type}`);
             const ranked = container.querySelectorAll('.card.ranked');
-            ranked.forEach((card, i) => {
-                card.setAttribute('data-rank', i + 1);
-                card.querySelector('.rank-indicator').innerText = i + 1;
-            });
-            document.getElementById(`count-${type}`).innerText = `${ranked.length}/6`;
+            const colors = ["", "var(--rank-1)", "var(--rank-2)", "var(--rank-3)", "var(--rank-4)", "var(--rank-5)", "var(--rank-6)"];
             
-            const totalRanked = document.querySelectorAll('.card.ranked').length;
-            const btn = document.getElementById('submitBtn');
-            if (totalRanked === 12) btn.classList.add('active');
-            else btn.classList.remove('active');
+            ranked.forEach((card, i) => {
+                const rank = i + 1;
+                card.setAttribute('data-rank', rank);
+                card.querySelector('.rank-indicator').innerText = rank;
+                const suff = ["th","st","nd","rd"][(rank%100-20)%10] || ["th","st","nd","rd"][rank%100] || "th";
+                card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${colors[rank]}">${rank}${suff} Choice</span> • ${card.getAttribute('data-role')}`;
+            });
+            
+            document.getElementById(`count-${type}`).innerText = `${ranked.length}/6`;
+            const active = document.querySelectorAll('.card.ranked').length === 12;
+            document.getElementById('submitBtn').classList.toggle('active', active);
         }
 
         async function submitVote() {
             if (!document.getElementById('submitBtn').classList.contains('active')) return;
             
-            const { isConfirmed } = await Swal.fire({
-                title: 'Confirm Choices?',
-                text: "Your rankings are final and cannot be edited.",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#B38728',
-                background: '#161618',
-                color: '#fff'
+            const res = await Swal.fire({
+                title: 'Confirm Submission?', text: "Choices cannot be changed after locking.",
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#B38728', background: '#161618', color: '#fff'
             });
 
-            if (!isConfirmed) return;
+            if (!res.isConfirmed) return;
 
-            const getRanks = (type) => [...document.getElementById(`list-${type}`).querySelectorAll('.card.ranked')]
-                .map(c => ({ id: c.id, rank: parseInt(c.getAttribute('data-rank')) }));
-
-            Swal.fire({ title: 'Submitting...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const getMap = (t) => [...document.getElementById(`list-${t}`).querySelectorAll('.card.ranked')].map(c => ({id: c.id, rank: parseInt(c.getAttribute('data-rank'))}));
+            
+            Swal.fire({ title: 'Locking Vote...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             try {
-                const ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json());
-                
-                // Call secure function
+                const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json());
                 const { error } = await _supabase.rpc('cast_preferential_vote', {
                     p_student_id: studentId,
-                    p_boy_ranks: getRanks('boys'),
-                    p_girl_ranks: getRanks('girls'),
-                    p_ip_address: ipRes.ip,
+                    p_boy_ranks: getMap('boys'),
+                    p_girl_ranks: getMap('girls'),
+                    p_ip_address: ip.ip,
                     p_user_agent: navigator.userAgent
                 });
-
                 if (error) throw error;
-                
-                await Swal.fire('Success', 'Your vote has been cast!', 'success');
+                await Swal.fire('Confirmed', 'Your ballot has been securely submitted.', 'success');
                 location.reload();
-            } catch (e) {
-                Swal.fire("Error", e.message || "Submission failed", "error");
-            }
+            } catch (e) { Swal.fire('Error', e.message, 'error'); }
         }
     </script>
 </body>
