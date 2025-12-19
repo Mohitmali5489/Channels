@@ -7,11 +7,13 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
+            /* THEME VARIABLES */
             --bg-body: #0a0a0b;       
             --bg-header: rgba(10, 10, 11, 0.95);
             --bg-card: #161618;       
@@ -19,15 +21,28 @@
             --text-main: #ffffff;
             --text-sub: #a1a1aa;
             --border: rgba(212, 175, 55, 0.15);
+            
             --brand-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             --gold-solid: #D4AF37;
-            --rank-1: #FFD700; --rank-2: #C0C0C0; --rank-3: #CD7F32;
-            --rank-4: #4A90E2; --rank-5: #9B51E0; --rank-6: #E91E63;
+
+            /* Rank Colors */
+            --rank-1: #FFD700; /* Gold */
+            --rank-2: #C0C0C0; /* Silver */
+            --rank-3: #CD7F32; /* Bronze */
+            --rank-4: #4A90E2; /* Blue */
+            --rank-5: #9B51E0; /* Purple */
+            --rank-6: #E91E63; /* Pink */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background-color: var(--bg-body); color: var(--text-main); font-family: 'Outfit', sans-serif; padding-bottom: 140px; }
 
+        body {
+            margin: 0; background-color: var(--bg-body);
+            color: var(--text-main); font-family: 'Outfit', sans-serif;
+            padding-bottom: 140px; user-select: none;
+        }
+
+        /* HEADER */
         header {
             position: sticky; top: 0; z-index: 100;
             background: var(--bg-header); backdrop-filter: blur(20px);
@@ -41,64 +56,120 @@
             -webkit-text-fill-color: transparent; text-transform: uppercase;
         }
 
-        #timer-display { font-size: 0.75rem; margin-top: 4px; font-weight: 700; color: var(--gold-solid); letter-spacing: 1px; }
-        .locked-content { filter: blur(10px); pointer-events: none; opacity: 0.4; transition: 0.5s; }
+        #timer-display {
+            font-size: 0.75rem; margin-top: 4px; font-weight: 700;
+            color: var(--gold-solid); letter-spacing: 1px;
+        }
+
+        /* STATES */
+        .locked-content { filter: blur(12px); pointer-events: none; opacity: 0.4; transition: 0.5s; }
         
         #status-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 11, 0.9); z-index: 1000;
+            background: rgba(10, 10, 11, 0.95); z-index: 1000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 30px;
         }
 
+        /* CARD LIST */
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .section-header { display: flex; align-items: center; justify-content: space-between; margin: 40px 0 15px; }
-        .sec-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-solid); }
-        .sec-count { font-size: 0.7rem; font-weight: 800; color: var(--text-main); background: rgba(212, 175, 55, 0.1); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; }
 
-        .rank-list { display: flex; flex-direction: column; gap: 14px; }
-        .card {
-            display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 14px; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin: 40px 0 15px;
+        }
+        
+        .sec-title { 
+            font-size: 0.75rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 2px; color: var(--gold-solid); 
+        }
+        
+        .sec-count { 
+            font-size: 0.7rem; font-weight: 800; color: var(--text-main);
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--border);
+            padding: 4px 10px; border-radius: 6px; 
         }
 
-        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .rank-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .card {
+            display: flex; align-items: center;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 14px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .card:active { transform: scale(0.98); }
+
+        /* Dynamic Ranking Styles */
+        .card.ranked { background: var(--bg-card-active); }
+        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); }
         .card[data-rank="2"] { border-color: var(--rank-2); }
         .card[data-rank="3"] { border-color: var(--rank-3); }
-        .card.ranked { background: var(--bg-card-active); }
+        .card[data-rank="4"] { border-color: var(--rank-4); }
+        .card[data-rank="5"] { border-color: var(--rank-5); }
+        .card[data-rank="6"] { border-color: var(--rank-6); }
 
-        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-right: 16px; background: #27272a; flex-shrink: 0; border: 2px solid var(--border); }
+        .avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            object-fit: cover; margin-right: 16px;
+            background: #27272a; flex-shrink: 0;
+            border: 2px solid var(--border);
+        }
+
         .info { flex-grow: 1; }
         .name { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
         .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; letter-spacing: 0.5px; }
         .choice-label { font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
 
         .rank-indicator {
-            width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
         }
 
-        /* Rank Highlights */
+        /* Rank Badge Colors */
         .card[data-rank="1"] .rank-indicator { background: var(--rank-1); color: #000; border: none; }
         .card[data-rank="2"] .rank-indicator { background: var(--rank-2); color: #000; border: none; }
         .card[data-rank="3"] .rank-indicator { background: var(--rank-3); color: #fff; border: none; }
+        .card[data-rank="4"] .rank-indicator { background: var(--rank-4); color: #fff; border: none; }
+        .card[data-rank="5"] .rank-indicator { background: var(--rank-5); color: #fff; border: none; }
+        .card[data-rank="6"] .rank-indicator { background: var(--rank-6); color: #fff; border: none; }
 
-        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 200; background: linear-gradient(to top, var(--bg-body) 70%, transparent); display: flex; justify-content: center; }
-        .btn-main { width: 100%; max-width: 400px; background: #27272a; color: #52525b; border: 1px solid #3f3f46; padding: 18px; border-radius: 14px; font-size: 0.85rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: not-allowed; transition: 0.4s; }
-        .btn-main.active { cursor: pointer; background: var(--brand-gradient); color: #000; border: none; box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3); }
+        /* FOOTER */
+        .footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            padding: 20px; z-index: 200;
+            background: linear-gradient(to top, var(--bg-body) 60%, transparent);
+            display: flex; justify-content: center;
+        }
+        
+        .btn-main {
+            width: 100%; max-width: 400px;
+            background: #27272a; color: #52525b;
+            border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
+            font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;
+            text-transform: uppercase; cursor: not-allowed; transition: 0.4s;
+        }
+        
+        .btn-main.active { 
+            cursor: pointer; background: var(--brand-gradient); color: #000; border: none;
+            box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div id="status-overlay">
-        <h1 id="ov-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SESSION ENDED</h1>
-        <p id="ov-msg" style="color: var(--text-sub);">The voting window has closed.</p>
+        <h1 id="ov-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; font-size: 1.8rem;">VOTING CLOSED</h1>
+        <p id="ov-msg" style="color: var(--text-sub);">The session has ended.</p>
     </div>
 
     <header>
         <div class="logo">Mr. & Miss BKBNC 2025</div>
-        <div id="timer-display">SYNCING...</div>
+        <div id="timer-display">SYNCING TIME...</div>
     </header>
 
     <div class="container locked-content" id="main-ballot">
@@ -116,16 +187,35 @@
     </div>
 
     <div class="footer">
-        <button class="btn-main" id="submitBtn" onclick="submitVote()">Confirm Selection</button>
+        <button class="btn-main" id="submitBtn" onclick="submitVote()">
+            Select All 12 (0/12)
+        </button>
     </div>
 
     <script>
-        const _supabase = supabase.createClient("https://uvlwqlddmanuzeuqtjxp.supabase.co", "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA");
+        // ==========================================
+        // 1. CONFIGURATION (Set Time Here)
+        // ==========================================
+        
+        // Example: December 19, 2025, 6:30 PM to 6:40 PM
+        // Format: YYYY-MM-DDTHH:MM:SS
+        const START_TIME = new Date("2025-12-19T18:30:00").getTime();
+        const END_TIME   = new Date("2025-12-19T23:59:00").getTime(); // Extended for testing
+        
+        // Supabase Config
+        const SUPABASE_URL = "https://uvlwqlddmanuzeuqtjxp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA";
+        
+        // Initialize Supabase (renamed to avoid CDN conflict)
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const START_TIME = new Date("2025-12-19T18:40:00").getTime();
-        const END_TIME = new Date("2025-12-19T18:50:00").getTime();
+        // Get Student ID from URL
         const studentId = new URLSearchParams(window.location.search).get('id');
 
+
+        // ==========================================
+        // 2. DATA
+        // ==========================================
         const DATA = {
             boys: [
                 { id: "b1", name: "Aashish Yadav", role: "TYBCOM", img: "" },
@@ -145,63 +235,81 @@
             ]
         };
 
-        function updateClock() {
-            const now = Date.now();
-            const timer = document.getElementById('timer-display');
-            const ballot = document.getElementById('main-ballot');
-            const overlay = document.getElementById('status-overlay');
-
-            if (now < START_TIME) {
-                const d = START_TIME - now;
-                timer.innerText = `STARTS IN: ${Math.floor(d/60000)}m ${Math.floor((d%60000)/1000)}s`;
-                ballot.classList.add('locked-content');
-            } else if (now >= START_TIME && now <= END_TIME) {
-                const d = END_TIME - now;
-                timer.innerText = `CLOSES IN: ${Math.floor(d/60000)}m ${Math.floor((d%60000)/1000)}s`;
-                ballot.classList.remove('locked-content');
-                overlay.style.display = "none";
-            } else {
-                timer.innerText = "VOTING CLOSED";
-                ballot.classList.add('locked-content');
-                overlay.style.display = "flex";
-            }
-        }
-
+        // ==========================================
+        // 3. INITIALIZATION
+        // ==========================================
         window.onload = async function() {
+            // A. Check for ID
             if (!studentId) {
-                Swal.fire('Error', 'Invalid link. Access via your personal link.', 'error');
+                Swal.fire({
+                    title: 'Access Denied', 
+                    text: 'No Student ID found in link.', 
+                    icon: 'error',
+                    allowOutsideClick: false
+                });
                 return;
             }
 
-            const { data } = await _supabase.from('voter_list').select('has_voted').eq('student_id', studentId).single();
-            if (data?.has_voted) {
-                document.getElementById('status-overlay').style.display = "flex";
-                document.getElementById('ov-title').innerText = "VOTE RECORDED";
-                document.getElementById('ov-msg').innerText = "You have already cast your vote.";
-                return;
-            }
+            // B. Check Database for previous vote
+            try {
+                const { data, error } = await _supabase
+                    .from('voter_list')
+                    .select('has_voted')
+                    .eq('student_id', studentId)
+                    .single();
 
+                if (data?.has_voted) {
+                    showOverlay("VOTE RECORDED", "You have already cast your vote.");
+                    return;
+                }
+            } catch (err) { console.error(err); }
+
+            // C. Setup UI
             shuffle(DATA.boys);
             shuffle(DATA.girls);
             render('boys', DATA.boys);
             render('girls', DATA.girls);
             
+            // D. Start Timer
             setInterval(updateClock, 1000);
             updateClock();
         };
 
-        function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
+        // ==========================================
+        // 4. RENDERING & SORTING LOGIC
+        // ==========================================
+        function shuffle(arr) {
+            for(let i=arr.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [arr[i],arr[j]]=[arr[j],arr[i]];
+            } 
+        }
 
         function render(type, items) {
             const container = document.getElementById(`list-${type}`);
+            container.innerHTML = "";
             items.forEach(c => {
                 const card = document.createElement('div');
-                card.className = "card"; card.id = c.id; card.setAttribute('data-role', c.role);
-                card.onclick = () => handleToggle(c.id, type);
+                card.className = "card"; 
+                card.id = c.id; 
+                card.setAttribute('data-role', c.role);
+                
+                // Click Event
+                card.onclick = (e) => {
+                    e.preventDefault(); 
+                    handleToggle(c.id, type);
+                };
+
+                const imgSrc = c.img ? c.img : "https://cdn-icons-png.flaticon.com/512/847/847969.png";
                 card.innerHTML = `
-                    <img src="${c.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
-                    <div class="info"><div class="name">${c.name}</div><div class="role">${c.role}</div></div>
-                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i></div>`;
+                    <img src="${imgSrc}" class="avatar">
+                    <div class="info">
+                        <div class="name">${c.name}</div>
+                        <div class="role">${c.role}</div>
+                    </div>
+                    <div class="rank-indicator">
+                        <i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>
+                    </div>`;
                 container.appendChild(card);
             });
         }
@@ -213,64 +321,149 @@
             const originalRole = card.getAttribute('data-role');
 
             if (isRanked) {
-                // Return to unranked state (move to bottom)
+                // DESELECT: Remove rank and Move to BOTTOM of the whole list
                 card.classList.remove('ranked');
                 card.removeAttribute('data-rank');
+                
+                // Reset Visuals
                 card.querySelector('.role').innerText = originalRole;
                 card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>';
+                
+                // Append to end of container
                 container.appendChild(card); 
             } else {
-                // Move to ranked state (move to top of selection list)
-                const rankedCards = container.querySelectorAll('.card.ranked');
-                if (rankedCards.length >= 6) return;
+                // SELECT: Check limit and Move to POSITION
+                const currentRanked = container.querySelectorAll('.card.ranked');
                 
+                if (currentRanked.length >= 6) {
+                    Swal.fire({ title: 'Limit Reached', text: 'Max 6 candidates allowed.', icon: 'info', timer: 1500, showConfirmButton: false });
+                    return;
+                }
+
                 card.classList.add('ranked');
-                if (rankedCards.length === 0) container.prepend(card);
-                else rankedCards[rankedCards.length - 1].after(card);
+                
+                // Insert AFTER the last ranked card (or at top if none)
+                if (currentRanked.length > 0) {
+                    const lastRanked = currentRanked[currentRanked.length - 1];
+                    lastRanked.after(card);
+                } else {
+                    container.prepend(card);
+                }
             }
-            sync(type);
+            syncVisuals(type);
         }
 
-        function sync(type) {
+        function syncVisuals(type) {
             const container = document.getElementById(`list-${type}`);
-            const cards = container.querySelectorAll('.card');
-            const colors = ["", "var(--rank-1)", "var(--rank-2)", "var(--rank-3)", "var(--rank-4)", "var(--rank-5)", "var(--rank-6)"];
-            let rankCounter = 1;
-            let rankedCount = 0;
+            const rankedCards = container.querySelectorAll('.card.ranked');
+            const colors = ["", "#FFD700", "#C0C0C0", "#CD7F32", "#4A90E2", "#9B51E0", "#E91E63"]; // 1-6
 
-            cards.forEach(card => {
-                if(card.classList.contains('ranked')) {
-                    rankedCount++;
-                    card.setAttribute('data-rank', rankCounter);
-                    card.querySelector('.rank-indicator').innerText = rankCounter;
-                    const suff = ["th","st","nd","rd"][(rankCounter%100-20)%10] || ["th","st","nd","rd"][rankCounter%100] || "th";
-                    card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${colors[rankCounter]}">${rankCounter}${suff} Choice</span> • ${card.getAttribute('data-role')}`;
-                    rankCounter++;
-                }
+            rankedCards.forEach((card, index) => {
+                const rank = index + 1;
+                card.setAttribute('data-rank', rank);
+                card.querySelector('.rank-indicator').innerText = rank;
+                
+                // Suffix logic (st, nd, rd, th)
+                const s = ["th","st","nd","rd"];
+                const v = rank % 100;
+                const ord = rank + (s[(v-20)%10] || s[v] || s[0]);
+                
+                const originalRole = card.getAttribute('data-role');
+                card.querySelector('.role').innerHTML = 
+                    `<span class="choice-label" style="color:${colors[rank]}">${ord} Choice</span> • ${originalRole}`;
             });
+
+            // Update Counts
+            document.getElementById(`count-${type}`).innerText = `${rankedCards.length}/6`;
             
-            document.getElementById(`count-${type}`).innerText = `${rankedCount}/6`;
-            const active = document.querySelectorAll('.card.ranked').length === 12;
-            document.getElementById('submitBtn').classList.toggle('active', active);
+            // Update Submit Button
+            const total = document.querySelectorAll('.card.ranked').length;
+            const btn = document.getElementById('submitBtn');
+            if (total === 12) {
+                btn.classList.add('active');
+                btn.innerText = "Confirm Selection";
+            } else {
+                btn.classList.remove('active');
+                btn.innerText = `Select All 12 (${total}/12)`;
+            }
+        }
+
+        // ==========================================
+        // 5. TIMER & SUBMISSION
+        // ==========================================
+        function updateClock() {
+            const now = Date.now();
+            const timer = document.getElementById('timer-display');
+            const ballot = document.getElementById('main-ballot');
+            const overlay = document.getElementById('status-overlay');
+
+            if (now < START_TIME) {
+                const diff = START_TIME - now;
+                timer.innerText = `STARTS IN: ${Math.floor(diff/60000)}m ${Math.floor((diff%60000)/1000)}s`;
+                ballot.classList.add('locked-content');
+                overlay.style.display = "none";
+            } 
+            else if (now >= START_TIME && now <= END_TIME) {
+                const diff = END_TIME - now;
+                timer.innerText = `CLOSES IN: ${Math.floor(diff/60000)}m ${Math.floor((diff%60000)/1000)}s`;
+                ballot.classList.remove('locked-content');
+                overlay.style.display = "none";
+            } 
+            else {
+                timer.innerText = "VOTING CLOSED";
+                ballot.classList.add('locked-content');
+                showOverlay("VOTING CLOSED", "The time window has expired.");
+            }
+        }
+
+        function showOverlay(title, msg) {
+            const ov = document.getElementById('status-overlay');
+            ov.style.display = "flex";
+            document.getElementById('ov-title').innerText = title;
+            document.getElementById('ov-msg').innerText = msg;
         }
 
         async function submitVote() {
             if (!document.getElementById('submitBtn').classList.contains('active')) return;
-            const res = await Swal.fire({ title: 'Lock Choice?', text: "Submission is final.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#B38728', background: '#161618', color: '#fff' });
-            if (!res.isConfirmed) return;
+            
+            const { isConfirmed } = await Swal.fire({
+                title: 'Confirm Vote?',
+                text: "Rankings cannot be changed after submission.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#B38728',
+                background: '#161618', color: '#fff'
+            });
 
-            const getMap = (t) => [...document.getElementById(`list-${t}`).querySelectorAll('.card.ranked')].map(c => ({id: c.id, rank: parseInt(c.getAttribute('data-rank'))}));
+            if (!isConfirmed) return;
+
+            // Gather Data
+            const getRanks = (t) => [...document.getElementById(`list-${t}`).querySelectorAll('.card.ranked')]
+                .map(c => ({ id: c.id, rank: parseInt(c.getAttribute('data-rank')) }));
+
             Swal.fire({ title: 'Submitting...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             try {
-                const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+                // Get IP
+                const ipData = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+                
+                // Call Secure RPC
                 const { error } = await _supabase.rpc('cast_preferential_vote', {
-                    p_student_id: studentId, p_boy_ranks: getMap('boys'), p_girl_ranks: getMap('girls'), p_ip_address: ip.ip, p_user_agent: navigator.userAgent
+                    p_student_id: studentId,
+                    p_boy_ranks: getRanks('boys'),
+                    p_girl_ranks: getRanks('girls'),
+                    p_ip_address: ipData.ip,
+                    p_user_agent: navigator.userAgent
                 });
+
                 if (error) throw error;
-                await Swal.fire('Success', 'Ballot cast securely.', 'success');
+                
+                await Swal.fire('Success!', 'Your vote has been cast securely.', 'success');
                 location.reload();
-            } catch (e) { Swal.fire('Error', e.message, 'error'); }
+
+            } catch (err) {
+                Swal.fire('Submission Error', err.message || "Unknown error occurred.", 'error');
+            }
         }
     </script>
 </body>
