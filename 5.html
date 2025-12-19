@@ -8,159 +8,102 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            /* FIXED DARK THEME */
             --bg-body: #0a0a0b;       
             --bg-header: rgba(10, 10, 11, 0.95);
             --bg-card: #161618;       
-            --bg-card-active: #1c1c1e;
             --text-main: #ffffff;
             --text-sub: #a1a1aa;
             --border: rgba(212, 175, 55, 0.15);
-            
             --brand-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             --gold-solid: #D4AF37;
-
-            /* Rank Specific Colors */
-            --rank-1: #FFD700; /* Gold */
-            --rank-2: #C0C0C0; /* Silver */
-            --rank-3: #CD7F32; /* Bronze */
-            --rank-4: #4A90E2; /* Blue */
-            --rank-5: #9B51E0; /* Purple */
-            --rank-6: #E91E63; /* Rose Pink */
+            --rank-1: #FFD700; --rank-2: #C0C0C0; --rank-3: #CD7F32;
+            --rank-4: #4A90E2; --rank-5: #9B51E0; --rank-6: #E91E63;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; background-color: var(--bg-body);
             color: var(--text-main); font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px;
+            padding-bottom: 140px; overflow-x: hidden;
         }
 
         header {
             position: sticky; top: 0; z-index: 100;
-            background: var(--bg-header);
-            backdrop-filter: blur(20px);
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: center; align-items: center;
+            background: var(--bg-header); backdrop-filter: blur(20px);
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .logo { 
             font-weight: 800; font-size: 1.1rem; letter-spacing: 2px;
-            background: var(--brand-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
+            background: var(--brand-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; text-transform: uppercase;
         }
 
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        #countdown-timer {
+            font-size: 0.8rem; margin-top: 5px; color: var(--gold-solid); font-weight: 600;
+        }
 
-        .section-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin: 40px 0 15px;
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; transition: 0.5s; }
+
+        /* BLUR STATE */
+        .locked-state { filter: blur(8px); pointer-events: none; user-select: none; opacity: 0.5; }
+
+        /* OVERLAY SCREEN */
+        #status-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 11, 0.9); z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
         }
-        
-        .sec-title { 
-            font-size: 0.75rem; font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 2px; 
-            color: var(--gold-solid); 
-        }
-        
-        .sec-count { 
-            font-size: 0.7rem; font-weight: 800; 
-            color: var(--text-main);
-            background: rgba(212, 175, 55, 0.1); 
-            border: 1px solid var(--border);
-            padding: 4px 10px; border-radius: 6px; 
-        }
+
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin: 40px 0 15px; }
+        .sec-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--gold-solid); }
+        .sec-count { font-size: 0.7rem; font-weight: 800; background: rgba(212, 175, 55, 0.1); padding: 4px 10px; border-radius: 6px; }
 
         .rank-list { display: flex; flex-direction: column; gap: 14px; }
-
         .card {
-            display: flex; align-items: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            display: flex; align-items: center; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 16px; padding: 14px;
+            cursor: pointer; transition: 0.3s; position: relative;
         }
-
-        .card:active { transform: scale(0.97); }
-
-        /* Dynamic Ranking Borders */
-        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        
+        /* Rank Colors */
+        .card[data-rank="1"] { border-color: var(--rank-1); }
         .card[data-rank="2"] { border-color: var(--rank-2); }
         .card[data-rank="3"] { border-color: var(--rank-3); }
-        .card[data-rank="4"] { border-color: var(--rank-4); }
-        .card[data-rank="5"] { border-color: var(--rank-5); }
-        .card[data-rank="6"] { border-color: var(--rank-6); }
 
-        .card.ranked { background: var(--bg-card-active); }
-
-        /* Circular Avatars */
-        .avatar {
-            width: 52px; height: 52px; border-radius: 50%;
-            object-fit: cover; margin-right: 16px;
-            background: #27272a; flex-shrink: 0;
-            border: 2px solid var(--border);
-        }
-
+        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-right: 16px; border: 2px solid var(--border); }
         .info { flex-grow: 1; }
-        .name { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
-        .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; letter-spacing: 0.5px; }
-        
-        .choice-label { font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
+        .name { font-weight: 600; font-size: 1rem; }
+        .role { font-size: 0.7rem; color: var(--text-sub); }
+        .rank-indicator { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; }
 
-        .rank-indicator {
-            width: 30px; height: 30px; border-radius: 50%;
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
-        }
-
-        /* Indicator Backgrounds */
-        .card[data-rank="1"] .rank-indicator { background: var(--rank-1); color: #000; border: none; }
-        .card[data-rank="2"] .rank-indicator { background: var(--rank-2); color: #000; border: none; }
-        .card[data-rank="3"] .rank-indicator { background: var(--rank-3); color: #fff; border: none; }
-        .card[data-rank="4"] .rank-indicator { background: var(--rank-4); color: #fff; border: none; }
-        .card[data-rank="5"] .rank-indicator { background: var(--rank-5); color: #fff; border: none; }
-        .card[data-rank="6"] .rank-indicator { background: var(--rank-6); color: #fff; border: none; }
-
-        .footer {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            padding: 20px; z-index: 200;
-            background: linear-gradient(to top, var(--bg-body) 70%, transparent);
-            display: flex; justify-content: center;
-        }
-        
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 200; display: flex; justify-content: center; }
         .btn-main {
-            width: 100%; max-width: 400px;
-            background: #27272a; color: #52525b;
+            width: 100%; max-width: 400px; background: #27272a; color: #52525b;
             border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
-            font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;
-            text-transform: uppercase; cursor: not-allowed; transition: 0.4s;
+            font-size: 0.85rem; font-weight: 800; text-transform: uppercase; cursor: not-allowed;
         }
-        
-        .btn-main.active { 
-            cursor: pointer; background: var(--brand-gradient); color: #000; border: none;
-            box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3);
-        }
+        .btn-main.active { cursor: pointer; background: var(--brand-gradient); color: #000; border: none; }
     </style>
 </head>
 <body>
 
+    <div id="status-overlay">
+        <h1 id="overlay-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">VOTING CLOSED</h1>
+        <p id="overlay-msg" style="color: var(--text-sub);">The results are being compiled.</p>
+    </div>
+
     <header>
         <div class="logo">Mr. & Miss BKBNC 2025</div>
+        <div id="countdown-timer">Initializing...</div>
     </header>
 
-    <div class="container">
+    <div class="container locked-state" id="main-content">
         <div class="section-header">
             <span class="sec-title">Mr. BKBNC Nominees</span>
             <span class="sec-count" id="count-boys">0/6</span>
@@ -175,12 +118,19 @@
     </div>
 
     <div class="footer">
-        <button class="btn-main" id="submitBtn" onclick="submitVote()">
-            Confirm Selection
-        </button>
+        <button class="btn-main" id="submitBtn" onclick="submitVote()">Confirm Selection</button>
     </div>
 
     <script>
+        const SUBAPASE_URL = "https://uvlwqlddmanuzeuqtjxp.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA";
+        const supabase = Object.assign(supabase, {}).createClient ? supabase.createClient(SUBAPASE_URL, SUPABASE_KEY) : window.supabase.createClient(SUBAPASE_URL, SUPABASE_KEY);
+
+        const VOTING_START = new Date("2025-12-19T18:30:00").getTime();
+        const VOTING_END = new Date("2025-12-19T18:40:00").getTime();
+        
+        const studentId = new URLSearchParams(window.location.search).get('id');
+
         const DATA = {
             boys: [
                 { id: "b1", name: "Aashish Yadav", role: "TYBCOM", img: "" },
@@ -200,124 +150,128 @@
             ]
         };
 
-        window.onload = function() {
-            if(localStorage.getItem('voteLocked') === 'true') {
-                document.getElementById('submitBtn').innerText = "VOTE SUBMITTED";
-                document.body.style.pointerEvents = "none";
-            }
-            shuffle(DATA.boys);
-            shuffle(DATA.girls);
-            renderList('boys', DATA.boys);
-            renderList('girls', DATA.girls);
-        };
+        function updateTimer() {
+            const now = Date.now();
+            const timerEl = document.getElementById('countdown-timer');
+            const content = document.getElementById('main-content');
+            const overlay = document.getElementById('status-overlay');
 
-        function shuffle(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+            if (now < VOTING_START) {
+                const diff = VOTING_START - now;
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                timerEl.innerText = `VOTING STARTS IN: ${mins}m ${secs}s`;
+                content.classList.add('locked-state');
+            } 
+            else if (now >= VOTING_START && now <= VOTING_END) {
+                const diff = VOTING_END - now;
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                timerEl.innerText = `TIME REMAINING: ${mins}m ${secs}s`;
+                content.classList.remove('locked-state');
+                overlay.style.display = "none";
+            } 
+            else {
+                timerEl.innerText = "VOTING PERIOD ENDED";
+                overlay.style.display = "flex";
+                content.classList.add('locked-state');
             }
         }
 
-        function renderList(type, candidates) {
-            const container = document.getElementById(`list-${type}`);
-            container.innerHTML = "";
-            candidates.forEach(c => {
-                const card = document.createElement('div');
-                card.className = "card";
-                card.id = c.id;
-                card.setAttribute('data-role', c.role);
-                card.onclick = () => toggleRank(c.id, type);
-                const imgSrc = c.img ? c.img : "https://cdn-icons-png.flaticon.com/512/847/847969.png"; 
+        window.onload = async function() {
+            if (!studentId) {
+                alert("Access Denied: No Student ID found.");
+                return;
+            }
 
+            const { data } = await supabase.from('voter_list').select('has_voted').eq('student_id', studentId).single();
+            if (data?.has_voted) {
+                document.getElementById('status-overlay').style.display = "flex";
+                document.getElementById('overlay-title').innerText = "VOTE RECORDED";
+                document.getElementById('overlay-msg').innerText = "Thank you for participating.";
+                return;
+            }
+
+            renderList('boys', DATA.boys);
+            renderList('girls', DATA.girls);
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        };
+
+        function renderList(type, items) {
+            const container = document.getElementById(`list-${type}`);
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = item.id;
+                card.onclick = () => toggleRank(item.id, type);
                 card.innerHTML = `
-                    <img src="${imgSrc}" class="avatar">
-                    <div class="info">
-                        <div class="name">${c.name}</div>
-                        <div class="role">${c.role}</div>
-                    </div>
-                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i></div>
+                    <img src="${item.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
+                    <div class="info"><div class="name">${item.name}</div><div class="role" data-orig="${item.role}">${item.role}</div></div>
+                    <div class="rank-indicator"><i class="fas fa-plus"></i></div>
                 `;
                 container.appendChild(card);
             });
         }
 
         function toggleRank(id, type) {
-            const container = document.getElementById(`list-${type}`);
             const card = document.getElementById(id);
-            const isRanked = card.classList.contains('ranked');
-            const originalRole = card.getAttribute('data-role');
-
-            if (isRanked) {
+            const container = document.getElementById(`list-${type}`);
+            if (card.classList.contains('ranked')) {
                 card.classList.remove('ranked');
                 card.removeAttribute('data-rank');
-                card.querySelector('.role').innerHTML = originalRole;
-                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>';
-                container.appendChild(card); 
+                container.appendChild(card);
             } else {
-                const rankedCards = container.querySelectorAll('.card.ranked');
-                if (rankedCards.length >= 6) {
-                    Swal.fire({ title: 'Limit Reached', text: 'You can only rank 6 candidates.', icon: 'info', timer: 1500, showConfirmButton: false });
-                    return;
-                }
-                if (rankedCards.length === 0) container.prepend(card);
-                else rankedCards[rankedCards.length - 1].after(card);
+                if (container.querySelectorAll('.card.ranked').length >= 6) return;
                 card.classList.add('ranked');
             }
             updateVisuals(type);
         }
 
         function updateVisuals(type) {
-            const container = document.getElementById(`list-${type}`);
-            const allCards = container.querySelectorAll('.card');
-            const rankColors = ["", "var(--rank-1)", "var(--rank-2)", "var(--rank-3)", "var(--rank-4)", "var(--rank-5)", "var(--rank-6)"];
-            let rankCounter = 1;
-            let rankedCount = 0;
-
-            allCards.forEach(card => {
-                if(card.classList.contains('ranked')) {
-                    rankedCount++;
-                    const originalRole = card.getAttribute('data-role');
-                    card.setAttribute('data-rank', rankCounter);
-                    card.querySelector('.rank-indicator').innerText = rankCounter;
-                    
-                    const suffix = ["th","st","nd","rd"];
-                    const v = rankCounter % 100;
-                    const ord = rankCounter + (suffix[(v-20)%10] || suffix[v] || suffix[0]);
-                    
-                    card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${rankColors[rankCounter]}">${ord} Choice</span> • ${originalRole}`;
-                    rankCounter++;
-                }
+            const ranked = document.getElementById(`list-${type}`).querySelectorAll('.card.ranked');
+            ranked.forEach((card, i) => {
+                card.setAttribute('data-rank', i + 1);
+                card.querySelector('.rank-indicator').innerText = i + 1;
             });
-
-            document.getElementById(`count-${type}`).innerText = `${rankedCount}/6`;
-            checkGlobalStatus();
+            document.getElementById(`count-${type}`).innerText = `${ranked.length}/6`;
+            const total = document.querySelectorAll('.card.ranked').length;
+            document.getElementById('submitBtn').classList.toggle('active', total === 12);
         }
 
-        function checkGlobalStatus() {
-            const b = document.getElementById('list-boys').querySelectorAll('.ranked').length;
-            const g = document.getElementById('list-girls').querySelectorAll('.ranked').length;
-            const btn = document.getElementById('submitBtn');
-            if (b === 6 && g === 6) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-
-        function submitVote() {
+        async function submitVote() {
             if (!document.getElementById('submitBtn').classList.contains('active')) return;
-            Swal.fire({
-                title: 'Lock your choice?',
-                text: "Rankings cannot be changed after submission.",
+            
+            const { isConfirmed } = await Swal.fire({
+                title: 'Finalize Vote?',
+                text: "This action cannot be undone.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Submit Now',
                 confirmButtonColor: '#B38728',
                 background: '#161618',
                 color: '#fff'
-            }).then((res) => {
-                if(res.isConfirmed) {
-                    localStorage.setItem('voteLocked', 'true');
-                    location.reload();
-                }
             });
+
+            if (!isConfirmed) return;
+
+            const getRanks = (type) => [...document.getElementById(`list-${type}`).querySelectorAll('.card.ranked')]
+                .map(c => ({ id: c.id, rank: parseInt(c.getAttribute('data-rank')) }));
+
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+                const { error } = await supabase.rpc('cast_preferential_vote', {
+                    p_student_id: studentId,
+                    p_boy_ranks: getRanks('boys'),
+                    p_girl_ranks: getRanks('girls'),
+                    p_ip_address: ipRes.ip,
+                    p_user_agent: navigator.userAgent
+                });
+
+                if (error) throw error;
+                location.reload();
+            } catch (e) {
+                Swal.fire("Error", e.message, "error");
+            }
         }
     </script>
 </body>
