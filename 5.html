@@ -3,47 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EcoCampus Ballot</title>
+    <title>EcoCampus Ballot | Mr. & Miss Birla</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* --- THEME PALETTE --- */
         :root {
-            /* DARK MODE (Default) */
-            --bg-body: #0f172a;       
-            --bg-header: rgba(15, 23, 42, 0.85);
-            --bg-card: #1e293b;       
-            --bg-card-active: #334155;
+            /* FIXED DARK THEME */
+            --bg-body: #0a0a0b;       
+            --bg-header: rgba(10, 10, 11, 0.95);
+            --bg-card: #161618;       
+            --bg-card-active: #1c1c1e;
+            --text-main: #ffffff;
+            --text-sub: #a1a1aa;
+            --border: rgba(212, 175, 55, 0.15);
             
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --border: rgba(255,255,255,0.08);
-            
-            --brand-gradient: linear-gradient(135deg, #2dd4bf, #3b82f6);
-            
-            /* Left Strip Colors */
-            --col-gold: #F59E0B;
-            --col-silver: #94A3B8;
-            --col-bronze: #B45309;
-            --col-blue: #3b82f6;
-            --col-purple: #8b5cf6;
-            --col-default: #475569; 
-        }
+            --brand-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            --gold-solid: #D4AF37;
 
-        body.light-mode {
-            /* LIGHT MODE */
-            --bg-body: #f1f5f9;       
-            --bg-header: rgba(241, 245, 249, 0.85);
-            --bg-card: #ffffff;
-            --bg-card-active: #e2e8f0;
-            
-            --text-main: #0f172a;     
-            --text-sub: #64748b;
-            --border: rgba(0,0,0,0.06);
-            --col-default: #cbd5e1;
+            /* Rank Specific Colors */
+            --rank-1: #FFD700; /* Gold */
+            --rank-2: #C0C0C0; /* Silver */
+            --rank-3: #CD7F32; /* Bronze */
+            --rank-4: #4A90E2; /* Blue */
+            --rank-5: #9B51E0; /* Purple */
+            --rank-6: #E91E63; /* Rose Pink */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -51,178 +37,141 @@
         body {
             margin: 0; background-color: var(--bg-body);
             color: var(--text-main); font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px; transition: background-color 0.4s ease, color 0.4s ease;
+            padding-bottom: 140px;
         }
 
-        /* --- HEADER --- */
         header {
             position: sticky; top: 0; z-index: 100;
             background: var(--bg-header);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             padding: 16px 20px;
             border-bottom: 1px solid var(--border);
             display: flex; justify-content: center; align-items: center;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         .logo { 
-            font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px;
+            font-weight: 800; font-size: 1.1rem; letter-spacing: 2px;
             background: var(--brand-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
         }
-        
-        .theme-toggle { 
-            position: absolute; right: 20px;
-            background: rgba(125,125,125,0.1); 
-            border: none; width: 40px; height: 40px; border-radius: 50%;
-            color: var(--text-main); font-size: 1rem; cursor: pointer;
-            transition: all 0.3s;
-        }
-        .theme-toggle:active { transform: scale(0.9); }
 
-        /* --- CONTAINER --- */
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
 
         .section-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin: 35px 0 15px;
+            margin: 40px 0 15px;
         }
         
         .sec-title { 
-            font-size: 0.8rem; font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 1.5px; 
-            color: var(--text-sub); 
+            font-size: 0.75rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 2px; 
+            color: var(--gold-solid); 
         }
         
         .sec-count { 
-            font-size: 0.75rem; font-weight: 700; 
+            font-size: 0.7rem; font-weight: 800; 
             color: var(--text-main);
-            background: var(--bg-card); 
+            background: rgba(212, 175, 55, 0.1); 
             border: 1px solid var(--border);
-            padding: 4px 12px; border-radius: 20px; 
+            padding: 4px 10px; border-radius: 6px; 
         }
 
-        /* --- CARD LIST --- */
-        .rank-list { display: flex; flex-direction: column; gap: 12px; }
+        .rank-list { display: flex; flex-direction: column; gap: 14px; }
 
         .card {
             display: flex; align-items: center;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 14px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            position: relative; overflow: hidden;
-            border-left: 5px solid var(--col-default);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        .card:active { transform: scale(0.98); }
-        .card:not(.ranked) { opacity: 0.9; }
-        .card:not(.ranked):hover { opacity: 1; border-color: rgba(100,100,100,0.3); }
+        .card:active { transform: scale(0.97); }
 
-        .card.ranked {
-            opacity: 1; 
-            background: var(--bg-card-active);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-        }
-        
-        /* Rank Colors */
-        .card[data-rank="1"] { border-left-color: var(--col-gold); }
-        .card[data-rank="2"] { border-left-color: var(--col-silver); }
-        .card[data-rank="3"] { border-left-color: var(--col-bronze); }
-        .card[data-rank="4"] { border-left-color: var(--col-blue); }
-        .card[data-rank="5"] { border-left-color: var(--col-purple); }
+        /* Dynamic Ranking Borders */
+        .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .card[data-rank="2"] { border-color: var(--rank-2); }
+        .card[data-rank="3"] { border-color: var(--rank-3); }
+        .card[data-rank="4"] { border-color: var(--rank-4); }
+        .card[data-rank="5"] { border-color: var(--rank-5); }
+        .card[data-rank="6"] { border-color: var(--rank-6); }
 
-        /* Avatar */
+        .card.ranked { background: var(--bg-card-active); }
+
+        /* Circular Avatars */
         .avatar {
-            width: 48px; height: 48px; border-radius: 50%;
+            width: 52px; height: 52px; border-radius: 50%;
             object-fit: cover; margin-right: 16px;
-            background: #334155; flex-shrink: 0;
-            border: 2px solid transparent; 
-            transition: 0.3s;
+            background: #27272a; flex-shrink: 0;
+            border: 2px solid var(--border);
         }
-        
-        .info { flex-grow: 1; }
-        .name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
-        .role { font-size: 0.75rem; color: var(--text-sub); font-weight: 500; }
-        
-        /* Highlighted text in role when ranked */
-        .rank-text { color: var(--brand-gradient); font-weight: 700; margin-right: 5px; }
 
-        /* Rank Badge */
+        .info { flex-grow: 1; }
+        .name { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+        .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; letter-spacing: 0.5px; }
+        
+        .choice-label { font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
+
         .rank-indicator {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: var(--bg-body); 
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.03); 
             border: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.75rem;
-            color: var(--text-sub);
-            transition: 0.4s;
+            font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
         }
 
-        .card[data-rank="1"] .rank-indicator { background: var(--col-gold); border:none; color: #fff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); }
-        .card[data-rank="2"] .rank-indicator { background: var(--col-silver); border:none; color: #fff; }
-        .card[data-rank="3"] .rank-indicator { background: var(--col-bronze); border:none; color: #fff; }
-        .card[data-rank="4"] .rank-indicator { background: var(--col-blue); border:none; color: #fff; }
-        .card[data-rank="5"] .rank-indicator { background: var(--col-purple); border:none; color: #fff; }
+        /* Indicator Backgrounds */
+        .card[data-rank="1"] .rank-indicator { background: var(--rank-1); color: #000; border: none; }
+        .card[data-rank="2"] .rank-indicator { background: var(--rank-2); color: #000; border: none; }
+        .card[data-rank="3"] .rank-indicator { background: var(--rank-3); color: #fff; border: none; }
+        .card[data-rank="4"] .rank-indicator { background: var(--rank-4); color: #fff; border: none; }
+        .card[data-rank="5"] .rank-indicator { background: var(--rank-5); color: #fff; border: none; }
+        .card[data-rank="6"] .rank-indicator { background: var(--rank-6); color: #fff; border: none; }
 
-        /* --- FOOTER --- */
         .footer {
-            position: fixed; bottom: 30px; left: 0; width: 100%;
-            padding: 0 20px; pointer-events: none; z-index: 200;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            padding: 20px; z-index: 200;
+            background: linear-gradient(to top, var(--bg-body) 70%, transparent);
             display: flex; justify-content: center;
         }
         
         .btn-main {
             width: 100%; max-width: 400px;
-            background: var(--text-main); color: var(--bg-body);
-            border: none; padding: 16px; border-radius: 30px;
-            font-size: 0.9rem; font-weight: 800; letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            pointer-events: auto; cursor: not-allowed;
-            transition: 0.3s; opacity: 0.4; transform: translateY(10px);
-            filter: grayscale(1);
+            background: #27272a; color: #52525b;
+            border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
+            font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;
+            text-transform: uppercase; cursor: not-allowed; transition: 0.4s;
         }
         
         .btn-main.active { 
-            opacity: 1; transform: translateY(0); cursor: pointer;
-            background: var(--brand-gradient); color: #fff;
-            filter: grayscale(0);
+            cursor: pointer; background: var(--brand-gradient); color: #000; border: none;
+            box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3);
         }
-
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">EcoCampus</div>
-        <button class="theme-toggle" onclick="toggleTheme()">
-            <i class="fas fa-sun" id="theme-icon"></i>
-        </button>
+        <div class="logo">Mr. & Miss Birla 2025</div>
     </header>
 
     <div class="container">
-
         <div class="section-header">
             <span class="sec-title">Mr. Birla Nominees</span>
-            <span class="sec-count" id="count-boys">0/5</span>
+            <span class="sec-count" id="count-boys">0/6</span>
         </div>
         <div class="rank-list" id="list-boys"></div>
 
         <div class="section-header">
             <span class="sec-title">Miss. Birla Nominees</span>
-            <span class="sec-count" id="count-girls">0/5</span>
+            <span class="sec-count" id="count-girls">0/6</span>
         </div>
         <div class="rank-list" id="list-girls"></div>
-
     </div>
 
     <div class="footer">
@@ -232,37 +181,32 @@
     </div>
 
     <script>
-        // DATA
         const DATA = {
             boys: [
                 { id: "b1", name: "Aashish Yadav", role: "TYBCOM", img: "" },
                 { id: "b2", name: "Krushnakant Pal", role: "TYBSC CS", img: "" },
                 { id: "b3", name: "Suraj Yadav", role: "TYBSC CS", img: "" },
                 { id: "b4", name: "Yashraj Gaikwad", role: "TYBSC CS", img: "https://i.ibb.co/Zz9Nhdnv/image.png" },
-                { id: "b5", name: "Prasad Jawale", role: "SYBSC CS", img: "https://i.ibb.co/F4fWpF2d/image.png" }
+                { id: "b5", name: "Prasad Jawale", role: "SYBSC CS", img: "https://i.ibb.co/F4fWpF2d/image.png" },
+                { id: "b6", name: "Dhananjay Gupta", role: "TYBSC", img: "" }
             ],
             girls: [
                 { id: "g1", name: "Vaidehi Gund", role: "TYBMS", img: "" },
                 { id: "g2", name: "Ekta Dixit", role: "TYBSC CS", img: "" },
                 { id: "g3", name: "Divya Nair", role: "SYBSC CS", img: "" },
                 { id: "g4", name: "Dharani Mudaliyar", role: "TYBSC CS", img: "https://i.ibb.co/VcnPCMq7/image.png" },
-                { id: "g5", name: "Kaustubhi Chavan", role: "TYBSC CS", img: "" }
+                { id: "g5", name: "Kaustubhi Chavan", role: "TYBSC CS", img: "" },
+                { id: "g6", name: "Dhani Singh", role: "SYBMS", img: "" }
             ]
         };
 
-        let isDarkMode = true;
-
         window.onload = function() {
-            updateThemeIcon();
             if(localStorage.getItem('voteLocked') === 'true') {
                 document.getElementById('submitBtn').innerText = "VOTE SUBMITTED";
-                return;
+                document.body.style.pointerEvents = "none";
             }
-            
-            // Randomize order on load
             shuffle(DATA.boys);
             shuffle(DATA.girls);
-            
             renderList('boys', DATA.boys);
             renderList('girls', DATA.girls);
         };
@@ -281,10 +225,8 @@
                 const card = document.createElement('div');
                 card.className = "card";
                 card.id = c.id;
-                // Store the original class name in a data attribute for easy retrieval
                 card.setAttribute('data-role', c.role);
                 card.onclick = () => toggleRank(c.id, type);
-                
                 const imgSrc = c.img ? c.img : "https://cdn-icons-png.flaticon.com/512/847/847969.png"; 
 
                 card.innerHTML = `
@@ -293,48 +235,41 @@
                         <div class="name">${c.name}</div>
                         <div class="role">${c.role}</div>
                     </div>
-                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.5;"></i></div>
+                    <div class="rank-indicator"><i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i></div>
                 `;
                 container.appendChild(card);
             });
         }
 
         function toggleRank(id, type) {
-            if(localStorage.getItem('voteLocked') === 'true') return;
-
             const container = document.getElementById(`list-${type}`);
             const card = document.getElementById(id);
             const isRanked = card.classList.contains('ranked');
             const originalRole = card.getAttribute('data-role');
 
             if (isRanked) {
-                // DEMOTE
                 card.classList.remove('ranked');
                 card.removeAttribute('data-rank');
-                
-                // Reset text to just the Class
                 card.querySelector('.role').innerHTML = originalRole;
-                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.5;"></i>';
-                
+                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>';
                 container.appendChild(card); 
             } else {
-                // PROMOTE
                 const rankedCards = container.querySelectorAll('.card.ranked');
-                if (rankedCards.length === 0) {
-                    container.prepend(card);
-                } else {
-                    rankedCards[rankedCards.length - 1].after(card);
+                if (rankedCards.length >= 6) {
+                    Swal.fire({ title: 'Limit Reached', text: 'You can only rank 6 candidates.', icon: 'info', timer: 1500, showConfirmButton: false });
+                    return;
                 }
+                if (rankedCards.length === 0) container.prepend(card);
+                else rankedCards[rankedCards.length - 1].after(card);
                 card.classList.add('ranked');
             }
-
             updateVisuals(type);
         }
 
         function updateVisuals(type) {
             const container = document.getElementById(`list-${type}`);
             const allCards = container.querySelectorAll('.card');
-            
+            const rankColors = ["", "var(--rank-1)", "var(--rank-2)", "var(--rank-3)", "var(--rank-4)", "var(--rank-5)", "var(--rank-6)"];
             let rankCounter = 1;
             let rankedCount = 0;
 
@@ -342,38 +277,19 @@
                 if(card.classList.contains('ranked')) {
                     rankedCount++;
                     const originalRole = card.getAttribute('data-role');
-                    
                     card.setAttribute('data-rank', rankCounter);
                     card.querySelector('.rank-indicator').innerText = rankCounter;
                     
-                    // Ordinal logic
                     const suffix = ["th","st","nd","rd"];
                     const v = rankCounter % 100;
                     const ord = rankCounter + (suffix[(v-20)%10] || suffix[v] || suffix[0]);
                     
-                    // Combine Rank + Class
-                    // e.g. "1st Choice • TYBSC CS"
-                    // We use a span for color styling if needed
-                    card.querySelector('.role').innerHTML = `<span style="color:var(--text-main); font-weight:700;">${ord} Choice</span> • ${originalRole}`;
-                    
+                    card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${rankColors[rankCounter]}">${ord} Choice</span> • ${originalRole}`;
                     rankCounter++;
                 }
             });
 
-            // Update Header Count
-            const countEl = document.getElementById(`count-${type}`);
-            countEl.innerText = `${rankedCount}/5`;
-            
-            if(rankedCount === 5) {
-                countEl.style.background = "var(--brand-gradient)";
-                countEl.style.color = "#fff";
-                countEl.style.border = "none";
-            } else {
-                countEl.style.background = "";
-                countEl.style.color = "";
-                countEl.style.border = "";
-            }
-
+            document.getElementById(`count-${type}`).innerText = `${rankedCount}/6`;
             checkGlobalStatus();
         }
 
@@ -381,63 +297,28 @@
             const b = document.getElementById('list-boys').querySelectorAll('.ranked').length;
             const g = document.getElementById('list-girls').querySelectorAll('.ranked').length;
             const btn = document.getElementById('submitBtn');
-
-            if (b === 5 && g === 5) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            if (b === 6 && g === 6) btn.classList.add('active');
+            else btn.classList.remove('active');
         }
 
         function submitVote() {
-            const btn = document.getElementById('submitBtn');
-            if (!btn.classList.contains('active')) return;
-
-            const isLight = document.body.classList.contains('light-mode');
-            const bg = isLight ? '#fff' : '#1e293b';
-            const color = isLight ? '#0f172a' : '#fff';
-
+            if (!document.getElementById('submitBtn').classList.contains('active')) return;
             Swal.fire({
-                title: 'Confirm Vote?',
+                title: 'Lock your choice?',
                 text: "Rankings cannot be changed after submission.",
-                icon: 'question',
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Lock Vote',
-                confirmButtonColor: '#3b82f6',
-                background: bg, color: color
+                confirmButtonText: 'Submit Now',
+                confirmButtonColor: '#B38728',
+                background: '#161618',
+                color: '#fff'
             }).then((res) => {
                 if(res.isConfirmed) {
                     localStorage.setItem('voteLocked', 'true');
-                    btn.innerText = "VOTE LOCKED";
-                    btn.classList.remove('active');
-                    btn.style.opacity = "1";
-                    btn.style.filter = "grayscale(1)";
-                    document.body.style.pointerEvents = "none";
-                    
-                    Swal.fire({
-                        title: 'Success!', icon: 'success', 
-                        showConfirmButton: false, timer: 1500,
-                        background: bg, color: color
-                    });
+                    location.reload();
                 }
             });
         }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            isDarkMode = !isDarkMode;
-            updateThemeIcon();
-        }
-
-        function updateThemeIcon() {
-            const icon = document.getElementById('theme-icon');
-            if (document.body.classList.contains('light-mode')) {
-                icon.className = "fas fa-moon";
-            } else {
-                icon.className = "fas fa-sun";
-            }
-        }
-
     </script>
 </body>
 </html>
