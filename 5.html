@@ -69,8 +69,10 @@
 
     <script>
         // --- CONFIGURATION ---
-        const START = new Date("2025-12-19T19:36:00").getTime();
-        const END = new Date("2025-12-19T19:28:00").getTime(); 
+        // Change these dates to your actual Event timings
+        const START = new Date("2025-12-19T19:32:00").getTime(); 
+        const END = new Date("2025-12-19T19:34:00").getTime(); 
+        
         const sb = supabase.createClient("https://uvlwqlddmanuzeuqtjxp.supabase.co", "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA");
         const uid = new URLSearchParams(location.search).get('id');
         const COLORS = ["", "#FFD700", "#C0C0C0", "#CD7F32", "#4A90E2", "#9B51E0", "#E91E63"];
@@ -78,7 +80,7 @@
         const DATA={boys:[{id:"b1",name:"Aashish Yadav",role:"TYBCOM"},{id:"b2",name:"Krushnakant Pal",role:"TYBSC CS"},{id:"b3",name:"Suraj Yadav",role:"TYBSC CS"},{id:"b4",name:"Yashraj Gaikwad",role:"TYBSC CS",img:"https://i.ibb.co/Zz9Nhdnv/image.png"},{id:"b5",name:"Prasad Jawale",role:"SYBSC CS",img:"https://i.ibb.co/F4fWpF2d/image.png"},{id:"b6",name:"Dhananjay Gupta",role:"TYBSC"}],girls:[{id:"g1",name:"Vaidehi Gund",role:"TYBMS"},{id:"g2",name:"Ekta Dixit",role:"TYBSC CS"},{id:"g3",name:"Divya Nair",role:"SYBSC CS"},{id:"g4",name:"Dharani Mudaliyar",role:"TYBSC CS",img:"https://i.ibb.co/VcnPCMq7/image.png"},{id:"g5",name:"Kaustubhi Chavan",role:"TYBSC CS"},{id:"g6",name:"Dhani Singh",role:"SYBMS"}]};
 
         window.onload = async () => {
-            // 1. INSTANT CHECK: Has this browser voted?
+            // 1. REVISIT CHECK: Is device already locked?
             if(localStorage.getItem('voted')) return lock('DEVICE LOCKED', 'You have already voted from this device.');
             if(!uid) return lock('ACCESS DENIED', 'No Student ID provided.');
 
@@ -178,17 +180,33 @@
 
         function tick() {
             const now = Date.now(), el = document.getElementById('app'), tm = document.getElementById('timer');
-            if(now < START) { 
-                tm.innerText = "STARTS SOON"; el.classList.add('blur'); 
-            } else if(now > END) { 
-                lock('VOTING CLOSED', 'The voting window has ended.'); 
-            } else { 
+            
+            if (now < START) {
+                // BEFORE START
+                el.classList.add('blur');
+                const diff = START - now;
+                
+                // If less than 24 hours, show HH:MM:SS
+                if (diff < 86400000) { 
+                    const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+                    const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                    const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                    tm.innerText = `STARTS IN: ${h}:${m}:${s}`;
+                } else {
+                    tm.innerText = "STARTS SOON";
+                }
+
+            } else if (now > END) {
+                // AFTER END
+                lock('VOTING CLOSED', 'The voting window has ended.');
+            } else {
+                // DURING VOTING
                 const d = END - now;
                 const h = Math.floor(d / 3600000).toString().padStart(2, '0');
                 const m = Math.floor((d % 3600000) / 60000).toString().padStart(2, '0');
                 const s = Math.floor((d % 60000) / 1000).toString().padStart(2, '0');
-                tm.innerText = `CLOSING IN: ${h}:${m}:${s}`; 
-                el.classList.remove('blur'); 
+                tm.innerText = `CLOSING IN: ${h}:${m}:${s}`;
+                el.classList.remove('blur');
             }
         }
 
