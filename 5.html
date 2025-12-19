@@ -12,7 +12,6 @@
 
     <style>
         :root {
-            /* FIXED DARK THEME FROM PROTOTYPE */
             --bg-body: #0a0a0b;       
             --bg-header: rgba(10, 10, 11, 0.95);
             --bg-card: #161618;       
@@ -20,22 +19,14 @@
             --text-main: #ffffff;
             --text-sub: #a1a1aa;
             --border: rgba(212, 175, 55, 0.15);
-            
             --brand-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
             --gold-solid: #D4AF37;
-
-            /* Rank Specific Colors */
             --rank-1: #FFD700; --rank-2: #C0C0C0; --rank-3: #CD7F32;
             --rank-4: #4A90E2; --rank-5: #9B51E0; --rank-6: #E91E63;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            margin: 0; background-color: var(--bg-body);
-            color: var(--text-main); font-family: 'Outfit', sans-serif;
-            padding-bottom: 140px;
-        }
+        body { margin: 0; background-color: var(--bg-body); color: var(--text-main); font-family: 'Outfit', sans-serif; padding-bottom: 140px; }
 
         header {
             position: sticky; top: 0; z-index: 100;
@@ -50,12 +41,7 @@
             -webkit-text-fill-color: transparent; text-transform: uppercase;
         }
 
-        #timer-display {
-            font-size: 0.75rem; margin-top: 4px; font-weight: 700;
-            color: var(--gold-solid); letter-spacing: 1px;
-        }
-
-        /* BLUR & OVERLAY LOGIC */
+        #timer-display { font-size: 0.75rem; margin-top: 4px; font-weight: 700; color: var(--gold-solid); letter-spacing: 1px; }
         .locked-content { filter: blur(10px); pointer-events: none; opacity: 0.4; transition: 0.5s; }
         
         #status-overlay {
@@ -66,106 +52,53 @@
         }
 
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-
-        .section-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin: 40px 0 15px;
-        }
-        
-        .sec-title { 
-            font-size: 0.75rem; font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 2px; 
-            color: var(--gold-solid); 
-        }
-        
-        .sec-count { 
-            font-size: 0.7rem; font-weight: 800; 
-            color: var(--text-main);
-            background: rgba(212, 175, 55, 0.1); 
-            border: 1px solid var(--border);
-            padding: 4px 10px; border-radius: 6px; 
-        }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin: 40px 0 15px; }
+        .sec-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-solid); }
+        .sec-count { font-size: 0.7rem; font-weight: 800; color: var(--text-main); background: rgba(212, 175, 55, 0.1); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; }
 
         .rank-list { display: flex; flex-direction: column; gap: 14px; }
-
         .card {
-            display: flex; align-items: center;
-            background: var(--bg-card); border: 1px solid var(--border);
+            display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border);
             border-radius: 16px; padding: 14px; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
         }
 
-        .card:active { transform: scale(0.97); }
-
-        /* Dynamic Ranking Borders from Prototype */
         .card[data-rank="1"] { border-color: var(--rank-1); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
         .card[data-rank="2"] { border-color: var(--rank-2); }
         .card[data-rank="3"] { border-color: var(--rank-3); }
-        .card[data-rank="4"] { border-color: var(--rank-4); }
-        .card[data-rank="5"] { border-color: var(--rank-5); }
-        .card[data-rank="6"] { border-color: var(--rank-6); }
-
         .card.ranked { background: var(--bg-card-active); }
 
-        .avatar {
-            width: 52px; height: 52px; border-radius: 50%;
-            object-fit: cover; margin-right: 16px;
-            background: #27272a; flex-shrink: 0;
-            border: 2px solid var(--border);
-        }
-
+        .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-right: 16px; background: #27272a; flex-shrink: 0; border: 2px solid var(--border); }
         .info { flex-grow: 1; }
         .name { font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
         .role { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; letter-spacing: 0.5px; }
         .choice-label { font-weight: 800; text-transform: uppercase; font-size: 0.65rem; }
 
         .rank-indicator {
-            width: 30px; height: 30px; border-radius: 50%;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
+            width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; color: var(--text-sub);
         }
 
-        /* Indicator Backgrounds from Prototype */
+        /* Rank Highlights */
         .card[data-rank="1"] .rank-indicator { background: var(--rank-1); color: #000; border: none; }
         .card[data-rank="2"] .rank-indicator { background: var(--rank-2); color: #000; border: none; }
         .card[data-rank="3"] .rank-indicator { background: var(--rank-3); color: #fff; border: none; }
-        .card[data-rank="4"] .rank-indicator { background: var(--rank-4); color: #fff; border: none; }
-        .card[data-rank="5"] .rank-indicator { background: var(--rank-5); color: #fff; border: none; }
-        .card[data-rank="6"] .rank-indicator { background: var(--rank-6); color: #fff; border: none; }
 
-        .footer {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            padding: 20px; z-index: 200;
-            background: linear-gradient(to top, var(--bg-body) 70%, transparent);
-            display: flex; justify-content: center;
-        }
-        
-        .btn-main {
-            width: 100%; max-width: 400px;
-            background: #27272a; color: #52525b;
-            border: 1px solid #3f3f46; padding: 18px; border-radius: 14px;
-            font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;
-            text-transform: uppercase; cursor: not-allowed; transition: 0.4s;
-        }
-        
-        .btn-main.active { 
-            cursor: pointer; background: var(--brand-gradient); color: #000; border: none;
-            box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3);
-        }
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 200; background: linear-gradient(to top, var(--bg-body) 70%, transparent); display: flex; justify-content: center; }
+        .btn-main { width: 100%; max-width: 400px; background: #27272a; color: #52525b; border: 1px solid #3f3f46; padding: 18px; border-radius: 14px; font-size: 0.85rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; cursor: not-allowed; transition: 0.4s; }
+        .btn-main.active { cursor: pointer; background: var(--brand-gradient); color: #000; border: none; box-shadow: 0 10px 30px rgba(179, 135, 40, 0.3); }
     </style>
 </head>
 <body>
 
     <div id="status-overlay">
-        <h1 id="ov-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">VOTING CLOSED</h1>
-        <p id="ov-msg" style="color: var(--text-sub);">The voting window has ended.</p>
+        <h1 id="ov-title" style="background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SESSION ENDED</h1>
+        <p id="ov-msg" style="color: var(--text-sub);">The voting window has closed.</p>
     </div>
 
     <header>
         <div class="logo">Mr. & Miss BKBNC 2025</div>
-        <div id="timer-display">SYNCING TIME...</div>
+        <div id="timer-display">SYNCING...</div>
     </header>
 
     <div class="container locked-content" id="main-ballot">
@@ -183,22 +116,14 @@
     </div>
 
     <div class="footer">
-        <button class="btn-main" id="submitBtn" onclick="submitVote()">
-            Confirm Selection
-        </button>
+        <button class="btn-main" id="submitBtn" onclick="submitVote()">Confirm Selection</button>
     </div>
 
     <script>
-        // Supabase Initialization
-        const _supabase = supabase.createClient(
-            "https://uvlwqlddmanuzeuqtjxp.supabase.co", 
-            "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA"
-        );
+        const _supabase = supabase.createClient("https://uvlwqlddmanuzeuqtjxp.supabase.co", "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA");
 
-        // CONFIG: Dec 19, 2025, 6:30 PM - 6:40 PM
-        const START_TIME = new Date("2025-12-19T18:30:00").getTime();
-        const END_TIME = new Date("2025-12-19T18:40:00").getTime();
-        
+        const START_TIME = new Date("2025-12-19T18:38:00").getTime();
+        const END_TIME = new Date("2025-12-19T18:45:00").getTime();
         const studentId = new URLSearchParams(window.location.search).get('id');
 
         const DATA = {
@@ -244,16 +169,15 @@
 
         window.onload = async function() {
             if (!studentId) {
-                Swal.fire('Error', 'Invalid link. Missing Student ID.', 'error');
+                Swal.fire('Error', 'Invalid link. Access via your personal link.', 'error');
                 return;
             }
 
-            // Database Check
             const { data } = await _supabase.from('voter_list').select('has_voted').eq('student_id', studentId).single();
             if (data?.has_voted) {
                 document.getElementById('status-overlay').style.display = "flex";
                 document.getElementById('ov-title').innerText = "VOTE RECORDED";
-                document.getElementById('ov-msg').innerText = "You have already cast your preferential vote.";
+                document.getElementById('ov-msg').innerText = "You have already cast your vote.";
                 return;
             }
 
@@ -285,61 +209,66 @@
         function handleToggle(id, type) {
             const card = document.getElementById(id);
             const container = document.getElementById(`list-${type}`);
-            if (card.classList.contains('ranked')) {
-                card.classList.remove('ranked'); card.removeAttribute('data-rank');
-                container.appendChild(card);
+            const isRanked = card.classList.contains('ranked');
+            const originalRole = card.getAttribute('data-role');
+
+            if (isRanked) {
+                // Return to unranked state (move to bottom)
+                card.classList.remove('ranked');
+                card.removeAttribute('data-rank');
+                card.querySelector('.role').innerText = originalRole;
+                card.querySelector('.rank-indicator').innerHTML = '<i class="fas fa-plus" style="font-size:0.6rem; opacity:0.3;"></i>';
+                container.appendChild(card); 
             } else {
-                if (container.querySelectorAll('.card.ranked').length >= 6) return;
+                // Move to ranked state (move to top of selection list)
+                const rankedCards = container.querySelectorAll('.card.ranked');
+                if (rankedCards.length >= 6) return;
+                
                 card.classList.add('ranked');
-                const rankedArr = Array.from(container.querySelectorAll('.card.ranked'));
-                rankedArr[rankedArr.length-1].after(card);
+                if (rankedCards.length === 0) container.prepend(card);
+                else rankedCards[rankedCards.length - 1].after(card);
             }
             sync(type);
         }
 
         function sync(type) {
             const container = document.getElementById(`list-${type}`);
-            const ranked = container.querySelectorAll('.card.ranked');
+            const cards = container.querySelectorAll('.card');
             const colors = ["", "var(--rank-1)", "var(--rank-2)", "var(--rank-3)", "var(--rank-4)", "var(--rank-5)", "var(--rank-6)"];
-            
-            ranked.forEach((card, i) => {
-                const rank = i + 1;
-                card.setAttribute('data-rank', rank);
-                card.querySelector('.rank-indicator').innerText = rank;
-                const suff = ["th","st","nd","rd"][(rank%100-20)%10] || ["th","st","nd","rd"][rank%100] || "th";
-                card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${colors[rank]}">${rank}${suff} Choice</span> • ${card.getAttribute('data-role')}`;
+            let rankCounter = 1;
+            let rankedCount = 0;
+
+            cards.forEach(card => {
+                if(card.classList.contains('ranked')) {
+                    rankedCount++;
+                    card.setAttribute('data-rank', rankCounter);
+                    card.querySelector('.rank-indicator').innerText = rankCounter;
+                    const suff = ["th","st","nd","rd"][(rankCounter%100-20)%10] || ["th","st","nd","rd"][rankCounter%100] || "th";
+                    card.querySelector('.role').innerHTML = `<span class="choice-label" style="color:${colors[rankCounter]}">${rankCounter}${suff} Choice</span> • ${card.getAttribute('data-role')}`;
+                    rankCounter++;
+                }
             });
             
-            document.getElementById(`count-${type}`).innerText = `${ranked.length}/6`;
+            document.getElementById(`count-${type}`).innerText = `${rankedCount}/6`;
             const active = document.querySelectorAll('.card.ranked').length === 12;
             document.getElementById('submitBtn').classList.toggle('active', active);
         }
 
         async function submitVote() {
             if (!document.getElementById('submitBtn').classList.contains('active')) return;
-            
-            const res = await Swal.fire({
-                title: 'Confirm Submission?', text: "Choices cannot be changed after locking.",
-                icon: 'warning', showCancelButton: true, confirmButtonColor: '#B38728', background: '#161618', color: '#fff'
-            });
-
+            const res = await Swal.fire({ title: 'Lock Choice?', text: "Submission is final.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#B38728', background: '#161618', color: '#fff' });
             if (!res.isConfirmed) return;
 
             const getMap = (t) => [...document.getElementById(`list-${t}`).querySelectorAll('.card.ranked')].map(c => ({id: c.id, rank: parseInt(c.getAttribute('data-rank'))}));
-            
-            Swal.fire({ title: 'Locking Vote...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Submitting...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             try {
                 const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json());
                 const { error } = await _supabase.rpc('cast_preferential_vote', {
-                    p_student_id: studentId,
-                    p_boy_ranks: getMap('boys'),
-                    p_girl_ranks: getMap('girls'),
-                    p_ip_address: ip.ip,
-                    p_user_agent: navigator.userAgent
+                    p_student_id: studentId, p_boy_ranks: getMap('boys'), p_girl_ranks: getMap('girls'), p_ip_address: ip.ip, p_user_agent: navigator.userAgent
                 });
                 if (error) throw error;
-                await Swal.fire('Confirmed', 'Your ballot has been securely submitted.', 'success');
+                await Swal.fire('Success', 'Ballot cast securely.', 'success');
                 location.reload();
             } catch (e) { Swal.fire('Error', e.message, 'error'); }
         }
