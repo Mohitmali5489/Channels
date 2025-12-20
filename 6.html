@@ -1,387 +1,196 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EcoCampus Voting</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Results | EcoCampus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        :root {
-            --primary: #10B981;       
-            --bg-body: #f0fdf4;
-            --glass-bg: rgba(255, 255, 255, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.8);
-            --text-main: #1F2937;
-            --text-sub: #6B7280;
-            --selected-border: #10B981;
-            --selected-bg: rgba(16, 185, 129, 0.15);
+        :root { 
+            --bg:#0a0a0b; --card:#161618; --gold:#D4AF37; 
+            --text-muted: #888;
+            --grad:linear-gradient(135deg,#BF953F,#FCF6BA,#B38728,#FBF5B7); 
         }
-
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #F9FAFB;
-            --text-sub: #9CA3AF;
-            --selected-bg: rgba(16, 185, 129, 0.25);
-        }
-
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 120px; transition: background 0.3s; }
+        body { margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; padding:20px; }
         
-        /* Loading Screen (Blocker) */
-        #authOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-body); z-index: 2000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        /* Header */
+        header { text-align:center; margin-bottom:40px; }
+        h1 { font-weight:800; font-size:2.5rem; margin:0; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .status { color:var(--text-muted); font-size:0.9rem; margin-top:5px; font-variant-numeric: tabular-nums; }
+
+        /* Grid Layout */
+        .grid { display:grid; grid-template-columns: 1fr 1fr; gap:40px; max-width:1200px; margin:0 auto; }
+        @media(max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+        .column h2 { color:var(--gold); border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px; font-size:1.2rem; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* Leaderboard Card */
+        .rank-card { 
+            display:flex; align-items:center; 
+            background:var(--card); 
+            border:1px solid rgba(255,255,255,0.05); 
+            border-radius:12px; 
+            padding:15px; 
+            margin-bottom:12px; 
+            transition:0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
-        header {
-            position: sticky; top: 0; z-index: 50; padding: 16px 20px;
-            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;
+        /* Top 3 Highlighting */
+        .rank-card[data-rank="1"] { border-color: #FFD700; background: linear-gradient(90deg, #1c1c1e, #2a2a00); }
+        .rank-card[data-rank="2"] { border-color: #C0C0C0; }
+        .rank-card[data-rank="3"] { border-color: #CD7F32; }
+
+        /* Rank Number */
+        .pos { 
+            font-size:1.5rem; font-weight:800; width:40px; color:#555; 
+            text-align:center; margin-right:15px; 
         }
-        .brand { font-size: 1.25rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .user-welcome { font-size: 0.9rem; font-weight: 600; color: var(--text-sub); }
+        .rank-card[data-rank="1"] .pos { color: #FFD700; }
+        .rank-card[data-rank="2"] .pos { color: #C0C0C0; }
+        .rank-card[data-rank="3"] .pos { color: #CD7F32; }
 
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .avatar { width:50px; height:50px; border-radius:50%; object-fit:cover; margin-right:15px; background:#333; border:2px solid #333; }
+        .info { flex:1; }
+        .name { font-weight:700; font-size:1.1rem; }
+        .role { font-size:0.8rem; color:#aaa; }
         
-        .timer-card {
-            background: linear-gradient(135deg, #F59E0B, #FBBF24);
-            border-radius: 20px; padding: 20px; color: white;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 24px; box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        /* Scores */
+        .score-box { text-align:right; }
+        .points { font-size:1.4rem; font-weight:800; color:#fff; display:block; line-height: 1; }
+        .pts-label { font-size:0.7rem; color:var(--gold); font-weight:600; text-transform: uppercase; }
+        .votes { font-size:0.7rem; color:#666; margin-top:2px; }
+
+        /* Progress Bar Background */
+        .progress-bg {
+            position: absolute; bottom: 0; left: 0; height: 3px; background: var(--gold); opacity: 0.5; width: 0%; transition: width 1s ease;
         }
-        .countdown { font-size: 1.4rem; font-weight: 800; background: rgba(255,255,255,0.25); padding: 8px 12px; border-radius: 12px; }
 
-        .section-title { margin: 24px 0 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+        /* Loading State */
+        .loading { text-align: center; color: #666; padding: 20px; font-style: italic; }
 
-        .nominee-list { display: flex; flex-direction: column; gap: 12px; }
-        .nominee-label { display: block; position: relative; cursor: pointer; }
-        .nominee-label input { display: none; }
-        
-        .nominee-card {
-            display: flex; align-items: center; padding: 14px; border-radius: 16px;
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            backdrop-filter: blur(4px); transition: all 0.2s;
-        }
-        
-        .avatar { width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; margin-right: 14px; }
-        .girls-sec .avatar { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
-        
-        .info { flex: 1; }
-        .name { font-weight: 700; margin-bottom: 2px; }
-        .meta { font-size: 0.8rem; color: var(--text-sub); }
-        
-        .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-sub); opacity: 0.3; display: flex; justify-content: center; align-items: center; transition: all 0.2s; }
-        .check i { transform: scale(0); color: white; font-size: 12px; }
-
-        .nominee-label input:checked + .nominee-card { background: var(--selected-bg); border-color: var(--selected-border); }
-        .nominee-label input:checked + .nominee-card .check { background: var(--primary); border-color: var(--primary); opacity: 1; }
-        .nominee-label input:checked + .nominee-card .check i { transform: scale(1); }
-
-        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; background: var(--glass-bg); backdrop-filter: blur(20px); border-top: 1px solid var(--glass-border); display: flex; justify-content: center; z-index: 100; }
-        .vote-btn { width: 100%; max-width: 500px; padding: 16px; border-radius: 50px; border: none; background: var(--primary); color: white; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-
-        #loadingOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 999; display: none;
-            flex-direction: column; justify-content: center; align-items: center; color: white;
-        }
-        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="authOverlay">
-        <div class="spinner" style="border-top-color: #333;"></div>
-        <h3>Verifying Student ID...</h3>
-    </div>
-
     <header>
-        <div class="brand">
-            <i class="fas fa-leaf"></i> 
-            <div>
-                EcoCampus<br>
-                <span class="user-welcome" id="userNameDisplay">Guest</span>
-            </div>
-        </div>
-        <button class="theme-btn" onclick="toggleTheme()" style="background:none;border:none;font-size:1.2rem;"><i class="fas fa-moon" id="themeIcon"></i></button>
+        <h1>LIVE RESULTS</h1>
+        <div class="status">Auto-refreshing every 5s • <span id="last-update">Waiting...</span></div>
     </header>
 
-    <div class="container">
-        <div class="timer-card">
-            <div class="timer-text">
-                <h2>Voting Live</h2>
-                <p>Location restricted: B.K. Birla Campus</p>
-            </div>
-            <div class="countdown" id="countdown">Loading...</div>
+    <div class="grid">
+        <div class="column">
+            <h2>Mr. BKBNC Leaderboard</h2>
+            <div id="list-boys"><div class="loading">Loading data...</div></div>
         </div>
 
-        <form id="votingForm">
-            <div class="section-title">Mr. Birla Nominees <span class="badge">Select 1</span></div>
-            <div class="nominee-list">
-                <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Aashish Santosh Yadav">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="info"><div class="name">Aashish Santosh Yadav</div><div class="meta">TYBCOM</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Krushnakant Pal">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="info"><div class="name">Krushnakant Pal</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                 <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Suraj Ramsudhakar Yadav">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="info"><div class="name">Suraj Ramsudhakar Yadav</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                 <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Yashraj Dattatray Gaikwad">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="info"><div class="name">Yashraj Dattatray Gaikwad</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                 <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Prasad Pankaj Jawale">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="info"><div class="name">Prasad Pankaj Jawale</div><div class="meta">SYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-            </div>
-
-            <div class="section-title" style="margin-top: 30px;">Miss. Birla Nominees <span class="badge" style="color:#EC4899; background:rgba(236,72,153,0.1)">Select 1</span></div>
-            <div class="nominee-list girls-sec">
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Vaidehi Balu Gund">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="info"><div class="name">Vaidehi Balu Gund</div><div class="meta">TYBMS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Ekta Mukesh Dixit">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="info"><div class="name">Ekta Mukesh Dixit</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Divya Anand Nair">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="info"><div class="name">Divya Anand Nair</div><div class="meta">SYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Dharani Shankar Mudaliyar">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="info"><div class="name">Dharani Shankar Mudaliyar</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Kaustubhi Chavan">
-                    <div class="nominee-card">
-                        <div class="avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="info"><div class="name">Kaustubhi Chavan</div><div class="meta">TYBSC CS</div></div>
-                        <div class="check"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-            </div>
-        </form>
-    </div>
-
-    <div class="bottom-bar">
-        <button class="vote-btn" onclick="initiateVote()">
-            <i class="fas fa-location-dot"></i> Verify Location & Vote
-        </button>
-    </div>
-
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <h3 id="loadingText">Acquiring GPS Signal...</h3>
+        <div class="column">
+            <h2>Miss BKBNC Leaderboard</h2>
+            <div id="list-girls"><div class="loading">Loading data...</div></div>
+        </div>
     </div>
 
     <script>
-        // REPLACE THESE WITH YOUR KEYS
-        const SUPABASE_URL = 'https://uvlwqlddmanuzeuqtjxp.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // GLOBAL VARS
-        let currentStudentId = null;
+        // --- CONFIGURATION ---
+        // !!! PASTE THE SAME KEYS HERE AS YOUR VOTING PAGE !!!
+        const SUPABASE_URL = "https://uvlwqlddmanuzeuqtjxp.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA";
 
-        // --- 1. INITIALIZATION: Verify Student from URL ---
-        window.onload = async function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const studentId = urlParams.get('id');
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            if (!studentId) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Access Denied',
-                    text: 'No Student ID provided. Use your unique voting link.',
-                    allowOutsideClick: false,
-                    showConfirmButton: false
-                });
-                return;
-            }
-
-            // Check Supabase "allowed_students" table
-            const { data, error } = await supabase
-                .from('allowed_students')
-                .select('full_name')
-                .eq('student_id', studentId)
-                .single();
-
-            if (error || !data) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid ID',
-                    text: 'This Student ID is not in the voter list.',
-                    allowOutsideClick: false,
-                    showConfirmButton: false
-                });
-            } else {
-                // Success: Unlock the page
-                currentStudentId = studentId;
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('userNameDisplay').innerText = `Hi, ${data.full_name}`;
-            }
+        // Static Candidate Data (Must match Voting Page IDs)
+        const CANDIDATES = {
+            'b1': {name:"Aashish Yadav", role:"TYBCOM", img:""},
+            'b2': {name:"Krushnakant Pal", role:"TYBSC CS", img:""},
+            'b3': {name:"Suraj Yadav", role:"TYBSC CS", img:""},
+            'b4': {name:"Yashraj Gaikwad", role:"TYBSC CS", img:"https://i.ibb.co/Zz9Nhdnv/image.png"},
+            'b5': {name:"Prasad Jawale", role:"SYBSC CS", img:"https://i.ibb.co/F4fWpF2d/image.png"},
+            'b6': {name:"Dhananjay Gupta", role:"TYBSC", img:""},
+            'g1': {name:"Vaidehi Gund", role:"TYBMS", img:""},
+            'g2': {name:"Ekta Dixit", role:"TYBSC CS", img:""},
+            'g3': {name:"Divya Nair", role:"SYBSC CS", img:""},
+            'g4': {name:"Dharani Mudaliyar", role:"TYBSC CS", img:"https://i.ibb.co/VcnPCMq7/image.png"},
+            'g5': {name:"Kaustubhi Chavan", role:"TYBSC CS", img:""},
+            'g6': {name:"Dhani Singh", role:"SYBMS", img:""}
         };
 
-        // --- 2. DEVICE FINGERPRINT ---
-        async function getDeviceFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = "top"; ctx.font = "14px 'Arial'";
-            ctx.fillStyle = "#f60"; ctx.fillRect(125,1,62,20);
-            ctx.fillStyle = "#069"; ctx.fillText("EcoCampusVote", 2, 15);
-            const canvasHash = canvas.toDataURL();
-            const components = [navigator.userAgent, window.screen.width + 'x' + window.screen.height, new Date().getTimezoneOffset(), canvasHash].join('||');
-            const msgBuffer = new TextEncoder().encode(components);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // --- 3. SUBMIT VOTE ---
-        async function initiateVote() {
-            const mrVote = document.querySelector('input[name="mr_birla"]:checked');
-            const missVote = document.querySelector('input[name="miss_birla"]:checked');
-
-            if (!mrVote || !missVote) {
-                Swal.fire({ icon: 'warning', title: 'Incomplete', text: 'Please select one candidate from each category.', confirmButtonColor: '#10B981' });
-                return;
-            }
-
-            const overlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            overlay.style.display = 'flex';
-
+        async function fetchResults() {
             try {
-                loadingText.innerText = "Verifying Device...";
-                const deviceHash = await getDeviceFingerprint();
+                // Call the SQL function we created earlier
+                const { data, error } = await sb.rpc('get_weighted_results');
+                if (error) throw error;
 
-                loadingText.innerText = "Verifying GPS Location...";
-                if (!navigator.geolocation) throw new Error("Geolocation not supported");
+                renderList('boys', data.filter(r => r.category === 'boys'));
+                renderList('girls', data.filter(r => r.category === 'girls'));
 
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        
-                        loadingText.innerText = "Secure Submission...";
-                        
-                        // CALL SECURE FUNCTION
-                        const { data, error } = await supabase.rpc('submit_secure_vote', {
-                            vote_mr: mrVote.value,
-                            vote_miss: missVote.value,
-                            client_device_hash: deviceHash,
-                            lat: lat,
-                            lng: lng,
-                            p_student_id: currentStudentId // PASSING THE ID
-                        });
+                // Update Timestamp
+                const now = new Date();
+                document.getElementById('last-update').innerText = `Updated: ${now.toLocaleTimeString()}`;
 
-                        overlay.style.display = 'none';
-
-                        if (error) {
-                            Swal.fire({ icon: 'error', title: 'System Error', text: error.message });
-                        } else if (data.success) {
-                            Swal.fire({ 
-                                icon: 'success', 
-                                title: 'Vote Recorded!', 
-                                text: `Thank you for voting! Verified inside campus.`, 
-                                confirmButtonColor: '#10B981' 
-                            });
-                            // Optional: Disable button to prevent double clicks
-                            document.querySelector('.vote-btn').disabled = true;
-                        } else {
-                            let msg = "Vote failed.";
-                            if (data.error === 'OUTSIDE_RADIUS') msg = `You are outside the campus (${data.distance.toFixed(0)}m away).`;
-                            if (data.error === 'DEVICE_ALREADY_VOTED') msg = "This device has already cast a vote.";
-                            if (data.error === 'STUDENT_ALREADY_VOTED') msg = "This Student ID has already voted.";
-                            if (data.error === 'INVALID_STUDENT_ID') msg = "Student ID not found in database.";
-                            
-                            Swal.fire({ icon: 'error', title: 'Validation Failed', text: msg });
-                        }
-                    },
-                    (error) => {
-                        overlay.style.display = 'none';
-                        let errMsg = "Location access denied.";
-                        if (error.code === 1) errMsg = "Please allow location access to vote.";
-                        Swal.fire({ icon: 'error', title: 'GPS Error', text: errMsg });
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
             } catch (err) {
-                overlay.style.display = 'none';
-                Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+                console.error("Error fetching results:", err);
             }
         }
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            if (html.getAttribute('data-theme') === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                icon.className = 'fas fa-sun';
-            } else {
-                html.setAttribute('data-theme', 'light');
-                icon.className = 'fas fa-moon';
-            }
+        function renderList(type, data) {
+            const container = document.getElementById(`list-${type}`);
+            
+            // 1. Map static data to results
+            // Note: DB returns specific rows. We also need to show candidates with 0 votes.
+            // So we start with the full candidate list for this category.
+            const prefix = type === 'boys' ? 'b' : 'g';
+            const allCandidates = Object.keys(CANDIDATES)
+                .filter(id => id.startsWith(prefix))
+                .map(id => {
+                    const dbRecord = data.find(r => r.candidate_id === id);
+                    return {
+                        id: id,
+                        ...CANDIDATES[id],
+                        points: dbRecord ? dbRecord.total_points : 0,
+                        votes: dbRecord ? dbRecord.vote_count : 0
+                    };
+                });
+
+            // 2. Sort by Points (Highest first)
+            allCandidates.sort((a, b) => b.points - a.points);
+
+            // 3. Find max points for progress bar calculation
+            const maxPoints = allCandidates.length > 0 ? allCandidates[0].points : 100;
+
+            // 4. Generate HTML
+            let html = '';
+            allCandidates.forEach((c, index) => {
+                const rank = index + 1;
+                const percentage = maxPoints > 0 ? (c.points / maxPoints) * 100 : 0;
+                
+                html += `
+                <div class="rank-card" data-rank="${rank}">
+                    <div class="pos">${rank}</div>
+                    <img src="${c.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
+                    <div class="info">
+                        <div class="name">${c.name}</div>
+                        <div class="role">${c.role}</div>
+                    </div>
+                    <div class="score-box">
+                        <span class="points">${c.points}</span>
+                        <span class="pts-label">Points</span>
+                        <div class="votes">${c.votes} votes</div>
+                    </div>
+                    <div class="progress-bg" style="width:${percentage}%"></div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
         }
-        
-        setInterval(() => {
-            const d = new Date();
-            const h = 23 - d.getHours();
-            const m = 59 - d.getMinutes();
-            const s = 59 - d.getSeconds();
-            document.getElementById('countdown').innerText = `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }, 1000);
+
+        // Initial Load
+        fetchResults();
+
+        // Refresh every 5 seconds
+        setInterval(fetchResults, 5000);
+
     </script>
 </body>
 </html>
