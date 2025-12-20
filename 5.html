@@ -18,7 +18,6 @@
         header { position:sticky; top:0; z-index:100; background:rgba(10,10,11,0.95); backdrop-filter:blur(20px); padding:15px; border-bottom:1px solid rgba(212,175,55,0.15); text-align:center; }
         .logo { font-weight:800; font-size:1.1rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
         
-        /* UPDATED TIMER STYLE */
         #timer { font-size:0.9rem; font-weight:700; color:var(--gold); margin-top:5px; letter-spacing:1px; font-variant-numeric: tabular-nums; }
         
         .container { max-width:500px; margin:0 auto; padding:20px; transition:0.3s; }
@@ -69,35 +68,62 @@
 
     <script>
         // --- CONFIGURATION ---
-        // Change these dates to your actual Event timings
-        const START = new Date("2025-12-19T19:32:00").getTime(); 
+        
+        // !!! IMPORTANT: PASTE YOUR NEW PROJECT KEYS HERE !!!
+        const SUPABASE_URL = "YOUR_NEW_SUPABASE_URL_HERE"; 
+        const SUPABASE_KEY = "YOUR_NEW_SUPABASE_ANON_KEY_HERE";
+        
+        // TESTING MODE: Starts immediately (Current Time - 1 sec). 
+        // Update these for the final event.
+        const START = Date.now() - 1000; 
         const END = new Date("2025-12-22T19:00:00").getTime(); 
         
-        const sb = supabase.createClient("https://uvlwqlddmanuzeuqtjxp.supabase.co", "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA");
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const uid = new URLSearchParams(location.search).get('id');
         const COLORS = ["", "#FFD700", "#C0C0C0", "#CD7F32", "#4A90E2", "#9B51E0", "#E91E63"];
         
         const DATA={boys:[{id:"b1",name:"Aashish Yadav",role:"TYBCOM"},{id:"b2",name:"Krushnakant Pal",role:"TYBSC CS"},{id:"b3",name:"Suraj Yadav",role:"TYBSC CS"},{id:"b4",name:"Yashraj Gaikwad",role:"TYBSC CS",img:"https://i.ibb.co/Zz9Nhdnv/image.png"},{id:"b5",name:"Prasad Jawale",role:"SYBSC CS",img:"https://i.ibb.co/F4fWpF2d/image.png"},{id:"b6",name:"Dhananjay Gupta",role:"TYBSC"}],girls:[{id:"g1",name:"Vaidehi Gund",role:"TYBMS"},{id:"g2",name:"Ekta Dixit",role:"TYBSC CS"},{id:"g3",name:"Divya Nair",role:"SYBSC CS"},{id:"g4",name:"Dharani Mudaliyar",role:"TYBSC CS",img:"https://i.ibb.co/VcnPCMq7/image.png"},{id:"g5",name:"Kaustubhi Chavan",role:"TYBSC CS"},{id:"g6",name:"Dhani Singh",role:"SYBMS"}]};
 
         window.onload = async () => {
-            // 1. REVISIT CHECK: Is device already locked?
-            if(localStorage.getItem('voted')) return lock('DEVICE LOCKED', 'You have already voted from this device.');
-            if(!uid) return lock('ACCESS DENIED', 'No Student ID provided.');
+            // 1. Basic Requirement Check
+            if(!uid) return lock('ACCESS DENIED', 'No Student ID provided in URL.');
 
-            // 2. FAST CHECK: IP & DB Status
+            // 2. LIVE DEVICE CHECK (Replaces static localStorage check)
             try {
+                // Fetch IP and DB status in parallel
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
                 const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
                 
                 const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
 
-                const { data: isUsed } = await sb.rpc('check_device_status', { p_ip: ipData.ip });
-                if(isUsed) { localStorage.setItem('voted', 'true'); return lock('DEVICE LOCKED', 'This device has already been used.'); }
-                if(usrRes.data?.has_voted) return lock('ALREADY VOTED', 'Your vote has already been recorded.');
+                // Check 1: Is the Student ID valid?
+                if (!usrRes.data) return lock('INVALID ID', 'Student ID not found in database.');
+                
+                // Check 2: Has Student ID already voted?
+                if(usrRes.data.has_voted) return lock('ALREADY VOTED', 'Your vote is already recorded.');
 
-            } catch(e) { console.error(e); }
+                // Check 3: Is Device (IP) Locked in DB?
+                const { data: isDeviceLocked } = await sb.rpc('check_device_status', { p_ip: ipData.ip });
+                
+                if(isDeviceLocked) {
+                    // Sync LocalStorage to match Server (Lock it)
+                    localStorage.setItem('voted', 'true');
+                    return lock('DEVICE LOCKED', 'This device has already been used.');
+                } else {
+                    // SELF-HEALING: If DB says we are free, CLEAR any old local locks.
+                    // This allows you to delete the DB row and immediately re-test.
+                    if(localStorage.getItem('voted')) {
+                        console.log("Database cleared, resetting local lock.");
+                        localStorage.removeItem('voted');
+                    }
+                }
 
-            // 3. Render
+            } catch(e) { 
+                console.error("Init Error:", e);
+                // Optional: Fail open or closed depending on preference. currently fails silently (allows voting attempt)
+            }
+
+            // 3. Render App
             initList('boys', DATA.boys); initList('girls', DATA.girls);
             setInterval(tick, 1000); tick();
         };
@@ -153,28 +179,41 @@
                 const get = t => [...document.getElementById(`l-${t}`).querySelectorAll('.ranked')].map(e=>({id:e.id, rank:parseInt(e.getAttribute('data-r'))}));
                 const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json());
 
-                const { error } = await sb.rpc('cast_preferential_vote', { p_student_id:uid, p_boy_ranks:get('boys'), p_girl_ranks:get('girls'), p_ip_address:ip.ip, p_user_agent:navigator.userAgent });
+                // Call the transaction function
+                const { error } = await sb.rpc('cast_preferential_vote', { 
+                    p_student_id: uid, 
+                    p_boy_ranks: get('boys'), 
+                    p_girl_ranks: get('girls'), 
+                    p_ip_address: ip.ip, 
+                    p_user_agent: navigator.userAgent 
+                });
                 
-                if(error) {
-                    if(error.message.includes('Device')) localStorage.setItem('voted', 'true');
-                    throw error;
-                }
+                if(error) throw error;
 
-                // SUCCESS: Mark as voted and show Thanks message
+                // SUCCESS
                 localStorage.setItem('voted', 'true');
                 await Swal.fire({
-                    title: 'Thanks for voting!',
-                    text: 'Your vote has been securely recorded.',
+                    title: 'Voted Successfully!',
+                    text: 'Your weighted preferences have been recorded.',
                     icon: 'success',
                     confirmButtonColor: '#D4AF37',
                     background: '#111', color: '#fff'
                 });
                 
-                // After clicking OK, lock the screen
                 location.reload(); 
 
             } catch(e) {
-                Swal.fire('Error', e.message, 'error');
+                // Check for specific restriction errors from SQL
+                let msg = e.message;
+                if(msg.includes('Device Restriction')) msg = "This device has already been used.";
+                if(msg.includes('User Restriction')) msg = "You have already voted.";
+                
+                Swal.fire({
+                    title: 'Submission Failed', 
+                    text: msg, 
+                    icon: 'error',
+                    background:'#111', color:'#fff'
+                });
             }
         }
 
@@ -182,25 +221,17 @@
             const now = Date.now(), el = document.getElementById('app'), tm = document.getElementById('timer');
             
             if (now < START) {
-                // BEFORE START
                 el.classList.add('blur');
                 const diff = START - now;
-                
-                // If less than 24 hours, show HH:MM:SS
                 if (diff < 86400000) { 
                     const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
                     const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
                     const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
                     tm.innerText = `STARTS IN: ${h}:${m}:${s}`;
-                } else {
-                    tm.innerText = "STARTS SOON";
-                }
-
+                } else { tm.innerText = "STARTS SOON"; }
             } else if (now > END) {
-                // AFTER END
                 lock('VOTING CLOSED', 'The voting window has ended.');
             } else {
-                // DURING VOTING
                 const d = END - now;
                 const h = Math.floor(d / 3600000).toString().padStart(2, '0');
                 const m = Math.floor((d % 3600000) / 60000).toString().padStart(2, '0');
