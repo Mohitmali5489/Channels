@@ -84,50 +84,43 @@
         
         const DATA={boys:[{id:"b1",name:"Aashish Yadav",role:"TYBCOM"},{id:"b2",name:"Krushnakant Pal",role:"TYBSC CS"},{id:"b3",name:"Suraj Yadav",role:"TYBSC CS"},{id:"b4",name:"Yashraj Gaikwad",role:"TYBSC CS",img:"https://i.ibb.co/Zz9Nhdnv/image.png"},{id:"b5",name:"Prasad Jawale",role:"SYBSC CS",img:"https://i.ibb.co/F4fWpF2d/image.png"},{id:"b6",name:"Dhananjay Gupta",role:"TYBSC"}],girls:[{id:"g1",name:"Vaidehi Gund",role:"TYBMS"},{id:"g2",name:"Ekta Dixit",role:"TYBSC CS"},{id:"g3",name:"Divya Nair",role:"SYBSC CS"},{id:"g4",name:"Dharani Mudaliyar",role:"TYBSC CS",img:"https://i.ibb.co/VcnPCMq7/image.png"},{id:"g5",name:"Kaustubhi Chavan",role:"TYBSC CS"},{id:"g6",name:"Dhani Singh",role:"SYBMS"}]};
 
-        window.onload = async () => {
-            // 1. Basic Requirement Check
-            if(!uid) return lock('ACCESS DENIED', 'No Student ID provided in URL.');
+       window.onload = async () => {
+    // 1. Check ID
+    if(!uid) return lock('ACCESS DENIED', 'No Student ID provided in URL.');
 
-            // 2. LIVE DEVICE CHECK (Replaces static localStorage check)
-            try {
-                // Fetch IP and DB status in parallel
-                const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
-                const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
-                
-                const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
+    // 2. LIVE CHECK (Database is the Authority)
+    try {
+        const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
+        // Check if this student ID has voted
+        const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
+        
+        const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
 
-                // Check 1: Is the Student ID valid?
-                if (!usrRes.data) return lock('INVALID ID', 'Student ID not found in database.');
-                
-                // Check 2: Has Student ID already voted?
-                if(usrRes.data.has_voted) return lock('ALREADY VOTED', 'Your vote is already recorded.');
+        // A. Check Student Status
+        if (!usrRes.data) return lock('INVALID ID', 'Student ID not found.');
+        if(usrRes.data.has_voted) return lock('ALREADY VOTED', 'Your vote is already recorded.');
 
-                // Check 3: Is Device (IP) Locked in DB?
-                const { data: isDeviceLocked } = await sb.rpc('check_device_status', { p_ip: ipData.ip });
-                
-                if(isDeviceLocked) {
-                    // Sync LocalStorage to match Server (Lock it)
-                    localStorage.setItem('voted', 'true');
-                    return lock('DEVICE LOCKED', 'This device has already been used.');
-                } else {
-                    // SELF-HEALING: If DB says we are free, CLEAR any old local locks.
-                    // This allows you to delete the DB row and immediately re-test.
-                    if(localStorage.getItem('voted')) {
-                        console.log("Database cleared, resetting local lock.");
-                        localStorage.removeItem('voted');
-                    }
-                }
-
-            } catch(e) { 
-                console.error("Init Error:", e);
-                // Optional: Fail open or closed depending on preference. currently fails silently (allows voting attempt)
+        // B. Check Device Lock (RPC Call)
+        const { data: isDeviceLocked } = await sb.rpc('check_device_status', { p_ip: ipData.ip });
+        
+        if(isDeviceLocked) {
+            // Database says LOCKED -> Lock the screen
+            localStorage.setItem('voted', 'true'); 
+            return lock('DEVICE LOCKED', 'This device has already been used.');
+        } else {
+            // Database says FREE -> UNLOCK the screen (Fixes your issue)
+            if(localStorage.getItem('voted')) {
+                console.log("Database cleared, resetting local lock.");
+                localStorage.removeItem('voted'); 
             }
+        }
 
-            // 3. Render App
-            initList('boys', DATA.boys); initList('girls', DATA.girls);
-            setInterval(tick, 1000); tick();
-        };
+    } catch(e) { console.error(e); }
 
+    // 3. Render App
+    initList('boys', DATA.boys); initList('girls', DATA.girls);
+    setInterval(tick, 1000); tick();
+};
         function initList(t, d) {
             d.sort(()=>Math.random()-0.5).forEach(c => {
                 const el = document.createElement('div'); el.className = 'card'; el.id = c.id;
