@@ -82,7 +82,85 @@
         const uid = new URLSearchParams(location.search).get('id');
         const COLORS = ["", "#FFD700", "#C0C0C0", "#CD7F32", "#4A90E2", "#9B51E0", "#E91E63"];
         
-        const DATA={boys:[{id:"b1",name:"Aashish Yadav",role:"TYBCOM"},{id:"b2",name:"Krushnakant Pal",role:"TYBSC CS"},{id:"b3",name:"Suraj Yadav",role:"TYBSC CS"},{id:"b4",name:"Yashraj Gaikwad",role:"TYBSC CS",img:"https://i.ibb.co/Zz9Nhdnv/image.png"},{id:"b5",name:"Prasad Jawale",role:"SYBSC CS",img:"https://i.ibb.co/F4fWpF2d/image.png"},{id:"b6",name:"Dhananjay Gupta",role:"TYBSC"}],girls:[{id:"g1",name:"Vaidehi Gund",role:"TYBMS"},{id:"g2",name:"Ekta Dixit",role:"TYBSC CS"},{id:"g3",name:"Divya Nair",role:"SYBSC CS"},{id:"g4",name:"Dharani Mudaliyar",role:"TYBSC CS",img:"https://i.ibb.co/VcnPCMq7/image.png"},{id:"g5",name:"Kaustubhi Chavan",role:"TYBSC CS"},{id:"g6",name:"Dhani Singh",role:"SYBMS"}]};
+const DATA = {
+  boys: [
+    {
+      id: "b1",
+      name: "Aashish Yadav",
+      role: "TYBCOM",
+      img: "https://i.ibb.co/rK7rNzZz/image.png"
+    },
+    {
+      id: "b2",
+      name: "Krushnakant Pal",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/KxP8J2Qg/image.png"
+    },
+    {
+      id: "b3",
+      name: "Suraj Yadav",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/Hf3nY4yG/image.png"
+    },
+    {
+      id: "b4",
+      name: "Yashraj Gaikwad",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/TMy7100K/1000231792-f742f4fa052e029d67e046b37879c8af-29-4-2025-11-42-50-am-20251218-223157-0000.jpg"
+    },
+    {
+      id: "b5",
+      name: "Prasad Jawale",
+      role: "SYBSC CS",
+      img: "https://i.ibb.co/F4fWpF2d/image.png"
+    },
+    {
+      id: "b6",
+      name: "Dhananjay Gupta",
+      role: "TYBSC",
+      img: "https://i.ibb.co/Wp5wqgx7/image.png"
+    }
+  ],
+
+  girls: [
+    {
+      id: "g1",
+      name: "Vaidehi Gund",
+      role: "TYBMS",
+      img: "https://i.ibb.co/pB6gFvH3/image.png"
+    },
+    {
+      id: "g2",
+      name: "Ekta Dixit",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/3YQ2xWJS/image.png"
+    },
+    {
+      id: "g3",
+      name: "Divya Nair",
+      role: "SYBSC CS",
+      img: "https://i.ibb.co/j94yBpdH/image.png"
+    },
+    {
+      id: "g4",
+      name: "Dharani Mudaliyar",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/VcnPCMq7/image.png"
+    },
+    {
+      id: "g5",
+      name: "Kaustubhi Chavan",
+      role: "TYBSC CS",
+      img: "https://i.ibb.co/4nzgL2Qf/image.png"
+    },
+    {
+      id: "g6",
+      name: "Dhani Singh",
+      role: "SYBMS",
+      img: "https://i.ibb.co/JRv3YGF8/image.png"
+    }
+  ]
+};
 
        window.onload = async () => {
     // 1. Check ID
