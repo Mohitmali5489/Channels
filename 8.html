@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCampus - Plastic Collection Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; /* Emerald Green matching your app */
+            --primary-dark: #047857;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important; /* Forces colors to print */
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 40px;
+            color: var(--text-dark);
+        }
+
+        .page-container {
+            max-width: 210mm; /* A4 Width */
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            min-height: 297mm; /* A4 Height */
+            position: relative;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            padding: 24px 32px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            color: var(--primary);
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .doc-title {
+            text-align: right;
+        }
+
+        .doc-title h2 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            color: var(--text-dark);
+        }
+
+        .doc-title span {
+            font-size: 12px;
+            color: var(--text-light);
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* --- INFO SECTION --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            padding: 20px 32px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .info-item div {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            height: 36px;
+            background: #f9fafb;
+        }
+
+        /* --- TABLE --- */
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .log-table th {
+            background-color: var(--primary);
+            color: white;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            padding: 10px 8px;
+            text-align: left;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .log-table td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px; /* Height for writing */
+            height: 45px;
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+        
+        /* Zebra Striping for professional look */
+        .log-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Column Widths */
+        .col-sr { width: 5%; text-align: center; }
+        .col-id { width: 12%; }
+        .col-name { width: 25%; }
+        .col-weight { width: 10%; text-align: center; font-weight: bold; }
+        .col-desc { width: 18%; }
+        .col-sign { width: 15%; }
+        .col-vol { width: 15%; }
+
+        /* --- FOOTER --- */
+        .footer-summary {
+            margin-top: auto;
+            padding: 24px 32px;
+            background: #f9fafb;
+            border-top: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .signatures {
+            display: flex;
+            gap: 40px;
+        }
+
+        .sign-box {
+            text-align: center;
+        }
+
+        .sign-line {
+            width: 180px;
+            border-bottom: 2px solid var(--text-light);
+            margin-bottom: 8px;
+            height: 40px;
+        }
+
+        .sign-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        .total-box {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 12px 24px;
+            text-align: center;
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .total-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* --- UTILS --- */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            opacity: 0.03;
+            pointer-events: none;
+            width: 400px;
+            height: 400px;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--text-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            background: black;
+        }
+
+        /* --- PRINT MEDIA QUERY --- */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page-container {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                max-width: none;
+                height: 100vh;
+            }
+            .print-btn {
+                display: none;
+            }
+            @page {
+                margin: 0;
+                size: A4;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="window.print()" class="print-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print / Save PDF
+    </button>
+
+    <div class="page-container">
+        <svg class="watermark" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" fill="#10b981"/>
+        </svg>
+
+        <div class="header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M12 22v-9"/><path d="M9 13.9a4.8 4.8 0 0 1-.3-1.6 5 5 0 0 1 1.7-3.7 9.8 9.8 0 0 1 6.3-2.6 4 4 0 0 1 2.3.6A3 3 0 0 1 21 9a9 9 0 0 1-2.9 6.2 5 5 0 0 1-3.6 1.7 4.8 4.8 0 0 1-1.6-.3"/></svg>
+                </div>
+                <div class="brand-text">
+                    <h1>EcoCampus</h1>
+                    <p>Green Club Initiative</p>
+                </div>
+            </div>
+            <div class="doc-title">
+                <h2>OFFLINE PLASTIC LOG</h2>
+                <span>ID: EC-OFF-2025</span>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Date</label>
+                <div></div>
+            </div>
+            <div class="info-item">
+                <label>House Name / Group</label>
+                <div></div>
+            </div>
+            <div class="info-item">
+                <label>House Leader / Mentor</label>
+                <div></div>
+            </div>
+        </div>
+
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th class="col-sr">Sr.</th>
+                    <th class="col-id">Student ID</th>
+                    <th class="col-name">Student Name</th>
+                    <th class="col-weight">Weight (Kg)</th>
+                    <th class="col-desc">Description / Notes</th>
+                    <th class="col-sign">Student Sign</th>
+                    <th class="col-vol">Volunteer Sign</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>7</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>8</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>9</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>16</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+
+        <div class="footer-summary">
+            <div class="signatures">
+                <div class="sign-box">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">House Leader</div>
+                </div>
+                <div class="sign-box">
+                    <div class="sign-line"></div>
+                    <div class="sign-label">Verification Officer</div>
+                </div>
+            </div>
+
+            <div class="total-box">
+                <div class="total-label">Total Collected</div>
+                <div class="total-val">_______ KG</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
