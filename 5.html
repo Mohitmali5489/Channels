@@ -75,7 +75,7 @@
         
         // TESTING MODE: Starts immediately (Current Time - 1 sec). 
         // Update these for the final event.
-        const START = Date.now() - 1000; 
+        const START = new Date("2025-12-20T13:40:00").getTime(); 
         const END = new Date("2025-12-22T19:00:00").getTime(); 
         
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
