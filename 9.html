@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr. & Miss Birla Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #050505; /* Deep Black */
+            font-family: 'Outfit', sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* BLURRED BACKGROUND - Gold Curtains Theme */
+        .bg-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            /* Placeholder for luxury curtain background */
+            background-image: url('https://images.unsplash.com/photo-1570577568565-d4c3821a8d29?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(16px) brightness(0.3); /* Dark & Blurred */
+            transform: scale(1.1);
+        }
+
+        /* TYPOGRAPHY */
+        .top-tag {
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ddd;
+            margin-bottom: -5px;
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem; /* Big luxury text */
+            color: #FFD700; /* Gold */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .sub-title {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #fff;
+            margin-top: 5px;
+            margin-bottom: 40px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+
+        /* COUNTDOWN GRID */
+        .timer-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+
+        .num {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .unit {
+            font-size: 0.7rem;
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* LIVE STATUS MESSAGE (Hidden by default) */
+        #status-msg {
+            display: none;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFD700;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* FOOTER INFO BOX (Like the parchment in your image) */
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 15px 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .info-label {
+            color: #FFD700;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .info-details {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.4;
+        }
+
+        /* MOBILE ADJUSTMENTS */
+        @media (max-width: 480px) {
+            .main-title { font-size: 3rem; }
+            .sub-title { font-size: 1.1rem; }
+            .num { font-size: 2rem; }
+            .timer-container { gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+
+    <div class="top-tag">MR. & MISS</div>
+    <h1 class="main-title">BKBNC</h1>
+    <div class="sub-title">Preferential Voting</div>
+
+    <div class="timer-container" id="countdown">
+        <div class="time-box">
+            <span class="num" id="d">00</span>
+            <span class="unit">Days</span>
+        </div>
+        <div class="time-box">
+            <span class="num" id="h">00</span>
+            <span class="unit">Hrs</span>
+        </div>
+        <div class="time-box">
+            <span class="num" id="m">00</span>
+            <span class="unit">Mins</span>
+        </div>
+        <div class="time-box">
+            <span class="num" id="s">00</span>
+            <span class="unit">Secs</span>
+        </div>
+    </div>
+
+    <div id="status-msg">VOTING LIVE</div>
+
+    <div class="info-box">
+        <div class="info-label">Voting Lines Open On:</div>
+        <div class="info-details">
+            Date : 22/12/2025<br>
+            Time : 5 PM to 7 PM
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const START_TIME = new Date("2025-12-22T17:00:00").getTime(); // 5 PM
+        const END_TIME   = new Date("2025-12-22T19:00:00").getTime(); // 7 PM
+
+        const els = {
+            d: document.getElementById('d'),
+            h: document.getElementById('h'),
+            m: document.getElementById('m'),
+            s: document.getElementById('s'),
+            timer: document.getElementById('countdown'),
+            msg: document.getElementById('status-msg')
+        };
+
+        function tick() {
+            const now = Date.now();
+
+            // 1. BEFORE EVENT (Countdown)
+            if (now < START_TIME) {
+                const diff = START_TIME - now;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                els.d.innerText = d < 10 ? '0' + d : d;
+                els.h.innerText = h < 10 ? '0' + h : h;
+                els.m.innerText = m < 10 ? '0' + m : m;
+                els.s.innerText = s < 10 ? '0' + s : s;
+            } 
+            // 2. DURING EVENT (Live)
+            else if (now >= START_TIME && now < END_TIME) {
+                els.timer.style.display = 'none';
+                els.msg.style.display = 'block';
+                els.msg.innerText = "VOTING LIVE NOW";
+                els.msg.style.color = "#00ff00"; // Green for active
+            } 
+            // 3. AFTER EVENT (Closed)
+            else {
+                els.timer.style.display = 'none';
+                els.msg.style.display = 'block';
+                els.msg.innerText = "VOTING CLOSED";
+                els.msg.style.color = "#ff4444"; // Red for closed
+                els.msg.style.animation = "none";
+            }
+        }
+
+        setInterval(tick, 1000);
+        tick();
+    </script>
+</body>
+</html>
