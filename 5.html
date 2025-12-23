@@ -13,56 +13,66 @@
             --grad: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #998100 100%);
             --neon-glow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
-        body { margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; padding-bottom:120px; user-select:none; -webkit-tap-highlight-color: transparent; }
+        
+        /* Mobile-First Base Styles */
+        body { 
+            margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; 
+            padding-bottom:140px; /* Space for fixed button */
+            user-select:none; -webkit-tap-highlight-color: transparent; 
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
         
         /* HEADER */
-        header { position:sticky; top:0; z-index:100; background:rgba(5,5,5,0.95); backdrop-filter:blur(10px); padding:15px; border-bottom:1px solid rgba(255,215,0,0.1); text-align:center; }
+        header { 
+            position:sticky; top:0; z-index:100; 
+            background:rgba(5,5,5,0.95); backdrop-filter:blur(10px); 
+            padding:15px; border-bottom:1px solid rgba(255,215,0,0.1); 
+            text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
         .badge { background: #222; color: var(--gold); border: 1px solid rgba(255,215,0,0.3); font-size: 0.6rem; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: inline-block; font-weight: 700; }
-        .logo { font-weight:900; font-size:1.6rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform: uppercase; letter-spacing: -0.5px; }
-        #timer { font-size:1rem; font-weight:700; color:var(--gold); margin-top:5px; font-variant-numeric: tabular-nums; }
+        .logo { font-weight:900; font-size:1.5rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform: uppercase; letter-spacing: -0.5px; }
+        #timer { font-size:0.9rem; font-weight:700; color:var(--gold); margin-top:5px; font-variant-numeric: tabular-nums; }
 
-        .container { max-width:600px; margin:0 auto; padding:20px 15px; }
+        .container { 
+            width: 100%; max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; 
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        }
         
         /* Section Titles */
         h4 { 
-            color: #fff; margin: 30px 0 20px; text-align: center;
-            text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; font-weight: 700; opacity: 0.7;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            color: #fff; margin: 30px 0 20px; text-align: center; width: 100%;
+            text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 700; opacity: 0.7;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
         }
-        h4::before, h4::after { content: ''; height: 1px; width: 30px; background: var(--gold); opacity: 0.5; }
+        h4::before, h4::after { content: ''; height: 1px; flex: 1; max-width: 50px; background: var(--gold); opacity: 0.5; }
 
-        /* CIRCLE CANDIDATE UI GRID */
+        /* CIRCLE CANDIDATE UI GRID - Mobile Optimized */
         .candidates-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 items per row */
-            gap: 20px 10px;
-            justify-items: center;
+            grid-template-columns: repeat(3, 1fr); /* 3 in a row looks good on mobile for circles */
+            gap: 25px 15px; /* Vertical gap 25px, Horizontal 15px */
+            justify-content: center;
+            width: 100%;
         }
 
         .candidate-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            width: 100px;
-            position: relative;
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; position: relative;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .candidate-item:active { transform: scale(0.95); }
 
         /* The Avatar Ring */
         .img-ring {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            padding: 3px;
-            border: 2px solid #333;
-            position: relative;
-            transition: all 0.3s ease;
-            background: #000;
+            width: 75px; height: 75px; /* Perfect size for mobile thumbs */
+            border-radius: 50%; padding: 3px;
+            border: 2px solid #333; position: relative;
+            transition: all 0.3s ease; background: #000;
         }
 
+        /* Active State */
         .candidate-item.selected .img-ring {
             border-color: var(--gold);
             box-shadow: var(--neon-glow);
@@ -70,64 +80,48 @@
         }
 
         .c-avatar {
-            width: 100%; height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #222;
-            filter: grayscale(100%); /* B&W by default */
-            transition: 0.3s;
+            width: 100%; height: 100%; border-radius: 50%;
+            object-fit: cover; background: #222;
+            filter: grayscale(100%); transition: 0.3s;
         }
-
-        .candidate-item.selected .c-avatar {
-            filter: grayscale(0%); /* Color when selected */
-        }
+        .candidate-item.selected .c-avatar { filter: grayscale(0%); }
 
         /* Checkmark Badge */
         .check-badge {
-            position: absolute; bottom: 0; right: 0;
+            position: absolute; bottom: -2px; right: -2px;
             width: 24px; height: 24px;
-            background: var(--grad);
-            border-radius: 50%;
+            background: var(--grad); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: #000; font-weight: 900; font-size: 12px;
             opacity: 0; transform: scale(0);
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #000;
-            z-index: 10;
+            border: 2px solid #000; z-index: 10;
         }
-
-        .candidate-item.selected .check-badge {
-            opacity: 1; transform: scale(1);
-        }
+        .candidate-item.selected .check-badge { opacity: 1; transform: scale(1); }
 
         /* Text Info */
         .c-name {
-            margin-top: 10px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-align: center;
-            color: #aaa;
-            line-height: 1.2;
-            transition: 0.3s;
+            margin-top: 8px; font-weight: 600; font-size: 0.75rem;
+            text-align: center; color: #aaa; line-height: 1.2;
+            transition: 0.3s; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        
-        .c-role { font-size: 0.65rem; color: #555; text-align: center; margin-top: 2px; }
+        .c-role { font-size: 0.6rem; color: #555; text-align: center; margin-top: 2px; }
 
         .candidate-item.selected .c-name { color: #fff; font-weight: 700; }
         .candidate-item.selected .c-role { color: var(--gold); }
 
         /* OVERLAYS & UTILS */
-        #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; }
+        #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; box-sizing: border-box; }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         .blur { filter:blur(15px); pointer-events:none; opacity:0.3; }
 
         /* ACTION BUTTON */
         .btn-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, #050505 80%, transparent);
+            background: linear-gradient(to top, #050505 85%, transparent);
             padding: 20px 0 30px;
             display: flex; justify-content: center;
-            pointer-events: none; /* Let clicks pass through gradient */
+            pointer-events: none; z-index: 200;
         }
         
         .btn { 
@@ -194,7 +188,7 @@
         // GEO-FENCING CONFIG (Strict Mode)
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
-        const MAX_DISTANCE_METERS = 30; 
+        const MAX_DISTANCE_METERS = 20; 
         
         // !!! STRICT DEPLOYMENT MODE !!!
         const TEST_MODE = false; 
@@ -318,12 +312,15 @@
                 el.id = c.id;
                 el.onclick = () => select(type, c.id);
                 
+                // Truncate name logic for display
+                const displayName = c.name.split(' ')[0]; 
+
                 el.innerHTML = `
                     <div class="img-ring">
                         <img src="${c.img}" class="c-avatar">
                         <div class="check-badge">✔</div>
                     </div>
-                    <div class="c-name">${c.name.split(' ')[0]}</div>
+                    <div class="c-name">${displayName}</div>
                     <div class="c-role">${c.role}</div>
                 `;
                 container.appendChild(el);
