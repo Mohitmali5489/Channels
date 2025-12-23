@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
-            --bg:#050505; --card:#111; --gold:#FFD700; --gold-dim: #998100;
+            --bg:#050505; --card:#111; --gold:#FFD700; 
             --grad: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #998100 100%);
         }
         body { margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; padding-bottom:100px; user-select:none; }
@@ -20,41 +20,97 @@
         .logo { font-weight:900; font-size:1.8rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform: uppercase; letter-spacing: -1px; }
         #timer { font-size:1.2rem; font-weight:700; color:var(--gold); margin-top:5px; font-variant-numeric: tabular-nums; }
 
-        .container { max-width:600px; margin:0 auto; padding:20px; }
-        h4 { color:var(--gold); border-bottom: 1px solid #333; padding-bottom: 10px; margin: 30px 0 15px; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; }
+        .container { max-width:600px; margin:0 auto; padding:20px; text-align: center; }
+        h4 { color:#888; margin: 40px 0 20px; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 700; }
 
-        /* SELECTION CARDS */
-        .card { 
-            display:flex; align-items:center; background:var(--card); 
-            border:1px solid #333; border-radius:16px; padding:15px; margin-bottom:12px; cursor:pointer; 
-            transition:0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            opacity: 0.6; transform: scale(0.98);
+        /* CIRCLE CANDIDATE UI (Social Style) */
+        .candidates-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px; /* Space between the two candidates */
         }
-        .card.selected { 
-            border-color:var(--gold); background: #1a1a1a; 
-            opacity: 1; transform: scale(1);
-            box-shadow: 0 0 20px rgba(255,215,0,0.1);
-        }
-        .avatar { width:60px; height:60px; border-radius:50%; object-fit:cover; margin-right:20px; background:#222; border:2px solid #333; }
-        .card.selected .avatar { border-color: var(--gold); }
-        .info { flex:1; } 
-        .name { font-weight:700; font-size:1.1rem; margin-bottom: 2px; } 
-        .role { font-size:0.8rem; color:#888; }
-        
-        /* CHECKBOX CIRCLE */
-        .check { 
-            width:24px; height:24px; border-radius:50%; border:2px solid #444; 
-            display:flex; align-items:center; justify-content:center; transition:0.2s;
-        }
-        .card.selected .check { background:var(--gold); border-color:var(--gold); }
-        .card.selected .check::after { content:'✔'; color:#000; font-size:14px; font-weight:800; }
 
-        /* OVERLAYS */
+        .candidate-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.6; /* Dimmed when not selected */
+            position: relative;
+        }
+
+        .candidate-item.selected {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .img-ring {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            padding: 4px; /* Gap between image and ring */
+            border: 3px solid #333; /* Default dark ring */
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .candidate-item.selected .img-ring {
+            border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .c-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #222;
+        }
+
+        /* Checkmark Badge on Selection */
+        .check-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 900;
+            font-size: 14px;
+            opacity: 0;
+            transform: scale(0);
+            transition: 0.3s;
+            border: 3px solid #000;
+        }
+
+        .candidate-item.selected .check-badge {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .c-name {
+            margin-top: 15px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            color: #fff;
+            max-width: 120px;
+            line-height: 1.2;
+        }
+
+        /* OVERLAYS & UTILS */
         #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         .blur { filter:blur(15px); pointer-events:none; opacity:0.3; }
 
-        /* CONFIRM BUTTON */
+        /* BUTTON */
         .btn { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; padding:18px; background:#333; color:#777; border-radius:14px; border:none; font-weight:800; font-size: 1rem; cursor:not-allowed; text-transform:uppercase; z-index:200; transition:0.3s; letter-spacing: 1px; }
         .btn.active { background:var(--grad); color:#000; cursor:pointer; box-shadow:0 10px 40px rgba(255,215,0,0.2); }
 
@@ -81,11 +137,11 @@
     </header>
     
     <div class="container blur" id="app">
-        <h4>Select 1 Mr. Finalist</h4>
-        <div id="l-boys"></div>
+        <h4>Vote for Mr. Finalist</h4>
+        <div id="l-boys" class="candidates-row"></div>
         
-        <h4>Select 1 Miss Finalist</h4>
-        <div id="l-girls"></div>
+        <h4>Vote for Miss Finalist</h4>
+        <div id="l-girls" class="candidates-row"></div>
     </div>
     
     <button class="btn" id="sub" onclick="vote()">Confirm Selection</button>
@@ -96,26 +152,26 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- EVENT SETTINGS ---
-        // 5 Minute Timer (300 seconds)
-        const EVENT_DURATION_MS = 5 * 60 * 1000; 
+        const EVENT_DURATION_MS = 5 * 60 * 1000; // 5 Minutes
         
         // GEO-FENCING CONFIG
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
         const MAX_DISTANCE_METERS = 20; 
         
-        // !!! STRICT MODE ACTIVE !!!
+        // !!! STRICT MODE ACTIVE - GPS ENFORCED !!!
         const TEST_MODE = false; 
 
-        // --- FINALISTS DATA (Edit this!) ---
+        // --- FINALISTS DATA ---
+        // Updated with proper IDs for the new round
         const DATA = {
             boys: [
-                {id: "fb1", name: "Aashish Yadav", role: "TYBCOM Finalist", img: "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"},
-                {id: "fb2", name: "Krushnakant Pal", role: "TYBSC CS Finalist", img: "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"}
+                {id: "fb1", name: "Aashish Yadav", img: "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"},
+                {id: "fb2", name: "Krushnakant Pal", img: "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"}
             ],
             girls: [
-                {id: "fg1", name: "Vaidehi Gund", role: "TYBMS Finalist", img: "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"},
-                {id: "fg2", name: "Ekta Dixit", role: "TYBSC CS Finalist", img: "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"}
+                {id: "fg1", name: "Vaidehi Gund", img: "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"},
+                {id: "fg2", name: "Ekta Dixit", img: "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"}
             ]
         };
 
@@ -127,10 +183,9 @@
         let userLat = 0, userLng = 0;
 
         window.onload = async () => {
-            // 1. Basic ID Check
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found. Use your unique link.', '🔒');
-
-            // 2. Start Location Check flow
+            
+            // Start Access Flow
             document.getElementById('ov-msg').innerHTML = "We need your location to verify<br>you are at the Main Building.";
             document.getElementById('ov-spin').style.display = 'none';
             document.getElementById('perm-btn').style.display = 'block';
@@ -164,8 +219,6 @@
                     (err) => {
                         let msg = "Location access denied.";
                         if(err.code === 1) msg = "Please allow location access to vote.";
-                        else if(err.code === 2) msg = "GPS signal unavailable.";
-                        else if(err.code === 3) msg = "Location request timed out.";
                         lock("LOCATION REQUIRED", msg, "🌍");
                     },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -192,9 +245,7 @@
                     p_ua: navigator.userAgent 
                 });
 
-                if (isLocked) {
-                    return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
-                }
+                if (isLocked) return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
 
                 // C. Unlock App
                 document.getElementById('overlay').style.display = 'none';
@@ -204,7 +255,7 @@
 
             } catch(e) {
                 console.error(e);
-                lock("CONNECTION ERROR", "Could not connect to server. Refresh to try again.", "⚠️");
+                lock("CONNECTION ERROR", "Could not connect to server.", "⚠️");
             }
         }
 
@@ -215,27 +266,32 @@
 
         function renderList(type, list) {
             const container = document.getElementById(`l-${type}`);
+            container.innerHTML = ""; // Clear existing
+            
             list.forEach(c => {
                 const el = document.createElement('div');
-                el.className = 'card';
-                el.onclick = () => select(type, c.id);
+                el.className = 'candidate-item';
                 el.id = c.id;
+                el.onclick = () => select(type, c.id);
+                
                 el.innerHTML = `
-                    <img src="${c.img}" class="avatar">
-                    <div class="info"><div class="name">${c.name}</div><div class="role">${c.role}</div></div>
-                    <div class="check"></div>
+                    <div class="img-ring">
+                        <img src="${c.img}" class="c-avatar">
+                        <div class="check-badge">✔</div>
+                    </div>
+                    <div class="c-name">${c.name}</div>
                 `;
                 container.appendChild(el);
             });
         }
 
         function select(type, id) {
-            // Deselect others in same category
+            // Logic: Only 1 selection per category
             const container = document.getElementById(`l-${type}`);
             [...container.children].forEach(c => c.classList.remove('selected'));
             
-            // Select clicked
-            document.getElementById(id).classList.add('selected');
+            const target = document.getElementById(id);
+            target.classList.add('selected');
             
             if(type === 'boys') selectedBoy = id;
             if(type === 'girls') selectedGirl = id;
@@ -260,7 +316,7 @@
 
             const { isConfirmed } = await Swal.fire({
                 title: 'Confirm Final Vote?',
-                text: 'This is the Grand Finale. You cannot change this.',
+                text: 'You cannot change this later.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#FFD700',
@@ -289,7 +345,7 @@
 
                 await Swal.fire({
                     title: 'Voted Successfully!',
-                    text: 'Thank you for participating in the Grand Finale.',
+                    text: 'Thank you for participating.',
                     icon: 'success',
                     confirmButtonColor: '#FFD700',
                     background: '#111', color: '#fff'
@@ -303,7 +359,6 @@
         }
 
         // --- UTILS ---
-
         function startTimer() {
             let timeLeft = EVENT_DURATION_MS / 1000;
             const display = document.getElementById('timer');
@@ -321,13 +376,10 @@
             }, 1000);
         }
 
-        // Haversine Formula for Distance (Meters)
         function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // Earth radius in meters
-            const φ1 = lat1 * Math.PI/180;
-            const φ2 = lat2 * Math.PI/180;
-            const Δφ = (lat2-lat1) * Math.PI/180;
-            const Δλ = (lon2-lon1) * Math.PI/180;
+            const R = 6371e3; // Earth radius meters
+            const φ1 = lat1 * Math.PI/180, φ2 = lat2 * Math.PI/180;
+            const Δφ = (lat2-lat1) * Math.PI/180, Δλ = (lon2-lon1) * Math.PI/180;
             const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
