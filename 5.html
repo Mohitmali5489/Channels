@@ -104,8 +104,8 @@
         const TARGET_LNG = 73.146977;
         const MAX_DISTANCE_METERS = 20; 
         
-        // !!! SET THIS TO TRUE FOR HOME TESTING, FALSE FOR LIVE EVENT !!!
-        const TEST_MODE = true; 
+        // !!! STRICT MODE ACTIVE !!!
+        const TEST_MODE = false; 
 
         // --- FINALISTS DATA (Edit this!) ---
         const DATA = {
@@ -154,6 +154,7 @@
                         userLng = pos.coords.longitude;
                         const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
                         
+                        // Strict Distance Check
                         if(dist > MAX_DISTANCE_METERS) {
                             lock("OUT OF RANGE", `You are ${Math.round(dist)}m away. You must be within ${MAX_DISTANCE_METERS}m of the venue.`, "📍");
                         } else {
