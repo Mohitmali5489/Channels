@@ -23,7 +23,7 @@
             display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        /* STATUS BAR (New) */
+        /* STATUS BAR */
         #status-bar {
             background: #222; font-size: 0.75rem; text-align: center; padding: 8px;
             font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid #333;
@@ -42,15 +42,14 @@
         .logo { font-weight:900; font-size:1.5rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform: uppercase; letter-spacing: -0.5px; }
         #timer { font-size:0.9rem; font-weight:700; color:var(--gold); margin-top:5px; font-variant-numeric: tabular-nums; }
 
-        /* CONTAINER with Hardware Acceleration for smooth blur */
+        /* CONTAINER */
         .container { 
             width: 100%; max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; 
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
             transition: filter 0.3s ease, opacity 0.3s ease;
-            will-change: filter; /* Performance Fix */
+            will-change: filter;
         }
         
-        /* Section Titles */
         h4 { 
             color: #fff; margin: 30px 0 20px; text-align: center; width: 100%;
             text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 700; opacity: 0.7;
@@ -73,7 +72,6 @@
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             -webkit-tap-highlight-color: transparent;
         }
-
         .candidate-item:active { transform: scale(0.95); }
 
         .img-ring {
@@ -113,7 +111,6 @@
             transition: 0.3s; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         .c-role { font-size: 0.6rem; color: #555; text-align: center; margin-top: 2px; }
-
         .candidate-item.selected .c-name { color: #fff; font-weight: 700; }
         .candidate-item.selected .c-role { color: var(--gold); }
 
@@ -157,13 +154,13 @@
     <div id="overlay">
         <div class="spinner" id="ov-spin"></div>
         <div class="icon-lock" id="ov-icon" style="display:none">🔒</div>
-        <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">WAITING FOR START</h1>
-        <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">Event starts at 5:00 PM</p>
-        <button id="perm-btn" style="display:none; margin-top:20px; padding:12px 30px; background:var(--gold); border:none; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="requestLocation()">ALLOW LOCATION</button>
+        <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">LOADING...</h1>
+        <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">Checking System...</p>
+        <button id="perm-btn" style="display:none; margin-top:20px; padding:12px 30px; background:var(--gold); border:none; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="manualLocationRequest()">ALLOW LOCATION</button>
     </div>
 
     <div id="status-bar">
-        <span class="status-dot"></span> <span id="status-text">Checking Location...</span>
+        <span class="status-dot"></span> <span id="status-text">Initializing...</span>
     </div>
 
     <header>
@@ -190,13 +187,13 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
-        const START_TIME = new Date("2025-12-24T16:16:00").getTime();
+        const START_TIME = new Date("2025-12-24T16:23:00").getTime();
         const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
-        // GEO-FENCING (Updated Radius)
+        // GEO-FENCING
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
-        const MAX_DISTANCE_METERS = 30; // UPDATED to 30m
+        const MAX_DISTANCE_METERS = 30; // 30m Radius
         
         // DATA
         const DATA = {
@@ -226,16 +223,37 @@
         let userLat = 0, userLng = 0;
         let hasAccess = false; 
 
+        // --- 1. INITIALIZE ---
         window.onload = async () => {
+            // STRICT USER ID CHECK
+            if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
+
             initApp(); 
-            updateStatus('neutral', 'Waiting for Event Start...');
+            updateStatus('neutral', 'Waiting for Sync...');
             
-            // Check timer every second
+            // Start Timer Loop
             setInterval(tick, 1000); 
             tick(); 
+            
+            // ATTEMPT SILENT BACKGROUND VERIFICATION
+            // We try this immediately to see if we can get location without disturbing user
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        // Got it silently! Store it.
+                        userLat = pos.coords.latitude;
+                        userLng = pos.coords.longitude;
+                        // If time is right, this will speed up checkDatabase
+                    },
+                    (err) => {
+                        console.log("Silent location failed, will ask later.");
+                    },
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                );
+            }
         };
 
-        // --- 1. TIME CONTROL LOOP ---
+        // --- 2. TIME & STATE LOOP ---
         function tick() {
             const now = Date.now();
             const tm = document.getElementById('timer');
@@ -243,14 +261,16 @@
             const spin = document.getElementById('ov-spin');
 
             if (now < START_TIME) {
-                // CASE 1: PRE-EVENT
+                // --- PRE-EVENT ---
                 const diff = START_TIME - now;
                 const m = Math.floor(diff / 60000).toString().padStart(2, '0');
                 const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
                 
                 tm.innerText = `STARTS IN: ${m}:${s}`;
                 tm.style.color = "#888";
+                updateStatus('neutral', 'Event has not started');
                 
+                // Show Wait Screen
                 if(overlay.style.display === 'none') {
                     lock("WAITING FOR START", `Event starts at 5:00 PM`, "⏳");
                     document.getElementById('perm-btn').style.display = 'none';
@@ -258,7 +278,7 @@
                 }
 
             } else if (now > END_TIME) {
-                // CASE 2: EVENT OVER
+                // --- EVENT OVER ---
                 lock('VOTING CLOSED', 'The voting window has ended.', '⏰');
                 tm.innerText = "CLOSED";
                 tm.style.color = "#ff4444";
@@ -267,51 +287,45 @@
                 spin.style.display = 'none';
 
             } else {
-                // CASE 3: LIVE EVENT
+                // --- LIVE EVENT ---
                 const diff = END_TIME - now;
                 const m = Math.floor(diff / 60000).toString().padStart(2, '0');
                 const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
                 tm.innerText = `CLOSING IN: ${m}:${s}`;
                 tm.style.color = "var(--gold)";
                 
-                // Auto-trigger verification if allowed
+                // If live and not verified, trigger checks
                 if (!hasAccess && document.getElementById('perm-btn').style.display === 'none') {
-                     startVerification();
+                     // Check if we already have coordinates from silent check
+                     if (userLat !== 0) {
+                         checkDatabase(); // Fast path
+                     } else {
+                         verifyLocationWithPrompt(); // Ask user
+                     }
                 }
             }
         }
 
-        // --- 2. VERIFICATION FLOW ---
-        async function startVerification() {
-            if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
-            
-            updateStatus('neutral', 'Verifying...');
+        // --- 3. VERIFICATION LOGIC ---
+        function verifyLocationWithPrompt() {
             document.getElementById('ov-title').innerText = "CHECKING ACCESS";
             document.getElementById('ov-msg').innerHTML = "Verifying location...<br>Please stand near Main Building.";
             document.getElementById('ov-spin').style.display = 'none';
             document.getElementById('perm-btn').style.display = 'block'; 
         }
 
-        function requestLocation() {
+        function manualLocationRequest() {
             document.getElementById('perm-btn').style.display = 'none';
             document.getElementById('ov-spin').style.display = 'block';
             document.getElementById('ov-msg').innerText = "Acquiring GPS signal...";
-
-            if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
             
-            // High accuracy but with a timeout to prevent infinite hanging
+            if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
+
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     userLat = pos.coords.latitude;
                     userLng = pos.coords.longitude;
-                    const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
-                    
-                    if(dist > MAX_DISTANCE_METERS) {
-                        lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building (Radius: 30m).`, "📍");
-                        updateStatus('bad', `Out of Range (${Math.round(dist)}m)`);
-                    } else {
-                        checkDatabase();
-                    }
+                    checkDatabase();
                 },
                 (err) => {
                     document.getElementById('perm-btn').style.display = 'block';
@@ -324,9 +338,15 @@
         }
 
         async function checkDatabase() {
-            document.getElementById('ov-msg').innerText = "Checking voting status...";
+            // First, verify distance locally to save DB calls if far away
+            const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
+            if(dist > MAX_DISTANCE_METERS) {
+                updateStatus('bad', `Out of Range (${Math.round(dist)}m)`);
+                return lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building (30m).`, "📍");
+            }
+
+            document.getElementById('ov-msg').innerText = "Verifying Student ID...";
             try {
-                // Using Promise.all to fetch fast
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
                 const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
                 
@@ -352,7 +372,7 @@
                 hasAccess = true;
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('app').classList.remove('blur');
-                updateStatus('good', '✅ You are in the voting area');
+                updateStatus('good', '✅ Verified: In Voting Area');
 
             } catch(e) {
                 console.error(e);
@@ -360,6 +380,7 @@
             }
         }
 
+        // --- 4. APP LOGIC ---
         function initApp() {
             renderList('boys', DATA.boys);
             renderList('girls', DATA.girls);
