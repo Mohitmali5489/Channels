@@ -264,7 +264,7 @@
                 const { data, error } = await sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
                 
                 if (error || !data) {
-                    return lock('INVALID ID', 'Student ID not found.', '🚫');
+                    return lock('UNAUTHORIZED ACCESS', 'Student not Authorized to vote.', '🚫');
                 }
                 if (data.has_voted) {
                     updateStatus('bad', 'Already Voted');
