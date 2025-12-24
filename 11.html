@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Results | EcoCampus</title>
+    <title>Grand Finale Results | EcoCampus</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { 
-            --bg:#0a0a0b; --card:#161618; --gold:#D4AF37; 
-            --grad:linear-gradient(135deg,#BF953F,#FCF6BA,#B38728,#FBF5B7); 
+            --bg:#050505; --card:#111; --gold:#FFD700; 
+            --grad: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #998100 100%);
             --text-muted: #666;
         }
         
@@ -22,7 +22,7 @@
         /* HEADER */
         header { 
             height: 80px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 40px; border-bottom: 1px solid #222; background: rgba(10,10,11,0.95);
+            padding: 0 40px; border-bottom: 1px solid #222; background: rgba(5,5,5,0.95);
         }
         .logo { font-size: 1.8rem; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: -1px; }
         .live-indicator { display: flex; align-items: center; font-size: 0.9rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -44,29 +44,38 @@
         .total-votes { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
 
         /* LIST CONTAINER */
-        .rank-list { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .rank-list { flex: 1; display: flex; flex-direction: column; gap: 12px; }
 
         /* CANDIDATE CARD */
         .card { 
             display: flex; align-items: center; 
             background: #141414; border: 1px solid #222; border-radius: 12px; 
-            padding: 10px 15px; position: relative; overflow: hidden;
+            padding: 12px 18px; position: relative; overflow: hidden;
             transition: transform 0.3s ease;
         }
         
-        /* Top 3 Highlighting */
-        .card[data-rank="1"] { border-color: var(--gold); background: linear-gradient(90deg, #1c1c1e 0%, #2a2200 100%); transform: scale(1.02); }
-        .card[data-rank="1"] .rank-num { color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-        
+        /* Top 1 Styling */
+        .card[data-rank="1"] { 
+            background: linear-gradient(90deg, #1c1c1e 0%, #2a2200 100%); 
+            border-color: rgba(255, 215, 0, 0.3); transform: scale(1.02); margin-bottom: 10px;
+        }
+        .card[data-rank="1"] .rank-num { color: var(--gold); font-size: 1.5rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .card[data-rank="1"] .avatar { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+
         .rank-num { width: 40px; font-size: 1.2rem; font-weight: 800; color: #444; text-align: center; margin-right: 15px; z-index: 2; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #333; z-index: 2; background: #000; }
+        
+        .avatar { 
+            width: 50px; height: 50px; border-radius: 50%; object-fit: cover; 
+            margin-right: 15px; border: 2px solid #333; z-index: 2; background: #000;
+        }
+        
         .info { flex: 1; z-index: 2; }
         .name { font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
         .role { font-size: 0.8rem; color: #666; }
 
         .score { text-align: right; z-index: 2; }
-        .count { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
-        .label { font-size: 0.6rem; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+        .count { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; }
+        .label { font-size: 0.6rem; text-transform: uppercase; color: #666; font-weight: 700; }
 
         /* PROGRESS BAR BEHIND */
         .progress-bar {
@@ -75,7 +84,7 @@
             width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1;
         }
-        .card[data-rank="1"] .progress-bar { background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.15)); }
+        .card[data-rank="1"] .progress-bar { background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15)); }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
@@ -83,14 +92,14 @@
 <body>
 
     <header>
-        <div class="logo">EcoCampus Results</div>
-        <div class="live-indicator"><div class="dot"></div> Live Counting</div>
+        <div class="logo">The Final Showdown</div>
+        <div class="live-indicator"><div class="dot"></div> Live Results</div>
     </header>
 
     <div class="dashboard">
         <div class="column">
             <div class="col-header">
-                Mr. Nominees
+                Mr. BKBNC
                 <span class="total-votes" id="total-boys">0 Votes</span>
             </div>
             <div class="rank-list" id="list-boys"></div>
@@ -98,7 +107,7 @@
 
         <div class="column">
             <div class="col-header">
-                Miss Nominees
+                Miss. BKBNC
                 <span class="total-votes" id="total-girls">0 Votes</span>
             </div>
             <div class="rank-list" id="list-girls"></div>
@@ -106,49 +115,52 @@
     </div>
 
     <script>
-        // --- CONFIGURATION (MATCHING YOUR VOTING PAGE) ---
-        const SUPABASE_URL = "https://uvlwqlddmanuzeuqtjxp.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_LIyHXHGq6pqfAcWw-QCz9g_N9lfVNOA";
+        // --- CONFIGURATION (MUST MATCH YOUR FINAL VOTING PAGE) ---
+        const SUPABASE_URL = "https://rdxknqyszgoymlvqwgrj.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // DATA MAPPING
+        // CANDIDATE DATA (Matches your Final Round HTML)
         const CANDIDATES = {
-            'b1': {name:"Aashish Yadav", role:"TYBCOM", img:""},
-            'b2': {name:"Krushnakant Pal", role:"TYBSC CS", img:""},
-            'b3': {name:"Suraj Yadav", role:"TYBSC CS", img:""},
-            'b4': {name:"Yashraj Gaikwad", role:"TYBSC CS", img:"https://i.ibb.co/Zz9Nhdnv/image.png"},
+            'b1': {name:"Aashish Yadav", role:"TYBCOM", img:"https://i.ibb.co/rK7rNzZz/image.png"},
+            'b2': {name:"Krushnakant Pal", role:"TYBSC CS", img:"https://i.ibb.co/KxP8J2Qg/image.png"},
+            'b3': {name:"Suraj Yadav", role:"TYBSC CS", img:"https://i.ibb.co/Hf3nY4yG/image.png"},
+            'b4': {name:"Yashraj Gaikwad", role:"TYBSC CS", img:"https://i.ibb.co/TMy7100K/1000231792-f742f4fa052e029d67e046b37879c8af-29-4-2025-11-42-50-am-20251218-223157-0000.jpg"},
             'b5': {name:"Prasad Jawale", role:"SYBSC CS", img:"https://i.ibb.co/F4fWpF2d/image.png"},
-            'b6': {name:"Dhananjay Gupta", role:"TYBSC", img:""},
+            'b6': {name:"Dhananjay Gupta", role:"TYBSC", img:"https://i.ibb.co/Wp5wqgx7/image.png"},
             
-            'g1': {name:"Vaidehi Gund", role:"TYBMS", img:""},
-            'g2': {name:"Ekta Dixit", role:"TYBSC CS", img:""},
-            'g3': {name:"Divya Nair", role:"SYBSC CS", img:""},
+            'g1': {name:"Vaidehi Gund", role:"TYBMS", img:"https://i.ibb.co/pB6gFvH3/image.png"},
+            'g2': {name:"Ekta Dixit", role:"TYBSC CS", img:"https://i.ibb.co/3YQ2xWJS/image.png"},
+            'g3': {name:"Divya Nair", role:"SYBSC CS", img:"https://i.ibb.co/j94yBpdH/image.png"},
             'g4': {name:"Dharani Mudaliyar", role:"TYBSC CS", img:"https://i.ibb.co/VcnPCMq7/image.png"},
-            'g5': {name:"Kaustubhi Chavan", role:"TYBSC CS", img:""},
-            'g6': {name:"Dhani Singh", role:"SYBMS", img:""}
+            'g5': {name:"Kaustubhi Chavan", role:"TYBSC CS", img:"https://i.ibb.co/4nzgL2Qf/image.png"},
+            'g6': {name:"Dhani Singh", role:"SYBMS", img:"https://i.ibb.co/JRv3YGF8/image.png"}
         };
 
-        // Track leader to trigger confetti
         let prevLeaderBoy = null;
+        let prevLeaderGirl = null;
 
         async function fetchResults() {
             try {
-                // Call the WEIGHTED results function (Round 1 Logic)
-                const { data, error } = await sb.rpc('get_weighted_results');
+                // Call the ROUND 2 specific function
+                const { data, error } = await sb.rpc('get_final_results');
                 if (error) throw error;
 
-                // Process Data
-                const boys = processCategory('boys', data);
-                const girls = processCategory('girls', data);
+                const boys = processCategory('b', data);
+                const girls = processCategory('g', data);
 
                 renderColumn('boys', boys);
                 renderColumn('girls', girls);
 
                 // Confetti if leader changes
-                if (boys.length > 0 && boys[0].points > 0 && boys[0].id !== prevLeaderBoy) {
+                if (boys.length > 0 && boys[0].votes > 0 && boys[0].id !== prevLeaderBoy) {
                     prevLeaderBoy = boys[0].id;
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                }
+                if (girls.length > 0 && girls[0].votes > 0 && girls[0].id !== prevLeaderGirl) {
+                    prevLeaderGirl = girls[0].id;
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }
 
             } catch (err) {
@@ -156,69 +168,63 @@
             }
         }
 
-        function processCategory(cat, dbData) {
-            // Filter DB results for this category
-            const categoryData = dbData.filter(r => r.category === cat);
-            
-            // Map to Candidate List
-            // Note: We scan CANDIDATES keys to find those belonging to this category prefix
-            const prefix = cat === 'boys' ? 'b' : 'g';
-            
+        function processCategory(prefix, dbData) {
             const list = Object.keys(CANDIDATES)
                 .filter(id => id.startsWith(prefix))
                 .map(id => {
-                    const record = categoryData.find(r => r.candidate_id === id);
+                    const record = dbData.find(r => r.candidate_id === id); // Note: rpc returns 'candidate_id' in my SQL
+                    // Fallback if SQL returns just 'id'
+                    const count = record ? (record.vote_count || record.count) : 0;
+                    
                     return {
                         id: id,
                         ...CANDIDATES[id],
-                        points: record ? record.total_points : 0,
-                        votes: record ? record.vote_count : 0
+                        votes: count
                     };
                 });
             
-            // Sort by Total Points (Weighted)
-            return list.sort((a, b) => b.points - a.points);
+            return list.sort((a, b) => b.votes - a.votes);
         }
 
         function renderColumn(type, list) {
             const container = document.getElementById(`list-${type}`);
             const totalEl = document.getElementById(`total-${type}`);
             
-            // Sum votes (vote_count from DB represents how many people voted for them at any rank)
-            // But usually in preferential, we just count total voters. 
-            // Here we just sum up the 'vote count' column which tells us how many ballots included this candidate.
-            // Since every ballot includes every candidate in your logic, we can just take the max vote count of the leader.
-            const totalVotes = list.length > 0 ? list[0].votes : 0;
-            totalEl.innerText = `${totalVotes} Voters`;
+            // Calculate total votes
+            const totalVotes = list.reduce((sum, c) => sum + c.votes, 0);
+            totalEl.innerText = `${totalVotes} Votes`;
 
-            // Max points for progress bar
-            const max = list.length > 0 ? list[0].points : 1;
+            const max = list.length > 0 ? list[0].votes : 1;
 
             container.innerHTML = list.map((c, i) => {
                 const rank = i + 1;
-                const percent = max > 0 ? (c.points / max) * 100 : 0;
+                const percent = max > 0 ? (c.votes / max) * 100 : 0;
                 
                 return `
                 <div class="card" data-rank="${rank}" id="${c.id}">
                     <div class="progress-bar" style="width:${percent}%"></div>
                     <div class="rank-num">${rank}</div>
-                    <img src="${c.img || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}" class="avatar">
+                    <img src="${c.img}" class="avatar">
                     <div class="info">
                         <div class="name">${c.name}</div>
                         <div class="role">${c.role}</div>
                     </div>
                     <div class="score">
-                        <div class="count">${c.points}</div>
-                        <div class="label">Points</div>
+                        <div class="count">${c.votes}</div>
+                        <div class="label">Votes</div>
                     </div>
                 </div>
                 `;
             }).join('');
         }
 
-        // Init & Interval
         fetchResults();
         setInterval(fetchResults, 2000); 
+
+        // Press 'C' for Confetti
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'c') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        });
 
     </script>
 </body>
