@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Finale Results | EcoCampus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { 
+            --bg:#050505; --card:#111; --gold:#FFD700; 
+            --grad: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #998100 100%);
+            --text-muted: #666;
+        }
+        
+        body { 
+            margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; 
+            overflow: hidden; /* No scrolling for dashboard feel */
+            height: 100vh; display: flex; flex-direction: column;
+        }
+
+        /* HEADER */
+        header { 
+            height: 80px; display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 40px; border-bottom: 1px solid #222; background: rgba(5,5,5,0.9);
+        }
+        .logo { font-size: 1.8rem; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: -1px; }
+        .live-indicator { display: flex; align-items: center; font-size: 0.9rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .dot { width: 10px; height: 10px; background: red; border-radius: 50%; margin-right: 10px; box-shadow: 0 0 10px red; animation: pulse 1.5s infinite; }
+        
+        /* MAIN GRID */
+        .dashboard { 
+            flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 30px 40px;
+            height: calc(100vh - 80px); box-sizing: border-box;
+        }
+        
+        .column { display: flex; flex-direction: column; height: 100%; }
+        
+        .col-header { 
+            font-size: 1.2rem; font-weight: 800; color: #fff; text-transform: uppercase; 
+            letter-spacing: 2px; border-bottom: 2px solid #222; padding-bottom: 15px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .total-votes { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+
+        /* LIST CONTAINER */
+        .rank-list { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+        /* CANDIDATE CARD */
+        .card { 
+            display: flex; align-items: center; 
+            background: #141414; border: 1px solid #222; border-radius: 12px; 
+            padding: 10px 15px; position: relative; overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Top 1 Styling */
+        .card[data-rank="1"] { 
+            background: linear-gradient(90deg, #1c1c1e 0%, #2a2200 100%); 
+            border-color: rgba(255, 215, 0, 0.3); transform: scale(1.02); margin-bottom: 10px;
+        }
+        .card[data-rank="1"] .rank-num { color: var(--gold); font-size: 1.5rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .card[data-rank="1"] .avatar { border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+
+        .rank-num { width: 40px; font-size: 1.2rem; font-weight: 800; color: #444; text-align: center; margin-right: 15px; z-index: 2; }
+        
+        .avatar { 
+            width: 45px; height: 45px; border-radius: 50%; object-fit: cover; 
+            margin-right: 15px; border: 2px solid #333; z-index: 2; background: #000;
+        }
+        
+        .info { flex: 1; z-index: 2; }
+        .name { font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
+        .role { font-size: 0.8rem; color: #666; }
+
+        .score { text-align: right; z-index: 2; }
+        .count { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
+        .label { font-size: 0.6rem; text-transform: uppercase; color: #666; font-weight: 700; }
+
+        /* PROGRESS BAR BEHIND */
+        .progress-bar {
+            position: absolute; top: 0; left: 0; height: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+        .card[data-rank="1"] .progress-bar { background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15)); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* Responsive Fix for small laptops */
+        @media (max-height: 700px) {
+            .dashboard { padding: 15px 30px; gap: 20px; }
+            .card { padding: 8px 12px; }
+            .avatar { width: 35px; height: 35px; }
+            .name { font-size: 0.95rem; }
+            .count { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">The Final Showdown</div>
+        <div class="live-indicator"><div class="dot"></div> Live Results</div>
+    </header>
+
+    <div class="dashboard">
+        <div class="column">
+            <div class="col-header">
+                Mr. BKBNC
+                <span class="total-votes" id="total-boys">0 Votes</span>
+            </div>
+            <div class="rank-list" id="list-boys"></div>
+        </div>
+
+        <div class="column">
+            <div class="col-header">
+                Miss. BKBNC
+                <span class="total-votes" id="total-girls">0 Votes</span>
+            </div>
+            <div class="rank-list" id="list-girls"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = "https://rdxknqyszgoymlvqwgrj.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // STATIC DATA MAPPING (ID -> Details)
+        const CANDIDATES = {
+            'b1': {name:"Aashish Yadav", role:"TYBCOM", img:"https://i.ibb.co/rK7rNzZz/image.png"},
+            'b2': {name:"Krushnakant Pal", role:"TYBSC CS", img:"https://i.ibb.co/KxP8J2Qg/image.png"},
+            'b3': {name:"Suraj Yadav", role:"TYBSC CS", img:"https://i.ibb.co/Hf3nY4yG/image.png"},
+            'b4': {name:"Yashraj Gaikwad", role:"TYBSC CS", img:"https://i.ibb.co/TMy7100K/1000231792-f742f4fa052e029d67e046b37879c8af-29-4-2025-11-42-50-am-20251218-223157-0000.jpg"},
+            'b5': {name:"Prasad Jawale", role:"SYBSC CS", img:"https://i.ibb.co/F4fWpF2d/image.png"},
+            'b6': {name:"Dhananjay Gupta", role:"TYBSC", img:"https://i.ibb.co/Wp5wqgx7/image.png"},
+            
+            'g1': {name:"Vaidehi Gund", role:"TYBMS", img:"https://i.ibb.co/pB6gFvH3/image.png"},
+            'g2': {name:"Ekta Dixit", role:"TYBSC CS", img:"https://i.ibb.co/3YQ2xWJS/image.png"},
+            'g3': {name:"Divya Nair", role:"SYBSC CS", img:"https://i.ibb.co/j94yBpdH/image.png"},
+            'g4': {name:"Dharani Mudaliyar", role:"TYBSC CS", img:"https://i.ibb.co/VcnPCMq7/image.png"},
+            'g5': {name:"Kaustubhi Chavan", role:"TYBSC CS", img:"https://i.ibb.co/4nzgL2Qf/image.png"},
+            'g6': {name:"Dhani Singh", role:"SYBMS", img:"https://i.ibb.co/JRv3YGF8/image.png"}
+        };
+
+        // Track previous leader to trigger confetti on change
+        let prevLeaderBoy = null;
+        let prevLeaderGirl = null;
+
+        async function fetchResults() {
+            try {
+                // Call SQL function from Round 2 logic
+                const { data, error } = await sb.rpc('get_final_results');
+                if (error) throw error;
+
+                // Process Data
+                const boys = processCategory('b', data);
+                const girls = processCategory('g', data);
+
+                renderColumn('boys', boys);
+                renderColumn('girls', girls);
+
+                // Confetti Check (If leader changes)
+                if (boys[0].votes > 0 && boys[0].id !== prevLeaderBoy) {
+                    prevLeaderBoy = boys[0].id;
+                    // Optional: trigger confetti if desired, strictly kept clean for now
+                }
+
+            } catch (err) {
+                console.error("Sync Error:", err);
+            }
+        }
+
+        function processCategory(prefix, dbData) {
+            // Merge Static Data with Real-time DB Counts
+            const list = Object.keys(CANDIDATES)
+                .filter(id => id.startsWith(prefix))
+                .map(id => {
+                    const record = dbData.find(r => r.id === id);
+                    return {
+                        id: id,
+                        ...CANDIDATES[id],
+                        votes: record ? record.count : 0
+                    };
+                });
+            
+            // Sort Descending
+            return list.sort((a, b) => b.votes - a.votes);
+        }
+
+        function renderColumn(type, list) {
+            const container = document.getElementById(`list-${type}`);
+            const totalEl = document.getElementById(`total-${type}`);
+            
+            // Calculate total votes for this category
+            const totalVotes = list.reduce((sum, c) => sum + c.votes, 0);
+            totalEl.innerText = `${totalVotes} Votes Cast`;
+
+            // Max votes for progress bar scaling
+            const max = list.length > 0 ? list[0].votes : 1;
+
+            container.innerHTML = list.map((c, i) => {
+                const rank = i + 1;
+                const percent = max > 0 ? (c.votes / max) * 100 : 0;
+                
+                return `
+                <div class="card" data-rank="${rank}" id="${c.id}">
+                    <div class="progress-bar" style="width:${percent}%"></div>
+                    <div class="rank-num">${rank}</div>
+                    <img src="${c.img}" class="avatar">
+                    <div class="info">
+                        <div class="name">${c.name}</div>
+                        <div class="role">${c.role}</div>
+                    </div>
+                    <div class="score">
+                        <div class="count">${c.votes}</div>
+                        <div class="label">Votes</div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Init & Interval
+        fetchResults();
+        setInterval(fetchResults, 2000); // Fast 2s refresh
+
+        // Keyboard Shortcut: Press 'C' for Confetti Celebration
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'c') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        });
+
+    </script>
+</body>
+</html>
