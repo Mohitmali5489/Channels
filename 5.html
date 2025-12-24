@@ -17,7 +17,7 @@
         /* Mobile-First Base Styles */
         body { 
             margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; 
-            padding-bottom:140px; /* Space for fixed button */
+            padding-bottom:140px; 
             user-select:none; -webkit-tap-highlight-color: transparent; 
             display: flex; flex-direction: column; min-height: 100vh;
         }
@@ -36,6 +36,7 @@
         .container { 
             width: 100%; max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; 
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            transition: filter 0.5s ease;
         }
         
         /* Section Titles */
@@ -46,11 +47,11 @@
         }
         h4::before, h4::after { content: ''; height: 1px; flex: 1; max-width: 50px; background: var(--gold); opacity: 0.5; }
 
-        /* CIRCLE CANDIDATE UI GRID - Mobile Optimized */
+        /* CIRCLE CANDIDATE UI GRID */
         .candidates-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 in a row looks good on mobile for circles */
-            gap: 25px 15px; /* Vertical gap 25px, Horizontal 15px */
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 25px 15px;
             justify-content: center;
             width: 100%;
         }
@@ -64,15 +65,13 @@
 
         .candidate-item:active { transform: scale(0.95); }
 
-        /* The Avatar Ring */
+        /* Avatar Ring */
         .img-ring {
-            width: 75px; height: 75px; /* Perfect size for mobile thumbs */
+            width: 75px; height: 75px; 
             border-radius: 50%; padding: 3px;
             border: 2px solid #333; position: relative;
             transition: all 0.3s ease; background: #000;
         }
-
-        /* Active State */
         .candidate-item.selected .img-ring {
             border-color: var(--gold);
             box-shadow: var(--neon-glow);
@@ -113,9 +112,10 @@
         /* OVERLAYS & UTILS */
         #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; box-sizing: border-box; }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
-        .blur { filter:blur(15px); pointer-events:none; opacity:0.3; }
+        
+        .blur { filter:blur(15px); pointer-events:none; opacity:0.4; }
 
-        /* ACTION BUTTON */
+        /* BUTTON */
         .btn-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(to top, #050505 85%, transparent);
@@ -123,7 +123,6 @@
             display: flex; justify-content: center;
             pointer-events: none; z-index: 200;
         }
-        
         .btn { 
             pointer-events: auto;
             width:90%; max-width:400px; padding:16px; 
@@ -134,14 +133,13 @@
             transition:0.3s; letter-spacing: 1px; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
-        
         .btn.active { 
             background:var(--grad); color:#000; border-color: transparent;
             cursor:pointer; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
             transform: translateY(-2px);
         }
 
-        /* LOADING SPINNER */
+        /* SPINNER */
         .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -177,23 +175,25 @@
 
     <script>
         // --- CONFIGURATION ---
-        
-        // Using Round 2 Project Keys (Single Choice Logic)
         const SUPABASE_URL = "https://rdxknqyszgoymlvqwgrj.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
-        // --- EVENT SETTINGS ---
-        const EVENT_DURATION_MS = 10 * 60 * 1000; // 10 Minutes for Finale
-        
-        // GEO-FENCING CONFIG (Strict Mode)
+        // --- TIMING DEMO (EDIT HERE) ---
+        // STARTS: 10 seconds from now
+        // ENDS: 5 minutes after start
+        const NOW = Date.now();
+        const START_TIME = NOW + 10000; 
+        const END_TIME = START_TIME + (5 * 60 * 1000); 
+
+        // GEO-FENCING
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
         const MAX_DISTANCE_METERS = 20; 
         
-        // !!! STRICT DEPLOYMENT MODE !!!
+        // STRICT MODE
         const TEST_MODE = false; 
 
-        // --- REAL CANDIDATE DATA ---
+        // DATA
         const DATA = {
             boys: [
                 { id: "b1", name: "Aashish Yadav", role: "TYBCOM", img: "https://i.ibb.co/rK7rNzZz/image.png" },
@@ -221,9 +221,13 @@
         let userLat = 0, userLng = 0;
 
         window.onload = async () => {
+            // Start the clock immediately to show "STARTS IN..." if needed
+            setInterval(tick, 1000); 
+            tick();
+
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
             
-            // Start Access Flow
+            // Initiate GPS Check
             document.getElementById('ov-msg').innerHTML = "Verifying location...<br>Please stand near Main Building.";
             document.getElementById('ov-spin').style.display = 'none';
             document.getElementById('perm-btn').style.display = 'block';
@@ -235,7 +239,6 @@
             document.getElementById('ov-msg').innerText = "Acquiring GPS signal...";
 
             if (TEST_MODE) {
-                console.warn("TEST MODE: Bypassing GPS Check");
                 userLat = TARGET_LAT; userLng = TARGET_LNG;
                 checkAccess();
             } else {
@@ -247,17 +250,14 @@
                         userLng = pos.coords.longitude;
                         const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
                         
-                        // Strict Distance Check
                         if(dist > MAX_DISTANCE_METERS) {
                             lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building.`, "📍");
                         } else {
-                            checkAccess(); // GPS Good, now check DB
+                            checkAccess(); 
                         }
                     },
                     (err) => {
-                        let msg = "Location access denied.";
-                        if(err.code === 1) msg = "Please allow location access to vote.";
-                        lock("LOCATION REQUIRED", msg, "🌍");
+                        lock("LOCATION REQUIRED", "Please allow location access to vote.", "🌍");
                     },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
@@ -267,17 +267,14 @@
         async function checkAccess() {
             document.getElementById('ov-msg').innerText = "Checking voting status...";
             try {
-                // Parallel Check: IP/UA and User Status
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
                 const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
                 
                 const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
 
-                // A. User Check
                 if (!usrRes.data) return lock('INVALID ID', 'Student ID not found.', '🚫');
                 if (usrRes.data.has_voted) return lock('ALREADY VOTED', 'Your vote is already recorded.', '✅');
 
-                // B. Device Check (Smart Lock)
                 const { data: isLocked } = await sb.rpc('check_device_status', { 
                     p_ip: ipData.ip, 
                     p_ua: navigator.userAgent 
@@ -285,14 +282,12 @@
 
                 if (isLocked) return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
 
-                // C. Unlock App
+                // Access Granted - Hide Overlay
+                // Note: App might still be blurred by tick() if Start Time hasn't arrived
                 document.getElementById('overlay').style.display = 'none';
-                document.getElementById('app').classList.remove('blur');
                 initApp();
-                startTimer();
 
             } catch(e) {
-                console.error(e);
                 lock("CONNECTION ERROR", "Could not connect to server.", "⚠️");
             }
         }
@@ -304,22 +299,15 @@
 
         function renderList(type, list) {
             const container = document.getElementById(`l-${type}`);
-            container.innerHTML = ""; // Clear existing
-            
+            container.innerHTML = "";
             list.forEach(c => {
                 const el = document.createElement('div');
                 el.className = 'candidate-item';
                 el.id = c.id;
                 el.onclick = () => select(type, c.id);
-                
-                // Truncate name logic for display
                 const displayName = c.name.split(' ')[0]; 
-
                 el.innerHTML = `
-                    <div class="img-ring">
-                        <img src="${c.img}" class="c-avatar">
-                        <div class="check-badge">✔</div>
-                    </div>
+                    <div class="img-ring"><img src="${c.img}" class="c-avatar"><div class="check-badge">✔</div></div>
                     <div class="c-name">${displayName}</div>
                     <div class="c-role">${c.role}</div>
                 `;
@@ -328,19 +316,12 @@
         }
 
         function select(type, id) {
-            // Logic: Only 1 selection per category
             const container = document.getElementById(`l-${type}`);
             [...container.children].forEach(c => c.classList.remove('selected'));
-            
-            const target = document.getElementById(id);
-            target.classList.add('selected');
-            
-            // Vibrations for feedback (Android only)
+            document.getElementById(id).classList.add('selected');
             if(navigator.vibrate) navigator.vibrate(50);
-            
             if(type === 'boys') selectedBoy = id;
             if(type === 'girls') selectedGirl = id;
-
             updateBtn();
         }
 
@@ -358,71 +339,73 @@
         async function vote() {
             const btn = document.getElementById('sub');
             if(!btn.classList.contains('active')) return;
+            // Double Check Time
+            if (Date.now() > END_TIME) return lock("TIME UP", "Voting has closed.", "⏰");
 
             const { isConfirmed } = await Swal.fire({
-                title: 'Confirm Vote?',
-                text: 'This is the Grand Finale. You cannot change this.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#FFD700',
-                confirmButtonText: 'Yes, Submit',
-                background: '#111', color: '#fff'
+                title: 'Confirm Vote?', text: 'You cannot change this later.',
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#FFD700',
+                confirmButtonText: 'Yes, Submit', background: '#111', color: '#fff'
             });
 
             if(!isConfirmed) return;
-
             Swal.fire({title:'Submitting...', didOpen:()=>Swal.showLoading(), background:'#111', color:'#fff', allowOutsideClick:false});
 
             try {
                 const ip = await fetch('https://api.ipify.org?format=json').then(r=>r.json());
-                
                 const { error } = await sb.rpc('cast_final_vote', {
-                    p_student_id: uid,
-                    p_boy_id: selectedBoy,
-                    p_girl_id: selectedGirl,
-                    p_ip: ip.ip,
-                    p_ua: navigator.userAgent,
-                    p_lat: userLat,
-                    p_long: userLng
+                    p_student_id: uid, p_boy_id: selectedBoy, p_girl_id: selectedGirl,
+                    p_ip: ip.ip, p_ua: navigator.userAgent, p_lat: userLat, p_long: userLng
                 });
 
                 if(error) throw error;
 
                 await Swal.fire({
-                    title: 'Voted Successfully!',
-                    text: 'Thank you for participating.',
-                    icon: 'success',
-                    confirmButtonColor: '#FFD700',
-                    background: '#111', color: '#fff'
+                    title: 'Voted Successfully!', icon: 'success',
+                    confirmButtonColor: '#FFD700', background: '#111', color: '#fff'
                 });
-
                 location.reload();
 
-            } catch(e) {
-                Swal.fire('Submission Failed', e.message, 'error');
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        }
+
+        function tick() {
+            const now = Date.now();
+            const tm = document.getElementById('timer');
+            const app = document.getElementById('app');
+            const overlay = document.getElementById('overlay');
+
+            if (now < START_TIME) {
+                // BEFORE START
+                // Only blur if the overlay isn't already showing a "Locked" message
+                if (overlay.style.display === 'none') {
+                    app.classList.add('blur');
+                }
+                const diff = START_TIME - now;
+                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                tm.innerText = `STARTS IN: ${m}:${s}`;
+                
+            } else if (now > END_TIME) {
+                // AFTER END
+                lock('VOTING CLOSED', 'The voting window has ended.', '⏰');
+                tm.innerText = "CLOSED";
+                
+            } else {
+                // DURING EVENT
+                // If overlay is hidden (user verified), remove blur
+                if (overlay.style.display === 'none') {
+                    app.classList.remove('blur');
+                }
+                const diff = END_TIME - now;
+                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                tm.innerText = `CLOSING IN: ${m}:${s}`;
             }
         }
 
-        // --- UTILS ---
-        function startTimer() {
-            let timeLeft = EVENT_DURATION_MS / 1000;
-            const display = document.getElementById('timer');
-            
-            const interval = setInterval(() => {
-                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const s = Math.floor(timeLeft % 60).toString().padStart(2, '0');
-                display.innerText = `${m}:${s}`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    lock("TIME UP", "The voting window has closed.", "⏰");
-                }
-                timeLeft--;
-            }, 1000);
-        }
-
         function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // Earth radius meters
+            const R = 6371e3; 
             const φ1 = lat1 * Math.PI/180, φ2 = lat2 * Math.PI/180;
             const Δφ = (lat2-lat1) * Math.PI/180, Δλ = (lon2-lon1) * Math.PI/180;
             const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
@@ -430,7 +413,8 @@
         }
 
         function lock(title, msg, icon) {
-            document.getElementById('overlay').style.display = 'flex';
+            const ov = document.getElementById('overlay');
+            ov.style.display = 'flex';
             document.getElementById('ov-spin').style.display = 'none';
             document.getElementById('ov-icon').style.display = 'block';
             document.getElementById('ov-icon').innerText = icon;
