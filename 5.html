@@ -12,6 +12,8 @@
             --bg:#050505; --card:#111; --gold:#FFD700; 
             --grad: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #998100 100%);
             --neon-glow: 0 0 15px rgba(255, 215, 0, 0.4);
+            --status-good: #00ff88;
+            --status-bad: #ff4444;
         }
         
         body { 
@@ -20,11 +22,19 @@
             user-select:none; -webkit-tap-highlight-color: transparent; 
             display: flex; flex-direction: column; min-height: 100vh;
         }
+
+        /* STATUS BAR (New) */
+        #status-bar {
+            background: #222; font-size: 0.75rem; text-align: center; padding: 8px;
+            font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid #333;
+            transition: background 0.3s;
+        }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #666; }
         
         /* HEADER */
         header { 
             position:sticky; top:0; z-index:100; 
-            background:rgba(5,5,5,0.95); backdrop-filter:blur(10px); 
+            background:rgba(5,5,5,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
             padding:15px; border-bottom:1px solid rgba(255,215,0,0.1); 
             text-align:center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
@@ -32,10 +42,12 @@
         .logo { font-weight:900; font-size:1.5rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-transform: uppercase; letter-spacing: -0.5px; }
         #timer { font-size:0.9rem; font-weight:700; color:var(--gold); margin-top:5px; font-variant-numeric: tabular-nums; }
 
+        /* CONTAINER with Hardware Acceleration for smooth blur */
         .container { 
             width: 100%; max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; 
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            transition: filter 0.5s ease;
+            transition: filter 0.3s ease, opacity 0.3s ease;
+            will-change: filter; /* Performance Fix */
         }
         
         /* Section Titles */
@@ -46,7 +58,7 @@
         }
         h4::before, h4::after { content: ''; height: 1px; flex: 1; max-width: 50px; background: var(--gold); opacity: 0.5; }
 
-        /* GRID */
+        /* CANDIDATES */
         .candidates-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
@@ -106,10 +118,10 @@
         .candidate-item.selected .c-role { color: var(--gold); }
 
         /* OVERLAYS */
-        #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; box-sizing: border-box; }
+        #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         
-        .blur { filter:blur(15px); pointer-events:none; opacity:0.4; }
+        .blur { filter:blur(10px); pointer-events:none; opacity:0.5; }
 
         /* BUTTON */
         .btn-container {
@@ -150,6 +162,10 @@
         <button id="perm-btn" style="display:none; margin-top:20px; padding:12px 30px; background:var(--gold); border:none; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="requestLocation()">ALLOW LOCATION</button>
     </div>
 
+    <div id="status-bar">
+        <span class="status-dot"></span> <span id="status-text">Checking Location...</span>
+    </div>
+
     <header>
         <span class="badge">Grand Finale • Live</span>
         <div class="logo">The Final Showdown</div>
@@ -174,13 +190,13 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
-        const START_TIME = new Date("2025-12-24T16:08:00").getTime();
+        const START_TIME = new Date("2025-12-24T16:16:00").getTime();
         const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
-        // GEO-FENCING
+        // GEO-FENCING (Updated Radius)
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
-        const MAX_DISTANCE_METERS = 20; 
+        const MAX_DISTANCE_METERS = 30; // UPDATED to 30m
         
         // DATA
         const DATA = {
@@ -208,17 +224,18 @@
         let selectedBoy = null;
         let selectedGirl = null;
         let userLat = 0, userLng = 0;
-        let hasAccess = false; // Flag to prevent re-checking
+        let hasAccess = false; 
 
         window.onload = async () => {
-            initApp(); // Render UI immediately (blurred)
+            initApp(); 
+            updateStatus('neutral', 'Waiting for Event Start...');
             
-            // Start the time ticker. It handles the "wait" screen.
+            // Check timer every second
             setInterval(tick, 1000); 
-            tick();
+            tick(); 
         };
 
-        // --- 1. TIME LOOP ---
+        // --- 1. TIME CONTROL LOOP ---
         function tick() {
             const now = Date.now();
             const tm = document.getElementById('timer');
@@ -226,14 +243,14 @@
             const spin = document.getElementById('ov-spin');
 
             if (now < START_TIME) {
-                // BEFORE 5:00 PM -> BLUR & WAIT
+                // CASE 1: PRE-EVENT
                 const diff = START_TIME - now;
                 const m = Math.floor(diff / 60000).toString().padStart(2, '0');
                 const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
                 
                 tm.innerText = `STARTS IN: ${m}:${s}`;
+                tm.style.color = "#888";
                 
-                // Ensure lock screen is visible
                 if(overlay.style.display === 'none') {
                     lock("WAITING FOR START", `Event starts at 5:00 PM`, "⏳");
                     document.getElementById('perm-btn').style.display = 'none';
@@ -241,20 +258,23 @@
                 }
 
             } else if (now > END_TIME) {
-                // AFTER 5:05 PM -> LOCK FOREVER
+                // CASE 2: EVENT OVER
                 lock('VOTING CLOSED', 'The voting window has ended.', '⏰');
                 tm.innerText = "CLOSED";
+                tm.style.color = "#ff4444";
+                updateStatus('bad', 'Voting Closed');
                 document.getElementById('perm-btn').style.display = 'none';
                 spin.style.display = 'none';
 
             } else {
-                // ACTIVE WINDOW (5:00 - 5:05)
+                // CASE 3: LIVE EVENT
                 const diff = END_TIME - now;
                 const m = Math.floor(diff / 60000).toString().padStart(2, '0');
                 const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
                 tm.innerText = `CLOSING IN: ${m}:${s}`;
+                tm.style.color = "var(--gold)";
                 
-                // If we haven't verified the user yet, START VERIFICATION
+                // Auto-trigger verification if allowed
                 if (!hasAccess && document.getElementById('perm-btn').style.display === 'none') {
                      startVerification();
                 }
@@ -265,10 +285,11 @@
         async function startVerification() {
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
             
+            updateStatus('neutral', 'Verifying...');
             document.getElementById('ov-title').innerText = "CHECKING ACCESS";
             document.getElementById('ov-msg').innerHTML = "Verifying location...<br>Please stand near Main Building.";
             document.getElementById('ov-spin').style.display = 'none';
-            document.getElementById('perm-btn').style.display = 'block'; // Show "Allow Location" button
+            document.getElementById('perm-btn').style.display = 'block'; 
         }
 
         function requestLocation() {
@@ -278,6 +299,7 @@
 
             if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
             
+            // High accuracy but with a timeout to prevent infinite hanging
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     userLat = pos.coords.latitude;
@@ -285,42 +307,52 @@
                     const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
                     
                     if(dist > MAX_DISTANCE_METERS) {
-                        lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building.`, "📍");
+                        lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building (Radius: 30m).`, "📍");
+                        updateStatus('bad', `Out of Range (${Math.round(dist)}m)`);
                     } else {
-                        checkDatabase(); // GPS OK -> Check DB
+                        checkDatabase();
                     }
                 },
                 (err) => {
-                    document.getElementById('perm-btn').style.display = 'block'; // Show button again on error
+                    document.getElementById('perm-btn').style.display = 'block';
                     document.getElementById('ov-spin').style.display = 'none';
                     document.getElementById('ov-msg').innerText = "Please allow location access to vote.";
+                    updateStatus('bad', 'Location Denied');
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
             );
         }
 
         async function checkDatabase() {
             document.getElementById('ov-msg').innerText = "Checking voting status...";
             try {
+                // Using Promise.all to fetch fast
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
                 const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
                 
                 const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
 
                 if (!usrRes.data) return lock('INVALID ID', 'Student ID not found.', '🚫');
-                if (usrRes.data.has_voted) return lock('ALREADY VOTED', 'Your vote is already recorded.', '✅');
+                if (usrRes.data.has_voted) {
+                    updateStatus('bad', 'Already Voted');
+                    return lock('ALREADY VOTED', 'Your vote is already recorded.', '✅');
+                }
 
                 const { data: isLocked } = await sb.rpc('check_device_status', { 
                     p_ip: ipData.ip, 
                     p_ua: navigator.userAgent 
                 });
 
-                if (isLocked) return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
+                if (isLocked) {
+                    updateStatus('bad', 'Device Used');
+                    return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
+                }
 
-                // SUCCESS: UNLOCK APP
+                // UNLOCK
                 hasAccess = true;
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('app').classList.remove('blur');
+                updateStatus('good', '✅ You are in the voting area');
 
             } catch(e) {
                 console.error(e);
@@ -352,7 +384,7 @@
         }
 
         function select(type, id) {
-            if (!hasAccess) return; // Prevent selection if blurred
+            if (!hasAccess) return; 
             const container = document.getElementById(`l-${type}`);
             [...container.children].forEach(c => c.classList.remove('selected'));
             document.getElementById(id).classList.add('selected');
@@ -376,7 +408,6 @@
         async function vote() {
             const btn = document.getElementById('sub');
             if(!btn.classList.contains('active')) return;
-            // Double Check Time on Submit
             if (Date.now() > END_TIME) return lock("TIME UP", "Voting has closed.", "⏰");
 
             const { isConfirmed } = await Swal.fire({
@@ -404,6 +435,23 @@
                 location.reload();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        }
+
+        function updateStatus(type, msg) {
+            const bar = document.getElementById('status-bar');
+            const dot = bar.querySelector('.status-dot');
+            document.getElementById('status-text').innerText = msg;
+            
+            if(type === 'good') {
+                dot.style.background = 'var(--status-good)';
+                bar.style.color = 'var(--status-good)';
+            } else if (type === 'bad') {
+                dot.style.background = 'var(--status-bad)';
+                bar.style.color = 'var(--status-bad)';
+            } else {
+                dot.style.background = '#666';
+                bar.style.color = '#fff';
+            }
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
