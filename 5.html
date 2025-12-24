@@ -121,20 +121,23 @@
         }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         
-        .blur { filter:blur(10px); pointer-events:none; opacity:0.4; }
+        /* Blur applied to app container, removed when verified */
+        .blur { filter:blur(12px); pointer-events:none; opacity:0.3; transition: all 0.5s ease; }
 
         /* PERMISSION BUTTON */
         #perm-btn {
-            margin-top:25px; padding:14px 35px; 
+            margin-top:25px; padding:16px 40px; 
             background:var(--grad); color: #000;
             border:none; border-radius:50px; 
-            font-weight:800; font-size: 1rem; cursor:pointer;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            font-weight:800; font-size: 1.1rem; cursor:pointer;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
             animation: pulse-btn 2s infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         @keyframes pulse-btn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* BUTTON */
+        /* VOTE BUTTON */
         .btn-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(to top, #050505 90%, transparent);
@@ -172,7 +175,7 @@
         <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">LOADING...</h1>
         <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">System Check...</p>
         
-        <button id="perm-btn" style="display:none;" onclick="manualTriggerGPS()">ALLOW LOCATION</button>
+        <button id="perm-btn" style="display:none;" onclick="manualTriggerGPS()">VERIFY LOCATION</button>
     </div>
 
     <div id="status-bar">
@@ -203,13 +206,13 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
-        const START_TIME = new Date("2025-12-24T16:45:00").getTime();
+        const START_TIME = new Date("2025-12-24T16:50:00").getTime();
         const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
         // GEO-FENCING
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
-        const MAX_DISTANCE_METERS = 30; 
+        const MAX_DISTANCE_METERS = 30; // 30m Radius
         
         // DATA
         const DATA = {
@@ -238,17 +241,43 @@
         let selectedGirl = null;
         let userLat = 0, userLng = 0;
         let hasAccess = false; 
+        let idVerified = false;
 
         // --- 1. INITIALIZE ---
         window.onload = async () => {
+            // STRICT ID CHECK ON LOAD
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
             
+            // Check Database for ID validity immediately
+            verifyID();
+
             initApp(); 
+            updateStatus('neutral', 'Waiting for Event...');
             
-            // Check Time every second
+            // Start Timer Loop
             setInterval(tick, 1000); 
             tick(); 
         };
+
+        async function verifyID() {
+            try {
+                const { data, error } = await sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
+                
+                if (error || !data) {
+                    return lock('INVALID ID', 'Student ID not found.', '🚫');
+                }
+                if (data.has_voted) {
+                    updateStatus('bad', 'Already Voted');
+                    return lock('ALREADY VOTED', 'Your vote is already recorded.', '✅');
+                }
+                
+                // ID Valid
+                idVerified = true;
+                
+            } catch(e) {
+                lock("CONNECTION ERROR", "Could not verify ID.", "⚠️");
+            }
+        }
 
         // --- 2. TIME LOOP ---
         function tick() {
@@ -256,6 +285,7 @@
             const tm = document.getElementById('timer');
             const overlay = document.getElementById('overlay');
             const spin = document.getElementById('ov-spin');
+            const btn = document.getElementById('perm-btn');
 
             if (now < START_TIME) {
                 // --- PRE-EVENT ---
@@ -265,12 +295,12 @@
                 
                 tm.innerText = `STARTS IN: ${m}:${s}`;
                 tm.style.color = "#888";
-                updateStatus('neutral', 'Event has not started');
                 
-                if(overlay.style.display === 'none') {
+                // If not showing locked message
+                if(overlay.style.display === 'none' || overlay.style.display === '') {
                     lock("WAITING FOR START", `Event starts at 5:00 PM`, "⏳");
                     spin.style.display = 'block';
-                    document.getElementById('perm-btn').style.display = 'none';
+                    btn.style.display = 'none';
                 }
 
             } else if (now > END_TIME) {
@@ -280,7 +310,7 @@
                 tm.style.color = "#ff4444";
                 updateStatus('bad', 'Voting Closed');
                 spin.style.display = 'none';
-                document.getElementById('perm-btn').style.display = 'none';
+                btn.style.display = 'none';
 
             } else {
                 // --- LIVE EVENT ---
@@ -290,57 +320,30 @@
                 tm.innerText = `CLOSING IN: ${m}:${s}`;
                 tm.style.color = "var(--gold)";
                 
-                // If Live & Not Verified & Not already asking
-                if (!hasAccess && document.getElementById('perm-btn').style.display === 'none') {
-                    // Try to get location silently immediately
-                    attemptGPS();
+                // SHOW BUTTON IF ID IS VERIFIED & NOT UNLOCKED YET
+                if (idVerified && !hasAccess && btn.style.display === 'none') {
+                    document.getElementById('ov-title').innerText = "LOCATION CHECK";
+                    document.getElementById('ov-msg').innerHTML = "You must be at the Main Building.";
+                    spin.style.display = 'none';
+                    btn.style.display = 'block';
+                    updateStatus('neutral', 'Verify Location');
                 }
             }
         }
 
         // --- 3. LOCATION LOGIC ---
-        function attemptGPS() {
-            if(!navigator.geolocation) return;
-
-            // Attempt silent fetch
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    // Success!
-                    userLat = pos.coords.latitude;
-                    userLng = pos.coords.longitude;
-                    checkDatabase();
-                },
-                (err) => {
-                    // Fail -> Show Manual Button
-                    showLocationButton();
-                },
-                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-            );
-        }
-
-        function showLocationButton() {
-            const btn = document.getElementById('perm-btn');
-            const spin = document.getElementById('ov-spin');
-            const msg = document.getElementById('ov-msg');
-            const title = document.getElementById('ov-title');
-
-            if(btn.style.display !== 'block') {
-                btn.style.display = 'block';
-                spin.style.display = 'none';
-                title.innerText = "LOCATION REQUIRED";
-                msg.innerHTML = "Access to GPS is required.<br>Please allow location access.";
-                updateStatus('bad', 'Action Required');
-            }
-        }
-
+        
         function manualTriggerGPS() {
             const spin = document.getElementById('ov-spin');
             const btn = document.getElementById('perm-btn');
             
             btn.style.display = 'none';
             spin.style.display = 'block';
-            document.getElementById('ov-msg').innerText = "Requesting Access...";
+            document.getElementById('ov-msg').innerText = "Acquiring accurate position...";
             
+            if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
+
+            // HIGH ACCURACY REQUEST
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     userLat = pos.coords.latitude;
@@ -350,8 +353,8 @@
                 (err) => {
                     spin.style.display = 'none';
                     btn.style.display = 'block';
-                    document.getElementById('ov-msg').innerText = "Location access denied. Please enable it in browser settings.";
-                    updateStatus('bad', 'Location Denied');
+                    document.getElementById('ov-msg').innerText = "Location permission required.";
+                    updateStatus('bad', 'Permission Denied');
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
@@ -362,22 +365,20 @@
             const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
             if(dist > MAX_DISTANCE_METERS) {
                 updateStatus('bad', `Out of Range (${Math.round(dist)}m)`);
-                return lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building (30m).`, "📍");
+                // Show Error but allow retry
+                document.getElementById('ov-spin').style.display = 'none';
+                document.getElementById('perm-btn').style.display = 'block';
+                document.getElementById('ov-title').innerText = "OUT OF RANGE";
+                document.getElementById('ov-msg').innerHTML = `You are ${Math.round(dist)}m away.<br>You must be within 30m.`;
+                return;
             }
 
-            // 2. DB Check
-            document.getElementById('ov-msg').innerText = "Verifying ID...";
+            // 2. Final Security Check (Device)
+            document.getElementById('ov-msg').innerText = "Final Security Check...";
             try {
+                // We already checked ID existence, now check Device Lock
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
-                const usrReq = sb.from('voter_list').select('has_voted').eq('student_id', uid).single();
-                
-                const [ipData, usrRes] = await Promise.all([ipReq, usrReq]);
-
-                if (!usrRes.data) return lock('INVALID ID', 'Student ID not found.', '🚫');
-                if (usrRes.data.has_voted) {
-                    updateStatus('bad', 'Already Voted');
-                    return lock('ALREADY VOTED', 'Your vote is already recorded.', '✅');
-                }
+                const [ipData] = await Promise.all([ipReq]);
 
                 const { data: isLocked } = await sb.rpc('check_device_status', { 
                     p_ip: ipData.ip, 
@@ -389,7 +390,7 @@
                     return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
                 }
 
-                // UNLOCK
+                // UNLOCK SUCCESS
                 hasAccess = true;
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('app').classList.remove('blur');
@@ -512,6 +513,12 @@
             document.getElementById('ov-icon').innerText = icon;
             document.getElementById('ov-title').innerText = title;
             document.getElementById('ov-msg').innerHTML = msg;
+            
+            // Hide button if completely locked
+            if(title === "ACCESS DENIED" || title === "ALREADY VOTED" || title === "DEVICE LOCKED") {
+                document.getElementById('perm-btn').style.display = 'none';
+            }
+            
             document.getElementById('app').classList.add('blur');
         }
     </script>
