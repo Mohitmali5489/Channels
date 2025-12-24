@@ -14,7 +14,6 @@
             --neon-glow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
         
-        /* Mobile-First Base Styles */
         body { 
             margin:0; background:var(--bg); color:#fff; font-family:'Outfit',sans-serif; 
             padding-bottom:140px; 
@@ -47,7 +46,7 @@
         }
         h4::before, h4::after { content: ''; height: 1px; flex: 1; max-width: 50px; background: var(--gold); opacity: 0.5; }
 
-        /* CIRCLE CANDIDATE UI GRID */
+        /* GRID */
         .candidates-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
@@ -65,7 +64,6 @@
 
         .candidate-item:active { transform: scale(0.95); }
 
-        /* Avatar Ring */
         .img-ring {
             width: 75px; height: 75px; 
             border-radius: 50%; padding: 3px;
@@ -85,7 +83,6 @@
         }
         .candidate-item.selected .c-avatar { filter: grayscale(0%); }
 
-        /* Checkmark Badge */
         .check-badge {
             position: absolute; bottom: -2px; right: -2px;
             width: 24px; height: 24px;
@@ -98,7 +95,6 @@
         }
         .candidate-item.selected .check-badge { opacity: 1; transform: scale(1); }
 
-        /* Text Info */
         .c-name {
             margin-top: 8px; font-weight: 600; font-size: 0.75rem;
             text-align: center; color: #aaa; line-height: 1.2;
@@ -109,7 +105,7 @@
         .candidate-item.selected .c-name { color: #fff; font-weight: 700; }
         .candidate-item.selected .c-role { color: var(--gold); }
 
-        /* OVERLAYS & UTILS */
+        /* OVERLAYS */
         #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; box-sizing: border-box; }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         
@@ -139,7 +135,6 @@
             transform: translateY(-2px);
         }
 
-        /* SPINNER */
         .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -150,8 +145,8 @@
     <div id="overlay">
         <div class="spinner" id="ov-spin"></div>
         <div class="icon-lock" id="ov-icon" style="display:none">🔒</div>
-        <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">CHECKING ACCESS</h1>
-        <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">Verifying location...</p>
+        <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">WAITING FOR START</h1>
+        <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">Event starts at 5:00 PM</p>
         <button id="perm-btn" style="display:none; margin-top:20px; padding:12px 30px; background:var(--gold); border:none; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="requestLocation()">ALLOW LOCATION</button>
     </div>
 
@@ -178,21 +173,15 @@
         const SUPABASE_URL = "https://rdxknqyszgoymlvqwgrj.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
-        // --- TIMING DEMO (EDIT HERE) ---
-        // STARTS: 10 seconds from now
-        // ENDS: 5 minutes after start
-        const NOW = Date.now();
-        const START_TIME = NOW + 10000; 
-        const END_TIME = START_TIME + (5 * 60 * 1000); 
+        // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
+        const START_TIME = new Date("2025-12-24T17:00:00").getTime();
+        const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
         // GEO-FENCING
         const TARGET_LAT = 19.248114;
         const TARGET_LNG = 73.146977;
         const MAX_DISTANCE_METERS = 20; 
         
-        // STRICT MODE
-        const TEST_MODE = false; 
-
         // DATA
         const DATA = {
             boys: [
@@ -219,52 +208,98 @@
         let selectedBoy = null;
         let selectedGirl = null;
         let userLat = 0, userLng = 0;
+        let hasAccess = false; // Flag to prevent re-checking
 
         window.onload = async () => {
-            // Start the clock immediately to show "STARTS IN..." if needed
+            initApp(); // Render UI immediately (blurred)
+            
+            // Start the time ticker. It handles the "wait" screen.
             setInterval(tick, 1000); 
             tick();
+        };
 
+        // --- 1. TIME LOOP ---
+        function tick() {
+            const now = Date.now();
+            const tm = document.getElementById('timer');
+            const overlay = document.getElementById('overlay');
+            const spin = document.getElementById('ov-spin');
+
+            if (now < START_TIME) {
+                // BEFORE 5:00 PM -> BLUR & WAIT
+                const diff = START_TIME - now;
+                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                
+                tm.innerText = `STARTS IN: ${m}:${s}`;
+                
+                // Ensure lock screen is visible
+                if(overlay.style.display === 'none') {
+                    lock("WAITING FOR START", `Event starts at 5:00 PM`, "⏳");
+                    document.getElementById('perm-btn').style.display = 'none';
+                    spin.style.display = 'block';
+                }
+
+            } else if (now > END_TIME) {
+                // AFTER 5:05 PM -> LOCK FOREVER
+                lock('VOTING CLOSED', 'The voting window has ended.', '⏰');
+                tm.innerText = "CLOSED";
+                document.getElementById('perm-btn').style.display = 'none';
+                spin.style.display = 'none';
+
+            } else {
+                // ACTIVE WINDOW (5:00 - 5:05)
+                const diff = END_TIME - now;
+                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                tm.innerText = `CLOSING IN: ${m}:${s}`;
+                
+                // If we haven't verified the user yet, START VERIFICATION
+                if (!hasAccess && document.getElementById('perm-btn').style.display === 'none') {
+                     startVerification();
+                }
+            }
+        }
+
+        // --- 2. VERIFICATION FLOW ---
+        async function startVerification() {
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
             
-            // Initiate GPS Check
+            document.getElementById('ov-title').innerText = "CHECKING ACCESS";
             document.getElementById('ov-msg').innerHTML = "Verifying location...<br>Please stand near Main Building.";
             document.getElementById('ov-spin').style.display = 'none';
-            document.getElementById('perm-btn').style.display = 'block';
-        };
+            document.getElementById('perm-btn').style.display = 'block'; // Show "Allow Location" button
+        }
 
         function requestLocation() {
             document.getElementById('perm-btn').style.display = 'none';
             document.getElementById('ov-spin').style.display = 'block';
             document.getElementById('ov-msg').innerText = "Acquiring GPS signal...";
 
-            if (TEST_MODE) {
-                userLat = TARGET_LAT; userLng = TARGET_LNG;
-                checkAccess();
-            } else {
-                if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
-                
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        userLat = pos.coords.latitude;
-                        userLng = pos.coords.longitude;
-                        const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
-                        
-                        if(dist > MAX_DISTANCE_METERS) {
-                            lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building.`, "📍");
-                        } else {
-                            checkAccess(); 
-                        }
-                    },
-                    (err) => {
-                        lock("LOCATION REQUIRED", "Please allow location access to vote.", "🌍");
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
-            }
+            if(!navigator.geolocation) return lock("ERROR", "Geolocation not supported.", "⚠️");
+            
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userLat = pos.coords.latitude;
+                    userLng = pos.coords.longitude;
+                    const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
+                    
+                    if(dist > MAX_DISTANCE_METERS) {
+                        lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building.`, "📍");
+                    } else {
+                        checkDatabase(); // GPS OK -> Check DB
+                    }
+                },
+                (err) => {
+                    document.getElementById('perm-btn').style.display = 'block'; // Show button again on error
+                    document.getElementById('ov-spin').style.display = 'none';
+                    document.getElementById('ov-msg').innerText = "Please allow location access to vote.";
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
-        async function checkAccess() {
+        async function checkDatabase() {
             document.getElementById('ov-msg').innerText = "Checking voting status...";
             try {
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
@@ -282,12 +317,13 @@
 
                 if (isLocked) return lock('DEVICE LOCKED', 'This device has already been used.', '📱');
 
-                // Access Granted - Hide Overlay
-                // Note: App might still be blurred by tick() if Start Time hasn't arrived
+                // SUCCESS: UNLOCK APP
+                hasAccess = true;
                 document.getElementById('overlay').style.display = 'none';
-                initApp();
+                document.getElementById('app').classList.remove('blur');
 
             } catch(e) {
+                console.error(e);
                 lock("CONNECTION ERROR", "Could not connect to server.", "⚠️");
             }
         }
@@ -316,6 +352,7 @@
         }
 
         function select(type, id) {
+            if (!hasAccess) return; // Prevent selection if blurred
             const container = document.getElementById(`l-${type}`);
             [...container.children].forEach(c => c.classList.remove('selected'));
             document.getElementById(id).classList.add('selected');
@@ -339,7 +376,7 @@
         async function vote() {
             const btn = document.getElementById('sub');
             if(!btn.classList.contains('active')) return;
-            // Double Check Time
+            // Double Check Time on Submit
             if (Date.now() > END_TIME) return lock("TIME UP", "Voting has closed.", "⏰");
 
             const { isConfirmed } = await Swal.fire({
@@ -367,41 +404,6 @@
                 location.reload();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
-        }
-
-        function tick() {
-            const now = Date.now();
-            const tm = document.getElementById('timer');
-            const app = document.getElementById('app');
-            const overlay = document.getElementById('overlay');
-
-            if (now < START_TIME) {
-                // BEFORE START
-                // Only blur if the overlay isn't already showing a "Locked" message
-                if (overlay.style.display === 'none') {
-                    app.classList.add('blur');
-                }
-                const diff = START_TIME - now;
-                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
-                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                tm.innerText = `STARTS IN: ${m}:${s}`;
-                
-            } else if (now > END_TIME) {
-                // AFTER END
-                lock('VOTING CLOSED', 'The voting window has ended.', '⏰');
-                tm.innerText = "CLOSED";
-                
-            } else {
-                // DURING EVENT
-                // If overlay is hidden (user verified), remove blur
-                if (overlay.style.display === 'none') {
-                    app.classList.remove('blur');
-                }
-                const diff = END_TIME - now;
-                const m = Math.floor(diff / 60000).toString().padStart(2, '0');
-                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-                tm.innerText = `CLOSING IN: ${m}:${s}`;
-            }
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
