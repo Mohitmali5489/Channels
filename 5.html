@@ -134,7 +134,7 @@
         }
         @keyframes pulse-btn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* VOTE BUTTON */
+        /* BUTTON */
         .btn-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(to top, #050505 90%, transparent);
@@ -203,7 +203,7 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
-        const START_TIME = new Date("2025-12-24T16:42:00").getTime();
+        const START_TIME = new Date("2025-12-24T16:45:00").getTime();
         const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
         // GEO-FENCING
@@ -244,12 +244,8 @@
             if(!uid) return lock('ACCESS DENIED', 'No Student ID found in URL.', '🔒');
             
             initApp(); 
-            updateStatus('neutral', 'Waiting for Sync...');
             
-            // Try Auto-Location immediately
-            attemptAutoLocation();
-
-            // Start Time Loop
+            // Check Time every second
             setInterval(tick, 1000); 
             tick(); 
         };
@@ -294,31 +290,31 @@
                 tm.innerText = `CLOSING IN: ${m}:${s}`;
                 tm.style.color = "var(--gold)";
                 
-                // If Live & No Access & No Button showing
-                if (!hasAccess && userLat === 0 && document.getElementById('perm-btn').style.display === 'none') {
-                    attemptAutoLocation();
+                // If Live & Not Verified & Not already asking
+                if (!hasAccess && document.getElementById('perm-btn').style.display === 'none') {
+                    // Try to get location silently immediately
+                    attemptGPS();
                 }
             }
         }
 
         // --- 3. LOCATION LOGIC ---
-        function attemptAutoLocation() {
+        function attemptGPS() {
             if(!navigator.geolocation) return;
 
             // Attempt silent fetch
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
+                    // Success!
                     userLat = pos.coords.latitude;
                     userLng = pos.coords.longitude;
-                    if (Date.now() >= START_TIME && Date.now() <= END_TIME) checkDatabase();
+                    checkDatabase();
                 },
                 (err) => {
-                    // Fail -> Show Button
-                    if (Date.now() >= START_TIME && Date.now() <= END_TIME) {
-                        showLocationButton();
-                    }
+                    // Fail -> Show Manual Button
+                    showLocationButton();
                 },
-                { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
         }
 
@@ -405,6 +401,23 @@
             }
         }
 
+        function updateStatus(type, msg) {
+            const bar = document.getElementById('status-bar');
+            const dot = bar.querySelector('.status-dot');
+            document.getElementById('status-text').innerText = msg;
+            
+            if(type === 'good') {
+                dot.style.background = 'var(--status-good)';
+                bar.style.color = 'var(--status-good)';
+            } else if (type === 'bad') {
+                dot.style.background = 'var(--status-bad)';
+                bar.style.color = 'var(--status-bad)';
+            } else {
+                dot.style.background = '#666';
+                bar.style.color = '#fff';
+            }
+        }
+
         // --- APP LOGIC ---
         function initApp() {
             renderList('boys', DATA.boys);
@@ -481,23 +494,6 @@
                 location.reload();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
-        }
-
-        function updateStatus(type, msg) {
-            const bar = document.getElementById('status-bar');
-            const dot = bar.querySelector('.status-dot');
-            document.getElementById('status-text').innerText = msg;
-            
-            if(type === 'good') {
-                dot.style.background = 'var(--status-good)';
-                bar.style.color = 'var(--status-good)';
-            } else if (type === 'bad') {
-                dot.style.background = 'var(--status-bad)';
-                bar.style.color = 'var(--status-bad)';
-            } else {
-                dot.style.background = '#666';
-                bar.style.color = '#fff';
-            }
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
