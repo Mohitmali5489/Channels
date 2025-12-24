@@ -46,7 +46,6 @@
         .container { 
             width: 100%; max-width: 500px; margin: 0 auto; padding: 10px; box-sizing: border-box; 
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            /* Removed transition filters for performance on low-end devices */
         }
         
         h4 { 
@@ -122,10 +121,20 @@
         }
         .icon-lock { font-size: 3rem; margin-bottom: 20px; color: #444; }
         
-        /* Only apply blur via class to prevent constant repaint */
         .blur { filter:blur(10px); pointer-events:none; opacity:0.4; }
 
-        /* BUTTON */
+        /* PERMISSION BUTTON */
+        #perm-btn {
+            margin-top:25px; padding:14px 35px; 
+            background:var(--grad); color: #000;
+            border:none; border-radius:50px; 
+            font-weight:800; font-size: 1rem; cursor:pointer;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            animation: pulse-btn 2s infinite;
+        }
+        @keyframes pulse-btn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* VOTE BUTTON */
         .btn-container {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: linear-gradient(to top, #050505 90%, transparent);
@@ -151,27 +160,19 @@
 
         .spinner { width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Force Touch Overlay for GPS (Transparent layer) */
-        #force-touch {
-            position: absolute; top:0; left:0; width:100%; height:100%; z-index: 10001;
-            cursor: pointer; display: none; background: transparent;
-        }
 
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <div id="force-touch" onclick="manualTriggerGPS()"></div>
-        
         <div class="spinner" id="ov-spin"></div>
         <div class="icon-lock" id="ov-icon" style="display:none">🔒</div>
         
         <h1 class="logo" style="-webkit-text-fill-color:unset; color:var(--gold); font-size:1.8rem; margin-bottom:10px;" id="ov-title">LOADING...</h1>
         <p style="color:#888; font-size:1rem; max-width: 300px; line-height: 1.5;" id="ov-msg">System Check...</p>
         
-        <p id="ov-sub" style="color:#666; font-size:0.8rem; margin-top:20px; display:none; animation: pulse 2s infinite;">TAP SCREEN TO VERIFY</p>
+        <button id="perm-btn" style="display:none;" onclick="manualTriggerGPS()">ALLOW LOCATION</button>
     </div>
 
     <div id="status-bar">
@@ -202,7 +203,7 @@
         const SUPABASE_KEY = "sb_publishable_iS9a8Rk6_wweyISm9GQYbQ_YqFapjAu";
         
         // --- FIXED TIME WINDOW (Dec 24, 2025 | 5:00 PM to 5:05 PM) ---
-        const START_TIME = new Date("2025-12-24T17:00:00").getTime();
+        const START_TIME = new Date("2025-12-24T16:42:00").getTime();
         const END_TIME   = new Date("2025-12-24T17:05:00").getTime();
 
         // GEO-FENCING
@@ -245,12 +246,8 @@
             initApp(); 
             updateStatus('neutral', 'Waiting for Sync...');
             
-            // ATTEMPT AUTO-LOCATION IMMEDIATELY ON LOAD
-            // This satisfies "Don't ask, just get it".
-            // Browsers may block this if not triggered by click, handled by fallback below.
-            if (navigator.geolocation) {
-                attemptGPS();
-            }
+            // Try Auto-Location immediately
+            attemptAutoLocation();
 
             // Start Time Loop
             setInterval(tick, 1000); 
@@ -263,7 +260,6 @@
             const tm = document.getElementById('timer');
             const overlay = document.getElementById('overlay');
             const spin = document.getElementById('ov-spin');
-            const subMsg = document.getElementById('ov-sub');
 
             if (now < START_TIME) {
                 // --- PRE-EVENT ---
@@ -278,7 +274,7 @@
                 if(overlay.style.display === 'none') {
                     lock("WAITING FOR START", `Event starts at 5:00 PM`, "⏳");
                     spin.style.display = 'block';
-                    document.getElementById('force-touch').style.display = 'none';
+                    document.getElementById('perm-btn').style.display = 'none';
                 }
 
             } else if (now > END_TIME) {
@@ -288,8 +284,7 @@
                 tm.style.color = "#ff4444";
                 updateStatus('bad', 'Voting Closed');
                 spin.style.display = 'none';
-                subMsg.style.display = 'none';
-                document.getElementById('force-touch').style.display = 'none';
+                document.getElementById('perm-btn').style.display = 'none';
 
             } else {
                 // --- LIVE EVENT ---
@@ -299,61 +294,56 @@
                 tm.innerText = `CLOSING IN: ${m}:${s}`;
                 tm.style.color = "var(--gold)";
                 
-                // If we are Live but don't have location yet
-                if (!hasAccess && userLat === 0 && document.getElementById('force-touch').style.display === 'none') {
-                    // Try getting it again
-                    attemptGPS();
+                // If Live & No Access & No Button showing
+                if (!hasAccess && userLat === 0 && document.getElementById('perm-btn').style.display === 'none') {
+                    attemptAutoLocation();
                 }
             }
         }
 
-        // --- 3. STRICT LOCATION LOGIC ---
-        function attemptGPS() {
-            // Strict Options: High Accuracy, No Cache, 5s Timeout
-            const opts = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+        // --- 3. LOCATION LOGIC ---
+        function attemptAutoLocation() {
+            if(!navigator.geolocation) return;
 
+            // Attempt silent fetch
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    // SUCCESS
                     userLat = pos.coords.latitude;
                     userLng = pos.coords.longitude;
                     if (Date.now() >= START_TIME && Date.now() <= END_TIME) checkDatabase();
                 },
                 (err) => {
-                    // FAIL / BLOCKED BY BROWSER
-                    // Only show "Tap to Verify" if we are currently live
+                    // Fail -> Show Button
                     if (Date.now() >= START_TIME && Date.now() <= END_TIME) {
-                        enableForceTouch();
+                        showLocationButton();
                     }
                 },
-                opts
+                { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
             );
         }
 
-        function enableForceTouch() {
-            // Activates the invisible overlay to capture the user's next tap
-            const touchZone = document.getElementById('force-touch');
-            const subMsg = document.getElementById('ov-sub');
+        function showLocationButton() {
+            const btn = document.getElementById('perm-btn');
             const spin = document.getElementById('ov-spin');
             const msg = document.getElementById('ov-msg');
             const title = document.getElementById('ov-title');
 
-            if(touchZone.style.display !== 'block') {
-                touchZone.style.display = 'block';
-                subMsg.style.display = 'block';
+            if(btn.style.display !== 'block') {
+                btn.style.display = 'block';
                 spin.style.display = 'none';
                 title.innerText = "LOCATION REQUIRED";
-                msg.innerHTML = "Browser blocked auto-location.<br>Please tap screen to verify.";
+                msg.innerHTML = "Access to GPS is required.<br>Please allow location access.";
                 updateStatus('bad', 'Action Required');
             }
         }
 
         function manualTriggerGPS() {
-            // Triggered by the user tap
             const spin = document.getElementById('ov-spin');
+            const btn = document.getElementById('perm-btn');
+            
+            btn.style.display = 'none';
             spin.style.display = 'block';
-            document.getElementById('ov-msg').innerText = "Locating...";
-            document.getElementById('ov-sub').style.display = 'none';
+            document.getElementById('ov-msg').innerText = "Requesting Access...";
             
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -363,7 +353,8 @@
                 },
                 (err) => {
                     spin.style.display = 'none';
-                    document.getElementById('ov-msg').innerText = "Location permission is required to vote.";
+                    btn.style.display = 'block';
+                    document.getElementById('ov-msg').innerText = "Location access denied. Please enable it in browser settings.";
                     updateStatus('bad', 'Location Denied');
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -371,14 +362,14 @@
         }
 
         async function checkDatabase() {
-            // 1. Verify Distance
+            // 1. Distance Check
             const dist = getDistance(userLat, userLng, TARGET_LAT, TARGET_LNG);
             if(dist > MAX_DISTANCE_METERS) {
                 updateStatus('bad', `Out of Range (${Math.round(dist)}m)`);
                 return lock("OUT OF RANGE", `You are ${Math.round(dist)}m away.<br>Move closer to the Main Building (30m).`, "📍");
             }
 
-            // 2. Verify Database
+            // 2. DB Check
             document.getElementById('ov-msg').innerText = "Verifying ID...";
             try {
                 const ipReq = fetch('https://api.ipify.org?format=json').then(r=>r.json());
