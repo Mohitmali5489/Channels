@@ -1,264 +1,283 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Ticket</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Event Pass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
         :root {
+            /* --- Dark Theme Palette --- */
             --bg-body: #050505;
-            --bg-ticket: #0f1014;
-            --text-main: #ffffff;
-            --text-sub: #9ca3af;
-            --accent: #e11d48;
-            --divider: #27272a;
-            --notch-color: #050505;
-            --glass-shine: rgba(255, 255, 255, 0.03);
-            --partner-box-bg: #18181b;
-            --partner-box-border: #27272a;
-            --partner-separator: #3f3f46;
+            --surface-card: #121212;
+            --surface-inner: #1e1e1e;
+            --border-color: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-color: #6366f1;
+            --highlight-bg: rgba(255, 255, 255, 0.05);
+            --shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+            --notch-color: #333333; 
         }
 
         [data-theme="light"] {
-            --bg-body: #e5e5e5;
-            --bg-ticket: #ffffff;
-            --text-main: #18181b;
-            --text-sub: #52525b;
-            --divider: #e4e4e7;
-            --notch-color: #e5e5e5;
-            --glass-shine: rgba(0, 0, 0, 0.02);
-            --partner-box-bg: #f4f4f5;
-            --partner-box-border: #e4e4e7;
-            --partner-separator: #d4d4d8;
+            /* --- Light Theme Palette --- */
+            --bg-body: #f2f2f7;
+            --surface-card: #ffffff;
+            --surface-inner: #f5f5f7;
+            --border-color: #e5e5ea;
+            --text-primary: #000000;
+            --text-secondary: #6e6e73;
+            --accent-color: #4f46e5;
+            --highlight-bg: rgba(0, 0, 0, 0.03);
+            --shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            --notch-color: #e0e0e0;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Manrope', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-body);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            transition: background 0.3s ease;
+            padding: 16px;
+            transition: background-color 0.3s ease;
         }
 
-        .controls {
-            position: absolute; top: 20px; right: 20px; z-index: 10;
-        }
-        .theme-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-main); width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        [data-theme="light"] .theme-btn { color: #000; border-color: rgba(0,0,0,0.1); background: rgba(0,0,0,0.05); }
-
-        .ticket-container {
-            width: 95%;
-            max-width: 420px;
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
-            animation: floatUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-            margin-top: 40px;
+        /* --- Layout Container --- */
+        .ticket-wrapper {
+            width: 100%;
+            max-width: 100%;
+            filter: drop-shadow(var(--shadow));
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .ticket {
-            background: var(--bg-ticket);
+            background: var(--surface-card);
             border-radius: 24px;
             overflow: hidden;
             position: relative;
-            background-image: linear-gradient(135deg, var(--glass-shine) 0%, transparent 100%);
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
         }
 
-        /* --- Redesigned Header & Collab Section --- */
-        .brand-header {
-            text-align: center;
-            padding: 24px 24px 20px;
-            border-bottom: 1px solid var(--divider);
+        /* --- Header Section --- */
+        .header {
+            padding: 28px 24px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            border-bottom: 1px dashed var(--border-color);
+            background: radial-gradient(circle at top, var(--highlight-bg), transparent 70%);
         }
 
-        .header-label {
-            font-size: 10px; letter-spacing: 1.5px; color: var(--text-sub);
-            text-transform: uppercase; font-weight: 700; margin-bottom: 8px;
+        .main-logo { height: 55px; width: auto; object-fit: contain; margin-bottom: 18px; }
+
+        .collab-container { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .collab-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-secondary); }
+        .collab-badge {
+            display: flex; align-items: center; background: var(--surface-inner); padding: 6px 14px;
+            border-radius: 50px; border: 1px solid var(--border-color); gap: 10px;
+        }
+        .partner-logo { height: 22px; width: auto; }
+        .divider-vertical { width: 1px; height: 14px; background: var(--text-secondary); opacity: 0.3; }
+        .partner-text { font-size: 11px; font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+
+        /* --- Content Section --- */
+        .content { padding: 24px; }
+
+        .movie-card { display: flex; gap: 16px; margin-bottom: 24px; }
+        .poster { width: 75px; height: 110px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .movie-details { display: flex; flex-direction: column; justify-content: center; }
+        .movie-title { font-size: 20px; font-weight: 800; line-height: 1.2; color: var(--text-primary); margin-bottom: 6px; }
+        .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag { font-size: 11px; background: var(--surface-inner); color: var(--text-secondary); padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+
+        /* --- Info Grid --- */
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            background: var(--surface-inner); padding: 16px; border-radius: 16px; border: 1px solid var(--border-color);
+        }
+        .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .value { font-size: 14px; color: var(--text-primary); font-weight: 700; }
+        .value.highlight { color: var(--accent-color); font-size: 15px; }
+
+        /* --- Footer --- */
+        .footer {
+            padding: 0 24px 28px; /* Standard padding kept for content */
+            text-align: center;
         }
 
-        .main-logo {
-            height: 70px;
-            width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            margin-bottom: 16px;
-        }
-        [data-theme="light"] .main-logo { filter: invert(1); }
-
-        .collab-section {
-            display: flex; flex-direction: column; align-items: center;
-            width: 100%;
+        /* --- NOTCH CONTAINER FIX --- */
+        .notch-container {
+            position: relative;
+            height: 30px;
+            margin-top: -15px;
+            margin-bottom: 10px;
+            z-index: 10;
+            
+            /* NEGATIVE MARGINS to pull notches to the card edges */
+            margin-left: -24px; 
+            margin-right: -24px;
         }
         
-        /* New Partner Box Style based on the image */
-        .partner-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--partner-box-bg);
-            border: 1px solid var(--partner-box-border);
-            border-radius: 16px;
-            padding: 8px 16px;
-            margin-top: 4px;
-        }
-
-        .partner-logo {
-            height: 32px; width: 32px; object-fit: contain;
-            border-radius: 4px; /* Optional: adds slight rounding to the logos themselves */
+        /* The Cutting Line */
+        .notch-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            /* Connect line from notch to notch */
+            left: 15px; 
+            right: 15px;
+            border-top: 2px dashed var(--border-color);
+            transform: translateY(-50%);
+            opacity: 0.5;
+            z-index: 1;
         }
         
-        .partner-separator-line {
-            width: 1px;
-            height: 24px;
-            background-color: var(--partner-separator);
-            margin: 0 16px;
-        }
-
-        /* Movie Info Section */
-        .movie-info {
-            padding: 24px; display: flex; gap: 16px; align-items: flex-start;
-        }
-        .poster {
-            width: 80px; aspect-ratio: 2/3; border-radius: 8px; object-fit: cover;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .details { flex: 1; padding-top: 4px; }
-        .title {
-            font-size: 18px; font-weight: 700; line-height: 1.3;
-            color: var(--text-main); margin-bottom: 8px;
-        }
-        .meta {
-            font-size: 12px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500;
-        }
-        .date-time { font-size: 14px; color: var(--text-main); font-weight: 600; }
-
-        /* QR Section */
-        .qr-section {
-            display: flex; flex-direction: column; align-items: center; padding: 0 0 30px;
-        }
-        .qr-box {
-            background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 20px;
-        }
-        .screen-label {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-sub); margin-bottom: 4px;
-        }
-        .seat-numbers { font-size: 18px; color: var(--text-main); font-weight: 700; }
-
-        /* Tear Line */
-        .tear-line {
-            position: relative; height: 30px; display: flex;
-            align-items: center; justify-content: center; margin-top: -10px;
-        }
-        .tear-line::after {
-            content: ''; width: 85%; height: 0; border-top: 2px dashed var(--divider); opacity: 0.5;
-        }
+        /* Curved Notches */
         .notch {
             position: absolute; top: 50%; transform: translateY(-50%);
-            width: 32px; height: 32px; background-color: var(--notch-color);
-            border-radius: 50%; z-index: 2; transition: background 0.3s ease;
+            width: 15px; height: 30px;
+            background-color: var(--notch-color); 
+            z-index: 2;
         }
-        .notch-left { left: -16px; } .notch-right { right: -16px; }
+        .notch-left {
+            left: 0;
+            border-radius: 0 30px 30px 0;
+        }
+        .notch-right {
+            right: 0;
+            border-radius: 30px 0 0 30px;
+        }
 
-        /* Footer */
-        .footer-info { padding: 20px 24px 30px; text-align: center; }
-        .venue { font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
-        .address { font-size: 12px; color: var(--text-sub); line-height: 1.4; max-width: 90%; margin: 0 auto 16px; }
-        .booking-id { font-size: 11px; color: var(--text-sub); opacity: 0.6; letter-spacing: 1px; }
+        .qr-wrapper {
+            background: white; padding: 10px; border-radius: 12px;
+            display: inline-block; margin-bottom: 12px;
+        }
 
-        @keyframes floatUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .footer-text { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+        
+        .screen-pill {
+            display: inline-block; background: var(--surface-inner); color: var(--text-primary);
+            border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 100px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 16px;
+        }
+
+        /* --- Theme Toggle --- */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px; width: 40px; height: 40px;
+            border-radius: 50%; background: var(--surface-card); border: 1px solid var(--border-color);
+            color: var(--text-primary); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="controls">
-        <button class="theme-btn" id="themeToggle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="5"></circle>
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-            </svg>
-        </button>
-    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme"></button>
 
-    <div class="ticket-container">
+    <div class="ticket-wrapper">
         <div class="ticket">
             
-            <div class="brand-header">
-               
+            <div class="header">
                 <img src="https://i.ibb.co/7d0rWb4t/1763474740707.png" alt="Aarmbh" class="main-logo">
                 
-                <div class="collab-section">
-                    <span class="header-label">In Collaboration With</span>
-                    <div class="partner-box">
-                        <img src="https://i.ibb.co/7d0rWb4t/1763474740707.png" alt="EcoCampus" class="partner-logo">
-                        <div class="partner-separator-line"></div>
-                        <img src="https://i.ibb.co/Gvnj9Lzc/image-removebg-preview.png" alt="Kalamandal" class="partner-logo">
+                <div class="collab-container">
+                    <span class="collab-label">In Collaboration With</span>
+                    <div class="collab-badge">
+                        <img src="https://i.ibb.co/Gvnj9Lzc/image-removebg-preview.png" alt="Logo" class="partner-logo">
+                        <div class="divider-vertical"></div>
+                        <span class="partner-text">Student Council</span>
                     </div>
                 </div>
             </div>
 
-            <div class="movie-info">
-                <img src="https://i.ibb.co/PsjPp8Zq/image.png" alt="Poster" class="poster">
-                <div class="details">
-                    <div class="title">The Ghazi Attack</div>
-                    <div class="meta">Hindi | 2D </div>
-                    <div class="date-time">Tuesday, 02 Jan | 3:15 PM</div>
+            <div class="content">
+                <div class="movie-card">
+                    <img src="https://i.ibb.co/PsjPp8Zq/image.png" alt="Poster" class="poster">
+                    <div class="movie-details">
+                        <div class="movie-title">The Ghazi Attack</div>
+                        <div class="tags">
+                            <span class="tag">Hindi</span>
+                            <span class="tag">Thriller</span>
+                            <span class="tag">2D</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Date</span>
+                        <span class="value">02 Jan 2024</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Time</span>
+                        <span class="value">03:15 PM</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Seat</span>
+                        <span class="value highlight">K15</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Venue</span>
+                        <span class="value">Seminar Hall</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="qr-section">
-                <div class="qr-box" id="qrContainer"></div>
-                <div class="screen-label">SCREEN 1</div>
-                <div class="seat-numbers">PR — K15</div>
-            </div>
-
-            <div class="tear-line">
-                <div class="notch notch-left"></div>
-                <div class="notch notch-right"></div>
-            </div>
-
-            <div class="footer-info">
-                <div class="venue">Seminar Hall</div>
-                <div class="address">IT Building, College Campus</div>
-                <div class="booking-id">Booking ID: T8AECSJ</div>
+            <div class="footer">
+                <div class="notch-container">
+                    <div class="notch notch-left"></div>
+                    <div class="notch notch-right"></div>
+                </div>
+                
+                <div class="screen-pill">Screen 1 • IT Building</div>
+                <br>
+                <div class="qr-wrapper" id="qrContainer"></div>
+                <div class="footer-text">ID: T8AECSJ-K15</div>
             </div>
 
         </div>
     </div>
 
     <script>
+        // QR Code Generation
         const qrContainer = document.getElementById("qrContainer");
         new QRCode(qrContainer, {
             text: "T8AECSJ-K15-K16-AARMBH-ECO-KALA",
-            width: 140,
-            height: 140,
+            width: 120,
+            height: 120,
             colorDark : "#000000",
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
 
+        // Theme Logic
         const toggleBtn = document.getElementById('themeToggle');
         const html = document.documentElement;
+        
+        const moonIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+        const sunIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+
+        toggleBtn.innerHTML = moonIcon;
 
         toggleBtn.addEventListener('click', () => {
             const current = html.getAttribute('data-theme');
-            html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+            if (current === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                toggleBtn.innerHTML = moonIcon;
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                toggleBtn.innerHTML = sunIcon;
+            }
         });
     </script>
 </body>
