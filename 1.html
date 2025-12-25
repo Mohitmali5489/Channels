@@ -139,7 +139,7 @@
 
         .wing {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: var(--seat-gap);
         }
 
@@ -237,7 +237,7 @@
 
     <header class="header">
         <div class="movie-info">
-            <h1>Kantara: A Legend Chapter-1</h1>
+            <h1>The Ghazi Attack</h1>
             <div class="movie-meta">Seminar Hall • 02:30 PM</div>
         </div>
         <button class="theme-btn" id="themeToggle" title="Toggle Dark Mode">
@@ -286,9 +286,9 @@
     </div>
 
     <script>
-        const ROWS = 14; 
-        const COLS_WING = 8;
-        const PRICES = { platinum: 100, gold: 80, silver: 60, bronze: 40 };
+        const ROWS = 12; 
+        const COLS_WING = 5; 
+        const PRICES = { platinum: 200, gold: 160, silver: 120, bronze: 80 };
 
         function initSeats() {
             const leftWing = document.getElementById('leftWing');
@@ -296,14 +296,27 @@
             const rowLetters = "ABCDEFGHIJKLMN".split("");
 
             for (let r = 0; r < ROWS; r++) {
-                // Tier Logic (Back to Front: A=Top=Front in typical cinema logic, but visual is Top)
+                // Tier Logic: REVERSED (Front/Top rows are Platinum)
                 let type = 'bronze';
                 let price = PRICES.bronze;
 
-                if (r < 2) { type = 'bronze'; price = PRICES.bronze; }
-                else if (r < 6) { type = 'silver'; price = PRICES.silver; }
-                else if (r < 10) { type = 'gold'; price = PRICES.gold; }
-                else { type = 'platinum'; price = PRICES.platinum; }
+                // r = 0 is the top visual row (closest to SCREEN)
+                if (r < 2) { 
+                    type = 'platinum'; 
+                    price = PRICES.platinum; 
+                } 
+                else if (r < 6) { 
+                    type = 'gold'; 
+                    price = PRICES.gold; 
+                } 
+                else if (r < 10) { 
+                    type = 'silver'; 
+                    price = PRICES.silver; 
+                } 
+                else { 
+                    type = 'bronze'; 
+                    price = PRICES.bronze; 
+                }
 
                 const rowId = rowLetters[r];
 
@@ -359,13 +372,10 @@
         
         function fitToScreen() {
             const vw = viewport.clientWidth;
-            const contentWidth = 700; // Base width of grid
+            const contentWidth = 500; 
             
-            // Calculate scale to fit width with margins
             state.scale = Math.min(vw / contentWidth, 1) * 0.95;
-            // Center horizontally
             state.x = (vw / 2) - ((contentWidth / 2) * state.scale);
-            // Center vertically (with top padding)
             state.y = 40; 
             
             updateTransform();
@@ -375,7 +385,6 @@
             stage.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
         }
 
-        // Panning
         let isDragging = false;
         let startX, startY;
 
@@ -395,7 +404,6 @@
 
         window.addEventListener('mouseup', () => isDragging = false);
 
-        // Touch Panning & Pinching
         let lastDist = 0;
         viewport.addEventListener('touchstart', e => {
             if(e.touches.length === 1) {
