@@ -1,523 +1,265 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EcoCampus Voting | Glass Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Ticket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
-        /* --- CSS VARIABLES --- */
         :root {
-            /* Brand Colors */
-            --primary: #10B981;       
-            --primary-glow: rgba(16, 185, 129, 0.4);
-            --secondary-grad-start: #F59E0B; 
-            --secondary-grad-end: #FBBF24;
-            
-            /* Light Mode Glass */
-            --bg-body: #f0fdf4; /* Very subtle green tint */
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.8);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            --text-main: #1F2937;
-            --text-sub: #6B7280;
-            
-            /* Selection State */
-            --selected-bg: rgba(16, 185, 129, 0.15);
-            --selected-border: #10B981;
+            --bg-body: #050505;
+            --bg-ticket: #0f1014;
+            --text-main: #ffffff;
+            --text-sub: #9ca3af;
+            --accent: #e11d48;
+            --divider: #27272a;
+            --notch-color: #050505;
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --partner-box-bg: #18181b;
+            --partner-box-border: #27272a;
+            --partner-separator: #3f3f46;
         }
 
-        [data-theme="dark"] {
-            /* Dark Mode Glass */
-            --bg-body: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            --text-main: #F9FAFB;
-            --text-sub: #9CA3AF;
-            
-            /* Selection State */
-            --selected-bg: rgba(16, 185, 129, 0.25);
-            --selected-border: #34D399;
+        [data-theme="light"] {
+            --bg-body: #e5e5e5;
+            --bg-ticket: #ffffff;
+            --text-main: #18181b;
+            --text-sub: #52525b;
+            --divider: #e4e4e7;
+            --notch-color: #e5e5e5;
+            --glass-shine: rgba(0, 0, 0, 0.02);
+            --partner-box-bg: #f4f4f5;
+            --partner-box-border: #e4e4e7;
+            --partner-separator: #d4d4d8;
         }
 
-        /* --- GLOBAL & RESET --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: all 0.3s ease;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
+            font-family: 'Manrope', sans-serif;
             background-color: var(--bg-body);
-            color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 120px;
-            /* Ambient Background Blobs for Glass Effect */
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(142,65%,65%,0.2) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(45,85%,65%,0.2) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(142,65%,65%,0.2) 0px, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        /* --- HEADER GLASS --- */
-        .glass-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            
-            /* The Glass Effect */
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--glass-border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-        }
-
-        .brand {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            background: rgba(0,0,0,0.05);
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-main);
-        }
-        
-        [data-theme="dark"] .icon-btn { background: rgba(255,255,255,0.1); }
-
-        /* --- CONTENT CONTAINER --- */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* --- COUNTDOWN CARD --- */
-        .timer-card {
-            background: linear-gradient(135deg, var(--secondary-grad-start), var(--secondary-grad-end));
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Shine effect on timer */
-        .timer-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -50%; width: 100%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-25deg);
-            animation: shine 6s infinite;
-        }
-        @keyframes shine { 0% { left: -50%; } 20% { left: 150%; } 100% { left: 150%; } }
-
-        .timer-text h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-        .timer-text p { font-size: 0.9rem; opacity: 0.9; }
-        .countdown {
-            font-size: 1.4rem; font-weight: 800;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 12px; border-radius: 12px;
-            backdrop-filter: blur(4px);
-        }
-
-        /* --- LIST LAYOUT (FULL WIDTH) --- */
-        .category-header {
-            margin: 24px 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .cat-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-        .cat-badge { 
-            font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 700; 
-            letter-spacing: 0.5px;
-        }
-        .bg-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-        .bg-pink { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
-
-        .nominee-list {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* Space between cards */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.3s ease;
         }
 
-        /* --- GLASS CARD DESIGN --- */
-        .nominee-label {
-            cursor: pointer;
+        .controls {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+        }
+        .theme-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main); width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        [data-theme="light"] .theme-btn { color: #000; border-color: rgba(0,0,0,0.1); background: rgba(0,0,0,0.05); }
+
+        .ticket-container {
+            width: 95%;
+            max-width: 420px;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
+            animation: floatUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            margin-top: 40px;
+        }
+
+        .ticket {
+            background: var(--bg-ticket);
+            border-radius: 24px;
+            overflow: hidden;
             position: relative;
-            width: 100%;
-            display: block;
-            -webkit-tap-highlight-color: transparent;
+            background-image: linear-gradient(135deg, var(--glass-shine) 0%, transparent 100%);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .nominee-label input { display: none; }
+        /* --- Redesigned Header & Collab Section --- */
+        .brand-header {
+            text-align: center;
+            padding: 24px 24px 20px;
+            border-bottom: 1px solid var(--divider);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .nominee-card {
+        .header-label {
+            font-size: 10px; letter-spacing: 1.5px; color: var(--text-sub);
+            text-transform: uppercase; font-weight: 700; margin-bottom: 8px;
+        }
+
+        .main-logo {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            margin-bottom: 16px;
+        }
+        [data-theme="light"] .main-logo { filter: invert(1); }
+
+        .collab-section {
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%;
+        }
+        
+        /* New Partner Box Style based on the image */
+        .partner-box {
             display: flex;
             align-items: center;
-            padding: 14px 16px;
+            justify-content: center;
+            background-color: var(--partner-box-bg);
+            border: 1px solid var(--partner-box-border);
             border-radius: 16px;
-            
-            /* Glassmorphism Styles */
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            
-            transform: scale(1);
-            position: relative;
+            padding: 8px 16px;
+            margin-top: 4px;
         }
 
-        .nominee-card:active { transform: scale(0.98); }
-
-        /* Left: Avatar */
-        .card-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 16px;
-            flex-shrink: 0;
+        .partner-logo {
+            height: 32px; width: 32px; object-fit: contain;
+            border-radius: 4px; /* Optional: adds slight rounding to the logos themselves */
         }
         
-        .girls-section .card-avatar { background: rgba(236, 72, 153, 0.1); color: #EC4899; }
-
-        /* Middle: Info */
-        .card-info { flex-grow: 1; }
-        .card-name { font-weight: 700; font-size: 1rem; color: var(--text-main); line-height: 1.3; }
-        .card-meta { font-size: 0.8rem; color: var(--text-sub); font-weight: 500; }
-
-        /* Right: Radio Indicator */
-        .radio-indicator {
-            width: 24px;
+        .partner-separator-line {
+            width: 1px;
             height: 24px;
-            border-radius: 50%;
-            border: 2px solid var(--text-sub);
-            opacity: 0.3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background-color: var(--partner-separator);
+            margin: 0 16px;
         }
 
-        .radio-indicator i { font-size: 12px; color: white; transform: scale(0); transition: transform 0.2s; }
-
-        /* --- SELECTED STATE --- */
-        .nominee-label input:checked + .nominee-card {
-            background: var(--selected-bg);
-            border-color: var(--selected-border);
-            box-shadow: 0 0 15px var(--primary-glow);
+        /* Movie Info Section */
+        .movie-info {
+            padding: 24px; display: flex; gap: 16px; align-items: flex-start;
         }
-
-        .nominee-label input:checked + .nominee-card .radio-indicator {
-            background: var(--primary);
-            border-color: var(--primary);
-            opacity: 1;
-            transform: scale(1.1);
+        .poster {
+            width: 80px; aspect-ratio: 2/3; border-radius: 8px; object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-
-        .nominee-label input:checked + .nominee-card .radio-indicator i {
-            transform: scale(1);
+        .details { flex: 1; padding-top: 4px; }
+        .title {
+            font-size: 18px; font-weight: 700; line-height: 1.3;
+            color: var(--text-main); margin-bottom: 8px;
         }
-
-        /* --- BOTTOM NAV --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            padding: 16px 20px 30px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--glass-border);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
+        .meta {
+            font-size: 12px; color: var(--text-sub); margin-bottom: 8px; font-weight: 500;
         }
+        .date-time { font-size: 14px; color: var(--text-main); font-weight: 600; }
 
-        .vote-btn {
-            width: 100%;
-            max-width: 500px;
-            padding: 16px;
-            border: none;
-            border-radius: 50px;
-            background: var(--primary);
-            color: white;
-            font-size: 1.05rem;
-            font-weight: 700;
-            box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.5);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        /* QR Section */
+        .qr-section {
+            display: flex; flex-direction: column; align-items: center; padding: 0 0 30px;
         }
-        
-        .vote-btn:active { transform: scale(0.98); }
+        .qr-box {
+            background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 20px;
+        }
+        .screen-label {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-sub); margin-bottom: 4px;
+        }
+        .seat-numbers { font-size: 18px; color: var(--text-main); font-weight: 700; }
 
+        /* Tear Line */
+        .tear-line {
+            position: relative; height: 30px; display: flex;
+            align-items: center; justify-content: center; margin-top: -10px;
+        }
+        .tear-line::after {
+            content: ''; width: 85%; height: 0; border-top: 2px dashed var(--divider); opacity: 0.5;
+        }
+        .notch {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 32px; height: 32px; background-color: var(--notch-color);
+            border-radius: 50%; z-index: 2; transition: background 0.3s ease;
+        }
+        .notch-left { left: -16px; } .notch-right { right: -16px; }
+
+        /* Footer */
+        .footer-info { padding: 20px 24px 30px; text-align: center; }
+        .venue { font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
+        .address { font-size: 12px; color: var(--text-sub); line-height: 1.4; max-width: 90%; margin: 0 auto 16px; }
+        .booking-id { font-size: 11px; color: var(--text-sub); opacity: 0.6; letter-spacing: 1px; }
+
+        @keyframes floatUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <header class="glass-header">
-        <div class="brand"><i class="fas fa-leaf"></i> EcoCampus</div>
-        <div class="header-actions">
-            <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
-        </div>
-    </header>
-
-    <div class="container">
-        
-        <div class="timer-card">
-            <div class="timer-text">
-                <h2>Voting Deadline</h2>
-                <p>Cast your vote before time runs out.</p>
-            </div>
-            <div class="countdown" id="countdown">23:59:59</div>
-        </div>
-
-        <form id="votingForm">
-            <div class="category-header">
-                <span class="cat-title">Mr. Birla Nominees</span>
-                <span class="cat-badge bg-blue">Select 1</span>
-            </div>
-            
-            <div class="nominee-list">
-                <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Aashish Santosh Yadav">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Aashish Santosh Yadav</div>
-                            <div class="card-meta">TYBCOM • Class Representative</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-
-                <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Krushnakant Pal">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Krushnakant Pal</div>
-                            <div class="card-meta">TYBSC CS • Tech Lead</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-
-                <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Suraj Ramsudhakar Yadav">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Suraj Ramsudhakar Yadav</div>
-                            <div class="card-meta">TYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                
-                 <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Yashraj Dattatray Gaikwad">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Yashraj Dattatray Gaikwad</div>
-                            <div class="card-meta">TYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                
-                 <label class="nominee-label">
-                    <input type="radio" name="mr_birla" value="Prasad Pankaj Jawale">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-tie"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Prasad Pankaj Jawale</div>
-                            <div class="card-meta">SYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-            </div>
-
-            <div class="category-header girls-section">
-                <span class="cat-title">Miss. Birla Nominees</span>
-                <span class="cat-badge bg-pink">Select 1</span>
-            </div>
-            
-            <div class="nominee-list girls-section">
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Vaidehi Balu Gund">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Vaidehi Balu Gund</div>
-                            <div class="card-meta">TYBMS • Cultural Sec</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Ekta Mukesh Dixit">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Ekta Mukesh Dixit</div>
-                            <div class="card-meta">TYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Divya Anand Nair">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Divya Anand Nair</div>
-                            <div class="card-meta">SYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Dharani Shankar Mudaliyar">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Dharani Shankar Mudaliyar</div>
-                            <div class="card-meta">TYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-                
-                <label class="nominee-label">
-                    <input type="radio" name="miss_birla" value="Kaustubhi Chavan">
-                    <div class="nominee-card">
-                        <div class="card-avatar"><i class="fas fa-user-graduate"></i></div>
-                        <div class="card-info">
-                            <div class="card-name">Kaustubhi Chavan</div>
-                            <div class="card-meta">TYBSC CS</div>
-                        </div>
-                        <div class="radio-indicator"><i class="fas fa-check"></i></div>
-                    </div>
-                </label>
-            </div>
-        </form>
-    </div>
-
-    <div class="bottom-nav">
-        <button type="button" class="vote-btn" onclick="submitVote()">
-            Confirm Selection <i class="fas fa-arrow-right"></i>
+    <div class="controls">
+        <button class="theme-btn" id="themeToggle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
         </button>
     </div>
 
+    <div class="ticket-container">
+        <div class="ticket">
+            
+            <div class="brand-header">
+               
+                <img src="https://i.ibb.co/7d0rWb4t/1763474740707.png" alt="Aarmbh" class="main-logo">
+                
+                <div class="collab-section">
+                    <span class="header-label">In Collaboration With</span>
+                    <div class="partner-box">
+                        <img src="https://i.ibb.co/7d0rWb4t/1763474740707.png" alt="EcoCampus" class="partner-logo">
+                        <div class="partner-separator-line"></div>
+                        <img src="https://i.ibb.co/Gvnj9Lzc/image-removebg-preview.png" alt="Kalamandal" class="partner-logo">
+                    </div>
+                </div>
+            </div>
+
+            <div class="movie-info">
+                <img src="https://i.ibb.co/PsjPp8Zq/image.png" alt="Poster" class="poster">
+                <div class="details">
+                    <div class="title">The Ghazi Attack</div>
+                    <div class="meta">Hindi | 2D </div>
+                    <div class="date-time">Tuesday, 02 Jan | 3:15 PM</div>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-box" id="qrContainer"></div>
+                <div class="screen-label">SCREEN 1</div>
+                <div class="seat-numbers">PR — K15</div>
+            </div>
+
+            <div class="tear-line">
+                <div class="notch notch-left"></div>
+                <div class="notch notch-right"></div>
+            </div>
+
+            <div class="footer-info">
+                <div class="venue">Seminar Hall</div>
+                <div class="address">IT Building, College Campus</div>
+                <div class="booking-id">Booking ID: T8AECSJ</div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            if (html.getAttribute('data-theme') === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                icon.className = 'fas fa-sun';
-            } else {
-                html.setAttribute('data-theme', 'light');
-                icon.className = 'fas fa-moon';
-            }
-        }
+        const qrContainer = document.getElementById("qrContainer");
+        new QRCode(qrContainer, {
+            text: "T8AECSJ-K15-K16-AARMBH-ECO-KALA",
+            width: 140,
+            height: 140,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
 
-        // Countdown
-        setInterval(() => {
-            const now = new Date();
-            const tomorrow = new Date();
-            tomorrow.setDate(now.getDate() + 1);
-            tomorrow.setHours(0,0,0,0);
-            const diff = tomorrow - now;
-            
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('countdown').innerText = 
-                `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-        }, 1000);
+        const toggleBtn = document.getElementById('themeToggle');
+        const html = document.documentElement;
 
-        // Submit Logic
-        function submitVote() {
-            const mr = document.querySelector('input[name="mr_birla"]:checked');
-            const miss = document.querySelector('input[name="miss_birla"]:checked');
-
-            if (!mr || !miss) {
-                Swal.fire({
-                    title: 'Incomplete!',
-                    text: 'Please select one candidate from both categories.',
-                    icon: 'warning',
-                    confirmButtonColor: '#10B981',
-                    background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
-                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#000'
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: 'Vote Recorded',
-                html: `Confirmed for: <br><b>${mr.value}</b><br><b>${miss.value}</b>`,
-                icon: 'success',
-                confirmButtonColor: '#10B981',
-                background: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#fff',
-                color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#000'
-            });
-        }
+        toggleBtn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        });
     </script>
 </body>
 </html>
