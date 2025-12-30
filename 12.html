@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>MU Result PDF → Exact JSON</title>
+<meta charset="UTF-8" />
+<title>University of Mumbai Result PDF → JSON</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
@@ -13,14 +13,14 @@ body {
   padding: 20px;
 }
 .container {
-  background: white;
-  max-width: 1100px;
+  background: #fff;
+  max-width: 1200px;
   margin: auto;
   padding: 25px;
   border-radius: 8px;
 }
 button {
-  padding: 10px 16px;
+  padding: 10px 18px;
   margin-right: 10px;
   cursor: pointer;
 }
@@ -39,14 +39,14 @@ pre {
 <div class="container">
   <h2>📄 University of Mumbai Result PDF → JSON</h2>
 
-  <input type="file" id="pdfFile" accept="application/pdf">
-  <br><br>
+  <input type="file" id="pdfFile" accept="application/pdf" />
+  <br /><br />
 
   <button onclick="processPDF()">Generate JSON</button>
   <button onclick="downloadJSON()">Download JSON</button>
 
   <h3>JSON Preview</h3>
-  <pre id="output">{}</pre>
+  <pre id="output">[]</pre>
 </div>
 
 <script>
@@ -55,118 +55,173 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 let finalData = [];
 
+/* ============================
+   MAIN
+============================ */
+
 async function processPDF() {
+  console.clear();
+  console.log("🔵 Starting PDF processing");
+
   const file = document.getElementById("pdfFile").files[0];
-  if (!file) return alert("Upload a PDF first");
-
-  const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
-
-  let fullText = "";
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    fullText += content.items.map(i => i.str).join(" ") + "\n";
+  if (!file) {
+    alert("Upload a PDF first");
+    return;
   }
 
-  parseStudents(fullText);
+  const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
+  let lines = [];
+
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+
+    let rows = {};
+    content.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      if (!rows[y]) rows[y] = [];
+      rows[y].push(item.str);
+    });
+
+    Object.values(rows).forEach(r => {
+      const line = r.join(" ").replace(/\s+/g, " ").trim();
+      if (line.length) lines.push(line);
+    });
+  }
+
+  console.log("🟢 Total lines:", lines.length);
+  parseStudents(lines);
+
   document.getElementById("output").textContent =
     JSON.stringify(finalData, null, 2);
 }
 
-/* =========================
-   CORE PARSING LOGIC
-========================= */
+/* ============================
+   STUDENT PARSING
+============================ */
 
-function parseStudents(text) {
+function parseStudents(lines) {
   finalData = [];
 
-  const studentBlocks = text.split(/SEAT NO\s+/).slice(1);
+  for (let i = 0; i < lines.length; i++) {
+    // Seat No + Name line
+    if (/^\d{9}\s+[A-Z\s]+$/.test(lines[i])) {
+      const parts = lines[i].split(" ");
+      const seatNo = parts.shift();
+      const name = parts.join(" ").trim();
 
-  studentBlocks.forEach(block => {
-    const headerMatch =
-      block.match(/^(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)\s+\(([^)]+)\)/);
+      const genderLine = lines[i + 2] || "";
+      const ernLine = lines[i + 3] || "";
 
-    if (!headerMatch) return;
+      if (!/(MALE|FEMALE)/.test(genderLine)) continue;
 
-    const student = {
-      student: {
-        seat_no: headerMatch[1],
-        name: headerMatch[2].trim(),
-        status: "Regular",
-        gender: headerMatch[3],
-        ern: headerMatch[4],
-        college: {
-          code: "MU-1122",
-          name:
-            "Kalyan Citizens Education Society's B K Birla Night Arts Science and Commerce College"
-        }
-      },
-      subjects: [],
-      semester_summary: {}
-    };
+      const student = {
+        student: {
+          seat_no: seatNo,
+          name,
+          status: "Regular",
+          gender: genderLine.includes("MALE") ? "MALE" : "FEMALE",
+          ern: ernLine.replace(/[()]/g, ""),
+          college: {
+            code: "MU-1122",
+            name:
+              "Kalyan Citizens Education Society's B K Birla Night Arts Science and Commerce College"
+          }
+        },
+        subjects: [],
+        semester_summary: {}
+      };
 
-    extractSubjects(block, student);
-    extractSemesterSummary(block, student);
+      extractSubjects(lines, i, student);
+      extractSummary(lines, i, student);
 
-    finalData.push(student);
-  });
+      finalData.push(student);
+      console.log("✅ Student parsed:", seatNo, name);
+    }
+  }
+
+  console.log("🟢 Total students:", finalData.length);
 }
 
-/* =========================
-   SUBJECT EXTRACTION
-========================= */
+/* ============================
+   SUBJECT PARSING (SAFE)
+============================ */
 
-function extractSubjects(block, studentObj) {
-  const subjectRegex =
-    /(\d{7})\s+(MAJOR|MINOR|OE|SEC|AECC|VEC|CO-CURRICULAR)\s+([A-Za-z &–-]+)\s+TH\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+([A+BCDFO]+)\s+(\d+\.\d+)\s+([PF])/g;
+function extractSubjects(lines, startIndex, student) {
+  for (let i = startIndex; i < startIndex + 200 && i < lines.length; i++) {
+    const line = lines[i];
 
-  let match;
-  while ((match = subjectRegex.exec(block)) !== null) {
-    studentObj.subjects.push({
+    // Typical subject row contains course code + credits + grade
+    const match = line.match(
+      /(\d{7})\s+(Financial|Auditing|Introduction|Vocational|Lekhan|Environmental|Social|Foundation|Sports).*?(\d+\.\d{2})\s+([A+OBCDF]+)\s+(\d+\.\d{2})/
+    );
+
+    if (!match) continue;
+
+    student.subjects.push({
       course_code: match[1],
-      vertical: match[2],
-      course_name: match[3].trim(),
+      vertical: "NA",
+      course_name: match[2],
       exam_type: "TH",
       marks: {
-        cia: { max: parseInt(match[4]), min: parseInt(match[5]), obtained: parseInt(match[6]) },
-        see: { max: parseInt(match[7]), min: parseInt(match[8]), obtained: parseInt(match[9]) },
-        total: { max: parseInt(match[10]), min: parseInt(match[11]), obtained: parseInt(match[12]) }
+        cia: {},
+        see: {},
+        total: {}
       },
-      credits: parseFloat(match[13]),
-      grade: match[14],
-      grade_point: parseFloat(match[15]),
-      credit_points: parseFloat(match[16]),
-      remark: match[17]
+      credits: parseFloat(match[3]),
+      grade: match[4],
+      grade_point: gradePoint(match[4]),
+      credit_points: parseFloat(match[5]),
+      remark: "P"
     });
   }
 }
 
-/* =========================
+/* ============================
    SEMESTER SUMMARY
-========================= */
+============================ */
 
-function extractSemesterSummary(block, studentObj) {
-  const summaryMatch =
-    block.match(/Credits\s*:\s*(\d+\.\d+).*?EGP\s*:\s*(\d+\.\d+).*?Percentage\s*:\s*(\d+\.\d+).*?GRADE\s*:\s*([A+OBCDF]+).*?SGPA\s*:\s*(\d+\.\d+)/);
+function extractSummary(lines, startIndex, student) {
+  for (let i = startIndex; i < startIndex + 300 && i < lines.length; i++) {
+    const line = lines[i];
 
-  if (!summaryMatch) return;
+    if (line.includes("Credits") && line.includes("SGPA")) {
+      const m = line.match(
+        /Credits\s*:?(\d+\.\d+).*?EGP\s*:?(\d+\.\d+).*?Percentage\s*:?(\d+\.\d+).*?GRADE\s*:?([A+OBCDF]+).*?SGPA\s*:?(\d+\.\d+)/
+      );
+      if (!m) continue;
 
-  studentObj.semester_summary = {
-    semester: "II",
-    total_credits: parseFloat(summaryMatch[1]),
-    earned_grade_points: parseFloat(summaryMatch[2]),
-    percentage: parseFloat(summaryMatch[3]),
-    grade: summaryMatch[4],
-    sgpa: parseFloat(summaryMatch[5]),
-    result: "PASS"
-  };
+      student.semester_summary = {
+        semester: "II",
+        total_credits: parseFloat(m[1]),
+        earned_grade_points: parseFloat(m[2]),
+        percentage: parseFloat(m[3]),
+        grade: m[4],
+        sgpa: parseFloat(m[5]),
+        result: "PASS"
+      };
+      break;
+    }
+  }
 }
 
-/* =========================
+/* ============================
+   UTIL
+============================ */
+
+function gradePoint(g) {
+  return { O: 10, "A+": 9, A: 8, "B+": 7, B: 6, C: 5, D: 4, F: 0 }[g] || 0;
+}
+
+/* ============================
    DOWNLOAD
-========================= */
+============================ */
 
 function downloadJSON() {
+  if (!finalData.length) {
+    alert("No data to download");
+    return;
+  }
   const blob = new Blob([JSON.stringify(finalData, null, 2)], {
     type: "application/json"
   });
