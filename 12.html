@@ -2,137 +2,181 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>University Result PDF → JSON Converter</title>
+<title>MU Result PDF → Exact JSON</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <style>
 body {
   font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  padding: 30px;
+  background: #eef2f6;
+  padding: 20px;
 }
 .container {
-  background: #fff;
-  padding: 25px;
-  max-width: 900px;
+  background: white;
+  max-width: 1100px;
   margin: auto;
+  padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 button {
-  padding: 10px 18px;
-  margin-top: 10px;
+  padding: 10px 16px;
+  margin-right: 10px;
   cursor: pointer;
 }
 pre {
   background: #111;
   color: #0f0;
   padding: 15px;
-  max-height: 400px;
+  max-height: 450px;
   overflow: auto;
+  font-size: 13px;
 }
 </style>
 </head>
-<body>
 
+<body>
 <div class="container">
-  <h2>📄 University Result PDF → JSON Converter</h2>
+  <h2>📄 University of Mumbai Result PDF → JSON</h2>
 
   <input type="file" id="pdfFile" accept="application/pdf">
   <br><br>
+
   <button onclick="processPDF()">Generate JSON</button>
   <button onclick="downloadJSON()">Download JSON</button>
 
-  <h3>Preview</h3>
+  <h3>JSON Preview</h3>
   <pre id="output">{}</pre>
 </div>
 
 <script>
-let finalJSON = {
-  metadata: {},
-  courses: [],
-  students: []
-};
-
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+let finalData = [];
 
 async function processPDF() {
   const file = document.getElementById("pdfFile").files[0];
   if (!file) return alert("Upload a PDF first");
 
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+  const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
 
   let fullText = "";
-
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const text = content.items.map(i => i.str).join(" ");
-    fullText += "\n" + text;
+    fullText += content.items.map(i => i.str).join(" ") + "\n";
   }
 
-  parseResultData(fullText);
+  parseStudents(fullText);
   document.getElementById("output").textContent =
-    JSON.stringify(finalJSON, null, 2);
+    JSON.stringify(finalData, null, 2);
 }
 
-function parseResultData(text) {
-  finalJSON = {
-    metadata: {
-      university: "University of Mumbai",
-      exam: "B.Com Accounting & Finance",
-      semester: "II",
-      regulation: "NEP 2020"
-    },
-    courses: [],
-    students: []
-  };
+/* =========================
+   CORE PARSING LOGIC
+========================= */
 
-  // ---- COURSES ----
-  const courseRegex = /(\d{7})\s*:\s*([^()]+)/g;
-  let courseMatch;
-  const seenCourses = new Set();
+function parseStudents(text) {
+  finalData = [];
 
-  while ((courseMatch = courseRegex.exec(text)) !== null) {
-    if (!seenCourses.has(courseMatch[1])) {
-      seenCourses.add(courseMatch[1]);
-      finalJSON.courses.push({
-        course_code: courseMatch[1],
-        course_name: courseMatch[2].trim()
-      });
-    }
-  }
+  const studentBlocks = text.split(/SEAT NO\s+/).slice(1);
 
-  // ---- STUDENTS ----
-  const studentRegex =
-    /(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)/g;
+  studentBlocks.forEach(block => {
+    const headerMatch =
+      block.match(/^(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)\s+\(([^)]+)\)/);
 
-  let studentMatch;
-  while ((studentMatch = studentRegex.exec(text)) !== null) {
-    finalJSON.students.push({
-      seat_no: studentMatch[1],
-      name: studentMatch[2].trim(),
-      gender: studentMatch[3],
+    if (!headerMatch) return;
+
+    const student = {
+      student: {
+        seat_no: headerMatch[1],
+        name: headerMatch[2].trim(),
+        status: "Regular",
+        gender: headerMatch[3],
+        ern: headerMatch[4],
+        college: {
+          code: "MU-1122",
+          name:
+            "Kalyan Citizens Education Society's B K Birla Night Arts Science and Commerce College"
+        }
+      },
       subjects: [],
-      result: "PROCESSED"
+      semester_summary: {}
+    };
+
+    extractSubjects(block, student);
+    extractSemesterSummary(block, student);
+
+    finalData.push(student);
+  });
+}
+
+/* =========================
+   SUBJECT EXTRACTION
+========================= */
+
+function extractSubjects(block, studentObj) {
+  const subjectRegex =
+    /(\d{7})\s+(MAJOR|MINOR|OE|SEC|AECC|VEC|CO-CURRICULAR)\s+([A-Za-z &–-]+)\s+TH\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+([A+BCDFO]+)\s+(\d+\.\d+)\s+([PF])/g;
+
+  let match;
+  while ((match = subjectRegex.exec(block)) !== null) {
+    studentObj.subjects.push({
+      course_code: match[1],
+      vertical: match[2],
+      course_name: match[3].trim(),
+      exam_type: "TH",
+      marks: {
+        cia: { max: parseInt(match[4]), min: parseInt(match[5]), obtained: parseInt(match[6]) },
+        see: { max: parseInt(match[7]), min: parseInt(match[8]), obtained: parseInt(match[9]) },
+        total: { max: parseInt(match[10]), min: parseInt(match[11]), obtained: parseInt(match[12]) }
+      },
+      credits: parseFloat(match[13]),
+      grade: match[14],
+      grade_point: parseFloat(match[15]),
+      credit_points: parseFloat(match[16]),
+      remark: match[17]
     });
   }
 }
 
+/* =========================
+   SEMESTER SUMMARY
+========================= */
+
+function extractSemesterSummary(block, studentObj) {
+  const summaryMatch =
+    block.match(/Credits\s*:\s*(\d+\.\d+).*?EGP\s*:\s*(\d+\.\d+).*?Percentage\s*:\s*(\d+\.\d+).*?GRADE\s*:\s*([A+OBCDF]+).*?SGPA\s*:\s*(\d+\.\d+)/);
+
+  if (!summaryMatch) return;
+
+  studentObj.semester_summary = {
+    semester: "II",
+    total_credits: parseFloat(summaryMatch[1]),
+    earned_grade_points: parseFloat(summaryMatch[2]),
+    percentage: parseFloat(summaryMatch[3]),
+    grade: summaryMatch[4],
+    sgpa: parseFloat(summaryMatch[5]),
+    result: "PASS"
+  };
+}
+
+/* =========================
+   DOWNLOAD
+========================= */
+
 function downloadJSON() {
-  const blob = new Blob(
-    [JSON.stringify(finalJSON, null, 2)],
-    { type: "application/json" }
-  );
+  const blob = new Blob([JSON.stringify(finalData, null, 2)], {
+    type: "application/json"
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "result.json";
+  a.download = "mu_results.json";
   a.click();
   URL.revokeObjectURL(url);
 }
 </script>
-
 </body>
 </html>
