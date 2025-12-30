@@ -1,45 +1,80 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pdfplumber
+import re
 
 app = Flask(__name__)
 
-# -------------------------------
-# HOME ROUTE (VERY IMPORTANT)
-# -------------------------------
+# 🔥 ENABLE CORS (THIS FIXES YOUR ISSUE)
+CORS(app)
+
+# -------------------------------------------------
+# HOME ROUTE
+# -------------------------------------------------
 @app.route("/")
 def home():
     return "MU Result Parser API is running"
 
-# -------------------------------
+# -------------------------------------------------
 # PARSE ROUTE
-# -------------------------------
+# -------------------------------------------------
 @app.route("/parse", methods=["POST"])
 def parse_pdf():
-    if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
+    try:
+        if "file" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
 
-    file = request.files["file"]
-    results = []
+        file = request.files["file"]
+        students = []
 
-    with pdfplumber.open(file) as pdf:
-        for page_no, page in enumerate(pdf.pages, start=1):
-            text = page.extract_text()
-            if not text:
-                continue
+        with pdfplumber.open(file) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if not text:
+                    continue
 
-            results.append({
-                "page": page_no,
-                "text_preview": text[:300]
-            })
+                lines = [l.strip() for l in text.split("\n") if l.strip()]
 
-    return jsonify({
-        "status": "success",
-        "pages_parsed": len(results),
-        "data": results
-    })
+                for line in lines:
+                    m = re.match(
+                        r"^(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)\s+\((MU\d+)\)",
+                        line
+                    )
+                    if not m:
+                        continue
 
-# -------------------------------
-# REQUIRED FOR RENDER
-# -------------------------------
+                    students.append({
+                        "student": {
+                            "seat_no": m.group(1),
+                            "name": m.group(2).strip(),
+                            "status": "Regular",
+                            "gender": m.group(3),
+                            "ern": m.group(4),
+                            "college": {
+                                "code": "MU-1122",
+                                "name": "Kalyan Citizens Education Society's B K Birla Night Arts Science and Commerce College"
+                            }
+                        },
+                        "subjects": [],
+                        "semester_summary": {}
+                    })
+
+        return jsonify({
+            "status": "success",
+            "total_students": len(students),
+            "data": students
+        })
+
+    except Exception as e:
+        # 🔥 PREVENTS 500 CRASH
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+# -------------------------------------------------
+# REQUIRED FOR LOCAL / RENDER
+# -------------------------------------------------
 if __name__ == "__main__":
     app.run()
