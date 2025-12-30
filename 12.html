@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>University Result PDF → JSON Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  padding: 30px;
+}
+.container {
+  background: #fff;
+  padding: 25px;
+  max-width: 900px;
+  margin: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+button {
+  padding: 10px 18px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+pre {
+  background: #111;
+  color: #0f0;
+  padding: 15px;
+  max-height: 400px;
+  overflow: auto;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>📄 University Result PDF → JSON Converter</h2>
+
+  <input type="file" id="pdfFile" accept="application/pdf">
+  <br><br>
+  <button onclick="processPDF()">Generate JSON</button>
+  <button onclick="downloadJSON()">Download JSON</button>
+
+  <h3>Preview</h3>
+  <pre id="output">{}</pre>
+</div>
+
+<script>
+let finalJSON = {
+  metadata: {},
+  courses: [],
+  students: []
+};
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+async function processPDF() {
+  const file = document.getElementById("pdfFile").files[0];
+  if (!file) return alert("Upload a PDF first");
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+
+  let fullText = "";
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const text = content.items.map(i => i.str).join(" ");
+    fullText += "\n" + text;
+  }
+
+  parseResultData(fullText);
+  document.getElementById("output").textContent =
+    JSON.stringify(finalJSON, null, 2);
+}
+
+function parseResultData(text) {
+  finalJSON = {
+    metadata: {
+      university: "University of Mumbai",
+      exam: "B.Com Accounting & Finance",
+      semester: "II",
+      regulation: "NEP 2020"
+    },
+    courses: [],
+    students: []
+  };
+
+  // ---- COURSES ----
+  const courseRegex = /(\d{7})\s*:\s*([^()]+)/g;
+  let courseMatch;
+  const seenCourses = new Set();
+
+  while ((courseMatch = courseRegex.exec(text)) !== null) {
+    if (!seenCourses.has(courseMatch[1])) {
+      seenCourses.add(courseMatch[1]);
+      finalJSON.courses.push({
+        course_code: courseMatch[1],
+        course_name: courseMatch[2].trim()
+      });
+    }
+  }
+
+  // ---- STUDENTS ----
+  const studentRegex =
+    /(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)/g;
+
+  let studentMatch;
+  while ((studentMatch = studentRegex.exec(text)) !== null) {
+    finalJSON.students.push({
+      seat_no: studentMatch[1],
+      name: studentMatch[2].trim(),
+      gender: studentMatch[3],
+      subjects: [],
+      result: "PROCESSED"
+    });
+  }
+}
+
+function downloadJSON() {
+  const blob = new Blob(
+    [JSON.stringify(finalJSON, null, 2)],
+    { type: "application/json" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "result.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
