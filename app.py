@@ -5,76 +5,54 @@ import re
 
 app = Flask(__name__)
 
-# 🔥 ENABLE CORS (THIS FIXES YOUR ISSUE)
-CORS(app)
+# 🔥 STRICT CORS (GitHub Pages allowed)
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://mohitmali5489.github.io"
+        ]
+    }
+})
 
-# -------------------------------------------------
-# HOME ROUTE
-# -------------------------------------------------
 @app.route("/")
 def home():
     return "MU Result Parser API is running"
 
-# -------------------------------------------------
-# PARSE ROUTE
-# -------------------------------------------------
-@app.route("/parse", methods=["POST"])
+@app.route("/parse", methods=["POST", "OPTIONS"])
 def parse_pdf():
-    try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
+    # OPTIONS request for CORS preflight
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
 
-        file = request.files["file"]
-        students = []
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
-        with pdfplumber.open(file) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
-                if not text:
-                    continue
+    file = request.files["file"]
 
-                lines = [l.strip() for l in text.split("\n") if l.strip()]
+    students = []
 
-                for line in lines:
-                    m = re.match(
-                        r"^(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)\s+\((MU\d+)\)",
-                        line
-                    )
-                    if not m:
-                        continue
+    # ⚠️ SAFE, FAST PARSE (NO HEAVY LOGIC YET)
+    with pdfplumber.open(file) as pdf:
+        for page in pdf.pages[:2]:  # LIMIT pages for stability
+            text = page.extract_text()
+            if not text:
+                continue
 
+            for line in text.split("\n"):
+                m = re.match(
+                    r"^(\d{9})\s+([A-Z\s]+)\s+Regular\s+(MALE|FEMALE)\s+\((MU\d+)\)",
+                    line.strip()
+                )
+                if m:
                     students.append({
-                        "student": {
-                            "seat_no": m.group(1),
-                            "name": m.group(2).strip(),
-                            "status": "Regular",
-                            "gender": m.group(3),
-                            "ern": m.group(4),
-                            "college": {
-                                "code": "MU-1122",
-                                "name": "Kalyan Citizens Education Society's B K Birla Night Arts Science and Commerce College"
-                            }
-                        },
-                        "subjects": [],
-                        "semester_summary": {}
+                        "seat_no": m.group(1),
+                        "name": m.group(2).strip(),
+                        "gender": m.group(3),
+                        "ern": m.group(4)
                     })
 
-        return jsonify({
-            "status": "success",
-            "total_students": len(students),
-            "data": students
-        })
-
-    except Exception as e:
-        # 🔥 PREVENTS 500 CRASH
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
-
-
-# -------------------------------------------------
-# REQUIRED FOR LOCAL / RENDER
-# -------------------------------------------------
-if __name__ == "__main__":
-    app.run()
+    return jsonify({
+        "status": "success",
+        "students_found": len(students),
+        "students": students
+    })
