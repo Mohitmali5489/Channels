@@ -15,16 +15,13 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Remove border for bottom nav specifically */
+/* Seamless Bottom Nav */
 nav.glass {
-    border-top: none !important;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
+    border: none !important;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
 }
 .dark nav.glass {
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
 }
 
 /* --- UTILITIES --- */
@@ -34,9 +31,10 @@ nav.glass {
 /* --- BOTTOM NAV ANIMATIONS --- */
 .nav-item { position: relative; transition: all 0.3s ease; }
 .nav-item.active { color: #6366F1; }
-.nav-item.active i { transform: translateY(-2px); transition: transform 0.3s ease; }
-.nav-item.active span { font-weight: 700; }
+.nav-item.active i { transform: translateY(-3px); transition: transform 0.3s ease; }
+.nav-item.active span { font-weight: 800; }
 
+/* Glowing Indicator */
 .nav-item.active::after {
     content: '';
     position: absolute;
@@ -47,93 +45,78 @@ nav.glass {
     height: 4px;
     background: #6366F1;
     border-radius: 0 0 4px 4px;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.6);
 }
 
 /* --- LEADERBOARD PODIUM --- */
 .podium-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
     transition: transform 0.3s ease;
 }
 
-/* Rank 1 (Center, Bigger) */
-.podium-1 { 
-    order: 2; 
-    z-index: 10; 
-    transform: scale(1.15) translateY(-5px); 
-}
+/* Podium Hierarchy Order */
+.podium-1 { order: 2; z-index: 10; transform: scale(1.1); margin: 0 10px; }
+.podium-2 { order: 1; transform: translateY(15px); }
+.podium-3 { order: 3; transform: translateY(25px); }
 
-/* Rank 2 (Left) */
-.podium-2 { 
-    order: 1; 
-    transform: translateY(10px); 
-}
-
-/* Rank 3 (Right) */
-.podium-3 { 
-    order: 3; 
-    transform: translateY(15px); 
-}
-
-/* Rank Badges (Circles with Numbers) */
+/* Rank Badges */
 .rank-badge {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 24px;
     height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 900;
     color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 2px solid white;
-    z-index: 5;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 20;
 }
-.dark .rank-badge { border: 2px solid #151522; }
+.dark .rank-badge { border-color: #151522; }
 
 /* Medal Gradients */
 .rank-1-bg { background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); }
 .rank-2-bg { background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%); }
 .rank-3-bg { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
 
-/* --- PROFESSIONAL MATCH DETAILS --- */
+/* --- PROFESSIONAL MATCH GRAPHICS --- */
 
-/* Cricket Card (TV Broadcast Style) */
+/* Cricket: TV Broadcast Card */
 .cricket-score-card {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: white;
     border-bottom: 4px solid #6366F1;
+    position: relative;
+}
+/* Subtle pattern overlay */
+.cricket-score-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 10px 10px;
+    pointer-events: none;
 }
 
-/* Cricket Worm Graph Visualization */
-.worm-graph {
-    width: 100%;
-    height: 60px;
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-}
+/* Cricket: Worm Graph Bar */
 .worm-bar {
-    flex: 1;
+    width: 4px;
     background: rgba(255,255,255,0.2);
-    border-radius: 2px 2px 0 0;
+    border-radius: 2px;
     transition: height 0.5s ease;
 }
 .worm-bar.active { 
-    background: #6366F1; 
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    background: #F59E0B; /* Amber for boundaries */
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
-/* Football Field (Grass Stripes) */
+/* Football: Mowed Grass Field */
 .football-field {
     background: 
         repeating-linear-gradient(
@@ -145,10 +128,10 @@ nav.glass {
         );
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
 }
 
-/* Center Circle on Football Field */
+/* Center Circle */
 .football-field::after {
     content: '';
     position: absolute;
