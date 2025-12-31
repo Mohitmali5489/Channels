@@ -15,7 +15,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Seamless Bottom Nav */
+/* Seamless Bottom Nav (No Top Border) */
 nav.glass {
     border: none !important;
     box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
@@ -48,43 +48,6 @@ nav.glass {
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.6);
 }
 
-/* --- LEADERBOARD PODIUM --- */
-.podium-card {
-    position: relative;
-    transition: transform 0.3s ease;
-}
-
-/* Podium Hierarchy Order */
-.podium-1 { order: 2; z-index: 10; transform: scale(1.1); margin: 0 10px; }
-.podium-2 { order: 1; transform: translateY(15px); }
-.podium-3 { order: 3; transform: translateY(25px); }
-
-/* Rank Badges */
-.rank-badge {
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 900;
-    color: white;
-    border: 3px solid white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 20;
-}
-.dark .rank-badge { border-color: #151522; }
-
-/* Medal Gradients */
-.rank-1-bg { background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); }
-.rank-2-bg { background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%); }
-.rank-3-bg { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
-
 /* --- PROFESSIONAL MATCH GRAPHICS --- */
 
 /* Cricket: TV Broadcast Card */
@@ -105,14 +68,21 @@ nav.glass {
 }
 
 /* Cricket: Worm Graph Bar */
+.worm-graph {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+}
 .worm-bar {
-    width: 4px;
+    flex: 1;
     background: rgba(255,255,255,0.2);
-    border-radius: 2px;
+    border-radius: 2px 2px 0 0;
     transition: height 0.5s ease;
 }
 .worm-bar.active { 
-    background: #F59E0B; /* Amber for boundaries */
+    background: #F59E0B; /* Amber for boundaries/wickets */
     box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
