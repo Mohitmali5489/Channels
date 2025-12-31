@@ -1,1002 +1,384 @@
-// =========================================
-// 1. DATA & STATE MANAGEMENT
-// =========================================
-
-const getDemoDateString = (dayOffset = 0) => {
-    const date = new Date();
-    date.setDate(date.getDate() + dayOffset);
-    return date.toISOString().split('T')[0];
-};
-const today = getDemoDateString(0);
-const yesterday = getDemoDateString(-1);
-
-// Application State
-let state = {
-    currentUser: {
-        id: 4,
-        name: 'Alex Green',
-        initials: 'AG',
-        avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG',
-        points: 375,
-        lifetimePoints: 375,
-        email: 'alex.green@college.edu',
-        joined: 'Sep 2025',
-        studentId: '5207872',
-        course: 'FYBCOM',
-        departmentId: 'd3',
-        mobile: '9850000000',
-        checkInStreak: 15,
-        isCheckedInToday: false
-    },
-    checkInReward: 10,
-    leaderboard: [
-        { id: 1, name: 'Jane Doe', initials: 'JD', course: 'FYBCOM', lifetimePoints: 520, departmentId: 'd1', avatarUrl: 'https://placehold.co/80x80/EAB308/FFFFFF?text=JD' },
-        { id: 2, name: 'Mike Smith', initials: 'MS', course: 'SYBCOM', lifetimePoints: 410, departmentId: 'd2', avatarUrl: 'https://placehold.co/80x80/3B82F6/FFFFFF?text=MS' },
-        { id: 3, name: 'Sarah Lee', initials: 'SL', course: 'TYBCOM', lifetimePoints: 395, departmentId: 'd1', avatarUrl: 'https://placehold.co/80x80/EC4899/FFFFFF?text=SL' },
-        { id: 4, name: 'Alex Green', initials: 'AG', course: 'FYBCOM', lifetimePoints: 375, departmentId: 'd3', isCurrentUser: true, avatarUrl: 'https://placehold.co/80x80/A3E635/FFFFFF?text=AG' },
-        { id: 5, name: 'Tom Wilson', initials: 'TW', course: 'SYBCOM', lifetimePoints: 280, departmentId: 'd3', avatarUrl: 'https://placehold.co/80x80/F97316/FFFFFF?text=TW' },
-        { id: 6, name: 'Emily Chen', initials: 'EC', course: 'FYBCOM', lifetimePoints: 250, departmentId: 'd2', avatarUrl: 'https://placehold.co/80x80/8B5CF6/FFFFFF?text=EC' }
-    ],
-    departmentLeaderboard: [
-        { id: 'd1', name: 'BSc IT', points: 4320 },
-        { id: 'd2', name: 'BMS', points: 3980 },
-        { id: 'd3', name: 'BAF', points: 3100 },
-        { id: 'd4', name: 'BCom', points: 2500 },
-        { id: 'd5', name: 'BA', points: 1800 },
-    ],
-    // ADOPTED FROM 4.html
-    history: [
-        { type: 'reward', description: 'Purchased Canteen Coupon', points: -25, date: '2025-10-24', icon: 'shopping-cart', kg: 0 },
-        { type: 'challenge', description: 'Completed 7-Day Reusable Cup', points: 50, date: '2025-10-22', icon: 'award', kg: 0 },
-        { type: 'recycle', description: 'Submitted 12 Bottles', points: 15, date: '2025-10-20', icon: 'recycle', kg: 0.5 },
-        { type: 'event', description: 'Attended Park Cleanup', points: 75, date: '2025-10-18', icon: 'calendar-check', kg: 0 },
-        { type: 'challenge', description: 'Completed Digital Notes Only', points: 15, date: '2025-10-15', icon: 'file-text', kg: 0 },
-        { type: 'recycle', description: 'Submitted 30 Bottles', points: 30, date: '2025-10-10', icon: 'recycle', kg: 1.2 },
-    ],
-    dailyChallenges: [
-        { id: 'c1', title: 'Selfie with a Tree', description: 'Upload a selfie with any tree on campus.', points_reward: 20, icon: 'camera', status: 'active', buttonText: 'Upload Selfie', type: 'upload' },
-        { id: 'c2', title: 'Daily Eco-Quiz', description: 'Get 3/3 questions right to earn points.', points_reward: 15, icon: 'brain', status: 'active', buttonText: 'Start Quiz', type: 'quiz' },
-        { id: 'c3', title: 'Spot a Reusable', description: 'Upload a photo of someone using a reusable bottle or cup.', points_reward: 10, icon: 'eye', status: 'active', buttonText: 'Upload Photo', type: 'upload' },
-    ],
-    events: [
-        { id: 2, title: 'Workshop: Composting Basics', date: 'Nov 20, 2025', description: 'Learn how to turn food scraps into garden gold.', points: 30, status: 'upcoming' },
-        { id: 3, title: 'Green Docu-Night', date: 'Nov 22, 2025', description: 'Screening of "A Plastic Ocean" with a discussion panel.', points: 20, status: 'upcoming' },
-        { id: 1, title: 'Community Park Cleanup', date: 'Oct 28, 2025', description: 'Helped clean up Kalyan Central Park.', points: 75, status: 'attended' },
-        { id: 4, title: 'Tree Planting Drive', date: 'Oct 15, 2025', description: 'Campus-wide tree planting initiative.', points: 50, status: 'missed' },
-    ],
-    // ADOPTED FROM 4.html (Full Structure)
-    stores: [
-        {
-            storeId: 's1',
-            storeName: 'Campus Canteen',
-            storeLogo: 'https://placehold.co/100x100/F9A8D4/1F2937?text=Canteen',
-            products: [
-                {
-                    productId: 'p1',
-                    name: 'Veg Thali',
-                    images: [
-                        'https://placehold.co/400x300/F9A8D4/1F2937?text=Thali+1',
-                        'https://placehold.co/400x300/FBCFE8/1F2937?text=Thali+2',
-                        'https://placehold.co/400x300/FCE7F3/1F2937?text=Thali+3'
-                    ],
-                    description: 'A wholesome and delicious vegetarian thali, complete with dal, two vegetables, rice, roti, and a sweet dish. Perfect for a hearty lunch.',
-                    features: ['100% Vegetarian', 'Daily changing menu', 'Freshly prepared'],
-                    specifications: [
-                        { key: 'Includes', value: 'Dal, 2 Sabzi, Roti, Rice, Sweet' },
-                        { key: 'Availability', value: '11:00 AM - 2:00 PM' }
-                    ],
-                    originalPrice: 80, discountedPrice: 50, cost: 30,
-                    popularity: 25,
-                    instructions: 'Show this QR code at the canteen cashier (Counter 1) to get your discounted thali.'
-                },
-                {
-                    productId: 'p2',
-                    name: 'Samosa & Chai',
-                    images: ['https://placehold.co/400x300/FBCFE8/1F2937?text=Chai'],
-                    description: 'The classic college combo. One crispy, spicy samosa served with a hot cup of masala chai. Ideal for a quick snack.',
-                    features: ['Freshly fried samosa', 'Strong masala chai'],
-                    specifications: [
-                        { key: 'Includes', value: '1 Samosa, 1 Cup Chai' },
-                        { key: 'Availability', value: '8:00 AM - 5:00 PM' }
-                    ],
-                    originalPrice: 30, discountedPrice: 15, cost: 15,
-                    popularity: 50,
-                    instructions: 'Show this QR code at the canteen cashier (Counter 2).'
-                },
-                {
-                    productId: 'p3',
-                    name: 'Masala Dosa',
-                    images: ['https://placehold.co/400x300/FCE7F3/1F2937?text=Dosa'],
-                    description: 'A crispy rice crepe filled with a savory potato masala, served with sambar and coconut chutney. Made fresh to order.',
-                    features: ['Crispy and golden', 'Spicy potato filling', 'Served with Sambar & Chutney'],
-                    specifications: [
-                        { key: 'Includes', value: '1 Dosa, Sambar, Chutney' },
-                        { key: 'Availability', value: '8:00 AM - 11:00 AM' }
-                    ],
-                    originalPrice: 60, discountedPrice: 40, cost: 20,
-                    popularity: 30,
-                    instructions: 'Show this QR code at the canteen cashier (Counter 1).'
-                }
-            ]
-        },
-        {
-            storeId: 's2',
-            storeName: 'The Beanery',
-            storeLogo: 'https://placehold.co/100x100/A5B4FC/1F2937?text=Bean',
-            products: [
-                {
-                    productId: 'p4',
-                    name: 'Large Cappuccino',
-                    images: ['https://placehold.co/400x300/A5B4FC/1F2937?text=Coffee'],
-                    description: 'A rich and foamy large cappuccino made with premium espresso beans. Customize with your choice of milk (dairy/non-dairy).',
-                    features: ['Premium Arabica beans', 'Choice of milk', 'Topped with cocoa powder'],
-                    specifications: [
-                        { key: 'Size', value: 'Large (16 oz)' },
-                        { key: 'Options', value: 'Soy, Almond, Oat milk available' }
-                    ],
-                    originalPrice: 120, discountedPrice: 80, cost: 40,
-                    popularity: 40,
-                    instructions: 'Show this QR code to the barista to redeem your discount.'
-                },
-                {
-                    productId: 'p5',
-                    name: 'Choco-chip Brownie',
-                    images: ['https://placehold.co/400x300/C7D2FE/1F2937?text=Brownie'],
-                    description: 'A fudgy, gooey chocolate brownie loaded with choco-chips. Served warm. Best paired with a coffee!',
-                    features: ['Extra fudgy', 'Loaded with chocolate chips', 'Can be served warm'],
-                    specifications: [
-                        { key: 'Allergens', value: 'Contains Gluten, Dairy, Egg' },
-                        { key: 'Serving', value: '1 Piece' }
-                    ],
-                    originalPrice: 70, discountedPrice: 50, cost: 20,
-                    popularity: 28,
-                    instructions: 'Show this QR code to the barista to redeem your discount.'
-                }
-            ]
-        },
-        {
-            storeId: 's3',
-            storeName: 'College Merch Store',
-            storeLogo: 'https://placehold.co/100x100/86EFAC/1F2937?text=Merch',
-            products: [
-                {
-                    productId: 'p6',
-                    name: 'College Hoodie',
-                    images: [
-                        'https://placehold.co/400x300/86EFAC/1F2937?text=Hoodie+Front',
-                        'https://placehold.co/400x300/BBF7D0/1F2937?text=Hoodie+Back',
-                        'https://placehold.co/400x300/D1FAE5/1F2937?text=Hoodie+Logo'
-                    ],
-                    description: 'Show your college spirit with this comfortable and stylish hoodie. Features an embroidered college logo. Made from 100% cotton fleece.',
-                    features: ['Embroidered logo', 'Soft cotton fleece', 'Kangaroo pocket'],
-                    specifications: [
-                        { key: 'Material', value: '100% Cotton' },
-                        { key: 'Sizes', value: 'S, M, L, XL, XXL' },
-                        { key: 'Color', value: 'Navy Blue, Grey' }
-                    ],
-                    originalPrice: 1000, discountedPrice: 800, cost: 200,
-                    popularity: 15,
-                    instructions: 'Show this QR at the merch store counter. Discount applicable on one hoodie.'
-                },
-                {
-                    productId: 'p7',
-                    name: 'Reusable Steel Bottle',
-                    images: ['https://placehold.co/400x300/BBF7D0/1F2937?text=Bottle'],
-                    description: 'A durable, insulated steel bottle to keep your drinks hot or cold. Eco-friendly and stylish, with a laser-etched college logo.',
-                    features: ['Insulated (Hot/Cold)', 'Leak-proof lid', 'BPA-Free'],
-                    specifications: [
-                        { key: 'Capacity', value: '750ml' },
-                        { key: 'Material', value: 'Stainless Steel' }
-                    ],
-                    originalPrice: 500, discountedPrice: 350, cost: 150,
-                    popularity: 45,
-                    instructions: 'Show this QR at the merch store counter. Discount applicable on one bottle.'
-                }
-            ]
-        }
-    ],
-    userRewards: [
-        { userRewardId: 'ur1', storeId: 's2', productId: 'p4', purchaseDate: '2025-10-26', status: 'active' },
-        { userRewardId: 'ur2', storeId: 's1', productId: 'p2', purchaseDate: '2025-10-24', status: 'used', usedDate: '2025-10-25' },
-        { userRewardId: 'ur3', storeId: 's1', productId: 'p1', purchaseDate: '2025-10-22', status: 'active' },
-    ],
-    nextUserRewardId: 4,
-    levels: [
-        { level: 1, title: 'Green Starter', minPoints: 0, nextMin: 1001 },
-        { level: 2, title: 'Eco Learner', minPoints: 1001, nextMin: 2001 },
-        { level: 3, title: 'Sustainability Leader', minPoints: 2001, nextMin: 4001 },
-    ]
-};
-
-// =========================================
-// 2. HELPERS & CORE
-// =========================================
-
-const getUserLevel = (points) => {
-    let current = state.levels[0];
-    for (let i = state.levels.length - 1; i >= 0; i--) {
-        if (points >= state.levels[i].minPoints) {
-            current = state.levels[i];
-            break;
-        }
-    }
-    const nextMin = current.nextMin || Infinity;
-    let progress = 0;
-    let progressText = "Max Level";
-    if (nextMin !== Infinity) {
-        const pointsInLevel = points - current.minPoints;
-        const range = nextMin - current.minPoints;
-        progress = Math.max(0, Math.min(100, (pointsInLevel / range) * 100));
-        progressText = `${points} / ${nextMin} Pts`;
-    }
-    return { ...current, progress, progressText };
-};
-
-const getAllProducts = () => {
-    let all = [];
-    state.stores.forEach(store => {
-        store.products.forEach(p => {
-            all.push({ ...p, storeId: store.storeId, storeName: store.storeName, storeLogo: store.storeLogo });
-        });
-    });
-    return all;
-};
-
-const getProduct = (storeId, productId) => {
-    const store = state.stores.find(s => s.storeId === storeId);
-    if (!store) return { store: null, product: null };
-    const product = store.products.find(p => p.productId === productId);
-    return { store, product };
-};
-
-// DOM Cache
-const els = {
-    pages: document.querySelectorAll('.page'),
-    sidebar: document.getElementById('sidebar'),
-    sidebarOverlay: document.getElementById('sidebar-overlay'),
-    userPointsHeader: document.getElementById('user-points-header'),
-    userNameGreeting: document.getElementById('user-name-greeting'),
-    dailyCheckinBtn: document.getElementById('daily-checkin-button'),
-    lbPodium: document.getElementById('lb-podium-container'),
-    lbList: document.getElementById('lb-list-container'),
-    lbLeafLayer: document.getElementById('lb-leaf-layer'),
-    productGrid: document.getElementById('product-grid'),
-    storeSearch: document.getElementById('store-search-input'),
-    storeSearchClear: document.getElementById('store-search-clear'),
-    sortBy: document.getElementById('sort-by-select'),
-    challengesList: document.getElementById('challenges-page-list'),
-    eventsList: document.getElementById('event-list'),
-    allRewardsList: document.getElementById('all-rewards-list'),
-    historyList: document.getElementById('history-list'),
-    storeDetailPage: document.getElementById('store-detail-page'),
-    productDetailPage: document.getElementById('product-detail-page'),
-    purchaseModalOverlay: document.getElementById('purchase-modal-overlay'),
-    purchaseModal: document.getElementById('purchase-modal'),
-    qrModalOverlay: document.getElementById('qr-modal-overlay'),
-    qrModal: document.getElementById('qr-modal')
-};
-
-// Navigation
-const showPage = (pageId) => {
-    els.pages.forEach(p => p.classList.remove('active'));
-    
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) targetPage.classList.add('active');
-
-    // Clear detail pages when navigating away
-    if (pageId !== 'store-detail-page' && pageId !== 'product-detail-page') {
-        els.storeDetailPage.innerHTML = '';
-        els.productDetailPage.innerHTML = '';
-    }
-
-    document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(btn => {
-        const onclickVal = btn.getAttribute('onclick');
-        btn.classList.toggle('active', onclickVal && onclickVal.includes(`'${pageId}'`));
-    });
-
-    document.querySelector('.main-content').scrollTop = 0;
-
-    if (pageId === 'dashboard') {
-        renderDashboard();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'leaderboard') {
-        showLeaderboardTab(currentLeaderboardTab);
-    } else if (pageId === 'rewards') {
-        renderRewards();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'my-rewards') {
-        renderMyRewardsPage();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'history') {
-        renderHistory();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'ecopoints') {
-        renderEcoPointsPage();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'challenges') {
-        renderChallengesPage();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else if (pageId === 'events') {
-        renderEventsPage();
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    } else {
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-    }
-
-    toggleSidebar(true);
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-};
+    renderMedalTally();
+    renderRegistrationCards();
+    renderSchedule();
+    renderAthleteSchedule();
+});
 
-const toggleSidebar = (forceClose = false) => {
-    if (forceClose) {
-        els.sidebar.classList.add('-translate-x-full');
-        els.sidebarOverlay.classList.add('opacity-0');
-        els.sidebarOverlay.classList.add('hidden');
-    } else {
-        els.sidebar.classList.toggle('-translate-x-full');
-        els.sidebarOverlay.classList.toggle('hidden');
-        els.sidebarOverlay.classList.toggle('opacity-0');
-    }
-};
+// --- DATA: LEADERBOARD ---
+const deptData = [
+    { name: "BAF", count: "14", color: "text-green-500", bar: "bg-green-500" },
+    { name: "BCOM", count: "12", color: "text-blue-500", bar: "bg-blue-500" },
+    { name: "BMS", count: "10", color: "text-purple-500", bar: "bg-purple-500" },
+    { name: "CS", count: "09", color: "text-indigo-500", bar: "bg-indigo-500" },
+    { name: "BFM", count: "07", color: "text-orange-500", bar: "bg-orange-500" },
+];
 
-const animatePointsUpdate = (newPoints) => {
-    state.currentUser.points = newPoints;
-    els.userPointsHeader.classList.add('points-pulse');
-    els.userPointsHeader.textContent = newPoints;
-    document.getElementById('user-points-sidebar').textContent = newPoints;
-    setTimeout(() => els.userPointsHeader.classList.remove('points-pulse'), 400);
-};
+const studentData = [
+    { name: "Rohan Das", dept: "CS", gold: 3, silver: 1, bronze: 0, avatar: "RD" },
+    { name: "Priya Sharma", dept: "BMS", gold: 2, silver: 2, bronze: 1, avatar: "PS" },
+    { name: "Amit Kumar", dept: "BCOM", gold: 2, silver: 0, bronze: 2, avatar: "AK" },
+];
 
-// =========================================
-// 3. DASHBOARD & CHECK-IN (Updated for Modern Grey)
-// =========================================
+// --- DATA: REGISTRATION GAMES ---
+const sportsData = [
+    { id: 1, name: "100m Sprint", icon: "timer", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 2, name: "Chess", icon: "crown", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 3, name: "Box Cricket", icon: "trophy", type: "Team", teamSize: 8, status: "Closed" }, 
+    { id: 4, name: "Kabaddi", icon: "swords", type: "Team", teamSize: 7, status: "Open" },
+    { id: 5, name: "Badminton", icon: "wind", type: "Solo", teamSize: 1, status: "Closed" }, 
+    { id: 6, name: "Relay Race", icon: "users", type: "Team", teamSize: 4, status: "Open" },
+    { id: 7, name: "Volleyball", icon: "volleyball", type: "Team", teamSize: 6, status: "Open" },
+    { id: 8, name: "Carrom", icon: "crosshair", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 9, name: "Table Tennis", icon: "circle-dot", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 10, name: "Tug of War", icon: "users", type: "Team", teamSize: 10, status: "Open" }
+];
 
-const renderDashboard = () => {
-    const user = state.currentUser;
-    els.userPointsHeader.textContent = user.points;
-    els.userNameGreeting.textContent = user.name.split(' ')[0];
-    
-    document.getElementById('user-name-sidebar').textContent = user.name;
-    document.getElementById('user-points-sidebar').textContent = user.points;
-    const level = getUserLevel(user.lifetimePoints);
-    document.getElementById('user-level-sidebar').textContent = level.title;
-    document.getElementById('user-avatar-sidebar').src = user.avatarUrl;
+// --- DATA: SCHEDULE ---
+const scheduleData = [
+    { id: 101, sport: "Cricket", type: "Semi Final", team1: "CS", team2: "BCOM", score1: "88/2", score2: "Yet to Bat", status: "Live", time: "Now", loc: "Gymkhana", live: true },
+    { id: 102, sport: "Badminton", type: "Singles", team1: "Rahul (CS)", team2: "Amit (BFM)", status: "Upcoming", time: "4:00 PM", loc: "Court 2", live: false },
+    { id: 103, sport: "Kabaddi", type: "Qualifier", team1: "BMS", team2: "BAF", status: "Upcoming", time: "5:30 PM", loc: "Ground A", live: false },
+    { id: 104, sport: "Chess", type: "Finals", team1: "Aditya P", team2: "Neha S", status: "Finished", winner: "Aditya P", result: "Checkmate", live: false },
+    { id: 105, sport: "Football", type: "Finals", team1: "BMS", team2: "BAF", status: "Finished", winner: "BMS", result: "2 - 1", live: false },
+    { id: 106, sport: "Volleyball", type: "Round 1", team1: "CS", team2: "BMS", status: "Upcoming", time: "Tomorrow", loc: "Court 1", live: false }
+];
 
-    // Impact stats (Calculated from history)
-    const recycledHistory = state.history.filter(h => h.type === 'recycle');
-    const totalKg = recycledHistory.reduce((sum, h) => sum + (h.kg || 0), 0);
-    document.getElementById('impact-recycled').textContent = `${totalKg.toFixed(1)} kg`;
-    document.getElementById('impact-co2').textContent = `${(totalKg * 2).toFixed(1)} kg`;
-    document.getElementById('impact-events').textContent = state.history.filter(h => h.type === 'event').length;
+// --- RENDER FUNCTIONS ---
 
-    renderCheckinButtonState();
-};
-
-const renderCheckinButtonState = () => {
-    document.getElementById('dashboard-streak-text').textContent = `${state.currentUser.checkInStreak} Day Streak`;
-    const btn = els.dailyCheckinBtn;
-    const checkIcon = document.getElementById('checkin-check-icon');
-    const subtext = document.getElementById('checkin-subtext');
-    const doneText = document.getElementById('checkin-done-text');
-
-    if (state.currentUser.isCheckedInToday) {
-        btn.classList.add('checkin-completed'); // New Grey style
-        btn.classList.remove('from-yellow-400', 'to-orange-400', 'dark:from-yellow-500', 'dark:to-orange-500', 'bg-gradient-to-r');
-        
-        btn.querySelector('h3').textContent = "Check-in Complete";
-        subtext.style.display = 'none';
-        doneText.classList.remove('hidden');
-        checkIcon.classList.remove('hidden');
-        
-        btn.onclick = null; 
-    } else {
-        btn.classList.remove('checkin-completed');
-        btn.classList.add('from-yellow-400', 'to-orange-400', 'dark:from-yellow-500', 'dark:to-orange-500', 'bg-gradient-to-r');
-        
-        btn.querySelector('h3').textContent = "Daily Check-in";
-        subtext.style.display = 'block';
-        doneText.classList.add('hidden');
-        checkIcon.classList.add('hidden');
-        
-        btn.onclick = openCheckinModal;
-    }
-};
-
-const checkinModal = document.getElementById('checkin-modal');
-const openCheckinModal = () => {
-    if (state.currentUser.isCheckedInToday) return;
-    checkinModal.classList.add('open');
-    checkinModal.classList.remove('invisible');
-    
-    const calendarContainer = document.getElementById('checkin-modal-calendar');
-    calendarContainer.innerHTML = '';
-    for (let i = -3; i <= 3; i++) {
-        const d = new Date();
-        d.setDate(d.getDate() + i);
-        const isToday = i === 0;
-        calendarContainer.innerHTML += `
-            <div class="flex flex-col items-center text-xs ${isToday ? 'font-bold text-yellow-600 dark:text-yellow-400' : 'text-gray-500 dark:text-gray-400'}">
-                <span class="mb-1">${['S','M','T','W','T','F','S'][d.getDay()]}</span>
-                <span class="w-8 h-8 flex items-center justify-center rounded-full ${isToday ? 'bg-yellow-100 dark:bg-yellow-900' : ''}">${d.getDate()}</span>
-            </div>
-        `;
-    }
-    document.getElementById('checkin-modal-streak').textContent = `${state.currentUser.checkInStreak} Days`;
-    document.getElementById('checkin-modal-button-container').innerHTML = `
-        <button onclick="handleDailyCheckin()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-green-700 shadow-lg transition-transform active:scale-95">
-            Check-in &amp; Earn ${state.checkInReward} Points
-        </button>
-    `;
-};
-
-const closeCheckinModal = () => {
-    checkinModal.classList.remove('open');
-    setTimeout(() => checkinModal.classList.add('invisible'), 300);
-};
-
-const handleDailyCheckin = () => {
-    state.currentUser.isCheckedInToday = true;
-    state.currentUser.checkInStreak++;
-    const newTotal = state.currentUser.points + state.checkInReward;
-    state.history.unshift({
-        type: 'checkin',
-        description: 'Daily Check-in',
-        points: state.checkInReward,
-        date: today,
-        icon: 'calendar-check'
-    });
-    animatePointsUpdate(newTotal);
-    closeCheckinModal();
-    renderDashboard();
-};
-
-// =========================================
-// 4. NEW: CAMERA LOGIC (Challenges)
-// =========================================
-
-let currentCameraStream = null;
-let currentChallengeIdForCamera = null;
-
-const startCamera = async (challengeId) => {
-    currentChallengeIdForCamera = challengeId;
-    const modal = document.getElementById('camera-modal');
-    const video = document.getElementById('camera-feed');
-    
-    modal.classList.remove('hidden');
-    setTimeout(() => modal.classList.add('open'), 10);
-
-    try {
-        currentCameraStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'user' } 
-        });
-        video.srcObject = currentCameraStream;
-    } catch (err) {
-        console.error("Camera error:", err);
-        alert("Unable to access camera. Please check permissions.");
-        closeCameraModal();
-    }
-};
-
-const closeCameraModal = () => {
-    const modal = document.getElementById('camera-modal');
-    const video = document.getElementById('camera-feed');
-    
-    if (currentCameraStream) {
-        currentCameraStream.getTracks().forEach(track => track.stop());
-    }
-    video.srcObject = null;
-    modal.classList.remove('open');
-    setTimeout(() => modal.classList.add('hidden'), 300);
-};
-
-const capturePhoto = () => {
-    const video = document.getElementById('camera-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const context = canvas.getContext('2d');
-    
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Logic to "upload" and set pending
-    const challenge = state.dailyChallenges.find(c => c.id === currentChallengeIdForCamera);
-    if (challenge) {
-        challenge.status = 'pending';
-        challenge.buttonText = 'Pending Review';
-        renderChallengesPage();
-    }
-    
-    closeCameraModal();
-    showPage('challenges');
-};
-
-const switchCamera = () => {
-    // Basic implementation - usually requires stopping stream and restarting with different constraint
-    alert("Switch camera functionality simulated.");
-};
-
-
-// =========================================
-// 5. ECO-STORE (Logic from 4.html)
-// =========================================
-
-const renderRewards = () => {
-    els.productGrid.innerHTML = '';
-    let products = getAllProducts();
-
-    const searchTerm = els.storeSearch.value.toLowerCase();
-    if(searchTerm.length > 0) {
-        products = products.filter(p => 
-            p.name.toLowerCase().includes(searchTerm) || 
-            p.storeName.toLowerCase().includes(searchTerm)
-        );
-    }
-    els.storeSearchClear.classList.toggle('hidden', !searchTerm);
-
-    const criteria = els.sortBy.value;
-    products.sort((a, b) => {
-        switch (criteria) {
-            case 'points-lh': return a.cost - b.cost;
-            case 'points-hl': return b.cost - a.cost;
-            case 'price-lh': return a.discountedPrice - b.discountedPrice;
-            case 'price-hl': return b.discountedPrice - a.discountedPrice;
-            case 'popularity': default: return b.popularity - a.popularity;
-        }
-    });
-
-    products.forEach(p => {
-        els.productGrid.innerHTML += `
-            <div class="w-full flex-shrink-0 glass-card border border-gray-200/60 dark:border-gray-700/80 rounded-2xl overflow-hidden flex flex-col cursor-pointer"
-                 onclick="showProductDetailPage('${p.storeId}', '${p.productId}')">
-                <img src="${p.images[0].replace('400x300', '300x225')}" class="w-full h-40 object-cover">
-                <div class="p-3 flex flex-col flex-grow">
-                    <div class="flex items-center mb-1">
-                        <img src="${p.storeLogo.replace('100x100', '40x40')}" class="w-5 h-5 rounded-full mr-2 border dark:border-gray-600">
-                        <p class="text-xs font-medium text-gray-600 dark:text-gray-400">${p.storeName}</p>
+function renderMedalTally() {
+    const deptHTML = deptData.map((dept, index) => {
+        const width = (parseInt(dept.count) / 15) * 100;
+        return `
+            <div class="flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
+                <div class="text-lg font-bold text-gray-400 w-6">#${index + 1}</div>
+                <div class="flex-1">
+                    <div class="flex justify-between mb-1">
+                        <h4 class="font-bold text-sm">${dept.name}</h4>
+                        <span class="text-xs font-bold ${dept.color}">${dept.count} 🥇</span>
                     </div>
-                    <p class="font-bold text-gray-800 dark:text-gray-100 text-sm truncate mt-1">${p.name}</p>
-                    <div class="mt-auto pt-2">
-                        <p class="text-xs text-gray-400 dark:text-gray-500 line-through">₹${p.originalPrice}</p>
-                        <div class="flex items-center font-bold text-gray-800 dark:text-gray-100 my-1">
-                            <span class="text-md text-green-700 dark:text-green-400">₹${p.discountedPrice}</span>
-                            <span class="mx-1 text-gray-400 dark:text-gray-500 text-xs">+</span>
-                            <i data-lucide="leaf" class="w-3 h-3 text-green-500 mr-1"></i>
-                            <span class="text-sm text-green-700 dark:text-green-400">${p.cost}</span>
-                        </div>
+                    <div class="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full ${dept.bar} rounded-full" style="width: ${width}%"></div>
                     </div>
                 </div>
+            </div>`;
+    }).join('');
+    document.getElementById('tally-dept').innerHTML = deptHTML;
+
+    const studHTML = studentData.map((s, i) => `
+        <div class="flex items-center gap-3 p-3 border-b border-gray-100 dark:border-white/5 last:border-0">
+            <div class="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-xs font-bold text-brand-primary">${s.avatar}</div>
+            <div class="flex-1">
+                <h4 class="font-bold text-sm dark:text-gray-200">${s.name}</h4>
+                <p class="text-[10px] text-gray-500 uppercase font-bold">${s.dept} • <span class="text-yellow-500">${s.gold}G</span></p>
             </div>
-        `;
-    });
-    lucide.createIcons();
-};
-
-const showProductDetailPage = (storeId, productId) => {
-    const { store, product } = getProduct(storeId, productId);
-    if (!product) return;
-
-    const images = product.images || [product.images[0]];
-    let sliderImagesHTML = '';
-    let sliderDotsHTML = '';
-
-    images.forEach((img, index) => {
-        sliderImagesHTML += `
-            <img src="${img.replace('400x300', '600x400')}" class="slider-item w-full h-80 object-cover flex-shrink-0 rounded-3xl" data-index="${index}">
-        `;
-        sliderDotsHTML += `<button class="slider-dot w-2.5 h-2.5 rounded-full bg-white/60 dark:bg-gray-700/80 ${index === 0 ? 'active' : ''}"></button>`;
-    });
-
-    const featuresHTML = (product.features || []).map(f => `
-        <li class="flex items-start space-x-2">
-            <span class="mt-1 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center flex-shrink-0">
-                <i data-lucide="check" class="w-3 h-3 text-emerald-600 dark:text-emerald-300"></i>
-            </span>
-            <span class="text-sm text-gray-700 dark:text-gray-300">${f}</span>
-        </li>
+            <span class="font-black text-xl text-gray-300">#${i + 1}</span>
+        </div>
     `).join('');
+    document.getElementById('tally-student').innerHTML = studHTML;
+}
 
-    const canAfford = state.currentUser.points >= product.cost;
+function renderRegistrationCards() {
+    const grid = document.getElementById('registration-grid');
+    grid.innerHTML = sportsData.map(sport => {
+        const isClosed = sport.status === "Closed";
+        const cardClass = isClosed 
+            ? "glass p-4 rounded-2xl border border-gray-200 dark:border-white/5 opacity-60 grayscale cursor-not-allowed bg-gray-100 dark:bg-white/5" 
+            : "glass p-4 rounded-2xl border border-transparent hover:border-brand-primary/30 transition-all cursor-pointer bg-white dark:bg-white/5 shadow-sm";
+        
+        const badgeClass = isClosed 
+            ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" 
+            : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400";
 
-    els.productDetailPage.innerHTML = `
-        <div class="pb-8">
-            <div class="relative">
-                <div class="slider-container flex w-full overflow-x-auto snap-x snap-mandatory gap-4 px-4 pt-4 pb-10">
-                    ${sliderImagesHTML}
-                </div>
-                <button onclick="showPage('rewards')" class="absolute top-6 left-6 p-2 glass-card rounded-full text-gray-700 dark:text-gray-200 !px-2 !py-2">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
-                <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center space-x-2 z-10">${sliderDotsHTML}</div>
-            </div>
-            <div class="px-4 -mt-6">
-                <div class="glass-card p-6 rounded-3xl">
-                    <div class="flex items-start justify-between gap-3 mb-2">
-                        <div>
-                            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-gray-50">${product.name}</h2>
-                            <div class="flex items-center mt-2">
-                                <img src="${store.storeLogo.replace('100x100', '40x40')}" class="w-7 h-7 rounded-full mr-2 border">
-                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400">${store.storeName}</p>
-                            </div>
-                        </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-200">
-                            ${product.cost} EcoPts
-                        </span>
+        return `
+            <div class="${cardClass}" onclick="openReg(${sport.id})">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="p-2 ${isClosed ? 'bg-gray-200 dark:bg-white/10' : 'bg-brand-primary/10'} rounded-lg">
+                        <i data-lucide="${sport.icon}" class="w-5 h-5 ${isClosed ? 'text-gray-500' : 'text-brand-primary'}"></i>
                     </div>
-                    <div class="mt-4 space-y-5">
-                        <div>
-                            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> Description</h3>
-                            <p class="mt-1 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${product.description}</p>
-                        </div>
-                        ${featuresHTML ? `<div><h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4"></i> Highlights</h3><ul class="mt-2 space-y-2">${featuresHTML}</ul></div>` : ''}
-                        <div class="pt-4 mt-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3">
-                            <div>
-                                <p class="text-xs text-gray-500 line-through">₹${product.originalPrice}</p>
-                                <div class="flex items-center font-bold text-gray-800 dark:text-gray-100">
-                                    <span class="text-xl text-emerald-700 dark:text-emerald-400">₹${product.discountedPrice}</span>
-                                    <span class="mx-2 text-gray-400 text-sm">+</span>
-                                    <i data-lucide="leaf" class="w-4 h-4 text-emerald-500 mr-1"></i>
-                                    <span class="text-xl text-emerald-700">${product.cost}</span>
-                                </div>
-                            </div>
-                            <button onclick="openPurchaseModal('${store.storeId}', '${product.productId}')" class="btn-eco-gradient text-white text-sm font-semibold py-3 px-5 rounded-xl flex-shrink-0 ${canAfford ? '' : 'opacity-60 cursor-not-allowed'}">
-                                ${canAfford ? 'Redeem Offer' : 'Not enough points'}
-                            </button>
-                        </div>
+                    <span class="text-[10px] font-bold uppercase px-2 py-1 rounded ${badgeClass}">${sport.status}</span>
+                </div>
+                <h4 class="font-bold text-sm dark:text-gray-200">${sport.name}</h4>
+                <div class="mt-1 text-xs text-gray-500">${sport.type === 'Team' ? `Team of ${sport.teamSize}` : 'Individual'}</div>
+            </div>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function renderSchedule() {
+    const upcomingContainer = document.getElementById('view-upcoming');
+    const resultsContainer = document.getElementById('view-results');
+    
+    // Filter Data
+    const upcoming = scheduleData.filter(m => m.status === 'Upcoming' || m.status === 'Live');
+    const results = scheduleData.filter(m => m.status === 'Finished');
+
+    // Render Upcoming
+    upcomingContainer.innerHTML = upcoming.map(m => {
+        const isLive = m.status === 'Live';
+        return `
+            <div onclick="openMatchDetails(${m.id})" class="glass p-4 rounded-2xl bg-white dark:bg-dark-card border-l-4 ${isLive ? 'border-brand-primary' : 'border-gray-300 dark:border-gray-700'} cursor-pointer">
+                <div class="flex justify-between mb-2">
+                    ${isLive ? `<span class="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-[10px] font-bold rounded animate-pulse">LIVE NOW</span>` 
+                             : `<span class="text-xs font-bold text-gray-500">${m.time}</span>`}
+                    <span class="text-xs text-gray-500">${m.loc || m.type}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="text-center">
+                        <h4 class="font-black text-lg">${m.team1.split(' ')[0]}</h4>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs font-bold text-gray-300">VS</span>
+                        <div class="mt-1 px-2 py-0.5 bg-gray-100 dark:bg-white/10 rounded text-[10px] font-mono">${m.sport}</div>
+                    </div>
+                    <div class="text-center">
+                        <h4 class="font-black text-lg text-gray-500">${m.team2.split(' ')[0]}</h4>
+                    </div>
+                </div>
+                ${isLive ? `
+                    <div class="mt-3 pt-3 border-t border-gray-100 dark:border-white/5 text-center flex justify-between items-center">
+                        <p class="text-xs font-mono">Score: <span class="text-brand-primary font-bold">${m.score1}</span></p>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                    </div>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    // Render Results
+    resultsContainer.innerHTML = results.map(m => `
+        <div class="glass p-0 rounded-2xl overflow-hidden bg-white dark:bg-dark-card border border-gray-100 dark:border-white/5">
+            <div class="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">${m.sport} • ${m.type}</span>
+                    <span class="text-[10px] font-bold text-green-500">FINISHED</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xl">${m.team1.split(' ')[0]}</span>
+                        ${m.winner.includes(m.team1.split(' ')[0]) ? '<span class="text-xs text-gray-500">(Winner)</span>' : ''}
+                    </div>
+                    <div class="font-black text-xl text-brand-secondary">${m.result}</div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xl text-gray-400">${m.team2.split(' ')[0]}</span>
                     </div>
                 </div>
             </div>
         </div>
-    `;
-
-    els.pages.forEach(p => p.classList.remove('active'));
-    els.productDetailPage.classList.add('active');
-    document.querySelector('.main-content').scrollTop = 0;
+    `).join('');
     lucide.createIcons();
-};
+}
 
-const openPurchaseModal = (storeId, productId) => {
-    const { store, product } = getProduct(storeId, productId);
-    if (!product) return;
-
-    els.purchaseModal.innerHTML = `
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">Purchase Reward</h3>
-            <button onclick="closePurchaseModal()" class="text-gray-400"><i data-lucide="x" class="w-6 h-6"></i></button>
-        </div>
-        <div class="flex items-center mb-4">
-            <img src="${product.images[0].replace('400x300', '100x100')}" class="w-20 h-20 object-cover rounded-lg mr-4">
-            <div>
-                <h4 class="text-lg font-bold text-gray-800 dark:text-gray-100">${product.name}</h4>
-                <p class="text-sm text-gray-500 mb-2">From ${store.storeName}</p>
-                <div class="flex items-center font-bold text-gray-800 dark:text-gray-100">
-                    <span class="text-lg text-green-700 dark:text-green-400">₹${product.discountedPrice}</span>
-                    <span class="mx-1 text-gray-400">+</span>
-                    <i data-lucide="leaf" class="w-4 h-4 text-green-500 mr-1"></i>
-                    <span class="text-lg text-green-700">${product.cost}</span>
-                </div>
-            </div>
-        </div>
-        <button onclick="confirmPurchase('${store.storeId}', '${product.productId}')" class="w-full btn-eco-gradient text-white font-bold py-3 px-4 rounded-lg mb-2">Confirm Purchase</button>
-        <button onclick="closePurchaseModal()" class="w-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-lg">Cancel</button>
-    `;
+function renderAthleteSchedule() {
+    // Simulating "Rohan's" upcoming matches from the schedule
+    // Let's assume Rohan is in CS Dept, so show CS matches
+    const myMatches = scheduleData.filter(m => (m.team1.includes('CS') || m.team2.includes('CS')) && m.status !== 'Finished');
     
-    els.purchaseModalOverlay.classList.remove('hidden');
-    setTimeout(() => els.purchaseModal.classList.remove('translate-y-full'), 10);
-    lucide.createIcons();
-};
-
-const closePurchaseModal = () => {
-    els.purchaseModal.classList.add('translate-y-full');
-    setTimeout(() => els.purchaseModalOverlay.classList.add('hidden'), 300);
-};
-
-const confirmPurchase = (storeId, productId) => {
-    const { store, product } = getProduct(storeId, productId);
-    if (!product || state.currentUser.points < product.cost) return;
-
-    const newPoints = state.currentUser.points - product.cost;
-    state.history.unshift({
-        type: 'reward',
-        description: `Purchased ${product.name}`,
-        points: -product.cost,
-        date: today.replaceAll('-', '/'),
-        icon: 'shopping-cart',
-        kg: 0
-    });
-    
-    state.userRewards.unshift({
-        userRewardId: 'ur' + state.nextUserRewardId++,
-        storeId: store.storeId,
-        productId: product.productId,
-        purchaseDate: today.replaceAll('-', '/'),
-        status: 'active'
-    });
-
-    animatePointsUpdate(newPoints);
-    renderRewards();
-    closePurchaseModal();
-    showPage('my-rewards');
-};
-
-// =========================================
-// 6. MY ORDERS & HISTORY (Logic from 4.html)
-// =========================================
-
-const renderMyRewardsPage = () => {
-    els.allRewardsList.innerHTML = '';
-    if (!state.userRewards.length) {
-        els.allRewardsList.innerHTML = `<p class="text-sm text-center text-gray-500">No orders yet.</p>`;
+    const container = document.getElementById('athlete-schedule-container');
+    if(myMatches.length === 0) {
+        container.innerHTML = `<p class="text-sm text-gray-500">No upcoming matches scheduled.</p>`;
         return;
     }
-    state.userRewards.forEach(ur => {
-        const { store, product } = getProduct(ur.storeId, ur.productId);
-        if (!product) return;
-        els.allRewardsList.innerHTML += `
-            <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
-                <div class="flex items-center">
-                    <img src="${product.images[0].replace('400x300', '100x100')}" class="w-14 h-14 rounded-lg object-cover mr-3">
-                    <div>
-                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">${product.name}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">From ${store.storeName}</p>
-                        <p class="text-xs text-gray-400 mt-1">${ur.purchaseDate}</p>
-                    </div>
-                </div>
-                <button onclick="openRewardQrModal('${ur.userRewardId}')" class="text-xs font-semibold px-3 py-2 rounded-full bg-emerald-600 text-white">View QR</button>
-            </div>
-        `;
-    });
-};
 
-const openRewardQrModal = (userRewardId) => {
-    const ur = state.userRewards.find(r => r.userRewardId === userRewardId);
-    if (!ur) return;
-    const { store, product } = getProduct(ur.storeId, ur.productId);
-    
-    els.qrModal.innerHTML = `
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">Reward QR</h3>
-            <button onclick="closeQrModal()" class="text-gray-400"><i data-lucide="x" class="w-6 h-6"></i></button>
+    container.innerHTML = myMatches.map(m => `
+        <div class="bg-white dark:bg-white/5 border border-brand-primary/30 p-4 rounded-2xl relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-primary"></div>
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h4 class="font-bold text-sm">${m.sport} (${m.type})</h4>
+                    <p class="text-xs text-gray-500">vs ${m.team1.includes('CS') ? m.team2 : m.team1}</p>
+                </div>
+                ${m.status === 'Live' ? '<span class="text-[10px] font-bold bg-red-500 text-white px-2 py-1 rounded animate-pulse">LIVE</span>' 
+                                      : `<span class="text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-500 px-2 py-1 rounded">${m.time}</span>`}
+            </div>
+            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${m.loc || 'Gymkhana'}</span>
+            </div>
         </div>
-        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Show this QR at <strong>${store.storeName}</strong> to redeem <strong>${product.name}</strong>.</p>
-        <div class="flex justify-center mb-4">
-            <img src="https://placehold.co/180x180/10B981/FFFFFF?text=QR+${userRewardId}" class="rounded-lg border">
-        </div>
-        <button onclick="closeQrModal()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg">Close</button>
-    `;
-    els.qrModalOverlay.classList.remove('hidden');
-    setTimeout(() => els.qrModal.classList.remove('translate-y-full'), 10);
+    `).join('');
     lucide.createIcons();
-};
-
-const closeQrModal = () => {
-    els.qrModal.classList.add('translate-y-full');
-    setTimeout(() => els.qrModalOverlay.classList.add('hidden'), 300);
-};
-
-const renderHistory = () => {
-    els.historyList.innerHTML = '';
-    state.history.forEach(h => {
-        els.historyList.innerHTML += `
-            <div class="glass-card p-3 rounded-xl flex items-center justify-between">
-                <div class="flex items-center">
-                    <span class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mr-3">
-                        <i data-lucide="${h.icon}" class="w-5 h-5 text-gray-700 dark:text-gray-200"></i>
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${h.description}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">${h.date}</p>
-                    </div>
-                </div>
-                <span class="text-sm font-bold ${h.points >= 0 ? 'text-green-600' : 'text-red-500'}">
-                    ${h.points > 0 ? '+' : ''}${h.points}
-                </span>
-            </div>
-        `;
-    });
-    lucide.createIcons();
-};
-
-// =========================================
-// 7. CHALLENGES & EVENTS
-// =========================================
-
-const renderChallengesPage = () => {
-    els.challengesList.innerHTML = '';
-    state.dailyChallenges.forEach(c => {
-        let buttonHTML = '';
-        if (c.status === 'active') {
-            const onclick = c.type === 'quiz' ? `openEcoQuizModal('${c.id}')` : `startCamera('${c.id}')`;
-            buttonHTML = `<button onclick="${onclick}" class="text-xs font-semibold px-3 py-2 rounded-full bg-green-600 text-white">${c.buttonText}</button>`;
-        } else if (c.status === 'pending') {
-            buttonHTML = `<button class="text-xs font-semibold px-3 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300 cursor-not-allowed">Pending Review</button>`;
-        }
-        els.challengesList.innerHTML += `
-            <div class="glass-card p-4 rounded-2xl flex items-start">
-                <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3">
-                    <i data-lucide="${c.icon}" class="w-5 h-5 text-green-600 dark:text-green-300"></i>
-                </div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-gray-900 dark:text-gray-100">${c.title}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${c.description}</p>
-                    <div class="flex items-center justify-between mt-3">
-                        <span class="text-xs font-semibold text-green-700 dark:text-green-300">+${c.points_reward} pts</span>
-                        ${buttonHTML}
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    lucide.createIcons();
-};
-
-const renderEventsPage = () => {
-    els.eventsList.innerHTML = '';
-    state.events.forEach(e => {
-        let statusButton = '';
-        if (e.status === 'upcoming') {
-            statusButton = `<button class="w-full bg-green-600 text-white text-sm font-semibold py-2 rounded-lg flex items-center justify-center space-x-2"><i data-lucide="ticket" class="w-4 h-4"></i><span>RSVP +${e.points} pts</span></button>`;
-        } else if (e.status === 'attended') {
-            statusButton = `<div class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2"><i data-lucide="check-circle" class="w-4 h-4"></i><span>Attended (+${e.points} pts)</span></div>`;
-        } else {
-             statusButton = `<div class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 px-4 rounded-lg text-sm w-full flex items-center justify-center space-x-2"><i data-lucide="x-circle" class="w-4 h-4"></i><span>Missed</span></div>`;
-        }
-        els.eventsList.innerHTML += `
-            <div class="glass-card p-4 rounded-2xl ${e.status === 'missed' ? 'opacity-60' : ''}">
-                <div class="flex items-start">
-                    <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg mr-4"><i data-lucide="calendar" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i></div>
-                    <div class="flex-grow">
-                        <p class="text-xs font-semibold text-purple-600 dark:text-purple-400">${e.date}</p>
-                        <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg">${e.title}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">${e.description}</p>
-                        ${statusButton}
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    lucide.createIcons();
-};
-
-// =========================================
-// 8. LEADERBOARD (Modern)
-// =========================================
-let currentLeaderboardTab = 'student';
-
-const showLeaderboardTab = (tab) => {
-    currentLeaderboardTab = tab;
-    const btnStudent = document.getElementById('leaderboard-tab-student');
-    const btnDept = document.getElementById('leaderboard-tab-dept');
-    const contentStudent = document.getElementById('leaderboard-content-student');
-    const contentDept = document.getElementById('leaderboard-content-department');
-
-    if (tab === 'department') {
-        btnDept.classList.add('active');
-        btnStudent.classList.remove('active');
-        contentDept.classList.remove('hidden');
-        contentStudent.classList.add('hidden');
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.add('hidden');
-        renderDepartmentLeaderboard();
-    } else {
-        btnStudent.classList.add('active');
-        btnDept.classList.remove('active');
-        contentStudent.classList.remove('hidden');
-        contentDept.classList.add('hidden');
-        if(els.lbLeafLayer) els.lbLeafLayer.classList.remove('hidden');
-        renderStudentLeaderboard();
-    }
-};
-
-const renderDepartmentLeaderboard = () => {
-    const container = document.getElementById('eco-wars-page-list');
-    container.innerHTML = '';
-    state.departmentLeaderboard
-        .sort((a, b) => b.points - a.points)
-        .forEach((dept, index) => {
-            container.innerHTML += `
-                <div class="glass-card p-3 rounded-2xl flex items-center justify-between">
-                    <div class="flex items-center">
-                        <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center mr-3 text-xs font-bold text-emerald-700 dark:text-emerald-200">#${index + 1}</span>
-                        <div>
-                            <p class="font-semibold text-gray-800 dark:text-gray-100">${dept.name}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">${dept.points.toLocaleString()} pts</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-};
-
-const renderStudentLeaderboard = () => {
-    const sorted = [...state.leaderboard].sort((a, b) => b.lifetimePoints - a.lifetimePoints);
-    const rank1 = sorted[0], rank2 = sorted[1], rank3 = sorted[2];
-    const rest = sorted.slice(3);
-
-    els.lbPodium.innerHTML = `
-        <div class="podium">
-            <div class="champ"><div class="badge silver">${rank2 ? rank2.initials : 'N/A'}</div><div class="champ-name">${rank2 ? rank2.name : '-'}</div><div class="champ-points">${rank2 ? rank2.lifetimePoints : 0} pts</div><div class="rank">2nd</div></div>
-            <div class="champ"><div class="badge gold">${rank1 ? rank1.initials : 'N/A'}</div><div class="champ-name">${rank1 ? rank1.name : '-'}</div><div class="champ-points">${rank1 ? rank1.lifetimePoints : 0} pts</div><div class="rank">1st</div></div>
-            <div class="champ"><div class="badge bronze">${rank3 ? rank3.initials : 'N/A'}</div><div class="champ-name">${rank3 ? rank3.name : '-'}</div><div class="champ-points">${rank3 ? rank3.lifetimePoints : 0} pts</div><div class="rank">3rd</div></div>
-        </div>
-    `;
-
-    els.lbList.innerHTML = '';
-    rest.forEach((user) => {
-        els.lbList.innerHTML += `
-            <div class="item ${user.isCurrentUser ? 'is-me' : ''}">
-                <div class="user"><div class="circle">${user.initials}</div><div class="user-info"><strong>${user.name} ${user.isCurrentUser ? '(You)' : ''}</strong><span class="sub-class">${user.course}</span></div></div>
-                <div class="points-display">${user.lifetimePoints} pts</div>
-            </div>
-        `;
-    });
-};
-
-// =========================================
-// 9. INIT & LISTENERS
-// =========================================
-
-// Profile & Ecopoints Page Renders (Basic implementation for navigation completeness)
-const renderProfile = () => {
-    const u = state.currentUser;
-    const l = getUserLevel(u.lifetimePoints);
-    document.getElementById('profile-name').textContent = u.name;
-    document.getElementById('profile-email').textContent = u.email;
-    document.getElementById('profile-avatar').src = u.avatarUrl;
-    document.getElementById('profile-joined').textContent = 'Joined ' + u.joined;
-    document.getElementById('profile-level-title').textContent = l.title;
-    document.getElementById('profile-level-number').textContent = l.level;
-    document.getElementById('profile-level-progress').style.width = l.progress + '%';
-    document.getElementById('profile-level-next').textContent = l.progressText;
-    document.getElementById('profile-student-id').textContent = u.studentId;
-    document.getElementById('profile-course').textContent = u.course;
-    document.getElementById('profile-mobile').textContent = u.mobile;
-    document.getElementById('profile-email-personal').textContent = u.email;
-};
-
-const renderEcoPointsPage = () => {
-    const u = state.currentUser;
-    const l = getUserLevel(u.lifetimePoints);
-    document.getElementById('ecopoints-balance').textContent = u.points;
-    document.getElementById('ecopoints-level-title').textContent = l.title;
-    document.getElementById('ecopoints-level-number').textContent = l.level;
-    document.getElementById('ecopoints-level-progress').style.width = l.progress + '%';
-    document.getElementById('ecopoints-level-next').textContent = l.progressText;
-    
-    const actContainer = document.getElementById('ecopoints-recent-activity');
-    actContainer.innerHTML = '';
-    state.history.slice(0,4).forEach(h => {
-        actContainer.innerHTML += `<div class="flex items-center justify-between text-sm"><div class="flex items-center"><span class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mr-3"><i data-lucide="${h.icon}" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i></span><div><p class="font-semibold text-gray-800 dark:text-gray-100">${h.description}</p><p class="text-xs text-gray-500 dark:text-gray-400">${h.date}</p></div></div><span class="font-bold ${h.points >= 0 ? 'text-green-600' : 'text-red-500'}">${h.points > 0 ? '+' : ''}${h.points}</span></div>`;
-    });
-    
-    const levelsContainer = document.getElementById('all-levels-list');
-    levelsContainer.innerHTML = '';
-    state.levels.forEach(lvl => {
-         levelsContainer.innerHTML += `<div class="flex items-center"><span class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center mr-3 text-sm font-bold text-green-600 dark:text-green-300">${lvl.level}</span><div><p class="text-sm font-bold text-gray-800 dark:text-gray-100">${lvl.title}</p><p class="text-xs text-gray-500 dark:text-gray-400">${lvl.minPoints} pts required</p></div></div>`;
-    });
-};
-
-els.storeSearch.addEventListener('input', renderRewards);
-els.storeSearchClear.addEventListener('click', () => { els.storeSearch.value = ''; renderRewards(); });
-els.sortBy.addEventListener('change', renderRewards);
-document.getElementById('sidebar-toggle-btn').addEventListener('click', () => toggleSidebar());
-
-// Theme Init
-if (localStorage.getItem('eco-theme') === 'dark' || (!localStorage.getItem('eco-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-    document.getElementById('theme-text').textContent = 'Dark Mode';
-    document.getElementById('theme-icon').setAttribute('data-lucide', 'moon');
 }
-document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('eco-theme', isDark ? 'dark' : 'light');
-    document.getElementById('theme-text').textContent = isDark ? 'Dark Mode' : 'Light Mode';
-    document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'moon' : 'sun');
-    lucide.createIcons();
-});
 
-// Startup
-window.addEventListener('load', () => {
-    renderDashboard();
-    renderProfile();
-    setTimeout(() => document.getElementById('app-loading').classList.add('loaded'), 800);
+// --- LOGIC ---
+function toggleTally(type) {
+    if(type === 'dept') {
+        document.getElementById('tally-dept').classList.remove('hidden');
+        document.getElementById('tally-student').classList.add('hidden');
+        document.getElementById('tally-dept-btn').className = "px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('tally-student-btn').className = "px-3 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    } else {
+        document.getElementById('tally-dept').classList.add('hidden');
+        document.getElementById('tally-student').classList.remove('hidden');
+        document.getElementById('tally-student-btn').className = "px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('tally-dept-btn').className = "px-3 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    }
+}
+
+function toggleSchedule(type) {
+    if(type === 'upcoming') {
+        document.getElementById('view-upcoming').classList.remove('hidden');
+        document.getElementById('view-results').classList.add('hidden');
+        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    } else {
+        document.getElementById('view-upcoming').classList.add('hidden');
+        document.getElementById('view-results').classList.remove('hidden');
+        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    }
+}
+
+function filterSports() {
+    const input = document.getElementById('sport-search').value.toLowerCase();
+    const cards = document.getElementById('registration-grid').children;
+    Array.from(cards).forEach(card => {
+        const title = card.querySelector('h4').textContent.toLowerCase();
+        card.style.display = title.includes(input) ? "block" : "none";
+    });
+}
+
+function switchTab(id) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + id).classList.remove('hidden');
+    
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active', 'text-brand-primary');
+        btn.classList.add('text-gray-500', 'dark:text-gray-400');
+    });
+    const active = document.getElementById('btn-' + id);
+    active.classList.add('active', 'text-brand-primary');
+    active.classList.remove('text-gray-500', 'dark:text-gray-400');
+    window.scrollTo(0, 0);
+}
+
+// --- MODALS ---
+const regModal = document.getElementById('reg-modal');
+const regContent = document.getElementById('reg-content');
+const regContainer = document.getElementById('reg-form-container');
+
+function openReg(id) {
+    const sport = sportsData.find(s => s.id === id);
+    if(!sport) return;
+
+    document.getElementById('modal-sport-title').textContent = sport.name;
+    document.getElementById('modal-sport-type').textContent = sport.type;
+    
+    if (sport.status === "Closed") {
+        regContainer.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-64 text-center">
+                <div class="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="lock" class="w-10 h-10 text-red-500"></i>
+                </div>
+                <h4 class="text-xl font-bold dark:text-white">Registration Closed</h4>
+                <p class="text-sm text-gray-500 mt-2 px-6">The deadline has passed.</p>
+                <button onclick="closeRegModal()" class="mt-6 px-6 py-2 bg-gray-200 dark:bg-white/10 rounded-full text-sm font-bold dark:text-white">Go Back</button>
+            </div>`;
+    } else {
+        let formHTML = `<form onsubmit="submitReg(event)" class="space-y-4 pt-2">
+            <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">
+                    ${sport.type === 'Team' ? 'Captain Details' : 'Participant Details'}
+                </h4>
+                <div class="space-y-3">
+                    <input type="text" required placeholder="Full Name" class="input-field">
+                    <input type="tel" required placeholder="WhatsApp Number" class="input-field">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select class="input-field"><option>FY</option><option>SY</option><option>TY</option></select>
+                        <input type="text" placeholder="Roll No" class="input-field">
+                    </div>
+                </div>
+            </div>`;
+
+        if (sport.type === "Team") {
+            formHTML += `
+                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                    <h4 class="text-xs font-bold uppercase text-brand-secondary mb-3">Team Information</h4>
+                    <input type="text" required placeholder="Team Name" class="input-field mb-4 font-bold">
+                    <h5 class="text-xs font-bold text-gray-400 mb-2">Team Members (${sport.teamSize})</h5>
+                    <div class="space-y-3">`;
+            for(let i=2; i <= sport.teamSize; i++) {
+                formHTML += `
+                    <div class="flex gap-2">
+                        <span class="w-6 py-3 text-center text-xs font-bold text-gray-400 pt-3">${i}.</span>
+                        <input type="text" placeholder="Player Name" class="input-field w-2/3">
+                        <input type="text" placeholder="Role" class="input-field w-1/3">
+                    </div>`;
+            }
+            formHTML += `</div></div>`;
+        }
+
+        formHTML += `
+            <div class="flex items-start gap-2 mt-4">
+                <input type="checkbox" required class="mt-1 accent-brand-primary">
+                <p class="text-xs text-gray-500">I agree to pay the fees within 24 hours.</p>
+            </div>
+            <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                Confirm Registration
+            </button>
+            </form>`;
+        
+        const inputClass = "w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:border-brand-primary outline-none dark:text-white";
+        regContainer.innerHTML = formHTML.replace(/input-field/g, inputClass);
+    }
+
+    regModal.classList.remove('hidden');
     lucide.createIcons();
-});
+    setTimeout(() => regContent.classList.remove('translate-y-full'), 10);
+}
+
+function closeRegModal() {
+    regContent.classList.add('translate-y-full');
+    setTimeout(() => regModal.classList.add('hidden'), 300);
+}
+
+function submitReg(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Success!';
+    btn.classList.add('bg-green-500');
+    confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 } });
+    setTimeout(() => {
+        closeRegModal();
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('bg-green-500');
+        }, 300);
+    }, 1500);
+}
+
+const matchModal = document.getElementById('match-modal');
+const matchContent = document.getElementById('match-content');
+
+function openMatchDetails(id) {
+    matchModal.classList.remove('hidden');
+    // For demo purposes, just showing title, full data mapping can be added
+    document.getElementById('match-detail-title').innerText = "Match #" + id;
+    
+    setTimeout(() => {
+        if(window.innerWidth >= 768) {
+             matchContent.classList.remove('md:scale-95', 'md:opacity-0');
+             matchContent.classList.add('md:scale-100', 'md:opacity-100');
+        }
+        matchContent.classList.remove('translate-y-full');
+        matchContent.classList.add('translate-y-0');
+    }, 10);
+}
+
+function closeMatchModal() {
+    if(window.innerWidth >= 768) {
+         matchContent.classList.remove('md:scale-100', 'md:opacity-100');
+         matchContent.classList.add('md:scale-95', 'md:opacity-0');
+    }
+    matchContent.classList.remove('translate-y-0');
+    matchContent.classList.add('translate-y-full');
+    setTimeout(() => matchModal.classList.add('hidden'), 300);
+}
+
+// Theme Toggle Logic
+const themeBtn = document.getElementById('theme-toggle');
+const html = document.documentElement;
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add('dark');
+themeBtn.addEventListener('click', () => html.classList.toggle('dark'));
