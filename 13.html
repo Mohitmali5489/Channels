@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OJAS 2026 Premium | EcoCampus</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        light: { bg: '#F3F4F6', card: '#FFFFFF', text: '#1F2937' },
+                        dark: { bg: '#0B0B15', card: '#151522', text: '#F9FAFB' },
+                        brand: { 
+                            primary: '#6366F1', // Indigo
+                            secondary: '#EC4899', // Pink
+                            accent: '#F59E0B', // Amber
+                            success: '#10B981' // Emerald
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass {
+            background: rgba(21, 21, 34, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            border: none;
+        }
+        .modal-tab.active {
+            border-bottom: 2px solid #6366F1;
+            color: #6366F1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+        /* Custom Table Styles */
+        .score-table th { font-size: 10px; text-transform: uppercase; color: #9CA3AF; font-weight: 700; padding: 8px 4px; }
+        .score-table td { font-size: 12px; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dark .score-table td { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .light .score-table td { border-bottom: 1px solid rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-dark-bg text-gray-900 dark:text-white pb-24 antialiased selection:bg-brand-primary selection:text-white">
+
+    <header class="fixed top-0 w-full z-50 glass border-b border-gray-200 dark:border-white/5 transition-colors">
+        <div class="px-5 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <button onclick="history.back()" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter italic">OJAS <span class="text-brand-primary">2026</span></h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition relative">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-dark-bg"></span>
+                </button>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="h-20"></div> 
+
+    <section class="px-4 mb-6">
+        <div class="relative w-full h-52 rounded-3xl overflow-hidden shadow-2xl shadow-brand-primary/20 group">
+            <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-primary/90 to-purple-900/60 mix-blend-multiply"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-0 left-0 p-6 w-full">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <span class="inline-block px-2 py-1 rounded bg-white/20 backdrop-blur text-[10px] font-bold uppercase tracking-wider text-white mb-2 border border-white/20">Annual Sports Event</span>
+                        <h2 class="text-3xl font-black text-white leading-none italic">IGNITE THE<br>PASSION</h2>
+                    </div>
+                    <div class="w-16 h-16 rounded-full border-2 border-white/30 flex flex-col items-center justify-center bg-black/40 backdrop-blur">
+                        <span class="text-xl font-bold text-white">2</span>
+                        <span class="text-[8px] uppercase text-gray-300">Days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="sticky top-[64px] z-40 bg-gray-100/95 dark:bg-[#0B0B15]/95 backdrop-blur-xl py-2 px-4 mb-2 border-b border-gray-200 dark:border-white/5">
+        <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn active px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all">Overview</button>
+            <button onclick="switchTab('registration')" id="btn-registration" class="tab-btn bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap text-gray-500 dark:text-gray-400 transition-all">Registration</button>
+            <button onclick="switchTab('matches')" id="btn-matches" class="tab-btn bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap text-gray-500 dark:text-gray-400 transition-all">Schedule</button>
+        </div>
+    </div>
+
+    <main class="px-4 min-h-screen">
+        
+        <div id="tab-dashboard" class="tab-content animate-fade-in">
+            
+            <div class="mb-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-red-500">Live Action</h3>
+                </div>
+                <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                    <div onclick="openMatchDetails('cricket-live')" class="min-w-[290px] bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 rounded-2xl shadow-sm relative overflow-hidden cursor-pointer hover:border-brand-primary transition-colors">
+                        <div class="absolute top-0 right-0 px-2 py-1 bg-red-500 text-white text-[9px] font-bold rounded-bl-xl">LIVE</div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-mono text-gray-500">Cricket • Semi Final</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-black text-lg">CS</h4>
+                                <p class="text-brand-primary font-bold text-sm">88/2</p>
+                                <p class="text-[9px] text-gray-400">8.4 Overs</p>
+                            </div>
+                            <div class="text-xs text-gray-400 font-bold">VS</div>
+                            <div class="text-right">
+                                <h4 class="font-black text-lg text-gray-500">BCOM</h4>
+                                <p class="text-gray-500 font-bold text-sm">Yet to Bat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-5 rounded-3xl mb-6 relative overflow-hidden bg-white dark:bg-dark-card border-brand-primary/20">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <h3 class="text-lg font-bold">Leaderboard</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Department & Individual</p>
+                    </div>
+                    <div class="bg-gray-200 dark:bg-black/30 p-1 rounded-lg flex text-[10px] font-bold">
+                        <button onclick="toggleTally('dept')" id="tally-dept-btn" class="px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all">Depts</button>
+                        <button onclick="toggleTally('student')" id="tally-student-btn" class="px-3 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all">Students</button>
+                    </div>
+                </div>
+
+                <div id="tally-dept" class="space-y-3">
+                    </div>
+
+                <div id="tally-student" class="space-y-3 hidden">
+                   </div>
+            </div>
+            
+            <div class="mb-24">
+                <h3 class="text-lg font-bold mb-3">Highlights</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="relative rounded-xl overflow-hidden aspect-[4/5] bg-black group cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1624880357913-a8539238245b?w=400&q=80" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/80 to-transparent">
+                            <i data-lucide="play-circle" class="w-8 h-8 text-white mb-2"></i>
+                            <p class="text-xs font-bold text-white">Rohan's Six</p>
+                            <p class="text-[10px] text-gray-300">CS vs BCOM</p>
+                        </div>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden aspect-[4/5] bg-black group cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&q=80" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/80 to-transparent">
+                            <i data-lucide="play-circle" class="w-8 h-8 text-white mb-2"></i>
+                            <p class="text-xs font-bold text-white">Final Goal</p>
+                            <p class="text-[10px] text-gray-300">Football Final</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-registration" class="tab-content hidden">
+            <div class="mb-4">
+                <h3 class="text-lg font-bold leading-tight">Select Sport</h3>
+                <p class="text-xs text-gray-500">Tap a card to register your participation</p>
+            </div>
+
+            <div class="relative mb-6">
+                <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-gray-400"></i>
+                <input type="text" id="sport-search" onkeyup="filterSports()" placeholder="Search sports..." class="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary dark:text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pb-20" id="registration-grid">
+                </div>
+        </div>
+
+        <div id="tab-matches" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold">Schedule Center</h3>
+                <div class="bg-gray-200 dark:bg-white/10 p-1 rounded-lg flex text-[10px] font-bold">
+                     <button onclick="toggleSchedule('upcoming')" id="sch-upcoming-btn" class="px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all">Upcoming</button>
+                     <button onclick="toggleSchedule('results')" id="sch-results-btn" class="px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all">Results</button>
+                </div>
+            </div>
+
+            <div id="view-upcoming" class="space-y-4 pb-24">
+                <div onclick="openMatchDetails('cricket-live')" class="glass p-4 rounded-2xl bg-white dark:bg-dark-card border-l-4 border-brand-primary cursor-pointer active:scale-95 transition-transform">
+                    <div class="flex justify-between mb-2">
+                        <span class="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-[10px] font-bold rounded animate-pulse">LIVE NOW</span>
+                        <span class="text-xs font-mono text-gray-500">Gymkhana Ground</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-center">
+                            <h4 class="font-black text-lg">CS</h4>
+                            <p class="text-[10px] text-gray-400">Batting</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-300">VS</span>
+                            <div class="mt-1 px-2 py-0.5 bg-gray-100 dark:bg-white/10 rounded text-[10px] font-mono">T20</div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-black text-lg text-gray-500">BCOM</h4>
+                            <p class="text-[10px] text-gray-400">Fielding</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-100 dark:border-white/5 text-center flex justify-between items-center">
+                        <p class="text-xs font-mono">Score: <span class="text-brand-primary font-bold">88/2</span> (8.4 Overs)</p>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="glass p-4 rounded-2xl bg-white dark:bg-dark-card border-l-4 border-gray-300 dark:border-gray-700">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-bold text-gray-500">Today, 4:00 PM</span>
+                        <span class="text-xs text-gray-500">Court 2</span>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-sm">Badminton (Singles)</h4>
+                            <p class="text-xs text-gray-500 mt-1">Rahul (CS) vs Amit (BFM)</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center">
+                            <i data-lucide="calendar" class="w-4 h-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-results" class="space-y-4 pb-24 hidden">
+                
+                <div class="glass p-0 rounded-2xl overflow-hidden bg-white dark:bg-dark-card border border-gray-100 dark:border-white/5">
+                    <div class="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">Football • Finals</span>
+                            <span class="text-[10px] font-bold text-green-500">FINISHED</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-xl">BMS</span>
+                                <span class="text-xs text-gray-500">(Winner)</span>
+                            </div>
+                            <div class="font-black text-2xl text-brand-secondary">2 - 1</div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-black text-xl text-gray-400">BAF</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-dark-card flex justify-between items-center">
+                         <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-[10px]">⭐</div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase text-gray-400">Player of Match</p>
+                                <p class="text-xs font-bold">Sahil Khan (BMS)</p>
+                            </div>
+                         </div>
+                         <button class="text-xs font-bold text-brand-primary">View Highlights</button>
+                    </div>
+                </div>
+
+                <div class="glass p-0 rounded-2xl overflow-hidden bg-white dark:bg-dark-card border border-gray-100 dark:border-white/5">
+                    <div class="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">Chess • Open</span>
+                            <span class="text-[10px] font-bold text-green-500">FINISHED</span>
+                        </div>
+                         <h4 class="font-bold text-sm">Aditya P. (CS) vs Neha S. (BCOM)</h4>
+                         <p class="text-xs text-gray-500 mt-1">Aditya won by Checkmate</p>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-dark-card">
+                         <div class="flex items-center gap-2">
+                            <span class="text-lg">🥇</span>
+                            <p class="text-xs font-bold">Gold: Aditya P. (CS Department)</p>
+                         </div>
+                    </div>
+                </div>
+
+                 <div class="glass p-0 rounded-2xl overflow-hidden bg-white dark:bg-dark-card border border-gray-100 dark:border-white/5">
+                    <div class="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">100m Sprint</span>
+                            <span class="text-[10px] font-bold text-green-500">FINISHED</span>
+                        </div>
+                        <div class="mt-2 space-y-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold">1. Vedant (BA)</span>
+                                <span class="font-mono">11.02s 🥇</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span>2. Rahul (CS)</span>
+                                <span class="font-mono">11.45s 🥈</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="reg-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeRegModal()"></div>
+        <div class="absolute bottom-0 w-full bg-white dark:bg-[#1A1A2E] rounded-t-3xl p-6 transition-transform duration-300 translate-y-full flex flex-col max-h-[90vh]" id="reg-content">
+            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4 flex-shrink-0"></div>
+            
+            <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                <h3 class="text-2xl font-black italic dark:text-white" id="modal-sport-title">REGISTER</h3>
+                <span id="modal-sport-type" class="text-[10px] uppercase font-bold px-2 py-1 bg-gray-100 dark:bg-white/10 rounded text-gray-500">Solo</span>
+            </div>
+            
+            <div id="reg-form-container" class="overflow-y-auto no-scrollbar pb-10 flex-1">
+                </div>
+        </div>
+    </div>
+
+    <div id="match-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity" onclick="closeMatchModal()"></div>
+        <div class="absolute inset-x-0 bottom-0 top-12 md:inset-x-4 md:top-20 md:bottom-20 bg-white dark:bg-[#1A1A2E] rounded-t-3xl md:rounded-3xl overflow-hidden transition-transform duration-300 translate-y-full md:translate-y-0 md:scale-95 md:opacity-0 flex flex-col" id="match-content">
+            
+            <div class="p-5 border-b border-gray-100 dark:border-white/5 flex justify-between items-start bg-gray-50 dark:bg-white/5 flex-shrink-0">
+                <div>
+                    <h3 class="font-black text-xl dark:text-white leading-none">CS <span class="text-gray-400 text-sm font-normal">vs</span> BCOM</h3>
+                    <p class="text-xs text-brand-primary font-bold mt-1">Live • Box Cricket Semi-Final</p>
+                </div>
+                <button onclick="closeMatchModal()" class="p-2 bg-white dark:bg-black/20 rounded-full">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="flex border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#1A1A2E] flex-shrink-0 overflow-x-auto no-scrollbar">
+                <button onclick="switchMatchTab('summary')" id="mtab-summary" class="modal-tab active flex-1 py-3 text-sm font-bold text-gray-500 transition-colors whitespace-nowrap px-4">Summary</button>
+                <button onclick="switchMatchTab('scorecard')" id="mtab-scorecard" class="modal-tab flex-1 py-3 text-sm font-bold text-gray-500 transition-colors whitespace-nowrap px-4">Scorecard</button>
+                <button onclick="switchMatchTab('squads')" id="mtab-squads" class="modal-tab flex-1 py-3 text-sm font-bold text-gray-500 transition-colors whitespace-nowrap px-4">Squads</button>
+                <button onclick="switchMatchTab('info')" id="mtab-info" class="modal-tab flex-1 py-3 text-sm font-bold text-gray-500 transition-colors whitespace-nowrap px-4">Info</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 p-5 pb-20">
+                
+                <div id="match-summary" class="match-tab-content space-y-6">
+                     <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-6 text-center shadow-xl">
+                        <p class="text-xs text-gray-400 mb-2">CS Department (Batting)</p>
+                        <div class="text-5xl font-black tracking-tighter mb-1">88/2</div>
+                        <p class="text-sm font-mono text-gray-400">Overs: 8.4 <span class="text-gray-600">|</span> CRR: 10.15</p>
+                        <div class="mt-4 flex justify-center gap-4 text-xs">
+                            <div class="bg-white/10 px-3 py-1.5 rounded-lg">
+                                <span class="block text-gray-400 text-[9px] uppercase">Batting</span>
+                                <span class="font-bold text-yellow-400">Rohan (42*)</span>
+                            </div>
+                            <div class="bg-white/10 px-3 py-1.5 rounded-lg">
+                                <span class="block text-gray-400 text-[9px] uppercase">Bowling</span>
+                                <span class="font-bold">Rahul (1/12)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                         <div class="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Projected Score</p>
+                            <p class="text-xl font-black text-brand-primary">118</p>
+                         </div>
+                         <div class="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Win Probability</p>
+                            <p class="text-xl font-black text-green-500">CS 72%</p>
+                         </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold uppercase text-gray-500 mb-3">Live Commentary</h4>
+                        <div class="space-y-3 pl-2 border-l-2 border-gray-200 dark:border-gray-800">
+                            <div class="pl-3 relative">
+                                <div class="absolute -left-[19px] top-1 w-3 h-3 bg-brand-primary rounded-full border-2 border-white dark:border-dark-bg"></div>
+                                <span class="font-mono font-bold text-brand-primary text-xs">8.4</span>
+                                <p class="text-sm text-gray-800 dark:text-gray-200 font-medium">FOUR! Smashed through covers! Rohan moves to 42.</p>
+                            </div>
+                            <div class="pl-3 relative">
+                                <div class="absolute -left-[19px] top-1 w-3 h-3 bg-gray-300 dark:bg-gray-700 rounded-full border-2 border-white dark:border-dark-bg"></div>
+                                <span class="font-mono font-bold text-gray-400 text-xs">8.3</span>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">No run, good length delivery outside off.</p>
+                            </div>
+                            <div class="pl-3 relative">
+                                <div class="absolute -left-[19px] top-1 w-3 h-3 bg-gray-300 dark:bg-gray-700 rounded-full border-2 border-white dark:border-dark-bg"></div>
+                                <span class="font-mono font-bold text-gray-400 text-xs">8.2</span>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Single taken towards long on.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="match-scorecard" class="match-tab-content hidden space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <h4 class="text-xs font-bold uppercase text-brand-primary">CS Batting</h4>
+                            <span class="text-xs font-bold">88/2 (8.4 ov)</span>
+                        </div>
+                        <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-white/10 bg-white dark:bg-white/5">
+                            <table class="w-full text-left score-table">
+                                <thead class="bg-gray-50 dark:bg-white/5">
+                                    <tr><th>Batter</th><th class="text-right">R</th><th class="text-right">B</th><th class="text-right">4s</th><th class="text-right">6s</th><th class="text-right">SR</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="font-bold">Rohan Das*</div><div class="text-[9px] text-gray-500">not out</div></td>
+                                        <td class="text-right font-bold text-black dark:text-white">42</td><td class="text-right">24</td><td class="text-right">4</td><td class="text-right">2</td><td class="text-right">175.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="font-bold">Amit K</div><div class="text-[9px] text-gray-500">c Rahul b Vivek</div></td>
+                                        <td class="text-right font-bold text-black dark:text-white">12</td><td class="text-right">8</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">150.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="font-bold">Sahil</div><div class="text-[9px] text-gray-500">run out</div></td>
+                                        <td class="text-right font-bold text-black dark:text-white">5</td><td class="text-right">6</td><td class="text-right">0</td><td class="text-right">0</td><td class="text-right">83.3</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="font-bold">Suresh*</div><div class="text-[9px] text-gray-500">not out</div></td>
+                                        <td class="text-right font-bold text-black dark:text-white">14</td><td class="text-right">10</td><td class="text-right">1</td><td class="text-right">0</td><td class="text-right">140.0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-2 text-xs flex justify-between px-2 text-gray-500">
+                            <span>Extras: 15</span>
+                            <span>Did Not Bat: 7 players</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase text-brand-secondary mb-2 px-1">BCOM Bowling</h4>
+                        <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-white/10 bg-white dark:bg-white/5">
+                            <table class="w-full text-left score-table">
+                                <thead class="bg-gray-50 dark:bg-white/5">
+                                    <tr><th>Bowler</th><th class="text-right">O</th><th class="text-right">M</th><th class="text-right">R</th><th class="text-right">W</th><th class="text-right">Eco</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-bold">Rahul S</td><td class="text-right">3.0</td><td class="text-right">0</td><td class="text-right">24</td><td class="text-right font-bold text-brand-primary">1</td><td class="text-right">8.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">Vivek M</td><td class="text-right">2.4</td><td class="text-right">0</td><td class="text-right">18</td><td class="text-right font-bold text-brand-primary">0</td><td class="text-right">6.75</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">Jayesh</td><td class="text-right">3.0</td><td class="text-right">0</td><td class="text-right">32</td><td class="text-right font-bold text-brand-primary">0</td><td class="text-right">10.6</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="match-squads" class="match-tab-content hidden">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl">
+                            <h4 class="font-black text-brand-primary mb-3 text-center border-b border-gray-200 dark:border-white/10 pb-2">CS DEPT</h4>
+                            <ul class="text-sm space-y-2">
+                                <li class="font-bold flex items-center justify-between">Rohan Das <span class="text-[9px] bg-brand-primary text-white px-1.5 rounded">C</span></li>
+                                <li class="flex items-center justify-between text-gray-600 dark:text-gray-300">Amit Kumar <span class="text-[9px] bg-gray-200 dark:text-black px-1.5 rounded">WK</span></li>
+                                <li>Sahil Shaikh</li>
+                                <li>Suresh Raina</li>
+                                <li>Dinesh Karthik</li>
+                                <li>Hardik P</li>
+                                <li>Jasprit B</li>
+                                <li>Ravi Jadhav</li>
+                                <li>Prithvi Shaw</li>
+                                <li>Ajinkya R</li>
+                                <li class="text-gray-400">12th: Tanmay</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl">
+                            <h4 class="font-black text-brand-secondary mb-3 text-center border-b border-gray-200 dark:border-white/10 pb-2">BCOM DEPT</h4>
+                            <ul class="text-sm space-y-2">
+                                <li class="font-bold flex items-center justify-between">Rahul S <span class="text-[9px] bg-brand-primary text-white px-1.5 rounded">C</span></li>
+                                <li>Vivek M</li>
+                                <li>Jayesh P</li>
+                                <li>Mayank A</li>
+                                <li>Shreyas Iyer</li>
+                                <li>Rishabh Pant</li>
+                                <li>Axar Patel</li>
+                                <li>Kuldeep Y</li>
+                                <li>Mohd Siraj</li>
+                                <li>Virat K</li>
+                                <li class="text-gray-400">12th: Sanju</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="match-info" class="match-tab-content hidden space-y-4">
+                    <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl space-y-3">
+                         <div class="flex justify-between border-b border-gray-200 dark:border-white/10 pb-2">
+                            <span class="text-xs text-gray-500 uppercase">Match Type</span>
+                            <span class="text-sm font-bold">Semi Final (T20 Format)</span>
+                         </div>
+                         <div class="flex justify-between border-b border-gray-200 dark:border-white/10 pb-2">
+                            <span class="text-xs text-gray-500 uppercase">Toss</span>
+                            <span class="text-sm font-bold">CS won toss, elected to Bat</span>
+                         </div>
+                         <div class="flex justify-between border-b border-gray-200 dark:border-white/10 pb-2">
+                            <span class="text-xs text-gray-500 uppercase">Venue</span>
+                            <span class="text-sm font-bold">College Gymkhana Ground</span>
+                         </div>
+                         <div class="flex justify-between">
+                            <span class="text-xs text-gray-500 uppercase">Umpires</span>
+                            <span class="text-sm font-bold">Prof. Shinde & Prof. Patil</span>
+                         </div>
+                    </div>
+
+                    <div class="bg-brand-primary/10 p-4 rounded-xl">
+                        <h4 class="text-brand-primary font-bold text-sm mb-1">Prize Info</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-300">Winner advances to the Grand Finale on Sunday vs BMS Department.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Init Icons
+        lucide.createIcons();
+
+        // --- DATA ---
+        const deptData = [
+            { name: "BAF", count: "14", color: "text-green-500", bar: "bg-green-500" },
+            { name: "BCOM", count: "12", color: "text-blue-500", bar: "bg-blue-500" },
+            { name: "BMS", count: "10", color: "text-purple-500", bar: "bg-purple-500" },
+            { name: "CS", count: "09", color: "text-indigo-500", bar: "bg-indigo-500" },
+            { name: "BFM", count: "07", color: "text-orange-500", bar: "bg-orange-500" },
+            { name: "BA", count: "05", color: "text-pink-500", bar: "bg-pink-500" },
+            { name: "BSC", count: "03", color: "text-cyan-500", bar: "bg-cyan-500" }
+        ];
+
+        // Individual Leaderboard Data (Expanded)
+        const studentData = [
+            { name: "Rohan Das", dept: "CS", gold: 3, silver: 1, bronze: 0, avatar: "RD" },
+            { name: "Priya Sharma", dept: "BMS", gold: 2, silver: 2, bronze: 1, avatar: "PS" },
+            { name: "Amit Kumar", dept: "BCOM", gold: 2, silver: 0, bronze: 2, avatar: "AK" },
+            { name: "Sneha Patel", dept: "BAF", gold: 1, silver: 3, bronze: 1, avatar: "SP" },
+            { name: "Vedant Patil", dept: "BA", gold: 1, silver: 2, bronze: 0, avatar: "VP" },
+            { name: "Rahul Singh", dept: "BCOM", gold: 1, silver: 1, bronze: 2, avatar: "RS" },
+            { name: "Aditya Roy", dept: "CS", gold: 1, silver: 1, bronze: 1, avatar: "AR" },
+            { name: "Neha Gupta", dept: "BFM", gold: 1, silver: 0, bronze: 3, avatar: "NG" },
+            { name: "Karan Johar", dept: "BMS", gold: 0, silver: 3, bronze: 2, avatar: "KJ" },
+            { name: "Zoya Khan", dept: "BSC", gold: 0, silver: 2, bronze: 1, avatar: "ZK" }
+        ];
+
+        const sportsData = [
+            { id: 1, name: "100m Sprint", icon: "timer", type: "Solo", teamSize: 1, status: "Open" },
+            { id: 2, name: "Chess", icon: "crown", type: "Solo", teamSize: 1, status: "Open" },
+            { id: 3, name: "Box Cricket", icon: "trophy", type: "Team", teamSize: 8, status: "Closed" }, 
+            { id: 4, name: "Kabaddi", icon: "swords", type: "Team", teamSize: 7, status: "Open" },
+            { id: 5, name: "Badminton", icon: "wind", type: "Solo", teamSize: 1, status: "Closed" }, 
+            { id: 6, name: "Relay Race", icon: "users", type: "Team", teamSize: 4, status: "Open" },
+            { id: 7, name: "Volleyball", icon: "volleyball", type: "Team", teamSize: 6, status: "Open" },
+            { id: 8, name: "Carrom", icon: "crosshair", type: "Solo", teamSize: 1, status: "Open" }
+        ];
+
+        // --- RENDER FUNCTIONS ---
+        
+        function renderMedalTally() {
+            // Render Depts
+            const container = document.getElementById('tally-dept');
+            container.innerHTML = deptData.map((dept, index) => {
+                const width = (parseInt(dept.count) / 15) * 100;
+                return `
+                    <div class="flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 shadow-sm">
+                        <div class="text-lg font-bold text-gray-400 w-6">#${index + 1}</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <h4 class="font-bold text-sm">${dept.name}</h4>
+                                <span class="text-xs font-bold ${dept.color}">${dept.count} 🥇</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                                <div class="h-full ${dept.bar} rounded-full" style="width: ${width}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render Students
+            const studentContainer = document.getElementById('tally-student');
+            studentContainer.innerHTML = studentData.map((s, i) => `
+                <div class="flex items-center gap-3 p-3 border-b border-gray-100 dark:border-white/5 last:border-0">
+                    <div class="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-xs font-bold text-brand-primary">${s.avatar}</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm dark:text-gray-200">${s.name}</h4>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold">${s.dept} • <span class="text-yellow-500">${s.gold}G</span> <span class="text-gray-400">${s.silver}S</span> <span class="text-orange-400">${s.bronze}B</span></p>
+                    </div>
+                    <span class="font-black text-xl text-gray-300">#${i + 1}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderRegistrationCards() {
+            const grid = document.getElementById('registration-grid');
+            grid.innerHTML = sportsData.map(sport => {
+                const isClosed = sport.status === "Closed";
+                const cardClass = isClosed 
+                    ? "glass p-4 rounded-2xl border border-gray-200 dark:border-white/5 opacity-60 grayscale cursor-not-allowed bg-gray-100 dark:bg-white/5" 
+                    : "glass p-4 rounded-2xl border border-transparent hover:border-brand-primary/30 transition-all cursor-pointer bg-white dark:bg-white/5 shadow-sm";
+                
+                const badgeClass = isClosed 
+                    ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" 
+                    : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400";
+
+                return `
+                    <div class="${cardClass}" onclick="openReg(${sport.id})">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="p-2 ${isClosed ? 'bg-gray-200 dark:bg-white/10' : 'bg-brand-primary/10'} rounded-lg">
+                                <i data-lucide="${sport.icon}" class="w-5 h-5 ${isClosed ? 'text-gray-500' : 'text-brand-primary'}"></i>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase px-2 py-1 rounded ${badgeClass}">${sport.status}</span>
+                        </div>
+                        <h4 class="font-bold text-sm dark:text-gray-200">${sport.name}</h4>
+                        <div class="mt-1 text-xs text-gray-500">${sport.type === 'Team' ? `Team of ${sport.teamSize}` : 'Individual'}</div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // --- FILTER FUNCTION ---
+        function filterSports() {
+            const input = document.getElementById('sport-search').value.toLowerCase();
+            const cards = document.getElementById('registration-grid').children;
+            Array.from(cards).forEach(card => {
+                const title = card.querySelector('h4').textContent.toLowerCase();
+                card.style.display = title.includes(input) ? "block" : "none";
+            });
+        }
+
+        // --- INTERACTION LOGIC ---
+
+        function toggleTally(type) {
+            if(type === 'dept') {
+                document.getElementById('tally-dept').classList.remove('hidden');
+                document.getElementById('tally-student').classList.add('hidden');
+                document.getElementById('tally-dept-btn').className = "px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+                document.getElementById('tally-student-btn').className = "px-3 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+            } else {
+                document.getElementById('tally-dept').classList.add('hidden');
+                document.getElementById('tally-student').classList.remove('hidden');
+                document.getElementById('tally-student-btn').className = "px-3 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+                document.getElementById('tally-dept-btn').className = "px-3 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+            }
+        }
+
+        function toggleSchedule(type) {
+            if(type === 'upcoming') {
+                document.getElementById('view-upcoming').classList.remove('hidden');
+                document.getElementById('view-results').classList.add('hidden');
+                document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+                document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+            } else {
+                document.getElementById('view-upcoming').classList.add('hidden');
+                document.getElementById('view-results').classList.remove('hidden');
+                document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+                document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+            }
+        }
+
+        // Registration Modal
+        const regModal = document.getElementById('reg-modal');
+        const regContent = document.getElementById('reg-content');
+        const regContainer = document.getElementById('reg-form-container');
+
+        function openReg(id) {
+            const sport = sportsData.find(s => s.id === id);
+            if(!sport) return;
+
+            document.getElementById('modal-sport-title').textContent = sport.name;
+            document.getElementById('modal-sport-type').textContent = sport.type;
+            
+            if (sport.status === "Closed") {
+                regContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-64 text-center">
+                        <div class="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="lock" class="w-10 h-10 text-red-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold dark:text-white">Registration Closed</h4>
+                        <p class="text-sm text-gray-500 mt-2 px-6">The deadline has passed.</p>
+                        <button onclick="closeRegModal()" class="mt-6 px-6 py-2 bg-gray-200 dark:bg-white/10 rounded-full text-sm font-bold dark:text-white">Go Back</button>
+                    </div>
+                `;
+            } else {
+                let formHTML = `<form onsubmit="submitReg(event)" class="space-y-4 pt-2">`;
+                
+                formHTML += `
+                    <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                        <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">
+                            ${sport.type === 'Team' ? 'Captain Details' : 'Participant Details'}
+                        </h4>
+                        <div class="space-y-3">
+                            <input type="text" required placeholder="Full Name" class="input-field">
+                            <input type="tel" required placeholder="WhatsApp Number" class="input-field">
+                            <div class="grid grid-cols-2 gap-3">
+                                <select class="input-field"><option>FY</option><option>SY</option><option>TY</option></select>
+                                <input type="text" placeholder="Roll No" class="input-field">
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (sport.type === "Team") {
+                    formHTML += `
+                        <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                            <h4 class="text-xs font-bold uppercase text-brand-secondary mb-3">Team Information</h4>
+                            <input type="text" required placeholder="Team Name" class="input-field mb-4 font-bold">
+                            <h5 class="text-xs font-bold text-gray-400 mb-2">Team Members & Roles</h5>
+                            <div class="space-y-3">
+                    `;
+                    for(let i=2; i <= sport.teamSize; i++) {
+                        formHTML += `
+                            <div class="flex gap-2">
+                                <span class="w-6 py-3 text-center text-xs font-bold text-gray-400 pt-3">${i}.</span>
+                                <input type="text" placeholder="Player Name" class="input-field w-2/3">
+                                <input type="text" placeholder="Role" class="input-field w-1/3">
+                            </div>
+                        `;
+                    }
+                    formHTML += `</div></div>`;
+                }
+
+                formHTML += `
+                    <div class="flex items-start gap-2 mt-4">
+                        <input type="checkbox" required class="mt-1 accent-brand-primary">
+                        <p class="text-xs text-gray-500">I agree to pay the fees within 24 hours.</p>
+                    </div>
+                    <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                        Confirm Registration
+                    </button>
+                    </form>
+                `;
+                
+                const inputClass = "w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:border-brand-primary outline-none dark:text-white";
+                regContainer.innerHTML = formHTML.replace(/input-field/g, inputClass);
+            }
+
+            regModal.classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => regContent.classList.remove('translate-y-full'), 10);
+        }
+
+        function closeRegModal() {
+            regContent.classList.add('translate-y-full');
+            setTimeout(() => regModal.classList.add('hidden'), 300);
+        }
+
+        function submitReg(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Success!';
+            btn.classList.add('bg-green-500');
+            confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 } });
+            setTimeout(() => {
+                closeRegModal();
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-500');
+                }, 300);
+            }, 1500);
+        }
+
+        // Match Modal Logic
+        const matchModal = document.getElementById('match-modal');
+        const matchContent = document.getElementById('match-content');
+
+        function openMatchDetails(id) {
+            matchModal.classList.remove('hidden');
+            switchMatchTab('summary');
+            setTimeout(() => {
+                if(window.innerWidth >= 768) {
+                     matchContent.classList.remove('md:scale-95', 'md:opacity-0');
+                     matchContent.classList.add('md:scale-100', 'md:opacity-100');
+                }
+                matchContent.classList.remove('translate-y-full');
+                matchContent.classList.add('translate-y-0');
+            }, 10);
+        }
+
+        function closeMatchModal() {
+            if(window.innerWidth >= 768) {
+                 matchContent.classList.remove('md:scale-100', 'md:opacity-100');
+                 matchContent.classList.add('md:scale-95', 'md:opacity-0');
+            }
+            matchContent.classList.remove('translate-y-0');
+            matchContent.classList.add('translate-y-full');
+            
+            setTimeout(() => matchModal.classList.add('hidden'), 300);
+        }
+
+        function switchMatchTab(tabName) {
+            document.querySelectorAll('.match-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('match-' + tabName).classList.remove('hidden');
+
+            document.querySelectorAll('.modal-tab').forEach(btn => {
+                btn.classList.remove('active', 'text-brand-primary');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.getElementById('mtab-' + tabName);
+            activeBtn.classList.add('active', 'text-brand-primary');
+            activeBtn.classList.remove('text-gray-500');
+        }
+
+        // --- GLOBAL TABS ---
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('bg-white', 'dark:bg-white/5', 'text-gray-500');
+            });
+            const active = document.getElementById('btn-' + id);
+            active.classList.add('active');
+            active.classList.remove('bg-white', 'dark:bg-white/5', 'text-gray-500');
+        }
+
+        // --- THEME ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            html.classList.add('dark');
+        }
+        themeBtn.addEventListener('click', () => html.classList.toggle('dark'));
+
+        // --- INIT ---
+        renderMedalTally();
+        renderRegistrationCards();
+
+    </script>
+</body>
+</html>
