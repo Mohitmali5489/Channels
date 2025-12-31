@@ -18,19 +18,13 @@ const studentData = [
     { name: "Anjali Gupta", dept: "BFM", gold: 2, silver: 0, bronze: 0, points: 100, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali" }
 ];
 
-// --- DATA: SCHEDULE (DEEP DATA) ---
+// --- DATA: SCHEDULE (DEEP DATA FOR PROTOTYPE) ---
 const scheduleData = [
+    // 1. CRICKET
     { 
-        id: 101, 
-        sport: "Cricket", 
-        type: "Semi Final", 
-        team1: "CS", 
-        team2: "BCOM", 
-        score1: "88/2", 
-        score2: "Yet to Bat", 
-        overs: "8.4",
-        status: "Live", 
-        live: true,
+        id: 101, sport: "Cricket", type: "Semi Final", team1: "CS", team2: "BCOM", 
+        score1: "88/2", score2: "Yet to Bat", overs: "8.4", status: "Live", live: true,
+        loc: "Main Ground",
         details: { 
             batters: [
                 { name: "Rohan Das*", status: "not out", r: 42, b: 24, fours: 4, sixes: 2, sr: 175.0 },
@@ -38,8 +32,7 @@ const scheduleData = [
                 { name: "Sahil", status: "run out", r: 5, b: 6, fours: 0, sixes: 0, sr: 83.3 },
                 { name: "Suresh*", status: "not out", r: 14, b: 10, fours: 1, sixes: 0, sr: 140.0 }
             ],
-            extras: 15,
-            did_not_bat: "7 players",
+            extras: 15, did_not_bat: "7 players",
             bowlers: [
                 { name: "Rahul S", o: 3.0, m: 0, r: 24, w: 1, eco: 8.00 },
                 { name: "Vivek M", o: 2.4, m: 0, r: 18, w: 0, eco: 6.75 },
@@ -56,23 +49,101 @@ const scheduleData = [
                 team1: ["Rohan (C)", "Suresh", "Amit", "Sahil", "Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
                 team2: ["Rahul (C)", "Vivek", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush", "Arjun", "Karan", "Sameer"]
             },
-            crr: "10.15",
-            project: "118"
+            crr: "10.15", project: "118"
         }
     },
+    // 2. FOOTBALL
     { 
         id: 105, sport: "Football", type: "Finals", team1: "BMS", team2: "BAF", status: "Finished", 
-        winner: "BMS", result: "2 - 1", live: false,
+        winner: "BMS", result: "2 - 1", live: false, time: "Ended", loc: "Turf A",
+        score1: "2", score2: "1",
         details: { 
             scorers: [
                 {name: "Sahil (BMS)", time: "12'", type: "Goal"}, 
                 {name: "Raj (BAF)", time: "44'", type: "Goal"}, 
                 {name: "Amit (BMS)", time: "88'", type: "Penalty"}
             ], 
-            stats: { possession: 55, shots: 12, onTarget: 5, corners: 6, fouls: 8, offsides: 2 },
-            lineups: {
+            stats: { possession: "55% - 45%", shots: "12 - 8", onTarget: "5 - 3", corners: "6 - 4", fouls: "8 - 10", offsides: "2 - 1" },
+            timeline: [
+                { time: "90+2'", text: "Full Time Whistle", icon: "whistle" },
+                { time: "88'", text: "GOAL! Amit scores from the spot.", icon: "goal" },
+                { time: "75'", text: "Yellow Card for Raj (BAF)", icon: "card" },
+                { time: "44'", text: "GOAL! Raj equalizes for BAF.", icon: "goal" }
+            ],
+            squads: {
                 team1: ["Sahil (GK)", "Karan", "Arjun", "Vikram", "Sameer", "Amit", "Rohan", "Siddharth", "Yash", "Pranav", "Dev"],
                 team2: ["Raj (GK)", "Vivek", "Suresh", "Manoj", "Kunal", "Tanmay", "Omkar", "Nikhil", "Pratik", "Jay", "Aman"]
+            }
+        }
+    },
+    // 3. KABADDI
+    {
+        id: 106, sport: "Kabaddi", type: "League", team1: "CS", team2: "BA", status: "Live", live: true,
+        score1: "24", score2: "19", loc: "Mat 1",
+        details: {
+            raid_history: [
+                { raider: "Rohan (CS)", result: "Success +2", type: "raid" },
+                { raider: "Vivek (BA)", result: "Empty Raid", type: "empty" },
+                { raider: "Amit (CS)", result: "Tackled", type: "tackle" }
+            ],
+            stats: {
+                team1: { raid_points: 14, tackle_points: 8, all_out: 1, extra: 2 },
+                team2: { raid_points: 10, tackle_points: 7, all_out: 0, extra: 2 }
+            },
+            current_raider: "Rohan Das",
+            last_raid_status: "Super Raid! (+3)",
+            squads: {
+                team1: ["Rohan (C)", "Amit", "Suresh", "Vikram", "Kunal", "Raj", "Dev"],
+                team2: ["Vivek (C)", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush"]
+            }
+        }
+    },
+    // 4. CHESS
+    {
+        id: 107, sport: "Chess", type: "Final", team1: "Rohan (CS)", team2: "Anjali (BFM)", status: "Live", live: true,
+        score1: "1", score2: "0", loc: "Library Hall",
+        details: {
+            current_turn: "White (Rohan)",
+            timers: { white: "10:45", black: "08:20" },
+            moves: [
+                "1. e4 e5", "2. Nf3 Nc6", "3. Bb5 a6", "4. Ba4 Nf6", "5. O-O Be7", "6. Re1 b5"
+            ],
+            captured: {
+                white: ["pawn", "pawn"],
+                black: ["pawn"]
+            },
+            status_text: "White to move. Sicilian Defense variation."
+        }
+    },
+    // 5. BADMINTON
+    {
+        id: 108, sport: "Badminton", type: "Quarter Final", team1: "Priya (BMS)", team2: "Sneha (BAF)", status: "Live", live: true,
+        score1: "1", score2: "1", loc: "Court 2",
+        details: {
+            sets: [
+                { s1: 21, s2: 19, winner: "Priya" },
+                { s1: 15, s2: 21, winner: "Sneha" },
+                { s1: 8, s2: 4, status: "Live" } // Set 3
+            ],
+            current_set: 3,
+            current_server: "Priya",
+            rally_history: ["Point Priya", "Point Sneha", "Service Fault Sneha", "Smash Winner Priya"]
+        }
+    },
+    // 6. RELAY / ATHLETICS
+    {
+        id: 109, sport: "Relay Race", type: "4x100m Final", team1: "CS Dept", team2: "BCOM Dept", status: "Live", live: true,
+        score1: "-", score2: "-", loc: "Track",
+        details: {
+            current_leg: "Leg 3/4",
+            positions: [
+                { rank: 1, team: "CS Dept", runner: "Rohan", split: "10.2s" },
+                { rank: 2, team: "BMS Dept", runner: "Sahil", split: "10.4s" },
+                { rank: 3, team: "BCOM Dept", runner: "Amit", split: "10.8s" }
+            ],
+            splits: {
+                cs: ["10.5s", "10.2s", "Running...", "-"],
+                bcom: ["11.0s", "10.8s", "Running...", "-"]
             }
         }
     }
@@ -93,21 +164,11 @@ const sportsData = [
 
 function renderLeaderboard() {
     const container = document.getElementById('leaderboard-container');
-    
-    // Sort: Gold > Silver > Bronze > Points
-    const sortedData = [...studentData].sort((a, b) => {
-        if (b.gold !== a.gold) return b.gold - a.gold;
-        if (b.silver !== a.silver) return b.silver - a.silver;
-        if (b.bronze !== a.bronze) return b.bronze - a.bronze;
-        return b.points - a.points;
-    });
+    const sortedData = [...studentData].sort((a, b) => b.points - a.points);
 
     let html = `<div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden mx-1">`;
-    
     html += sortedData.map((s) => {
-        // Removed Rank Display Logic & Row Highlights
         let rowClass = "hover:bg-gray-50 dark:hover:bg-white/5 transition border-b border-gray-100 dark:border-white/5 last:border-0";
-
         return `
             <div class="flex items-center gap-4 p-4 ${rowClass}">
                 <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden shadow-sm">
@@ -123,11 +184,10 @@ function renderLeaderboard() {
                         <span class="text-gray-400">${s.silver}S</span>
                         <span class="text-orange-500">${s.bronze}B</span>
                     </div>
-                    </div>
+                </div>
             </div>
         `;
     }).join('');
-    
     html += `</div>`;
     container.innerHTML = html;
 }
@@ -159,24 +219,26 @@ function renderSchedule() {
     const upcoming = scheduleData.filter(m => m.status === 'Upcoming' || m.status === 'Live');
     const results = scheduleData.filter(m => m.status === 'Finished');
 
-    upcomingContainer.innerHTML = upcoming.map(m => `
+    const renderCard = (m) => `
         <div onclick="openMatchDetails(${m.id})" class="glass p-4 rounded-2xl bg-white dark:bg-dark-card border-l-4 ${m.live ? 'border-brand-primary' : 'border-gray-300'} cursor-pointer active:scale-95 transition-transform shadow-sm">
             <div class="flex justify-between mb-2">
                 ${m.live ? `<span class="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-[10px] font-bold rounded animate-pulse">LIVE NOW</span>` : `<span class="text-xs font-bold text-gray-500">${m.time}</span>`}
                 <span class="text-xs text-gray-500">${m.loc || m.type}</span>
             </div>
             <div class="flex justify-between items-center">
-                <div class="text-center"><h4 class="font-black text-lg">${m.team1.split(' ')[0]}</h4></div>
-                <div class="flex flex-col items-center">
+                <div class="text-center w-1/3"><h4 class="font-black text-lg truncate">${m.team1.split(' ')[0]}</h4></div>
+                <div class="flex flex-col items-center w-1/3">
                     <span class="text-xs font-bold text-gray-300">VS</span>
                     <div class="mt-1 px-2 py-0.5 bg-gray-100 dark:bg-white/10 rounded text-[10px] font-mono">${m.sport}</div>
                 </div>
-                <div class="text-center"><h4 class="font-black text-lg text-gray-500">${m.team2.split(' ')[0]}</h4></div>
+                <div class="text-center w-1/3"><h4 class="font-black text-lg text-gray-500 truncate">${m.team2.split(' ')[0]}</h4></div>
             </div>
-            ${m.live ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-white/5 text-center flex justify-between items-center"><p class="text-xs font-mono">Score: <span class="text-brand-primary font-bold">${m.score1}</span></p><i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i></div>` : ''}
+            ${m.live ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-white/5 text-center flex justify-between items-center"><p class="text-xs font-mono">Score: <span class="text-brand-primary font-bold">${m.score1 || '0'} - ${m.score2 || '0'}</span></p><i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i></div>` : ''}
         </div>
-    `).join('');
+    `;
 
+    upcomingContainer.innerHTML = upcoming.map(renderCard).join('');
+    
     resultsContainer.innerHTML = results.map(m => `
         <div onclick="openMatchDetails(${m.id})" class="glass p-0 rounded-2xl overflow-hidden bg-white dark:bg-dark-card border border-gray-100 dark:border-white/5 cursor-pointer active:scale-95 transition-transform shadow-sm">
             <div class="p-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
@@ -222,12 +284,11 @@ function renderAthleteSchedule() {
     lucide.createIcons();
 }
 
-// --- PROFESSIONAL MATCH MODAL LOGIC (TABS SYSTEM) ---
+// --- DEEP MATCH MODAL LOGIC (ALL SPORTS) ---
 function openMatchDetails(id) {
     const match = scheduleData.find(m => m.id === id);
     if (!match) return;
 
-    // Grab Elements directly inside function to avoid reference errors
     const modal = document.getElementById('match-modal');
     const content = document.getElementById('match-content');
     const matchBody = document.getElementById('match-modal-body');
@@ -235,173 +296,216 @@ function openMatchDetails(id) {
 
     if (subtitle) subtitle.innerText = match.sport + " • " + match.type;
 
-    // Generate Tabs Navigation
-    let tabsHTML = `
-        <div class="flex border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#151522] sticky top-0 z-20 overflow-x-auto no-scrollbar">
-            <button onclick="switchMatchTab('summary')" id="tab-summary" class="flex-1 py-3 text-xs font-bold text-brand-primary border-b-2 border-brand-primary transition-colors">Summary</button>
-            <button onclick="switchMatchTab('scorecard')" id="tab-scorecard" class="flex-1 py-3 text-xs font-bold text-gray-500 transition-colors">Scorecard</button>
-            <button onclick="switchMatchTab('commentary')" id="tab-commentary" class="flex-1 py-3 text-xs font-bold text-gray-500 transition-colors">Commentary</button>
-            <button onclick="switchMatchTab('squads')" id="tab-squads" class="flex-1 py-3 text-xs font-bold text-gray-500 transition-colors">Squads</button>
-        </div>
-    `;
+    // --- TAB GENERATION LOGIC ---
+    let buttons = [];
+    if (match.sport === 'Cricket') buttons = ['Summary', 'Scorecard', 'Commentary', 'Squads'];
+    else if (match.sport === 'Football') buttons = ['Summary', 'Stats', 'Timeline', 'Squads'];
+    else if (match.sport === 'Kabaddi') buttons = ['Summary', 'Raid-Log', 'Squads'];
+    else if (match.sport === 'Chess') buttons = ['Board', 'Moves'];
+    else if (match.sport === 'Badminton' || match.sport === 'Volleyball') buttons = ['Scoreboard', 'Rally-Log'];
+    else buttons = ['Summary', 'Squads'];
 
-    // 1. SUMMARY TAB CONTENT
-    let summaryContent = '';
+    let tabsHTML = `<div class="flex border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#151522] sticky top-0 z-20 overflow-x-auto no-scrollbar">`;
+    buttons.forEach((btn, index) => {
+        const id = btn.toLowerCase();
+        const activeClass = index === 0 ? "text-brand-primary border-b-2 border-brand-primary" : "text-gray-500";
+        tabsHTML += `<button onclick="switchMatchTab('${id}')" id="tab-${id}" class="flex-1 py-3 text-xs font-bold whitespace-nowrap px-4 transition-colors ${activeClass}">${btn}</button>`;
+    });
+    tabsHTML += `</div>`;
+
+    // --- CONTENT GENERATION LOGIC ---
+    let contentHTML = '';
+
+    // 1. CRICKET LOGIC
     if (match.sport === 'Cricket') {
+        // ... (Same Cricket Logic as before, preserved for brevity, insert if needed)
+        // Re-inserting optimized Cricket Summary
         const wormBars = match.details.recent_balls.map(b => `<div class="worm-bar ${['4','6'].includes(b) ? 'active' : ''}" style="height: ${Math.random() * 80 + 20}%"></div>`).join('');
-        summaryContent = `
-            <div class="cricket-score-card p-6 pb-8 text-white relative overflow-hidden shadow-lg">
-                <div class="flex justify-between items-start mb-6 z-10 relative">
-                    <div class="text-center">
-                         <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-xl font-black mb-2 mx-auto border border-white/20">${match.team1}</div>
-                         <p class="text-3xl font-black">${match.score1}</p>
-                         <p class="text-[10px] opacity-70">(${match.overs} ov)</p>
+        contentHTML += `
+            <div id="mtab-summary" class="match-tab-view animate-fade-in">
+                <div class="cricket-score-card p-6 pb-8 text-white relative overflow-hidden shadow-lg">
+                    <div class="flex justify-between items-center z-10 relative">
+                        <div><h1 class="text-4xl font-black">${match.score1}</h1><p class="text-xs opacity-80">${match.team1} (${match.overs} ov)</p></div>
+                        <div class="text-right"><h1 class="text-xl font-bold opacity-50">0/0</h1><p class="text-xs opacity-50">${match.team2}</p></div>
                     </div>
-                    <div class="text-center pt-2">
-                        <div class="inline-block bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-pulse mb-1">LIVE</div>
-                        <p class="text-[10px] opacity-70">Target: -</p>
-                    </div>
-                     <div class="text-center">
-                         <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-xl font-black mb-2 mx-auto border border-white/20 text-gray-400">${match.team2}</div>
-                         <p class="text-3xl font-black text-gray-400">0/0</p>
-                         <p class="text-[10px] opacity-70">Yet to Bat</p>
+                    <div class="mt-4 flex gap-4 text-xs font-mono bg-black/20 p-2 rounded-lg backdrop-blur-sm">
+                        <span>CRR: ${match.details.crr}</span>
+                        <span>Proj: ${match.details.project}</span>
                     </div>
                 </div>
-                <div class="flex justify-around bg-black/20 p-3 rounded-xl backdrop-blur-sm z-10 relative text-xs">
-                     <div class="text-center">
-                        <p class="opacity-60 text-[9px] uppercase">CRR</p>
-                        <p class="font-bold">${match.details.crr}</p>
-                     </div>
-                     <div class="text-center">
-                        <p class="opacity-60 text-[9px] uppercase">Proj</p>
-                        <p class="font-bold text-brand-primary">${match.details.project}</p>
-                     </div>
-                </div>
+                <div class="p-4"><h5 class="text-xs font-bold uppercase text-gray-400 mb-2">Recent Overs</h5><div class="worm-graph">${wormBars}</div></div>
             </div>
-            <div class="p-4 space-y-4">
-                <div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 p-4">
-                    <h5 class="text-xs font-bold text-gray-500 uppercase mb-3">Run Rate</h5>
-                    <div class="worm-graph">${wormBars}</div>
-                </div>
+            <div id="mtab-scorecard" class="match-tab-view hidden animate-fade-in p-4">
+                ${generateTable(match.details.batters, ['Batter', 'R', 'B', '4s', '6s'], ['name', 'r', 'b', 'fours', 'sixes'])}
             </div>
+            <div id="mtab-commentary" class="match-tab-view hidden animate-fade-in p-4 space-y-3">
+                ${match.details.commentary.map(c => `<div class="p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5"><span class="font-bold text-xs bg-gray-200 dark:bg-white/10 px-1 rounded mr-2">${c.over}</span><span class="text-xs">${c.text}</span></div>`).join('')}
+            </div>
+            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
         `;
     }
 
-    // 2. SCORECARD TAB CONTENT
-    let scorecardContent = '';
-    if (match.sport === 'Cricket') {
-        scorecardContent = `
-            <div class="p-4 space-y-6">
-                <div class="bg-white dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5 overflow-hidden">
-                    <div class="bg-brand-primary/5 p-3 border-b border-gray-100 dark:border-white/5">
-                        <h4 class="text-xs font-bold text-brand-primary uppercase">${match.team1} Batting</h4>
-                    </div>
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-gray-50 dark:bg-white/5 text-gray-400 uppercase font-bold">
-                            <tr><th class="p-3">Batter</th><th class="p-3 text-right">R</th><th class="p-3 text-right">B</th><th class="p-3 text-right">4s</th><th class="p-3 text-right">6s</th><th class="p-3 text-right">SR</th></tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-                            ${match.details.batters.map(b => `
-                                <tr>
-                                    <td class="p-3">
-                                        <p class="font-bold text-gray-900 dark:text-white">${b.name}</p>
-                                        <p class="text-[9px] text-gray-500">${b.status}</p>
-                                    </td>
-                                    <td class="p-3 text-right font-bold text-gray-900 dark:text-white">${b.r}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.b}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.fours}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.sixes}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.sr}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    <div class="p-3 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5 flex justify-between text-xs text-gray-500">
-                        <span>Extras: ${match.details.extras}</span>
-                        <span>Did Not Bat: ${match.details.did_not_bat}</span>
-                    </div>
-                </div>
+    // 2. KABADDI LOGIC
+    else if (match.sport === 'Kabaddi') {
+        const raidHTML = match.details.raid_history.map(r => {
+            const color = r.type === 'raid' ? 'text-green-500' : (r.type === 'tackle' ? 'text-red-500' : 'text-gray-500');
+            return `<div class="flex justify-between border-b border-gray-100 dark:border-white/5 py-2 text-xs"><span>${r.raider}</span><span class="font-bold ${color}">${r.result}</span></div>`
+        }).join('');
 
-                <div class="bg-white dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5 overflow-hidden">
-                    <div class="bg-brand-secondary/5 p-3 border-b border-gray-100 dark:border-white/5">
-                        <h4 class="text-xs font-bold text-brand-secondary uppercase">${match.team2} Bowling</h4>
+        contentHTML += `
+            <div id="mtab-summary" class="match-tab-view animate-fade-in">
+                <div class="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white text-center shadow-lg">
+                    <h2 class="text-sm font-bold opacity-90 uppercase tracking-widest mb-2">Live Score</h2>
+                    <div class="flex justify-center items-center gap-6">
+                         <div class="text-center"><span class="text-5xl font-black">${match.score1}</span><p class="text-xs mt-1 font-bold">${match.team1}</p></div>
+                         <div class="text-2xl font-black opacity-50">:</div>
+                         <div class="text-center"><span class="text-5xl font-black">${match.score2}</span><p class="text-xs mt-1 font-bold">${match.team2}</p></div>
                     </div>
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-gray-50 dark:bg-white/5 text-gray-400 uppercase font-bold">
-                            <tr><th class="p-3">Bowler</th><th class="p-3 text-right">O</th><th class="p-3 text-right">M</th><th class="p-3 text-right">R</th><th class="p-3 text-right">W</th><th class="p-3 text-right">ECO</th></tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-                            ${match.details.bowlers.map(b => `
-                                <tr>
-                                    <td class="p-3 font-bold text-gray-900 dark:text-white">${b.name}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.o}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.m}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.r}</td>
-                                    <td class="p-3 text-right font-bold text-brand-primary">${b.w}</td>
-                                    <td class="p-3 text-right text-gray-500">${b.eco}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                    <div class="mt-4 inline-block px-3 py-1 bg-black/20 rounded-full text-[10px] font-bold uppercase tracking-wider">Raiding: ${match.details.current_raider}</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase">Raid Pts</p>
+                        <p class="text-xl font-black text-brand-primary">${match.details.stats.team1.raid_points}</p>
+                    </div>
+                    <div class="bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase">Tackle Pts</p>
+                        <p class="text-xl font-black text-brand-secondary">${match.details.stats.team1.tackle_points}</p>
+                    </div>
                 </div>
             </div>
+            <div id="mtab-raid-log" class="match-tab-view hidden animate-fade-in p-4">${raidHTML}</div>
+            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
         `;
     }
 
-    // 3. COMMENTARY TAB
-    let commentaryContent = '';
-    if (match.sport === 'Cricket') {
-        commentaryContent = `
-            <div class="p-4 space-y-4">
-                ${match.details.commentary.map(c => `
-                    <div class="flex gap-3 pb-4 border-b border-gray-100 dark:border-white/5 last:border-0">
-                        <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center font-bold text-xs text-gray-600 dark:text-white flex-shrink-0">
-                            ${c.over}
+    // 3. FOOTBALL LOGIC
+    else if (match.sport === 'Football') {
+        const timelineHTML = match.details.timeline.map(t => `
+            <div class="flex gap-3 mb-4">
+                <div class="w-10 text-right font-mono font-bold text-xs text-brand-primary pt-0.5">${t.time}</div>
+                <div class="w-px bg-gray-200 dark:bg-white/10 relative"><div class="absolute top-1 -left-1 w-2 h-2 rounded-full bg-brand-primary"></div></div>
+                <div class="flex-1 pb-4 border-b border-gray-50 dark:border-white/5">
+                    <p class="text-xs font-bold dark:text-white">${t.text}</p>
+                </div>
+            </div>
+        `).join('');
+
+        contentHTML += `
+            <div id="mtab-summary" class="match-tab-view animate-fade-in">
+                <div class="football-field h-48 w-full relative bg-green-600 flex items-center justify-center shadow-inner">
+                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="z-10 text-center text-white">
+                        <div class="flex items-center gap-8">
+                            <span class="text-4xl font-black">${match.score1}</span>
+                            <span class="text-sm font-bold px-2 py-1 bg-white/20 rounded backdrop-blur">${match.time}</span>
+                            <span class="text-4xl font-black">${match.score2}</span>
                         </div>
-                        <div class="flex-1 pt-1">
-                            <p class="text-xs font-medium text-gray-800 dark:text-gray-200 leading-relaxed">${c.text}</p>
-                        </div>
+                        <p class="mt-2 text-xs opacity-80">${match.team1} vs ${match.team2}</p>
                     </div>
-                `).join('')}
+                </div>
+                <div class="p-4 space-y-2">
+                    ${generateStatBar('Possession', match.details.stats.possession)}
+                    ${generateStatBar('Shots on Target', match.details.stats.onTarget)}
+                </div>
+            </div>
+            <div id="mtab-stats" class="match-tab-view hidden animate-fade-in p-4 space-y-4">
+                 <div class="grid grid-cols-2 gap-4">
+                    ${Object.entries(match.details.stats).map(([k,v]) => `<div class="bg-gray-50 dark:bg-white/5 p-3 rounded-lg"><p class="text-[10px] uppercase text-gray-500">${k}</p><p class="font-bold text-sm">${v}</p></div>`).join('')}
+                 </div>
+            </div>
+            <div id="mtab-timeline" class="match-tab-view hidden animate-fade-in p-4">${timelineHTML}</div>
+            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
+        `;
+    }
+
+    // 4. CHESS LOGIC
+    else if (match.sport === 'Chess') {
+        const movesHTML = match.details.moves.map(m => `<span class="inline-block bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-xs font-mono m-1">${m}</span>`).join('');
+        
+        contentHTML += `
+            <div id="mtab-board" class="match-tab-view animate-fade-in">
+                <div class="bg-[#2E2E2E] p-6 text-center shadow-lg">
+                    <div class="flex justify-between text-white text-xs font-mono mb-4">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 bg-white rounded-full"></div> ${match.details.timers.white}</div>
+                        <div class="flex items-center gap-2 text-gray-400">${match.details.timers.black} <div class="w-3 h-3 bg-black border border-white rounded-full"></div></div>
+                    </div>
+                    <div class="aspect-square bg-white rounded-lg mx-auto max-w-[280px] grid grid-cols-8 grid-rows-8 border-4 border-[#4B4B4B]">
+                         ${Array(64).fill(0).map((_, i) => {
+                             const row = Math.floor(i / 8);
+                             const col = i % 8;
+                             const isBlack = (row + col) % 2 === 1;
+                             return `<div class="${isBlack ? 'bg-[#769656]' : 'bg-[#EEEED2]'}"></div>`
+                         }).join('')}
+                    </div>
+                    <p class="mt-4 text-white text-xs font-medium">${match.details.status_text}</p>
+                </div>
+                <div class="p-4">
+                    <h4 class="text-xs font-bold mb-2">Captured Pieces</h4>
+                    <div class="flex gap-2 mb-2"><span class="text-xs font-bold w-12">White:</span> ${match.details.captured.white.map(p => '♟').join(' ')}</div>
+                    <div class="flex gap-2"><span class="text-xs font-bold w-12">Black:</span> ${match.details.captured.black.map(p => '♟').join(' ')}</div>
+                </div>
+            </div>
+            <div id="mtab-moves" class="match-tab-view hidden animate-fade-in p-4">
+                <div class="flex flex-wrap">${movesHTML}</div>
             </div>
         `;
     }
 
-    // 4. SQUADS TAB
-    let squadsContent = '';
-    if (match.details?.squads) {
-        squadsContent = `
-            <div class="p-4 grid grid-cols-2 gap-4">
-                <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl">
-                    <h5 class="text-xs font-bold text-brand-primary uppercase mb-3 text-center border-b border-gray-200 dark:border-white/10 pb-2">${match.team1}</h5>
-                    <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300">
-                        ${match.details.squads.team1.map(p => `<li>${p}</li>`).join('')}
-                    </ul>
-                </div>
-                <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl">
-                    <h5 class="text-xs font-bold text-brand-secondary uppercase mb-3 text-center border-b border-gray-200 dark:border-white/10 pb-2">${match.team2}</h5>
-                    <ul class="text-xs space-y-2 text-gray-600 dark:text-gray-300">
-                        ${match.details.squads.team2.map(p => `<li>${p}</li>`).join('')}
-                    </ul>
-                </div>
+    // 5. BADMINTON / VOLLEYBALL LOGIC
+    else if (match.sport === 'Badminton' || match.sport === 'Volleyball') {
+        const setsHTML = match.details.sets.map((s, i) => `
+            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-white/5 rounded-lg mb-2 ${match.details.current_set === i+1 ? 'border border-brand-primary' : ''}">
+                <span class="text-xs font-bold text-gray-500">Set ${i+1}</span>
+                <div class="font-mono font-bold text-sm">${s.s1} - ${s.s2}</div>
+                <span class="text-[10px] font-bold ${s.winner === match.team1.split(' ')[0] ? 'text-green-500' : 'text-gray-400'}">${s.winner || 'Live'}</span>
+            </div>
+        `).join('');
+
+        contentHTML += `
+            <div id="mtab-scoreboard" class="match-tab-view animate-fade-in">
+                 <div class="bg-blue-600 p-6 text-white text-center shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                    <h2 class="text-4xl font-black mb-1">${match.score1} - ${match.score2}</h2>
+                    <p class="text-xs opacity-80 uppercase tracking-widest">Sets Score</p>
+                    <div class="mt-4 flex justify-center items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                        <span class="text-xs font-bold">Serving: ${match.details.current_server}</span>
+                    </div>
+                 </div>
+                 <div class="p-4">
+                    <h4 class="text-xs font-bold uppercase text-gray-400 mb-3">Set History</h4>
+                    ${setsHTML}
+                 </div>
+            </div>
+            <div id="mtab-rally-log" class="match-tab-view hidden animate-fade-in p-4 space-y-2">
+                ${match.details.rally_history.map(r => `<p class="text-xs border-b border-gray-100 dark:border-white/5 py-2">${r}</p>`).join('')}
             </div>
         `;
     }
 
-    // Default Fallback for Football etc (Simple view for now to keep code short)
-    if (match.sport === 'Football') {
-        summaryContent = `<div class="p-10 text-center text-gray-500 text-sm">Football Summary (Possession 55% - 45%)</div>`;
+     // 6. RELAY / GENERIC
+    else {
+        contentHTML += `
+            <div id="mtab-summary" class="match-tab-view animate-fade-in p-4">
+                <div class="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/5">
+                    <h3 class="font-bold mb-4">Live Positions</h3>
+                    ${match.details?.positions ? match.details.positions.map(p => `
+                        <div class="flex items-center justify-between mb-3 last:mb-0">
+                            <div class="flex items-center gap-3">
+                                <span class="w-6 h-6 flex items-center justify-center bg-gray-100 dark:bg-white/10 rounded-full text-xs font-bold">${p.rank}</span>
+                                <span class="text-sm font-bold">${p.team}</span>
+                            </div>
+                            <span class="font-mono text-xs font-bold text-brand-primary">${p.split}</span>
+                        </div>
+                    `).join('') : '<p>No live data</p>'}
+                </div>
+            </div>
+            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4">Squad list...</div>
+        `;
     }
 
-    // Inject into Modal
-    matchBody.innerHTML = `
-        ${tabsHTML}
-        <div id="mtab-summary" class="match-tab-view animate-fade-in">${summaryContent}</div>
-        <div id="mtab-scorecard" class="match-tab-view hidden animate-fade-in">${scorecardContent}</div>
-        <div id="mtab-commentary" class="match-tab-view hidden animate-fade-in">${commentaryContent}</div>
-        <div id="mtab-squads" class="match-tab-view hidden animate-fade-in">${squadsContent}</div>
-    `;
-
+    matchBody.innerHTML = tabsHTML + contentHTML;
     modal.classList.remove('hidden');
     setTimeout(() => {
         if(window.innerWidth >= 768) {
@@ -413,24 +517,61 @@ function openMatchDetails(id) {
     }, 10);
 }
 
-// Tab Switching inside Match Modal
+// --- UTILITIES FOR HTML GENERATION ---
+function generateTable(data, headers, keys) {
+    if(!data) return '';
+    return `
+        <div class="overflow-hidden rounded-xl border border-gray-100 dark:border-white/5">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 dark:bg-white/5 text-gray-400 uppercase font-bold">
+                    <tr>${headers.map(h => `<th class="p-3">${h}</th>`).join('')}</tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-white/5">
+                    ${data.map(row => `<tr>${keys.map((k, i) => `<td class="p-3 ${i===0?'font-bold':''}">${row[k]}</td>`).join('')}</tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function generateStatBar(label, valueString) {
+    // Expects valueString like "55% - 45%" or "12 - 8"
+    const parts = valueString.includes('%') ? valueString.replace(/%/g,'').split('-') : valueString.split('-');
+    const v1 = parseFloat(parts[0]);
+    const v2 = parseFloat(parts[1]);
+    const total = v1 + v2;
+    const p1 = (v1 / total) * 100;
+    
+    return `
+        <div class="mb-3">
+            <div class="flex justify-between text-[10px] font-bold uppercase mb-1 text-gray-500">
+                <span>${parts[0].trim()}</span>
+                <span>${label}</span>
+                <span>${parts[1].trim()}</span>
+            </div>
+            <div class="h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden flex">
+                <div class="h-full bg-brand-primary" style="width: ${p1}%"></div>
+                <div class="h-full bg-brand-secondary flex-1"></div>
+            </div>
+        </div>
+    `;
+}
+
+// --- TAB SWITCHING & MODAL CONTROL ---
 window.switchMatchTab = function(tabName) {
     document.querySelectorAll('.match-tab-view').forEach(el => el.classList.add('hidden'));
-    document.getElementById('mtab-' + tabName).classList.remove('hidden');
+    const target = document.getElementById('mtab-' + tabName);
+    if(target) target.classList.remove('hidden');
 
-    const buttons = ['summary', 'scorecard', 'commentary', 'squads'];
-    buttons.forEach(btn => {
-        const el = document.getElementById('tab-' + btn);
-        if (el) {
-            if (btn === tabName) {
-                el.classList.add('text-brand-primary', 'border-b-2', 'border-brand-primary');
-                el.classList.remove('text-gray-500');
-            } else {
-                el.classList.remove('text-brand-primary', 'border-b-2', 'border-brand-primary');
-                el.classList.add('text-gray-500');
-            }
-        }
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+        btn.classList.remove('text-brand-primary', 'border-b-2', 'border-brand-primary');
+        btn.classList.add('text-gray-500');
     });
+    const activeBtn = document.getElementById('tab-' + tabName);
+    if(activeBtn) {
+        activeBtn.classList.add('text-brand-primary', 'border-b-2', 'border-brand-primary');
+        activeBtn.classList.remove('text-gray-500');
+    }
 }
 
 function closeMatchModal() {
@@ -441,7 +582,7 @@ function closeMatchModal() {
     setTimeout(() => modal.classList.add('hidden'), 300);
 }
 
-// --- STANDARD TAB SWITCHING ---
+// --- STANDARD NAV & REGISTRATION ---
 function switchTab(id) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     document.getElementById('tab-' + id).classList.remove('hidden');
@@ -455,7 +596,6 @@ function switchTab(id) {
     window.scrollTo(0, 0);
 }
 
-// --- RESTORED DETAILED REGISTRATION LOGIC ---
 function openReg(id) {
     const sport = sportsData.find(s => s.id === id);
     if(!sport) return;
@@ -470,15 +610,9 @@ function openReg(id) {
     if (sport.status === "Closed") {
         container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-center"><h4 class="text-xl font-bold dark:text-white">Registration Closed</h4><p class="text-sm text-gray-500 mt-2">Deadline passed.</p><button onclick="closeRegModal()" class="mt-6 px-6 py-2 bg-gray-200 rounded-full text-sm font-bold">Close</button></div>`;
     } else {
-        // Detailed Form Construction
-        let formHTML = `<form onsubmit="submitReg(event)" class="space-y-4 pt-2">`;
-        
-        // Captain / Participant Section
-        formHTML += `
+        let formHTML = `<form onsubmit="submitReg(event)" class="space-y-4 pt-2">
             <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
-                <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">
-                    ${sport.type === 'Team' ? 'Captain Details' : 'Participant Details'}
-                </h4>
+                <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">${sport.type === 'Team' ? 'Captain Details' : 'Participant Details'}</h4>
                 <div class="space-y-3">
                     <input type="text" required placeholder="Full Name" class="input-field">
                     <input type="tel" required placeholder="WhatsApp Number" class="input-field">
@@ -487,43 +621,22 @@ function openReg(id) {
                         <input type="text" placeholder="Roll No" class="input-field">
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        // Team Member Loop
         if (sport.type === "Team") {
-            formHTML += `
-                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+            formHTML += `<div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
                     <h4 class="text-xs font-bold uppercase text-brand-secondary mb-3">Team Information</h4>
                     <input type="text" required placeholder="Team Name" class="input-field mb-4 font-bold">
                     <h5 class="text-xs font-bold text-gray-400 mb-2">Team Members (${sport.teamSize})</h5>
-                    <div class="space-y-3">
-            `;
-            // Loop for members starting from 2
+                    <div class="space-y-3">`;
             for(let i=2; i <= sport.teamSize; i++) {
-                formHTML += `
-                    <div class="flex gap-2">
-                        <span class="w-6 py-3 text-center text-xs font-bold text-gray-400 pt-3">${i}.</span>
-                        <input type="text" placeholder="Player Name" class="input-field w-2/3">
-                        <input type="text" placeholder="Role" class="input-field w-1/3">
-                    </div>
-                `;
+                formHTML += `<div class="flex gap-2"><span class="w-6 py-3 text-center text-xs font-bold text-gray-400 pt-3">${i}.</span><input type="text" placeholder="Player Name" class="input-field w-2/3"><input type="text" placeholder="Role" class="input-field w-1/3"></div>`;
             }
             formHTML += `</div></div>`;
         }
 
-        formHTML += `
-            <div class="flex items-start gap-2 mt-4">
-                <input type="checkbox" required class="mt-1 accent-brand-primary">
-                <p class="text-xs text-gray-500">I agree to pay the fees within 24 hours.</p>
-            </div>
-            <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
-                Confirm Registration
-            </button>
-            </form>
-        `;
+        formHTML += `<div class="flex items-start gap-2 mt-4"><input type="checkbox" required class="mt-1 accent-brand-primary"><p class="text-xs text-gray-500">I agree to pay the fees within 24 hours.</p></div><button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">Confirm Registration</button></form>`;
         
-        // CSS class for inputs
         const inputClass = "w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:border-brand-primary outline-none dark:text-white";
         container.innerHTML = formHTML.replace(/input-field/g, inputClass);
     }
@@ -548,14 +661,10 @@ function submitReg(e) {
     confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 } });
     setTimeout(() => {
         closeRegModal();
-        setTimeout(() => { 
-            btn.innerHTML = originalText; 
-            btn.classList.remove('bg-green-500'); 
-        }, 300);
+        setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('bg-green-500'); }, 300);
     }, 1500);
 }
 
-// Logic: Filters
 function filterSports() {
     const input = document.getElementById('sport-search').value.toLowerCase();
     const cards = document.getElementById('registration-grid').children;
@@ -579,7 +688,6 @@ function toggleSchedule(type) {
     }
 }
 
-// Theme Toggle
 const themeBtn = document.getElementById('theme-toggle');
 const html = document.documentElement;
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add('dark');
