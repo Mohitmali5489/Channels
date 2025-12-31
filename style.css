@@ -1,16 +1,25 @@
 /* Base Transitions */
-body { transition: background-color 0.3s ease, color 0.3s ease; }
+body { 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
 
-/* Glassmorphism */
+/* Glassmorphism Effect */
 .glass {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.85); /* Slightly more opaque for nav */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 .dark .glass {
-    background: rgba(21, 21, 34, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(21, 21, 34, 0.8);
+}
+
+/* Nav specific: removed border-top logic here just in case, dealt with in HTML classes mostly */
+nav.glass {
+    border-top: none !important;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
+}
+.dark nav.glass {
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
 }
 
 /* Utilities */
@@ -22,36 +31,56 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
 .nav-item.active { color: #6366F1; }
 .nav-item.active i { transform: translateY(-2px); }
 .nav-item.active span { font-weight: 700; }
-/* No border-top on nav, just indicator */
+
 .nav-item.active::after {
     content: '';
     position: absolute;
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
+    width: 30px;
     height: 4px;
     background: #6366F1;
     border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
 
-/* Animation */
+/* Match Detail Specifics */
+.cricket-score-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: white;
+}
+.football-field {
+    background: linear-gradient(to bottom, #059669 0%, #047857 100%);
+    position: relative;
+    overflow: hidden;
+}
+.football-field::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.2);
+}
+.football-field::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+
+/* Animation Utility */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
-}
-
-/* Match Specific Styles */
-.timeline-line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(156, 163, 175, 0.3); /* gray-400 */
-    transform: translateX(-50%);
 }
