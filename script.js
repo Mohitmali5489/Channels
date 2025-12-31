@@ -8,16 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- DATA: LEADERBOARD ---
+// Raw data - will be sorted by the render function
 const studentData = [
     { name: "Rohan Das", dept: "CS", gold: 4, silver: 1, bronze: 0, points: 220, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan" },
     { name: "Priya Sharma", dept: "BMS", gold: 3, silver: 2, bronze: 1, points: 195, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya" },
     { name: "Amit Kumar", dept: "BCOM", gold: 2, silver: 3, bronze: 2, points: 170, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" },
     { name: "Sneha Patel", dept: "BAF", gold: 1, silver: 3, bronze: 1, points: 140, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha" },
     { name: "Vedant Patil", dept: "BA", gold: 1, silver: 2, bronze: 0, points: 110, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vedant" },
-    { name: "Rahul Singh", dept: "CS", gold: 0, silver: 2, bronze: 2, points: 90, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" }
+    { name: "Rahul Singh", dept: "CS", gold: 0, silver: 2, bronze: 2, points: 90, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" },
+    { name: "Anjali Gupta", dept: "BFM", gold: 2, silver: 0, bronze: 0, points: 100, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali" }
 ];
 
-// --- DATA: SCHEDULE (ENHANCED DEMO DATA) ---
+// --- DATA: SCHEDULE (REALISTIC DEEP DATA) ---
 const scheduleData = [
     { 
         id: 101, sport: "Cricket", type: "Semi Final", team1: "CS", team2: "BCOM", score1: "88/2", score2: "Yet to Bat", 
@@ -29,21 +31,53 @@ const scheduleData = [
             bowl: { name: "Rahul", figures: "1/12 (1.4)" },
             crr: "10.15", 
             project: "118",
-            balls: ["4", "1", "0", "6", "1", "W"] // Recent balls
+            balls: ["4", "1", "0", "6", "1", "W"], // Recent balls
+            partnership: "56 runs (32 balls)",
+            fall_of_wickets: "1-12 (Raj, 2.1 ov), 2-32 (Amit, 4.3 ov)",
+            squads: {
+                team1: ["Rohan (C)", "Suresh", "Raj", "Amit", "Vikram", "Sahil", "Tanmay", "Kunal"],
+                team2: ["Rahul (C)", "Vivek", "Jayesh", "Mayank", "Omkar", "Pratik", "Yash", "Nikhil"]
+            }
         }
     },
     { 
         id: 105, sport: "Football", type: "Finals", team1: "BMS", team2: "BAF", status: "Finished", 
         winner: "BMS", result: "2 - 1", live: false,
         details: { 
-            scorers: [{name: "Sahil (BMS)", time: "12'"}, {name: "Raj (BAF)", time: "44'"}, {name: "Amit (BMS)", time: "88'"}], 
+            scorers: [
+                {name: "Sahil (BMS)", time: "12'", type: "Goal"}, 
+                {name: "Raj (BAF)", time: "44'", type: "Goal"}, 
+                {name: "Amit (BMS)", time: "88'", type: "Penalty"}
+            ], 
             cards: "2 Yellow",
-            stats: { possession: 55, shots: 12, onTarget: 5 }
+            stats: { 
+                possession: 55, shots: 12, onTarget: 5, corners: 6, fouls: 8, offsides: 2 
+            },
+            lineups: {
+                team1: ["Sahil (GK)", "Karan", "Arjun", "Vikram", "Sameer", "Amit", "Rohan", "Siddharth", "Yash", "Pranav", "Dev"],
+                team2: ["Raj (GK)", "Vivek", "Suresh", "Manoj", "Kunal", "Tanmay", "Omkar", "Nikhil", "Pratik", "Jay", "Aman"]
+            },
+            subs: {
+                team1: ["Rahul", "Varun"],
+                team2: ["Sanket", "Piyush"]
+            }
         }
     },
-    { id: 102, sport: "Badminton", type: "Singles", team1: "Rahul (CS)", team2: "Amit (BFM)", status: "Upcoming", time: "4:00 PM", loc: "Court 2", live: false },
-    { id: 103, sport: "Kabaddi", type: "Qualifier", team1: "BMS", team2: "BAF", status: "Upcoming", time: "5:30 PM", loc: "Ground A", live: false },
-    { id: 104, sport: "Chess", type: "Finals", team1: "Aditya P", team2: "Neha S", status: "Finished", winner: "Aditya P", result: "1 - 0", live: false }
+    { 
+        id: 102, sport: "Badminton", type: "Singles", team1: "Rahul (CS)", team2: "Amit (BFM)", status: "Upcoming", 
+        time: "4:00 PM", loc: "Court 2", live: false,
+        details: { sets: "Best of 3", head_to_head: "Rahul leads 2-1" }
+    },
+    { 
+        id: 104, sport: "Chess", type: "Finals", team1: "Aditya P", team2: "Neha S", status: "Finished", 
+        winner: "Aditya P", result: "1 - 0", live: false,
+        details: { moves: 42, opening: "Queen's Gambit", duration: "45 mins" }
+    },
+    { 
+        id: 103, sport: "Kabaddi", type: "Qualifier", team1: "BMS", team2: "BAF", status: "Upcoming", 
+        time: "5:30 PM", loc: "Ground A", live: false,
+        details: { prev_meeting: "BMS won by 12 points" }
+    }
 ];
 
 const sportsData = [
@@ -61,41 +95,62 @@ const sportsData = [
 
 function renderLeaderboard() {
     const container = document.getElementById('leaderboard-container');
-    const top3 = studentData.slice(0, 3);
-    const rest = studentData.slice(3);
+    
+    // SORT LOGIC: Gold > Silver > Bronze > Points
+    const sortedData = [...studentData].sort((a, b) => {
+        if (b.gold !== a.gold) return b.gold - a.gold;
+        if (b.silver !== a.silver) return b.silver - a.silver;
+        if (b.bronze !== a.bronze) return b.bronze - a.bronze;
+        return b.points - a.points;
+    });
+
+    const top3 = sortedData.slice(0, 3);
+    const rest = sortedData.slice(3);
 
     // Podium HTML
     let podiumHTML = `
         <div class="flex justify-center items-end gap-4 mb-8 pt-4">
             <div class="podium-card podium-2">
                 <div class="relative w-16 h-16 rounded-full border-4 border-gray-100 dark:border-white/10 overflow-hidden mb-2">
-                    <img src="${top3[1].avatar}" class="w-full h-full">
+                    <img src="${top3[1].avatar}" class="w-full h-full bg-gray-200">
                     <div class="rank-badge rank-2-bg">2</div>
                 </div>
                 <div class="text-center">
-                    <p class="text-xs font-bold truncate w-20">${top3[1].name}</p>
-                    <p class="text-[10px] font-bold text-gray-500">${top3[1].points} pts</p>
+                    <p class="text-xs font-bold truncate w-20 dark:text-gray-200">${top3[1].name}</p>
+                    <div class="flex gap-1 justify-center mt-1 text-[8px] font-bold">
+                        <span class="text-yellow-500">${top3[1].gold}G</span>
+                        <span class="text-gray-400">${top3[1].silver}S</span>
+                        <span class="text-orange-400">${top3[1].bronze}B</span>
+                    </div>
                 </div>
             </div>
             <div class="podium-card podium-1">
                 <div class="relative w-20 h-20 rounded-full border-4 border-yellow-100 dark:border-yellow-500/30 overflow-hidden mb-2 shadow-xl shadow-brand-gold/20">
-                    <img src="${top3[0].avatar}" class="w-full h-full">
+                    <img src="${top3[0].avatar}" class="w-full h-full bg-gray-200">
                     <div class="absolute inset-0 border-4 border-yellow-400 rounded-full opacity-50"></div>
                     <div class="rank-badge rank-1-bg w-8 h-8 text-sm bottom-[-12px]">1</div>
                 </div>
                 <div class="text-center">
-                    <p class="text-sm font-black truncate w-24">${top3[0].name}</p>
-                    <p class="text-xs font-bold text-brand-primary">${top3[0].points} pts</p>
+                    <p class="text-sm font-black truncate w-24 dark:text-white">${top3[0].name}</p>
+                    <div class="flex gap-1 justify-center mt-1 text-[10px] font-bold">
+                        <span class="text-yellow-500">${top3[0].gold}G</span>
+                        <span class="text-gray-400">${top3[0].silver}S</span>
+                        <span class="text-orange-400">${top3[0].bronze}B</span>
+                    </div>
                 </div>
             </div>
             <div class="podium-card podium-3">
                 <div class="relative w-16 h-16 rounded-full border-4 border-gray-100 dark:border-white/10 overflow-hidden mb-2">
-                    <img src="${top3[2].avatar}" class="w-full h-full">
+                    <img src="${top3[2].avatar}" class="w-full h-full bg-gray-200">
                     <div class="rank-badge rank-3-bg">3</div>
                 </div>
                 <div class="text-center">
-                    <p class="text-xs font-bold truncate w-20">${top3[2].name}</p>
-                    <p class="text-[10px] font-bold text-gray-500">${top3[2].points} pts</p>
+                    <p class="text-xs font-bold truncate w-20 dark:text-gray-200">${top3[2].name}</p>
+                    <div class="flex gap-1 justify-center mt-1 text-[8px] font-bold">
+                        <span class="text-yellow-500">${top3[2].gold}G</span>
+                        <span class="text-gray-400">${top3[2].silver}S</span>
+                        <span class="text-orange-400">${top3[2].bronze}B</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,13 +162,19 @@ function renderLeaderboard() {
         <div class="flex items-center gap-3 p-3 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/5 transition">
             <span class="font-bold text-gray-400 w-6 text-center text-sm">#${i + 4}</span>
             <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
-                <img src="${s.avatar}" class="w-full h-full">
+                <img src="${s.avatar}" class="w-full h-full bg-gray-200">
             </div>
             <div class="flex-1">
                 <h4 class="font-bold text-sm dark:text-gray-200">${s.name}</h4>
                 <p class="text-[10px] text-gray-500 uppercase font-bold">${s.dept}</p>
             </div>
-            <span class="text-xs font-bold text-gray-900 dark:text-white">${s.points} pts</span>
+            <div class="text-right">
+                <div class="flex gap-1 justify-end text-[10px] font-bold">
+                    <span class="text-yellow-500">${s.gold}</span>
+                    <span class="text-gray-400">${s.silver}</span>
+                    <span class="text-orange-400">${s.bronze}</span>
+                </div>
+            </div>
         </div>
     `).join('');
     listHTML += `</div>`;
@@ -211,7 +272,7 @@ function renderAthleteSchedule() {
     lucide.createIcons();
 }
 
-// --- PROFESSIONAL MATCH MODAL ---
+// --- PROFESSIONAL MATCH MODAL LOGIC ---
 const matchModal = document.getElementById('match-modal');
 const matchContent = document.getElementById('match-content');
 const matchBody = document.getElementById('match-modal-body');
@@ -225,7 +286,6 @@ function openMatchDetails(id) {
     let content = "";
 
     if (match.sport === "Cricket") {
-        // Generating Worm Graph Bars
         const wormBars = match.details.balls.map(b => `<div class="worm-bar ${['4','6'].includes(b) ? 'active' : ''}" style="height: ${Math.random() * 80 + 20}%"></div>`).join('');
         
         content = `
@@ -238,7 +298,7 @@ function openMatchDetails(id) {
                     </div>
                     <div class="text-center pt-2">
                         <div class="inline-block bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-pulse mb-1">LIVE</div>
-                        <p class="text-[10px] opacity-70">Target: -</p>
+                        <p class="text-[10px] opacity-70">P'ship: ${match.details.partnership}</p>
                     </div>
                      <div class="text-center">
                          <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-xl font-black mb-2 mx-auto border border-white/20 text-gray-400">${match.team2}</div>
@@ -256,8 +316,8 @@ function openMatchDetails(id) {
                         <p class="font-bold text-base text-brand-primary">${match.details.project}</p>
                      </div>
                      <div class="text-center flex-1">
-                        <p class="opacity-60 text-[9px] uppercase">Partnership</p>
-                        <p class="font-bold text-base">56 (32)</p>
+                        <p class="opacity-60 text-[9px] uppercase">Target</p>
+                        <p class="font-bold text-base">-</p>
                      </div>
                 </div>
             </div>
@@ -287,22 +347,36 @@ function openMatchDetails(id) {
 
                 <div>
                      <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Recent Balls</p>
-                     <div class="flex gap-2">
+                     <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                         ${match.details.balls.map(b => {
                             let color = 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300';
                             if(b === '4') color = 'bg-blue-500 text-white';
                             if(b === '6') color = 'bg-purple-500 text-white';
                             if(b === 'W') color = 'bg-red-500 text-white';
-                            return `<div class="w-8 h-8 rounded-full ${color} flex items-center justify-center font-bold text-xs shadow-sm">${b}</div>`;
+                            return `<div class="w-8 h-8 rounded-full ${color} flex-shrink-0 flex items-center justify-center font-bold text-xs shadow-sm">${b}</div>`;
                         }).join('')}
                      </div>
                 </div>
                 
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Run Rate (Last 10 Overs)</p>
-                    <div class="h-20 bg-gray-900 rounded-xl p-2 flex items-end gap-1 overflow-hidden relative">
-                         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-brand-primary/20 to-transparent"></div>
-                         ${Array(20).fill(0).map(() => `<div class="flex-1 bg-brand-primary rounded-t-sm opacity-60" style="height: ${Math.random() * 80 + 10}%"></div>`).join('')}
+                <div class="glass p-4 rounded-xl border border-gray-100 dark:border-white/5">
+                    <h5 class="text-xs font-bold text-gray-500 uppercase mb-2">Fall of Wickets</h5>
+                    <p class="text-xs text-gray-800 dark:text-gray-300 leading-relaxed">${match.details.fall_of_wickets}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-50 dark:bg-white/5 p-3 rounded-xl">
+                        <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-2">CS Squad</h5>
+                        <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+                            ${match.details.squads.team1.slice(0,5).map(p => `<li>${p}</li>`).join('')}
+                            <li class="italic text-[9px]">+3 others</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-white/5 p-3 rounded-xl">
+                        <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-2">BCOM Squad</h5>
+                        <ul class="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+                            ${match.details.squads.team2.slice(0,5).map(p => `<li>${p}</li>`).join('')}
+                            <li class="italic text-[9px]">+3 others</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -311,7 +385,6 @@ function openMatchDetails(id) {
         content = `
             <div class="football-field h-56 relative flex flex-col justify-center text-white shadow-xl rounded-b-3xl">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
-                
                 <div class="relative z-10 flex w-full justify-around items-center px-4 mt-4">
                      <div class="text-center">
                          <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black font-black text-2xl mb-2 mx-auto border-4 border-white/20">${match.team1}</div>
@@ -339,12 +412,27 @@ function openMatchDetails(id) {
                     </div>
                 </div>
 
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="glass p-2 rounded-lg">
+                        <p class="font-black text-lg">${match.details.stats.shots}</p>
+                        <p class="text-gray-400 text-[9px] uppercase">Shots</p>
+                    </div>
+                    <div class="glass p-2 rounded-lg">
+                        <p class="font-black text-lg">${match.details.stats.corners}</p>
+                        <p class="text-gray-400 text-[9px] uppercase">Corners</p>
+                    </div>
+                    <div class="glass p-2 rounded-lg">
+                        <p class="font-black text-lg text-yellow-500">${match.details.stats.fouls}</p>
+                        <p class="text-gray-400 text-[9px] uppercase">Fouls</p>
+                    </div>
+                </div>
+
                 <div>
-                    <h4 class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-3">Match Events</h4>
+                    <h4 class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-3">Timeline</h4>
                     <div class="space-y-3 relative pl-4 border-l-2 border-dashed border-gray-200 dark:border-white/10">
                         ${match.details.scorers.map(g => `
                             <div class="relative pl-4">
-                                <div class="absolute -left-[23px] top-0 w-5 h-5 bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/20 rounded-full flex items-center justify-center text-[10px]">⚽</div>
+                                <div class="absolute -left-[23px] top-0 w-5 h-5 bg-white dark:bg-dark-bg border border-gray-200 dark:border-white/20 rounded-full flex items-center justify-center text-[10px]">${g.type === 'Goal' ? '⚽' : '🥅'}</div>
                                 <div class="flex justify-between items-center bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
                                     <span class="text-sm font-bold text-gray-800 dark:text-white">${g.name}</span>
                                     <span class="font-mono text-xs font-bold text-brand-primary bg-brand-primary/10 px-2 py-1 rounded">${g.time}</span>
@@ -354,20 +442,23 @@ function openMatchDetails(id) {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="glass p-3 rounded-xl text-center">
-                        <p class="text-[10px] text-gray-400 uppercase">Shots on Target</p>
-                        <p class="text-xl font-black">${match.details.stats.onTarget}</p>
+                <div>
+                    <h4 class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 mb-3">Starting XI</h4>
+                    <div class="flex gap-4 text-xs text-gray-600 dark:text-gray-300">
+                        <div class="flex-1">
+                            <p class="font-bold mb-2 underline">${match.team1}</p>
+                            <ul class="space-y-1">${match.details.lineups.team1.slice(0,6).map(p => `<li>${p}</li>`).join('')}<li class="italic">+5 more</li></ul>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold mb-2 underline">${match.team2}</p>
+                            <ul class="space-y-1">${match.details.lineups.team2.slice(0,6).map(p => `<li>${p}</li>`).join('')}<li class="italic">+5 more</li></ul>
+                        </div>
                     </div>
-                    <div class="glass p-3 rounded-xl text-center">
-                        <p class="text-[10px] text-gray-400 uppercase">Cards</p>
-                        <p class="text-xl font-black text-yellow-500">2</p>
-                    </div>
-                 </div>
+                </div>
             </div>
         `;
     } else {
-        // Generic Layout for others
+        // Generic Layout
         content = `
             <div class="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-white/5 dark:to-white/10 h-40 flex items-center justify-center rounded-b-3xl relative overflow-hidden">
                  <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
@@ -381,24 +472,14 @@ function openMatchDetails(id) {
                       </div>
                  </div>
             </div>
-            <div class="p-6 space-y-6">
-                <div class="text-center">
-                    <span class="inline-block px-4 py-2 rounded-full bg-brand-primary text-white font-bold text-sm shadow-lg shadow-brand-primary/30">
-                        ${match.status}
-                    </span>
-                    <p class="mt-4 text-gray-500 text-sm">
-                        ${match.status === 'Upcoming' ? `Scheduled for <span class="text-gray-900 dark:text-white font-bold">${match.time}</span>` : `Winner: <span class="text-brand-success font-bold">${match.winner}</span>`}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${match.loc || 'Main Ground'}</p>
+            <div class="p-6 space-y-6 text-center">
+                <span class="inline-block px-4 py-2 rounded-full bg-brand-primary text-white font-bold text-sm shadow-lg shadow-brand-primary/30">${match.status}</span>
+                <p class="text-gray-500 text-sm">
+                    ${match.status === 'Upcoming' ? `Scheduled for <span class="text-gray-900 dark:text-white font-bold">${match.time}</span>` : `Winner: <span class="text-brand-success font-bold">${match.winner}</span>`}
+                </p>
+                <div class="bg-brand-primary/5 border border-brand-primary/20 p-4 rounded-xl">
+                    <p class="text-xs text-gray-600 dark:text-gray-300">${match.details.sets ? `Set Scores: <span class="font-bold">${match.details.sets}</span>` : 'Additional details unavailable.'}</p>
                 </div>
-                
-                ${match.status === 'Upcoming' ? `
-                    <div class="bg-brand-primary/5 border border-brand-primary/20 p-4 rounded-xl flex items-start gap-3">
-                        <i data-lucide="info" class="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5"></i>
-                        <p class="text-xs text-gray-600 dark:text-gray-300">This match is critical for qualification. Ensure you arrive 15 minutes early for warm-ups.</p>
-                    </div>
-                    <button class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl shadow-lg hover:scale-[1.02] transition-transform">Add to Calendar</button>
-                ` : ''}
             </div>
         `;
     }
@@ -414,6 +495,16 @@ function openMatchDetails(id) {
         matchContent.classList.remove('translate-y-full');
         matchContent.classList.add('translate-y-0');
     }, 10);
+}
+
+function closeMatchModal() {
+    if(window.innerWidth >= 768) {
+         matchContent.classList.remove('md:scale-100', 'md:opacity-100');
+         matchContent.classList.add('md:scale-95', 'md:opacity-0');
+    }
+    matchContent.classList.remove('translate-y-0');
+    matchContent.classList.add('translate-y-full');
+    setTimeout(() => matchModal.classList.add('hidden'), 300);
 }
 
 // Logic: Tabs, Filters, Reg Modals (Kept same)
@@ -448,9 +539,6 @@ function toggleSchedule(type) {
         document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
     }
 }
-const regModal = document.getElementById('reg-modal');
-const regContent = document.getElementById('reg-content');
-const regContainer = document.getElementById('reg-form-container');
 function openReg(id) {
     const sport = sportsData.find(s => s.id === id);
     if(!sport) return;
