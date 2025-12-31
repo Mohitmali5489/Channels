@@ -1,9 +1,7 @@
 /* Base Transitions */
-body { 
-    transition: background-color 0.3s ease, color 0.3s ease; 
-}
+body { transition: background-color 0.3s ease, color 0.3s ease; }
 
-/* Glassmorphism Effect */
+/* Glassmorphism */
 .glass {
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(16px);
@@ -24,38 +22,36 @@ body {
 .nav-item.active { color: #6366F1; }
 .nav-item.active i { transform: translateY(-2px); }
 .nav-item.active span { font-weight: 700; }
-
+/* No border-top on nav, just indicator */
 .nav-item.active::after {
     content: '';
     position: absolute;
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 30px;
+    width: 20px;
     height: 4px;
     background: #6366F1;
     border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
 
-/* Modal Tabs */
-.modal-tab.active {
-    border-bottom: 2px solid #6366F1;
-    color: #6366F1;
-    background: rgba(99, 102, 241, 0.05);
-}
-
-/* Custom Table */
-.score-table th { font-size: 10px; text-transform: uppercase; color: #9CA3AF; font-weight: 700; padding: 8px 4px; }
-.score-table td { font-size: 12px; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.dark .score-table td { border-bottom: 1px solid rgba(255,255,255,0.05); }
-.light .score-table td { border-bottom: 1px solid rgba(0,0,0,0.05); }
-
-/* Animation Utility */
+/* Animation */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Match Specific Styles */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(156, 163, 175, 0.3); /* gray-400 */
+    transform: translateX(-50%);
 }
