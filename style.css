@@ -1,26 +1,40 @@
-/* Base Transitions */
+/* --- BASE TRANSITIONS --- */
 body { 
     transition: background-color 0.3s ease, color 0.3s ease; 
 }
 
-/* Glassmorphism Effect */
+/* --- GLASSMORPHISM --- */
 .glass {
     background: rgba(255, 255, 255, 0.85); 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 .dark .glass {
     background: rgba(21, 21, 34, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Utilities */
+/* Remove border for bottom nav specifically */
+nav.glass {
+    border-top: none !important;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
+}
+.dark nav.glass {
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+}
+
+/* --- UTILITIES --- */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Bottom Nav Animations */
+/* --- BOTTOM NAV ANIMATIONS --- */
 .nav-item { position: relative; transition: all 0.3s ease; }
 .nav-item.active { color: #6366F1; }
-.nav-item.active i { transform: translateY(-2px); }
+.nav-item.active i { transform: translateY(-2px); transition: transform 0.3s ease; }
 .nav-item.active span { font-weight: 700; }
 
 .nav-item.active::after {
@@ -36,13 +50,90 @@ body {
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
 }
 
-/* Match Detail Specifics - TV Style */
+/* --- LEADERBOARD PODIUM --- */
+.podium-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    transition: transform 0.3s ease;
+}
+
+/* Rank 1 (Center, Bigger) */
+.podium-1 { 
+    order: 2; 
+    z-index: 10; 
+    transform: scale(1.15) translateY(-5px); 
+}
+
+/* Rank 2 (Left) */
+.podium-2 { 
+    order: 1; 
+    transform: translateY(10px); 
+}
+
+/* Rank 3 (Right) */
+.podium-3 { 
+    order: 3; 
+    transform: translateY(15px); 
+}
+
+/* Rank Badges (Circles with Numbers) */
+.rank-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 2px solid white;
+    z-index: 5;
+}
+.dark .rank-badge { border: 2px solid #151522; }
+
+/* Medal Gradients */
+.rank-1-bg { background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); }
+.rank-2-bg { background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%); }
+.rank-3-bg { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
+
+/* --- PROFESSIONAL MATCH DETAILS --- */
+
+/* Cricket Card (TV Broadcast Style) */
 .cricket-score-card {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: white;
     border-bottom: 4px solid #6366F1;
 }
 
+/* Cricket Worm Graph Visualization */
+.worm-graph {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+}
+.worm-bar {
+    flex: 1;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px 2px 0 0;
+    transition: height 0.5s ease;
+}
+.worm-bar.active { 
+    background: #6366F1; 
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* Football Field (Grass Stripes) */
 .football-field {
     background: 
         repeating-linear-gradient(
@@ -57,56 +148,31 @@ body {
     box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
 }
 
-/* Leaderboard Podium Styling */
-.podium-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-}
-.podium-1 { order: 2; z-index: 10; transform: scale(1.1); }
-.podium-2 { order: 1; margin-top: 20px; }
-.podium-3 { order: 3; margin-top: 30px; }
-
-.rank-badge {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 900;
-    color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+/* Center Circle on Football Field */
+.football-field::after {
+    content: '';
     position: absolute;
-    bottom: -8px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    border: 2px solid white;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
 }
-.rank-1-bg { background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); }
-.rank-2-bg { background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%); }
-.rank-3-bg { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
 
-.dark .rank-badge { border: 2px solid #151522; }
-
-/* Worm Graph Placeholder */
-.worm-graph {
-    width: 100%;
-    height: 60px;
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
+/* Halfway Line */
+.football-field::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: rgba(255,255,255,0.3);
 }
-.worm-bar {
-    flex: 1;
-    background: rgba(255,255,255,0.2);
-    border-radius: 2px 2px 0 0;
-}
-.worm-bar.active { background: #6366F1; }
 
+/* --- ANIMATIONS --- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
