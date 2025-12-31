@@ -7,11 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAthleteSchedule();
 });
 
-// --- GLOBAL VARS ---
-// Moved modal elements to global scope but initialized securely
-let matchModalElement = null;
-let matchContentElement = null;
-
 // --- DATA: LEADERBOARD ---
 const studentData = [
     { name: "Rohan Das", dept: "CS", gold: 5, silver: 1, bronze: 0, points: 250, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan" },
@@ -20,9 +15,10 @@ const studentData = [
     { name: "Sneha Patel", dept: "BAF", gold: 1, silver: 3, bronze: 1, points: 140, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha" },
     { name: "Vedant Patil", dept: "BA", gold: 1, silver: 2, bronze: 0, points: 110, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vedant" },
     { name: "Rahul Singh", dept: "CS", gold: 0, silver: 2, bronze: 2, points: 90, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul" },
+    { name: "Anjali Gupta", dept: "BFM", gold: 2, silver: 0, bronze: 0, points: 100, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali" }
 ];
 
-// --- DATA: SCHEDULE (FULL DETAILS) ---
+// --- DATA: SCHEDULE (DEEP DATA) ---
 const scheduleData = [
     { 
         id: 101, 
@@ -59,7 +55,9 @@ const scheduleData = [
             squads: {
                 team1: ["Rohan (C)", "Suresh", "Amit", "Sahil", "Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
                 team2: ["Rahul (C)", "Vivek", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush", "Arjun", "Karan", "Sameer"]
-            }
+            },
+            crr: "10.15",
+            project: "118"
         }
     },
     { 
@@ -96,7 +94,7 @@ const sportsData = [
 function renderLeaderboard() {
     const container = document.getElementById('leaderboard-container');
     
-    // Auto-Sort: Gold > Silver > Bronze
+    // Sort: Gold > Silver > Bronze > Points
     const sortedData = [...studentData].sort((a, b) => {
         if (b.gold !== a.gold) return b.gold - a.gold;
         if (b.silver !== a.silver) return b.silver - a.silver;
@@ -104,84 +102,48 @@ function renderLeaderboard() {
         return b.points - a.points;
     });
 
-    const top3 = sortedData.slice(0, 3);
-    const rest = sortedData.slice(3);
+    let html = `<div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">`;
+    
+    html += sortedData.map((s, i) => {
+        let rankDisplay = `<span class="font-bold text-gray-400 w-6 text-center text-sm">#${i + 1}</span>`;
+        let rowClass = "hover:bg-gray-50 dark:hover:bg-white/5 transition border-b border-gray-100 dark:border-white/5 last:border-0";
+        
+        // Highlights for Top 3
+        if (i === 0) {
+            rankDisplay = `<span class="text-xl">🥇</span>`;
+            rowClass += " bg-yellow-50/50 dark:bg-yellow-500/10 border-l-4 border-l-yellow-400";
+        } else if (i === 1) {
+            rankDisplay = `<span class="text-xl">🥈</span>`;
+            rowClass += " bg-gray-50/50 dark:bg-gray-500/10 border-l-4 border-l-gray-300";
+        } else if (i === 2) {
+            rankDisplay = `<span class="text-xl">🥉</span>`;
+            rowClass += " bg-orange-50/50 dark:bg-orange-500/10 border-l-4 border-l-orange-400";
+        }
 
-    // Hero Podium Layout
-    let podiumHTML = `
-        <div class="flex justify-center items-end gap-3 mb-8 pt-6">
-            <div class="podium-card podium-2 w-1/3 flex flex-col items-center">
-                <div class="relative w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-gray-200 dark:border-white/10 overflow-hidden mb-2 shadow-lg">
-                    <img src="${top3[1].avatar}" class="w-full h-full bg-gray-100">
-                    <div class="rank-badge rank-2-bg">2</div>
+        return `
+            <div class="flex items-center gap-4 p-4 ${rowClass}">
+                <div class="flex-shrink-0 w-8 flex justify-center">${rankDisplay}</div>
+                <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden shadow-sm">
+                    <img src="${s.avatar}" class="w-full h-full object-cover">
                 </div>
-                <div class="text-center w-full">
-                    <p class="text-xs font-bold truncate dark:text-white">${top3[1].name}</p>
-                    <p class="text-[10px] text-gray-500 font-bold">${top3[1].gold} Gold</p>
+                <div class="flex-1">
+                    <h4 class="font-bold text-sm dark:text-white">${s.name}</h4>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">${s.dept}</p>
                 </div>
-                <div class="h-16 w-full bg-gradient-to-t from-gray-200/50 to-transparent rounded-t-lg mt-2"></div>
-            </div>
-            
-            <div class="podium-card podium-1 w-1/3 flex flex-col items-center -mt-6">
-                <div class="relative w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-yellow-300 overflow-hidden mb-2 shadow-2xl shadow-yellow-500/20">
-                    <img src="${top3[0].avatar}" class="w-full h-full bg-gray-100">
-                    <div class="absolute inset-0 border-4 border-white/20 rounded-full"></div>
-                    <div class="rank-badge rank-1-bg w-8 h-8 text-sm bottom-[-10px]">1</div>
-                </div>
-                <div class="text-center w-full">
-                    <p class="text-sm font-black truncate dark:text-white">${top3[0].name}</p>
-                    <p class="text-xs font-bold text-yellow-500">${top3[0].gold} Gold</p>
-                </div>
-                <div class="h-24 w-full bg-gradient-to-t from-yellow-500/20 to-transparent rounded-t-lg mt-2 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-yellow-400/10 animate-pulse"></div>
+                <div class="text-right">
+                    <div class="flex gap-2 justify-end text-[10px] font-bold mb-0.5">
+                        <span class="text-yellow-500">${s.gold}G</span>
+                        <span class="text-gray-400">${s.silver}S</span>
+                        <span class="text-orange-500">${s.bronze}B</span>
+                    </div>
+                    <span class="text-[10px] text-gray-400 font-medium">${s.points} pts</span>
                 </div>
             </div>
-
-            <div class="podium-card podium-3 w-1/3 flex flex-col items-center">
-                <div class="relative w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-orange-200 dark:border-white/10 overflow-hidden mb-2 shadow-lg">
-                    <img src="${top3[2].avatar}" class="w-full h-full bg-gray-100">
-                    <div class="rank-badge rank-3-bg">3</div>
-                </div>
-                <div class="text-center w-full">
-                    <p class="text-xs font-bold truncate dark:text-white">${top3[2].name}</p>
-                    <p class="text-[10px] text-gray-500 font-bold">${top3[2].gold} Gold</p>
-                </div>
-                <div class="h-12 w-full bg-gradient-to-t from-orange-200/30 to-transparent rounded-t-lg mt-2"></div>
-            </div>
-        </div>
-    `;
-
-    // Remaining List
-    let listHTML = `<div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden mx-1">`;
-    listHTML += rest.map((s, i) => `
-        <div class="flex items-center gap-4 p-4 border-b border-gray-100 dark:border-white/5 last:border-0">
-            <span class="font-bold text-gray-400 w-4 text-center text-sm">#${i + 4}</span>
-            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
-                <img src="${s.avatar}" class="w-full h-full">
-            </div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm dark:text-white">${s.name}</h4>
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">${s.dept}</p>
-            </div>
-            <div class="flex gap-2">
-                <div class="flex flex-col items-center">
-                    <span class="text-[9px] text-gray-400 font-bold">G</span>
-                    <span class="text-xs font-bold text-yellow-500">${s.gold}</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-[9px] text-gray-400 font-bold">S</span>
-                    <span class="text-xs font-bold text-gray-400">${s.silver}</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="text-[9px] text-gray-400 font-bold">B</span>
-                    <span class="text-xs font-bold text-orange-500">${s.bronze}</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    listHTML += `</div>`;
-
-    container.innerHTML = podiumHTML + listHTML;
+        `;
+    }).join('');
+    
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
 function renderRegistrationCards() {
@@ -279,9 +241,13 @@ function openMatchDetails(id) {
     const match = scheduleData.find(m => m.id === id);
     if (!match) return;
 
-    matchModalElement = document.getElementById('match-modal');
-    matchContentElement = document.getElementById('match-content');
+    // Grab Elements directly inside function to avoid reference errors
+    const modal = document.getElementById('match-modal');
+    const content = document.getElementById('match-content');
     const matchBody = document.getElementById('match-modal-body');
+    const subtitle = document.getElementById('match-modal-subtitle');
+
+    if (subtitle) subtitle.innerText = match.sport + " • " + match.type;
 
     // Generate Tabs Navigation
     let tabsHTML = `
@@ -296,6 +262,7 @@ function openMatchDetails(id) {
     // 1. SUMMARY TAB CONTENT
     let summaryContent = '';
     if (match.sport === 'Cricket') {
+        const wormBars = match.details.recent_balls.map(b => `<div class="worm-bar ${['4','6'].includes(b) ? 'active' : ''}" style="height: ${Math.random() * 80 + 20}%"></div>`).join('');
         summaryContent = `
             <div class="cricket-score-card p-6 pb-8 text-white relative overflow-hidden shadow-lg">
                 <div class="flex justify-between items-start mb-6 z-10 relative">
@@ -314,19 +281,21 @@ function openMatchDetails(id) {
                          <p class="text-[10px] opacity-70">Yet to Bat</p>
                     </div>
                 </div>
+                <div class="flex justify-around bg-black/20 p-3 rounded-xl backdrop-blur-sm z-10 relative text-xs">
+                     <div class="text-center">
+                        <p class="opacity-60 text-[9px] uppercase">CRR</p>
+                        <p class="font-bold">${match.details.crr}</p>
+                     </div>
+                     <div class="text-center">
+                        <p class="opacity-60 text-[9px] uppercase">Proj</p>
+                        <p class="font-bold text-brand-primary">${match.details.project}</p>
+                     </div>
+                </div>
             </div>
             <div class="p-4 space-y-4">
                 <div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 p-4">
-                    <h5 class="text-xs font-bold text-gray-500 uppercase mb-3">Recent Overs</h5>
-                    <div class="flex gap-2 overflow-x-auto no-scrollbar">
-                        ${match.details.recent_balls.map(b => {
-                            let color = 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300';
-                            if(b === '4') color = 'bg-blue-500 text-white';
-                            if(b === '6') color = 'bg-purple-500 text-white';
-                            if(b === 'W') color = 'bg-red-500 text-white';
-                            return `<div class="w-8 h-8 rounded-full ${color} flex-shrink-0 flex items-center justify-center font-bold text-xs shadow-sm">${b}</div>`;
-                        }).join('')}
-                    </div>
+                    <h5 class="text-xs font-bold text-gray-500 uppercase mb-3">Run Rate</h5>
+                    <div class="worm-graph">${wormBars}</div>
                 </div>
             </div>
         `;
@@ -433,9 +402,9 @@ function openMatchDetails(id) {
         `;
     }
 
-    // Default Fallback
-    if (match.sport !== 'Cricket') {
-        summaryContent = `<div class="p-10 text-center text-gray-500 text-sm">Full details available for Cricket matches in this demo.</div>`;
+    // Default Fallback for Football etc (Simple view for now to keep code short)
+    if (match.sport === 'Football') {
+        summaryContent = `<div class="p-10 text-center text-gray-500 text-sm">Football Summary (Possession 55% - 45%)</div>`;
     }
 
     // Inject into Modal
@@ -447,24 +416,22 @@ function openMatchDetails(id) {
         <div id="mtab-squads" class="match-tab-view hidden animate-fade-in">${squadsContent}</div>
     `;
 
-    matchModalElement.classList.remove('hidden');
+    modal.classList.remove('hidden');
     setTimeout(() => {
         if(window.innerWidth >= 768) {
-             matchContentElement.classList.remove('md:scale-95', 'md:opacity-0');
-             matchContentElement.classList.add('md:scale-100', 'md:opacity-100');
+             content.classList.remove('md:scale-95', 'md:opacity-0');
+             content.classList.add('md:scale-100', 'md:opacity-100');
         }
-        matchContentElement.classList.remove('translate-y-full');
-        matchContentElement.classList.add('translate-y-0');
+        content.classList.remove('translate-y-full');
+        content.classList.add('translate-y-0');
     }, 10);
 }
 
 // Tab Switching inside Match Modal
 window.switchMatchTab = function(tabName) {
-    // Hide all contents
     document.querySelectorAll('.match-tab-view').forEach(el => el.classList.add('hidden'));
     document.getElementById('mtab-' + tabName).classList.remove('hidden');
 
-    // Reset button styles
     const buttons = ['summary', 'scorecard', 'commentary', 'squads'];
     buttons.forEach(btn => {
         const el = document.getElementById('tab-' + btn);
@@ -481,9 +448,11 @@ window.switchMatchTab = function(tabName) {
 }
 
 function closeMatchModal() {
-    matchContentElement.classList.remove('translate-y-0');
-    matchContentElement.classList.add('translate-y-full');
-    setTimeout(() => matchModalElement.classList.add('hidden'), 300);
+    const modal = document.getElementById('match-modal');
+    const content = document.getElementById('match-content');
+    content.classList.remove('translate-y-0');
+    content.classList.add('translate-y-full');
+    setTimeout(() => modal.classList.add('hidden'), 300);
 }
 
 // --- STANDARD TAB SWITCHING ---
@@ -500,12 +469,11 @@ function switchTab(id) {
     window.scrollTo(0, 0);
 }
 
-// --- REGISTRATION LOGIC ---
+// --- RESTORED DETAILED REGISTRATION LOGIC ---
 function openReg(id) {
     const sport = sportsData.find(s => s.id === id);
     if(!sport) return;
 
-    // Secure DOM elements inside the function
     const modal = document.getElementById('reg-modal');
     const content = document.getElementById('reg-content');
     const container = document.getElementById('reg-form-container');
@@ -516,16 +484,62 @@ function openReg(id) {
     if (sport.status === "Closed") {
         container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-center"><h4 class="text-xl font-bold dark:text-white">Registration Closed</h4><p class="text-sm text-gray-500 mt-2">Deadline passed.</p><button onclick="closeRegModal()" class="mt-6 px-6 py-2 bg-gray-200 rounded-full text-sm font-bold">Close</button></div>`;
     } else {
-        container.innerHTML = `
-            <form onsubmit="submitReg(event)" class="space-y-4 pt-2">
-                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
-                    <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">Participant Details</h4>
-                    <input type="text" required placeholder="Full Name" class="w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm mb-3">
-                    <input type="tel" required placeholder="WhatsApp" class="w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm">
+        // Detailed Form Construction
+        let formHTML = `<form onsubmit="submitReg(event)" class="space-y-4 pt-2">`;
+        
+        // Captain / Participant Section
+        formHTML += `
+            <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                <h4 class="text-xs font-bold uppercase text-brand-primary mb-3">
+                    ${sport.type === 'Team' ? 'Captain Details' : 'Participant Details'}
+                </h4>
+                <div class="space-y-3">
+                    <input type="text" required placeholder="Full Name" class="input-field">
+                    <input type="tel" required placeholder="WhatsApp Number" class="input-field">
+                    <div class="grid grid-cols-2 gap-3">
+                        <select class="input-field"><option>FY</option><option>SY</option><option>TY</option></select>
+                        <input type="text" placeholder="Roll No" class="input-field">
+                    </div>
                 </div>
-                <button type="submit" class="w-full py-4 bg-brand-primary text-white font-bold rounded-xl shadow-lg">Confirm Registration</button>
+            </div>
+        `;
+
+        // Team Member Loop
+        if (sport.type === "Team") {
+            formHTML += `
+                <div class="p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/5">
+                    <h4 class="text-xs font-bold uppercase text-brand-secondary mb-3">Team Information</h4>
+                    <input type="text" required placeholder="Team Name" class="input-field mb-4 font-bold">
+                    <h5 class="text-xs font-bold text-gray-400 mb-2">Team Members (${sport.teamSize})</h5>
+                    <div class="space-y-3">
+            `;
+            // Loop for members starting from 2
+            for(let i=2; i <= sport.teamSize; i++) {
+                formHTML += `
+                    <div class="flex gap-2">
+                        <span class="w-6 py-3 text-center text-xs font-bold text-gray-400 pt-3">${i}.</span>
+                        <input type="text" placeholder="Player Name" class="input-field w-2/3">
+                        <input type="text" placeholder="Role" class="input-field w-1/3">
+                    </div>
+                `;
+            }
+            formHTML += `</div></div>`;
+        }
+
+        formHTML += `
+            <div class="flex items-start gap-2 mt-4">
+                <input type="checkbox" required class="mt-1 accent-brand-primary">
+                <p class="text-xs text-gray-500">I agree to pay the fees within 24 hours.</p>
+            </div>
+            <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                Confirm Registration
+            </button>
             </form>
         `;
+        
+        // CSS class for inputs
+        const inputClass = "w-full bg-white dark:bg-black/30 border border-gray-200 dark:border-white/10 rounded-lg p-3 text-sm focus:border-brand-primary outline-none dark:text-white";
+        container.innerHTML = formHTML.replace(/input-field/g, inputClass);
     }
 
     modal.classList.remove('hidden');
@@ -553,30 +567,6 @@ function submitReg(e) {
             btn.classList.remove('bg-green-500'); 
         }, 300);
     }, 1500);
-}
-
-// Logic: Filters
-function filterSports() {
-    const input = document.getElementById('sport-search').value.toLowerCase();
-    const cards = document.getElementById('registration-grid').children;
-    Array.from(cards).forEach(card => {
-        const title = card.querySelector('h4').textContent.toLowerCase();
-        card.style.display = title.includes(input) ? "block" : "none";
-    });
-}
-
-function toggleSchedule(type) {
-    if(type === 'upcoming') {
-        document.getElementById('view-upcoming').classList.remove('hidden');
-        document.getElementById('view-results').classList.add('hidden');
-        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
-        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
-    } else {
-        document.getElementById('view-upcoming').classList.add('hidden');
-        document.getElementById('view-results').classList.remove('hidden');
-        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
-        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
-    }
 }
 
 // Theme Toggle
