@@ -102,27 +102,14 @@ function renderLeaderboard() {
         return b.points - a.points;
     });
 
-    let html = `<div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden">`;
+    let html = `<div class="bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden mx-1">`;
     
-    html += sortedData.map((s, i) => {
-        let rankDisplay = `<span class="font-bold text-gray-400 w-6 text-center text-sm">#${i + 1}</span>`;
+    html += sortedData.map((s) => {
+        // Removed Rank Display Logic & Row Highlights
         let rowClass = "hover:bg-gray-50 dark:hover:bg-white/5 transition border-b border-gray-100 dark:border-white/5 last:border-0";
-        
-        // Highlights for Top 3
-        if (i === 0) {
-            rankDisplay = `<span class="text-xl">🥇</span>`;
-            rowClass += " bg-yellow-50/50 dark:bg-yellow-500/10 border-l-4 border-l-yellow-400";
-        } else if (i === 1) {
-            rankDisplay = `<span class="text-xl">🥈</span>`;
-            rowClass += " bg-gray-50/50 dark:bg-gray-500/10 border-l-4 border-l-gray-300";
-        } else if (i === 2) {
-            rankDisplay = `<span class="text-xl">🥉</span>`;
-            rowClass += " bg-orange-50/50 dark:bg-orange-500/10 border-l-4 border-l-orange-400";
-        }
 
         return `
             <div class="flex items-center gap-4 p-4 ${rowClass}">
-                <div class="flex-shrink-0 w-8 flex justify-center">${rankDisplay}</div>
                 <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden shadow-sm">
                     <img src="${s.avatar}" class="w-full h-full object-cover">
                 </div>
@@ -136,8 +123,7 @@ function renderLeaderboard() {
                         <span class="text-gray-400">${s.silver}S</span>
                         <span class="text-orange-500">${s.bronze}B</span>
                     </div>
-                    <span class="text-[10px] text-gray-400 font-medium">${s.points} pts</span>
-                </div>
+                    </div>
             </div>
         `;
     }).join('');
@@ -567,6 +553,30 @@ function submitReg(e) {
             btn.classList.remove('bg-green-500'); 
         }, 300);
     }, 1500);
+}
+
+// Logic: Filters
+function filterSports() {
+    const input = document.getElementById('sport-search').value.toLowerCase();
+    const cards = document.getElementById('registration-grid').children;
+    Array.from(cards).forEach(card => {
+        const title = card.querySelector('h4').textContent.toLowerCase();
+        card.style.display = title.includes(input) ? "block" : "none";
+    });
+}
+
+function toggleSchedule(type) {
+    if(type === 'upcoming') {
+        document.getElementById('view-upcoming').classList.remove('hidden');
+        document.getElementById('view-results').classList.add('hidden');
+        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    } else {
+        document.getElementById('view-upcoming').classList.add('hidden');
+        document.getElementById('view-results').classList.remove('hidden');
+        document.getElementById('sch-results-btn').className = "px-4 py-1.5 rounded-md bg-white dark:bg-gray-700 shadow text-brand-primary transition-all";
+        document.getElementById('sch-upcoming-btn').className = "px-4 py-1.5 rounded-md text-gray-500 dark:text-gray-400 transition-all";
+    }
 }
 
 // Theme Toggle
