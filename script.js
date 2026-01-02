@@ -20,30 +20,39 @@ const studentData = [
 
 // --- DATA: SCHEDULE (DEEP DATA FOR PROTOTYPE) ---
 const scheduleData = [
-    // 1. CRICKET
+    // 1. CRICKET - UPGRADED DEEP DATA
     { 
-        id: 101, sport: "Cricket", type: "Semi Final", team1: "CS", team2: "BCOM", 
+        id: 101, sport: "Cricket", type: "Semi Final (T10)", team1: "CS Dept", team2: "BCOM Dept", 
         score1: "88/2", score2: "Yet to Bat", overs: "8.4", status: "Live", live: true,
-        loc: "Main Ground",
+        loc: "Main Gymkhana Ground",
         details: { 
+            toss: "CS Dept won the toss and elected to bat",
             batters: [
-                { name: "Rohan Das*", status: "not out", r: 42, b: 24, fours: 4, sixes: 2, sr: 175.0 },
+                { name: "Rohan Das", status: "not out", r: 42, b: 24, fours: 4, sixes: 2, sr: 175.0 },
+                { name: "Suresh Raina", status: "not out", r: 14, b: 10, fours: 1, sixes: 0, sr: 140.0 },
                 { name: "Amit K", status: "c Rahul b Vivek", r: 12, b: 8, fours: 1, sixes: 0, sr: 150.0 },
-                { name: "Sahil", status: "run out", r: 5, b: 6, fours: 0, sixes: 0, sr: 83.3 },
-                { name: "Suresh*", status: "not out", r: 14, b: 10, fours: 1, sixes: 0, sr: 140.0 }
+                { name: "Sahil", status: "run out (Jayesh)", r: 5, b: 6, fours: 0, sixes: 0, sr: 83.3 }
             ],
-            extras: 15, did_not_bat: "7 players",
+            dnb: ["Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
+            extras_detail: "15 (b 4, lb 2, w 8, nb 1)",
+            fow: [
+                { score: "32-1", name: "Amit K", over: "3.2" },
+                { score: "62-2", name: "Sahil", over: "6.1" }
+            ],
             bowlers: [
-                { name: "Rahul S", o: 3.0, m: 0, r: 24, w: 1, eco: 8.00 },
-                { name: "Vivek M", o: 2.4, m: 0, r: 18, w: 0, eco: 6.75 },
-                { name: "Jayesh", o: 3.0, m: 0, r: 32, w: 0, eco: 10.6 }
+                { name: "Rahul S", o: 2.0, m: 0, r: 24, w: 0, eco: 12.00 },
+                { name: "Vivek M", o: 3.0, m: 0, r: 18, w: 1, eco: 6.00 },
+                { name: "Jayesh", o: 2.0, m: 0, r: 32, w: 0, eco: 16.0 },
+                { name: "Karan", o: 1.4, m: 0, r: 14, w: 0, eco: 8.4 }
             ],
-            recent_balls: ["4", "1", "0", "6", "1", "W"],
+            current_partnership: { runs: 26, balls: 15, b1: 14, b2: 12 }, // b1=Rohan, b2=Suresh
+            recent_balls: ["4", "1", "0", "6", "1nb", "W", "2", "4", "1", "0", "1", "6"], // Newest last
             commentary: [
-                { over: "8.4", text: "FOUR! Smashed down the ground by Rohan." },
+                { over: "8.4", text: "FOUR! Smashed down the ground by Rohan. Pure class." },
                 { over: "8.3", text: "Single taken towards long on." },
-                { over: "8.2", text: "No run, good length delivery." },
-                { over: "8.1", text: "SIX! Massive hit over deep mid-wicket!" }
+                { over: "8.2", text: "No run, good length delivery outside off." },
+                { over: "8.1", text: "SIX! Massive hit over deep mid-wicket! That's gone into the parking lot." },
+                { over: "8.0", text: "End of Over. CS Dept looking strong for a 100+ finish." }
             ],
             squads: {
                 team1: ["Rohan (C)", "Suresh", "Amit", "Sahil", "Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
@@ -316,32 +325,184 @@ function openMatchDetails(id) {
     // --- CONTENT GENERATION LOGIC ---
     let contentHTML = '';
 
-    // 1. CRICKET LOGIC
+    // 1. CRICKET LOGIC (ESPN Style)
     if (match.sport === 'Cricket') {
-        // ... (Same Cricket Logic as before, preserved for brevity, insert if needed)
-        // Re-inserting optimized Cricket Summary
-        const wormBars = match.details.recent_balls.map(b => `<div class="worm-bar ${['4','6'].includes(b) ? 'active' : ''}" style="height: ${Math.random() * 80 + 20}%"></div>`).join('');
+        // --- HELPERS FOR CRICKET ---
+        const renderBall = (b) => {
+            const cls = b === '4' ? 'b-4' : (b === '6' ? 'b-6' : (b === 'W' ? 'b-w' : (b === '0' ? 'b-0' : 'b-1')));
+            return `<div class="cric-ball ${cls}">${b}</div>`;
+        };
+
+        const activeBatters = match.details.batters.filter(b => b.status === 'not out');
+        const activeBowler = match.details.bowlers[match.details.bowlers.length - 1];
+        
+        // SUMMARY TAB
         contentHTML += `
-            <div id="mtab-summary" class="match-tab-view animate-fade-in">
-                <div class="cricket-score-card p-6 pb-8 text-white relative overflow-hidden shadow-lg">
-                    <div class="flex justify-between items-center z-10 relative">
-                        <div><h1 class="text-4xl font-black">${match.score1}</h1><p class="text-xs opacity-80">${match.team1} (${match.overs} ov)</p></div>
-                        <div class="text-right"><h1 class="text-xl font-bold opacity-50">0/0</h1><p class="text-xs opacity-50">${match.team2}</p></div>
+            <div id="mtab-summary" class="match-tab-view animate-fade-in pb-10">
+                <div class="cricket-score-card px-4 pt-4 pb-2">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="flex items-end gap-2">
+                                <h1 class="text-4xl font-black">${match.score1}</h1>
+                                <span class="text-sm font-bold opacity-80 mb-1">(${match.overs})</span>
+                            </div>
+                            <p class="text-xs font-medium text-gray-300">${match.team1}</p>
+                        </div>
+                        <div class="text-right">
+                             <div class="flex items-center gap-1 justify-end">
+                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider">Live</span>
+                             </div>
+                             <p class="text-[10px] mt-1 text-gray-400">CRR: ${match.details.crr}</p>
+                        </div>
                     </div>
-                    <div class="mt-4 flex gap-4 text-xs font-mono bg-black/20 p-2 rounded-lg backdrop-blur-sm">
-                        <span>CRR: ${match.details.crr}</span>
-                        <span>Proj: ${match.details.project}</span>
+                    <p class="text-[10px] text-gray-400 border-t border-white/10 pt-2 mt-2">${match.details.toss}</p>
+                </div>
+
+                <div class="match-info-grid p-3">
+                    <div class="info-box shadow-sm">
+                         <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 mb-2"><span>Batter</span><span>R (B)</span></div>
+                         ${activeBatters.map(b => `
+                            <div class="flex justify-between text-xs font-bold border-b border-gray-100 dark:border-white/5 py-1 last:border-0">
+                                <span class="flex items-center gap-1">${b.name} <span class="text-brand-primary">*</span></span>
+                                <span>${b.r} <span class="text-gray-400 font-medium">(${b.b})</span></span>
+                            </div>
+                         `).join('')}
+                    </div>
+                    <div class="info-box shadow-sm">
+                         <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 mb-2"><span>Bowler</span><span>Fig</span></div>
+                         <div class="flex justify-between text-xs font-bold py-1">
+                                <span>${activeBowler.name}</span>
+                                <span>${activeBowler.w}/${activeBowler.r} <span class="text-gray-400 font-medium">(${activeBowler.o})</span></span>
+                         </div>
                     </div>
                 </div>
-                <div class="p-4"><h5 class="text-xs font-bold uppercase text-gray-400 mb-2">Recent Overs</h5><div class="worm-graph">${wormBars}</div></div>
+
+                <div class="bg-white dark:bg-white/5 py-3 border-y border-gray-100 dark:border-white/5 mb-2">
+                    <div class="flex items-center gap-3 px-4 overflow-x-auto no-scrollbar">
+                        <span class="text-[10px] font-bold uppercase text-gray-500 whitespace-nowrap">Recent Balls</span>
+                        <div class="flex">${match.details.recent_balls.slice().reverse().map(renderBall).join('')}</div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white dark:bg-white/5 mx-3 rounded-lg border border-gray-100 dark:border-white/5 shadow-sm">
+                    <h5 class="text-[10px] font-bold uppercase text-gray-400 mb-2">Current Partnership</h5>
+                    <div class="flex justify-between items-end mb-1">
+                        <div class="text-left">
+                            <span class="block text-xs font-bold">${match.details.current_partnership.b1_name || 'Rohan'}</span>
+                            <span class="text-brand-primary font-black">${match.details.current_partnership.b1}</span>
+                        </div>
+                        <div class="text-center pb-1">
+                            <span class="text-xl font-black">${match.details.current_partnership.runs}</span>
+                            <span class="text-[10px] text-gray-400 block">runs (${match.details.current_partnership.balls} balls)</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-xs font-bold">${match.details.current_partnership.b2_name || 'Suresh'}</span>
+                            <span class="text-brand-secondary font-black">${match.details.current_partnership.b2}</span>
+                        </div>
+                    </div>
+                    <div class="partnership-container">
+                        <div class="p-bar-1" style="width: ${(match.details.current_partnership.b1 / match.details.current_partnership.runs) * 100}%"></div>
+                        <div class="p-bar-2" style="width: ${(match.details.current_partnership.b2 / match.details.current_partnership.runs) * 100}%"></div>
+                    </div>
+                </div>
             </div>
-            <div id="mtab-scorecard" class="match-tab-view hidden animate-fade-in p-4">
-                ${generateTable(match.details.batters, ['Batter', 'R', 'B', '4s', '6s'], ['name', 'r', 'b', 'fours', 'sixes'])}
+
+            <div id="mtab-scorecard" class="match-tab-view hidden animate-fade-in p-3 space-y-4 pb-10">
+                <div class="bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm">
+                    <div class="bg-brand-primary/5 px-3 py-2 border-b border-brand-primary/10 flex justify-between">
+                        <span class="text-xs font-bold uppercase text-brand-primary">${match.team1} Innings</span>
+                        <span class="text-xs font-bold text-gray-500">${match.score1} (${match.overs})</span>
+                    </div>
+                    <div class="cric-table-container">
+                        <table class="cric-table">
+                            <thead><tr><th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+                            <tbody>
+                                ${match.details.batters.map(b => `
+                                    <tr>
+                                        <td>${b.name} <span class="dismissal">${b.status}</span></td>
+                                        <td class="font-bold">${b.r}</td>
+                                        <td>${b.b}</td>
+                                        <td>${b.fours}</td>
+                                        <td>${b.sixes}</td>
+                                        <td>${b.sr}</td>
+                                    </tr>
+                                `).join('')}
+                                <tr>
+                                    <td colspan="6" class="text-left py-2 px-2 bg-gray-50 dark:bg-white/5">
+                                        <div class="flex justify-between text-xs">
+                                            <span class="font-bold">Extras</span>
+                                            <span>${match.details.extras_detail}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-2 text-[10px] text-gray-500 border-t border-gray-100 dark:border-white/5">
+                        <span class="font-bold">Did not bat:</span> ${match.details.dnb.join(', ')}
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5 p-3 shadow-sm">
+                    <h5 class="text-[10px] font-bold uppercase text-gray-400 mb-2">Fall of Wickets</h5>
+                    <div class="flex flex-wrap gap-2">
+                        ${match.details.fow.map(f => `
+                            <span class="px-2 py-1 bg-gray-100 dark:bg-white/10 rounded text-[10px]">
+                                <span class="font-bold text-brand-secondary">${f.score}</span> 
+                                <span class="text-gray-500">(${f.name}, ${f.over} ov)</span>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm">
+                     <div class="bg-gray-50 dark:bg-white/10 px-3 py-2 border-b border-gray-100 dark:border-white/5">
+                        <span class="text-xs font-bold uppercase text-gray-500">Bowling</span>
+                    </div>
+                    <div class="cric-table-container">
+                        <table class="cric-table">
+                            <thead><tr><th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>ECO</th></tr></thead>
+                            <tbody>
+                                ${match.details.bowlers.map(bo => `
+                                    <tr>
+                                        <td>${bo.name}</td>
+                                        <td>${bo.o}</td>
+                                        <td>${bo.m}</td>
+                                        <td>${bo.r}</td>
+                                        <td class="font-bold text-brand-primary">${bo.w}</td>
+                                        <td>${bo.eco}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div id="mtab-commentary" class="match-tab-view hidden animate-fade-in p-4 space-y-3">
-                ${match.details.commentary.map(c => `<div class="p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/5"><span class="font-bold text-xs bg-gray-200 dark:bg-white/10 px-1 rounded mr-2">${c.over}</span><span class="text-xs">${c.text}</span></div>`).join('')}
+
+            <div id="mtab-commentary" class="match-tab-view hidden animate-fade-in p-4 space-y-3 pb-10">
+                ${match.details.commentary.map(c => `
+                    <div class="flex gap-3">
+                        <div class="w-10 pt-1 flex flex-col items-center">
+                            <span class="text-xs font-black text-gray-900 dark:text-white">${c.over}</span>
+                        </div>
+                        <div class="flex-1 pb-3 border-b border-gray-100 dark:border-white/5">
+                            <p class="text-xs leading-relaxed text-gray-600 dark:text-gray-300">${c.text}</p>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
-            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
+
+            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs pb-10">
+                 <div class="mb-4">
+                    <h5 class="font-bold uppercase text-brand-primary mb-2">${match.team1} XI</h5>
+                    <p class="text-gray-500 leading-6">${match.details.squads.team1.join(', ')}</p>
+                 </div>
+                 <div>
+                    <h5 class="font-bold uppercase text-gray-500 mb-2">${match.team2} XI</h5>
+                    <p class="text-gray-500 leading-6">${match.details.squads.team2.join(', ')}</p>
+                 </div>
+            </div>
         `;
     }
 
@@ -585,14 +746,19 @@ function closeMatchModal() {
 // --- STANDARD NAV & REGISTRATION ---
 function switchTab(id) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById('tab-' + id).classList.remove('hidden');
+    const target = document.getElementById('tab-' + id);
+    if(target) target.classList.remove('hidden');
     
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active', 'text-brand-primary');
         btn.classList.add('text-gray-500', 'dark:text-gray-400');
     });
-    document.getElementById('btn-' + id).classList.add('active', 'text-brand-primary');
-    document.getElementById('btn-' + id).classList.remove('text-gray-500', 'dark:text-gray-400');
+    
+    const activeBtn = document.getElementById('btn-' + id);
+    if(activeBtn) {
+        activeBtn.classList.add('active', 'text-brand-primary');
+        activeBtn.classList.remove('text-gray-500', 'dark:text-gray-400');
+    }
     window.scrollTo(0, 0);
 }
 
