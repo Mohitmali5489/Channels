@@ -34,19 +34,7 @@ nav.glass {
 .nav-item.active i { transform: translateY(-3px); transition: transform 0.3s ease; }
 .nav-item.active span { font-weight: 800; }
 
-/* Glowing Indicator for Bottom Nav */
-.nav-item.active::after {
-    content: '';
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 4px;
-    background: #6366F1;
-    border-radius: 0 0 4px 4px;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.6);
-}
+/* NOTE: Removed Glowing Indicator (::after) for simple nav */
 
 /* --- PROFESSIONAL MATCH GRAPHICS --- */
 
