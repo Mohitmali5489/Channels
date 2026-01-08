@@ -18,112 +18,123 @@ const studentData = [
     { name: "Anjali Gupta", dept: "BFM", gold: 2, silver: 0, bronze: 0, points: 100, avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anjali" }
 ];
 
-// --- DATA: SCHEDULE (DEEP DATA WITH 2 INNINGS) ---
+// --- DATA: SCHEDULE (UPDATED WITH 14 SPORTS) ---
 const scheduleData = [
-    // 1. CRICKET - UPGRADED TO DUAL INNINGS
+    // --- INDOOR GAMES ---
+    {
+        id: 101, sport: "Chess", type: "Final", team1: "Rohan (CS)", team2: "Anjali (BFM)", status: "Live", live: true,
+        score1: "1", score2: "0", loc: "Library Hall",
+        details: {
+            current_turn: "White (Rohan)",
+            timers: { white: "10:45", black: "08:20" },
+            moves: ["1. e4 e5", "2. Nf3 Nc6", "3. Bb5 a6", "4. Ba4 Nf6", "5. O-O Be7", "6. Re1 b5"],
+            captured: { white: ["pawn", "pawn"], black: ["pawn"] },
+            status_text: "White to move. Sicilian Defense variation."
+        }
+    },
+    {
+        id: 102, sport: "Carrom", type: "Semi Final", team1: "Vivek (BA)", team2: "Rahul (CS)", status: "Live", live: true,
+        score1: "21", score2: "9", loc: "Gymkhana Room 1",
+        details: {
+            sets: [{ s1: 21, s2: 9, winner: "Vivek" }, { s1: 0, s2: 0, status: "Live" }],
+            current_set: 2,
+            current_server: "Rahul",
+            rally_history: ["Queen Pocketed by Vivek", "Cover Pocketed", "Foul Rahul", "White Slam Vivek"]
+        }
+    },
+    {
+        id: 103, sport: "Badminton", type: "Quarter Final", team1: "Priya (BMS)", team2: "Sneha (BAF)", status: "Live", live: true,
+        score1: "1", score2: "1", loc: "Court 2",
+        details: {
+            sets: [{ s1: 21, s2: 19, winner: "Priya" }, { s1: 15, s2: 21, winner: "Sneha" }, { s1: 8, s2: 4, status: "Live" }],
+            current_set: 3,
+            current_server: "Priya",
+            rally_history: ["Point Priya", "Point Sneha", "Service Fault Sneha", "Smash Winner Priya"]
+        }
+    },
+    {
+        id: 104, sport: "Table-Tennis", type: "Final", team1: "Amit (BCOM)", team2: "Karan (CS)", status: "Upcoming", live: false, time: "2:00 PM",
+        score1: "0", score2: "0", loc: "TT Hall",
+        details: { sets: [], current_set: 1, current_server: "Amit", rally_history: [] }
+    },
+
+    // --- OUTDOOR GAMES ---
     { 
-        id: 101, sport: "Cricket", type: "Semi Final (T10)", team1: "CS Dept", team2: "BCOM Dept", 
-        score1: "88/2 (8.4)", score2: "112/5 (10.0)", status: "Live", live: true,
-        loc: "Main Gymkhana Ground",
+        id: 201, sport: "Box Cricket", type: "Final", team1: "CS Dept", team2: "BCOM Dept", 
+        score1: "45/1 (4.2)", score2: "42/4 (5.0)", status: "Live", live: true,
+        loc: "Main Turf",
         details: { 
             toss: "BCOM Dept won the toss and elected to bat",
-            match_status: "CS Dept need 25 runs in 8 balls",
-            crr: "10.15", 
-            rrr: "18.75",
-            current_partnership: { runs: 26, balls: 15, b1: 14, b2: 12, b1_name: "Rohan", b2_name: "Suresh" },
-            recent_balls: ["4", "1", "0", "6", "1nb", "W", "2", "4", "1", "0", "1", "6"], 
-            
-            // 2nd Innings (Live - CS Dept)
+            match_status: "CS Dept need 3 runs in 4 balls (Target: 43)", // Box cricket usually 5-6 overs
+            crr: "10.38", rrr: "4.50",
+            current_partnership: { runs: 12, balls: 6, b1: 8, b2: 4, b1_name: "Rohan", b2_name: "Suresh" },
+            recent_balls: ["4", "1", "2", "0", "1", "6"], 
+            // 2nd Innings (Live)
             innings_2: {
-                team: "CS Dept",
-                score: "88/2",
-                overs: "8.4",
-                extras: "15 (b 4, lb 2, w 8, nb 1)",
+                team: "CS Dept", score: "45/1", overs: "4.2", extras: "4 (w 4)",
                 batters: [
-                    { name: "Rohan Das", status: "not out", r: 42, b: 24, fours: 4, sixes: 2, sr: 175.0 },
-                    { name: "Suresh Raina", status: "not out", r: 14, b: 10, fours: 1, sixes: 0, sr: 140.0 },
-                    { name: "Amit K", status: "c Rahul b Vivek", r: 12, b: 8, fours: 1, sixes: 0, sr: 150.0 },
-                    { name: "Sahil", status: "run out (Jayesh)", r: 5, b: 6, fours: 0, sixes: 0, sr: 83.3 }
+                    { name: "Rohan", status: "not out", r: 22, b: 10, fours: 3, sixes: 1, sr: 220.0 },
+                    { name: "Suresh", status: "not out", r: 12, b: 8, fours: 1, sixes: 0, sr: 150.0 },
+                    { name: "Amit", status: "run out", r: 5, b: 4, fours: 1, sixes: 0, sr: 125.0 }
                 ],
-                dnb: ["Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
-                bowlers: [
-                    { name: "Rahul S", o: 2.0, m: 0, r: 24, w: 0, eco: 12.00 },
-                    { name: "Vivek M", o: 3.0, m: 0, r: 18, w: 1, eco: 6.00 },
-                    { name: "Jayesh", o: 2.0, m: 0, r: 32, w: 0, eco: 16.0 },
-                    { name: "Karan", o: 1.4, m: 0, r: 14, w: 0, eco: 8.4 }
-                ],
-                fow: [
-                    { score: "32-1", name: "Amit K", over: "3.2" },
-                    { score: "62-2", name: "Sahil", over: "6.1" }
-                ]
+                bowlers: [{ name: "Rahul", o: 1.2, m: 0, r: 15, w: 0, eco: 11.2 }],
+                dnb: ["Vikram", "Tanmay"]
             },
-
-            // 1st Innings (Completed - BCOM Dept)
+            // 1st Innings
             innings_1: {
-                team: "BCOM Dept",
-                score: "112/5",
-                overs: "10.0",
-                extras: "8 (w 6, lb 2)",
-                batters: [
-                    { name: "Rahul S", status: "b Rohan", r: 45, b: 28, fours: 5, sixes: 1, sr: 160.7 },
-                    { name: "Vivek M", status: "c Suresh b Vikram", r: 32, b: 18, fours: 3, sixes: 2, sr: 177.7 },
-                    { name: "Jayesh", status: "run out", r: 10, b: 8, fours: 1, sixes: 0, sr: 125.0 },
-                    { name: "Mayank", status: "not out", r: 18, b: 6, fours: 0, sixes: 2, sr: 300.0 }
-                ],
-                dnb: [],
-                bowlers: [
-                    { name: "Rohan Das", o: 2.0, m: 0, r: 18, w: 1, eco: 9.00 },
-                    { name: "Vikram", o: 2.0, m: 0, r: 22, w: 1, eco: 11.0 },
-                    { name: "Tanmay", o: 2.0, m: 0, r: 28, w: 0, eco: 14.0 },
-                    { name: "Kunal", o: 2.0, m: 0, r: 20, w: 0, eco: 10.0 },
-                    { name: "Raj", o: 2.0, m: 0, r: 24, w: 1, eco: 12.0 }
-                ],
-                fow: [
-                    { score: "55-1", name: "Rahul S", over: "5.4" },
-                    { score: "80-2", name: "Vivek M", over: "8.1" }
-                ]
+                team: "BCOM Dept", score: "42/4", overs: "5.0", extras: "2",
+                batters: [{ name: "Vivek", status: "b Rohan", r: 18, b: 12, fours: 2, sixes: 0, sr: 150.0 }],
+                bowlers: [{ name: "Rohan", o: 1.0, m: 0, r: 8, w: 1, eco: 8.0 }]
             },
-            
-            commentary: [
-                { over: "8.4", text: "FOUR! Smashed down the ground by Rohan. Pure class." },
-                { over: "8.3", text: "Single taken towards long on." },
-                { over: "8.2", text: "No run, good length delivery outside off." },
-                { over: "8.1", text: "SIX! Massive hit over deep mid-wicket! That's gone into the parking lot." },
-                { over: "8.0", text: "End of Over. CS Dept looking strong." }
-            ],
-            squads: {
-                team1: ["Rohan (C)", "Suresh", "Amit", "Sahil", "Vikram", "Tanmay", "Kunal", "Raj", "Dev", "Om", "Yash"],
-                team2: ["Rahul (C)", "Vivek", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush", "Arjun", "Karan", "Sameer"]
-            }
+            commentary: [{ over: "4.2", text: "SIX! Straight down the ground." }],
+            squads: { team1: ["Rohan", "Suresh", "Amit", "Vikram", "Tanmay", "Kunal", "Raj", "Dev"], team2: ["Rahul", "Vivek", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush"] }
         }
     },
-    // 2. FOOTBALL
-    { 
-        id: 105, sport: "Football", type: "Finals", team1: "BMS", team2: "BAF", status: "Finished", 
-        winner: "BMS", result: "2 - 1", live: false, time: "Ended", loc: "Turf A",
-        score1: "2", score2: "1",
-        details: { 
-            scorers: [
-                {name: "Sahil (BMS)", time: "12'", type: "Goal"}, 
-                {name: "Raj (BAF)", time: "44'", type: "Goal"}, 
-                {name: "Amit (BMS)", time: "88'", type: "Penalty"}
-            ], 
-            stats: { possession: "55% - 45%", shots: "12 - 8", onTarget: "5 - 3", corners: "6 - 4", fouls: "8 - 10", offsides: "2 - 1" },
-            timeline: [
-                { time: "90+2'", text: "Full Time Whistle", icon: "whistle" },
-                { time: "88'", text: "GOAL! Amit scores from the spot.", icon: "goal" },
-                { time: "75'", text: "Yellow Card for Raj (BAF)", icon: "card" },
-                { time: "44'", text: "GOAL! Raj equalizes for BAF.", icon: "goal" }
-            ],
-            squads: {
-                team1: ["Sahil (GK)", "Karan", "Arjun", "Vikram", "Sameer", "Amit", "Rohan", "Siddharth", "Yash", "Pranav", "Dev"],
-                team2: ["Raj (GK)", "Vivek", "Suresh", "Manoj", "Kunal", "Tanmay", "Omkar", "Nikhil", "Pratik", "Jay", "Aman"]
-            }
-        }
-    },
-    // 3. KABADDI
     {
-        id: 106, sport: "Kabaddi", type: "League", team1: "CS", team2: "BA", status: "Live", live: true,
+        id: 202, sport: "Running 100m", type: "Finals", team1: "Heat 1", team2: "Result", status: "Finished", live: false,
+        winner: "Rohan (CS)", result: "10.8s", time: "Ended", loc: "Track Lane",
+        score1: "-", score2: "-",
+        details: {
+            positions: [
+                { rank: 1, team: "CS Dept", runner: "Rohan Das", split: "10.8s" },
+                { rank: 2, team: "BMS Dept", runner: "Sahil", split: "11.2s" },
+                { rank: 3, team: "BCOM Dept", runner: "Amit", split: "11.5s" }
+            ]
+        }
+    },
+    {
+        id: 203, sport: "Running 200m", type: "Heats", team1: "Group A", team2: "Group B", status: "Upcoming", live: false, time: "11:00 AM",
+        score1: "-", score2: "-", loc: "Track Lane",
+        details: { positions: [] }
+    },
+    {
+        id: 204, sport: "Relay 4*100", type: "Final", team1: "CS Dept", team2: "BMS Dept", status: "Live", live: true,
+        score1: "-", score2: "-", loc: "Track",
+        details: {
+            current_leg: "Leg 3/4",
+            positions: [
+                { rank: 1, team: "CS Dept", runner: "Rohan (Leg 3)", split: "Lead: +5m" },
+                { rank: 2, team: "BMS Dept", runner: "Sahil (Leg 3)", split: "Chasing" },
+                { rank: 3, team: "BAF Dept", runner: "Raj (Leg 3)", split: "+12m" }
+            ],
+            splits: { cs: ["11.2", "10.9", "Running...", "-"] }
+        }
+    },
+    {
+        id: 205, sport: "Kho-kho", type: "League", team1: "BAF", team2: "BFM", status: "Live", live: true,
+        score1: "12", score2: "14", loc: "Ground B",
+        details: {
+            raid_history: [], // Reusing generic structure
+            stats: {
+                team1: { chasers: 9, defenders_out: 12, extra: 0 },
+                team2: { chasers: 9, defenders_out: 14, extra: 0 }
+            },
+            current_raider: "Batch 2 Running",
+            squads: { team1: ["Team A1", "Team A2"], team2: ["Team B1", "Team B2"] }
+        }
+    },
+    {
+        id: 206, sport: "Kabaddi", type: "League", team1: "CS", team2: "BA", status: "Live", live: true,
         score1: "24", score2: "19", loc: "Mat 1",
         details: {
             raid_history: [
@@ -137,72 +148,63 @@ const scheduleData = [
             },
             current_raider: "Rohan Das",
             last_raid_status: "Super Raid! (+3)",
-            squads: {
-                team1: ["Rohan (C)", "Amit", "Suresh", "Vikram", "Kunal", "Raj", "Dev"],
-                team2: ["Vivek (C)", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush"]
-            }
+            squads: { team1: ["Rohan", "Amit", "Suresh", "Vikram", "Kunal", "Raj", "Dev"], team2: ["Vivek", "Jayesh", "Mayank", "Pratik", "Nikhil", "Sanket", "Piyush"] }
         }
     },
-    // 4. CHESS
     {
-        id: 107, sport: "Chess", type: "Final", team1: "Rohan (CS)", team2: "Anjali (BFM)", status: "Live", live: true,
-        score1: "1", score2: "0", loc: "Library Hall",
+        id: 207, sport: "Box langadi", type: "Knockout", team1: "BCOM", team2: "BMS", status: "Finished", live: false,
+        score1: "15", score2: "12", result: "BCOM Won", time: "Ended", loc: "Quadrangle",
         details: {
-            current_turn: "White (Rohan)",
-            timers: { white: "10:45", black: "08:20" },
-            moves: [
-                "1. e4 e5", "2. Nf3 Nc6", "3. Bb5 a6", "4. Ba4 Nf6", "5. O-O Be7", "6. Re1 b5"
-            ],
-            captured: {
-                white: ["pawn", "pawn"],
-                black: ["pawn"]
-            },
-            status_text: "White to move. Sicilian Defense variation."
+            stats: { team1: { points: 15 }, team2: { points: 12 } },
+            squads: { team1: ["List..."], team2: ["List..."] }
         }
     },
-    // 5. BADMINTON
     {
-        id: 108, sport: "Badminton", type: "Quarter Final", team1: "Priya (BMS)", team2: "Sneha (BAF)", status: "Live", live: true,
-        score1: "1", score2: "1", loc: "Court 2",
-        details: {
-            sets: [
-                { s1: 21, s2: 19, winner: "Priya" },
-                { s1: 15, s2: 21, winner: "Sneha" },
-                { s1: 8, s2: 4, status: "Live" } // Set 3
-            ],
-            current_set: 3,
-            current_server: "Priya",
-            rally_history: ["Point Priya", "Point Sneha", "Service Fault Sneha", "Smash Winner Priya"]
-        }
+        id: 208, sport: "Volleyball", type: "Semi Final", team1: "CS", team2: "IT", status: "Upcoming", live: false, time: "3:30 PM",
+        score1: "0", score2: "0", loc: "Volleyball Court",
+        details: { sets: [], squads: { team1: [], team2: [] } }
     },
-    // 6. RELAY / ATHLETICS
     {
-        id: 109, sport: "Relay Race", type: "4x100m Final", team1: "CS Dept", team2: "BCOM Dept", status: "Live", live: true,
-        score1: "-", score2: "-", loc: "Track",
+        id: 209, sport: "Shot put", type: "Finals", team1: "All", team2: "Participants", status: "Live", live: true,
+        score1: "-", score2: "-", loc: "Field Corner",
         details: {
-            current_leg: "Leg 3/4",
             positions: [
-                { rank: 1, team: "CS Dept", runner: "Rohan", split: "10.2s" },
-                { rank: 2, team: "BMS Dept", runner: "Sahil", split: "10.4s" },
-                { rank: 3, team: "BCOM Dept", runner: "Amit", split: "10.8s" }
-            ],
-            splits: {
-                cs: ["10.5s", "10.2s", "Running...", "-"],
-                bcom: ["11.0s", "10.8s", "Running...", "-"]
-            }
+                { rank: 1, team: "BCOM", runner: "Vikram", split: "12.4m" },
+                { rank: 2, team: "CS", runner: "Tanmay", split: "11.8m" },
+                { rank: 3, team: "BA", runner: "Vedant", split: "11.2m" }
+            ]
+        }
+    },
+    {
+        id: 210, sport: "3-leg-race", type: "Fun Event", team1: "Heat 1", team2: "Result", status: "Finished", live: false,
+        score1: "-", score2: "-", winner: "Rohan & Amit", result: "Won", time: "Ended", loc: "Track",
+        details: {
+            positions: [
+                { rank: 1, team: "CS", runner: "Rohan & Amit", split: "Winner" },
+                { rank: 2, team: "BMS", runner: "Priya & Neha", split: "Runner Up" }
+            ]
         }
     }
 ];
 
 const sportsData = [
-    { id: 1, name: "100m Sprint", icon: "timer", type: "Solo", teamSize: 1, status: "Open" },
-    { id: 2, name: "Chess", icon: "crown", type: "Solo", teamSize: 1, status: "Open" },
-    { id: 3, name: "Box Cricket", icon: "trophy", type: "Team", teamSize: 8, status: "Closed" }, 
-    { id: 4, name: "Kabaddi", icon: "swords", type: "Team", teamSize: 7, status: "Open" },
-    { id: 5, name: "Badminton", icon: "wind", type: "Solo", teamSize: 1, status: "Closed" }, 
-    { id: 6, name: "Relay Race", icon: "users", type: "Team", teamSize: 4, status: "Open" },
-    { id: 7, name: "Volleyball", icon: "volleyball", type: "Team", teamSize: 6, status: "Open" },
-    { id: 8, name: "Carrom", icon: "crosshair", type: "Solo", teamSize: 1, status: "Open" },
+    // INDOOR
+    { id: 1, name: "Chess", icon: "crown", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 2, name: "Carrom", icon: "crosshair", type: "Solo", teamSize: 1, status: "Open" }, // Or Team size 2 for doubles
+    { id: 3, name: "Badminton", icon: "wind", type: "Solo", teamSize: 1, status: "Closed" }, // Or Team size 2
+    { id: 4, name: "Table-Tennis", icon: "circle-dot", type: "Solo", teamSize: 1, status: "Open" },
+    
+    // OUTDOOR
+    { id: 5, name: "Running 100m", icon: "timer", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 6, name: "Running 200m", icon: "timer", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 7, name: "Relay 4*100", icon: "users", type: "Team", teamSize: 4, status: "Open" },
+    { id: 8, name: "Kho-kho", icon: "users", type: "Team", teamSize: 12, status: "Closed" }, // Usually 9 playing + 3 subs
+    { id: 9, name: "Kabaddi", icon: "swords", type: "Team", teamSize: 7, status: "Open" },
+    { id: 10, name: "Box Cricket", icon: "trophy", type: "Team", teamSize: 8, status: "Closed" },
+    { id: 11, name: "Box langadi", icon: "footprints", type: "Team", teamSize: 12, status: "Open" },
+    { id: 12, name: "Volleyball", icon: "volleyball", type: "Team", teamSize: 6, status: "Open" },
+    { id: 13, name: "Shot put", icon: "dumbbell", type: "Solo", teamSize: 1, status: "Open" },
+    { id: 14, name: "3-leg-race", icon: "users-2", type: "Team", teamSize: 2, status: "Open" },
 ];
 
 // --- RENDER FUNCTIONS ---
@@ -249,7 +251,7 @@ function renderRegistrationCards() {
                     </div>
                     <span class="text-[10px] font-bold uppercase px-2 py-1 rounded ${isClosed ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${sport.status}</span>
                 </div>
-                <h4 class="font-bold text-sm dark:text-gray-200">${sport.name}</h4>
+                <h4 class="font-bold text-sm dark:text-gray-200 truncate">${sport.name}</h4>
                 <div class="mt-1 text-xs text-gray-500">${sport.type === 'Team' ? `Team of ${sport.teamSize}` : 'Individual'}</div>
             </div>
         `;
@@ -268,13 +270,13 @@ function renderSchedule() {
         <div onclick="openMatchDetails(${m.id})" class="glass p-4 rounded-2xl bg-white dark:bg-dark-card border-l-4 ${m.live ? 'border-brand-primary' : 'border-gray-300'} cursor-pointer active:scale-95 transition-transform shadow-sm">
             <div class="flex justify-between mb-2">
                 ${m.live ? `<span class="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-[10px] font-bold rounded animate-pulse">LIVE NOW</span>` : `<span class="text-xs font-bold text-gray-500">${m.time}</span>`}
-                <span class="text-xs text-gray-500">${m.loc || m.type}</span>
+                <span class="text-xs text-gray-500 truncate max-w-[120px]">${m.loc || m.type}</span>
             </div>
             <div class="flex justify-between items-center">
                 <div class="text-center w-1/3"><h4 class="font-black text-lg truncate">${m.team1.split(' ')[0]}</h4></div>
                 <div class="flex flex-col items-center w-1/3">
                     <span class="text-xs font-bold text-gray-300">VS</span>
-                    <div class="mt-1 px-2 py-0.5 bg-gray-100 dark:bg-white/10 rounded text-[10px] font-mono">${m.sport}</div>
+                    <div class="mt-1 px-2 py-0.5 bg-gray-100 dark:bg-white/10 rounded text-[10px] font-mono truncate w-full text-center">${m.sport}</div>
                 </div>
                 <div class="text-center w-1/3"><h4 class="font-black text-lg text-gray-500 truncate">${m.team2.split(' ')[0]}</h4></div>
             </div>
@@ -292,9 +294,9 @@ function renderSchedule() {
                     <span class="text-[10px] font-bold text-green-500">FINISHED</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2"><span class="font-black text-xl">${m.team1.split(' ')[0]}</span></div>
+                    <div class="flex items-center gap-2"><span class="font-black text-xl truncate max-w-[100px]">${m.team1.split(' ')[0]}</span></div>
                     <div class="font-black text-xl text-brand-secondary">${m.result}</div>
-                    <div class="flex items-center gap-2"><span class="font-black text-xl text-gray-400">${m.team2.split(' ')[0]}</span></div>
+                    <div class="flex items-center gap-2"><span class="font-black text-xl text-gray-400 truncate max-w-[100px]">${m.team2.split(' ')[0]}</span></div>
                 </div>
             </div>
         </div>
@@ -303,7 +305,7 @@ function renderSchedule() {
 }
 
 function renderAthleteSchedule() {
-    const myMatches = scheduleData.filter(m => (m.team1.includes('CS') || m.team2.includes('CS')) && m.status !== 'Finished');
+    const myMatches = scheduleData.filter(m => (m.team1.includes('CS') || m.team2.includes('CS') || m.team1.includes('Rohan') || m.details?.positions?.some(p => p.runner.includes('Rohan'))) && m.status !== 'Finished');
     const container = document.getElementById('athlete-schedule-container');
     
     if(myMatches.length === 0) {
@@ -317,7 +319,7 @@ function renderAthleteSchedule() {
             <div class="flex justify-between items-start mb-2">
                 <div>
                     <h4 class="font-bold text-sm">${m.sport} (${m.type})</h4>
-                    <p class="text-xs text-gray-500">vs ${m.team1.includes('CS') ? m.team2 : m.team1}</p>
+                    <p class="text-xs text-gray-500">vs ${m.team1.includes('CS') || m.team1.includes('Rohan') ? m.team2 : m.team1}</p>
                 </div>
                 ${m.status === 'Live' ? '<span class="text-[10px] font-bold bg-red-500 text-white px-2 py-1 rounded animate-pulse">LIVE</span>' : `<span class="text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-500 px-2 py-1 rounded">${m.time}</span>`}
             </div>
@@ -343,12 +345,12 @@ function openMatchDetails(id) {
 
     // --- TAB GENERATION LOGIC ---
     let buttons = [];
-    if (match.sport === 'Cricket') buttons = ['Summary', 'Scorecard', 'Commentary', 'Squads'];
-    else if (match.sport === 'Football') buttons = ['Summary', 'Stats', 'Timeline', 'Squads'];
-    else if (match.sport === 'Kabaddi') buttons = ['Summary', 'Raid-Log', 'Squads'];
+    if (match.sport === 'Cricket' || match.sport === 'Box Cricket') buttons = ['Summary', 'Scorecard', 'Commentary', 'Squads'];
+    else if (match.sport === 'Football') buttons = ['Summary', 'Stats', 'Timeline', 'Squads']; // Kept logic in case Football returns
+    else if (match.sport === 'Kabaddi' || match.sport === 'Kho-kho') buttons = ['Summary', 'Stats', 'Squads'];
     else if (match.sport === 'Chess') buttons = ['Board', 'Moves'];
-    else if (match.sport === 'Badminton' || match.sport === 'Volleyball') buttons = ['Scoreboard', 'Rally-Log'];
-    else buttons = ['Summary', 'Squads'];
+    else if (match.sport === 'Badminton' || match.sport === 'Volleyball' || match.sport === 'Table-Tennis' || match.sport === 'Carrom') buttons = ['Scoreboard', 'Rally-Log'];
+    else buttons = ['Summary', 'Positions']; // For Running, Relay, Shot put, etc.
 
     let tabsHTML = `<div class="flex border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#151522] sticky top-0 z-20 overflow-x-auto no-scrollbar">`;
     buttons.forEach((btn, index) => {
@@ -361,20 +363,17 @@ function openMatchDetails(id) {
     // --- CONTENT GENERATION LOGIC ---
     let contentHTML = '';
 
-    // 1. CRICKET LOGIC (DUAL INNINGS)
-    if (match.sport === 'Cricket') {
-        // --- HELPERS FOR CRICKET ---
+    // 1. CRICKET / BOX CRICKET LOGIC
+    if (match.sport === 'Cricket' || match.sport === 'Box Cricket') {
         const renderBall = (b) => {
             const cls = b === '4' ? 'b-4' : (b === '6' ? 'b-6' : (b === 'W' ? 'b-w' : (b === '0' ? 'b-0' : 'b-1')));
             return `<div class="cric-ball ${cls}">${b}</div>`;
         };
 
-        // Current Innings is usually Innings 2 in this live data
-        const currentInnings = match.details.innings_2;
+        const currentInnings = match.details.innings_2 || match.details.innings_1;
         const activeBatters = currentInnings.batters.filter(b => b.status === 'not out');
         const activeBowler = currentInnings.bowlers[currentInnings.bowlers.length - 1];
         
-        // SUMMARY TAB
         contentHTML += `
             <div id="mtab-summary" class="match-tab-view animate-fade-in pb-10">
                 <div class="cricket-score-card px-4 pt-4 pb-2">
@@ -388,10 +387,10 @@ function openMatchDetails(id) {
                         </div>
                         <div class="text-right">
                              <div class="flex items-center gap-1 justify-end">
-                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider">Live</span>
+                                <span class="w-2 h-2 rounded-full ${match.live ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}"></span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider">${match.status}</span>
                              </div>
-                             <p class="text-[10px] mt-1 text-gray-400">CRR: ${match.details.crr} • RRR: ${match.details.rrr}</p>
+                             <p class="text-[10px] mt-1 text-gray-400">CRR: ${match.details.crr} • RRR: ${match.details.rrr || '-'}</p>
                         </div>
                     </div>
                     <div class="border-t border-white/10 pt-2 mt-2">
@@ -403,18 +402,18 @@ function openMatchDetails(id) {
                 <div class="match-info-grid p-3">
                     <div class="info-box shadow-sm">
                          <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 mb-2"><span>Batter</span><span>R (B)</span></div>
-                         ${activeBatters.map(b => `
+                         ${activeBatters.length > 0 ? activeBatters.map(b => `
                             <div class="flex justify-between text-xs font-bold border-b border-gray-100 dark:border-white/5 py-1 last:border-0">
                                 <span class="flex items-center gap-1">${b.name} <span class="text-brand-primary">*</span></span>
                                 <span>${b.r} <span class="text-gray-400 font-medium">(${b.b})</span></span>
                             </div>
-                         `).join('')}
+                         `).join('') : '<p class="text-xs text-gray-500">Innings Break</p>'}
                     </div>
                     <div class="info-box shadow-sm">
                          <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 mb-2"><span>Bowler</span><span>Fig</span></div>
                          <div class="flex justify-between text-xs font-bold py-1">
-                                <span>${activeBowler.name}</span>
-                                <span>${activeBowler.w}/${activeBowler.r} <span class="text-gray-400 font-medium">(${activeBowler.o})</span></span>
+                                <span>${activeBowler ? activeBowler.name : '-'}</span>
+                                <span>${activeBowler ? `${activeBowler.w}/${activeBowler.r}` : '-'} <span class="text-gray-400 font-medium">(${activeBowler ? activeBowler.o : '-'})</span></span>
                          </div>
                     </div>
                 </div>
@@ -456,10 +455,9 @@ function openMatchDetails(id) {
                     return `
                         <div>
                             <div class="bg-gray-100 dark:bg-white/10 px-3 py-2 rounded-t-lg border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-                                <span class="text-xs font-bold uppercase text-gray-700 dark:text-gray-200">${innKey === 'innings_1' ? '1st Innings' : '2nd Innings'} - ${inn.team}</span>
+                                <span class="text-xs font-bold uppercase text-gray-700 dark:text-gray-200">${inn.team}</span>
                                 <span class="text-xs font-black">${inn.score} (${inn.overs})</span>
                             </div>
-                            
                             <div class="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm mb-2">
                                 <div class="cric-table-container">
                                     <table class="cric-table">
@@ -488,7 +486,6 @@ function openMatchDetails(id) {
                                 </div>
                                 ${inn.dnb && inn.dnb.length > 0 ? `<div class="p-2 text-[10px] text-gray-500 border-t border-gray-100 dark:border-white/5"><span class="font-bold">Did not bat:</span> ${inn.dnb.join(', ')}</div>` : ''}
                             </div>
-
                             <div class="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-b-lg overflow-hidden shadow-sm">
                                 <div class="bg-gray-50 dark:bg-white/5 px-3 py-1.5 border-b border-gray-100 dark:border-white/5">
                                     <span class="text-[10px] font-bold uppercase text-gray-400">Bowling</span>
@@ -517,7 +514,7 @@ function openMatchDetails(id) {
             </div>
 
             <div id="mtab-commentary" class="match-tab-view hidden animate-fade-in p-4 space-y-3 pb-10">
-                ${match.details.commentary.map(c => `
+                ${match.details.commentary ? match.details.commentary.map(c => `
                     <div class="flex gap-3">
                         <div class="w-10 pt-1 flex flex-col items-center">
                             <span class="text-xs font-black text-gray-900 dark:text-white">${c.over}</span>
@@ -526,7 +523,7 @@ function openMatchDetails(id) {
                             <p class="text-xs leading-relaxed text-gray-600 dark:text-gray-300">${c.text}</p>
                         </div>
                     </div>
-                `).join('')}
+                `).join('') : '<p class="text-xs text-gray-500">No commentary available.</p>'}
             </div>
 
             <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs pb-10">
@@ -542,12 +539,12 @@ function openMatchDetails(id) {
         `;
     }
 
-    // 2. KABADDI LOGIC
-    else if (match.sport === 'Kabaddi') {
-        const raidHTML = match.details.raid_history.map(r => {
+    // 2. KABADDI / KHO-KHO LOGIC
+    else if (match.sport === 'Kabaddi' || match.sport === 'Kho-kho') {
+        const raidHTML = match.details.raid_history && match.details.raid_history.length > 0 ? match.details.raid_history.map(r => {
             const color = r.type === 'raid' ? 'text-green-500' : (r.type === 'tackle' ? 'text-red-500' : 'text-gray-500');
             return `<div class="flex justify-between border-b border-gray-100 dark:border-white/5 py-2 text-xs"><span>${r.raider}</span><span class="font-bold ${color}">${r.result}</span></div>`
-        }).join('');
+        }).join('') : '<p class="text-xs text-gray-500 text-center py-4">No recent activity logged.</p>';
 
         contentHTML += `
             <div id="mtab-summary" class="match-tab-view animate-fade-in">
@@ -558,65 +555,25 @@ function openMatchDetails(id) {
                          <div class="text-2xl font-black opacity-50">:</div>
                          <div class="text-center"><span class="text-5xl font-black">${match.score2}</span><p class="text-xs mt-1 font-bold">${match.team2}</p></div>
                     </div>
-                    <div class="mt-4 inline-block px-3 py-1 bg-black/20 rounded-full text-[10px] font-bold uppercase tracking-wider">Raiding: ${match.details.current_raider}</div>
+                    <div class="mt-4 inline-block px-3 py-1 bg-black/20 rounded-full text-[10px] font-bold uppercase tracking-wider">${match.sport === 'Kabaddi' ? 'Raiding' : 'Chasing'}: ${match.details.current_raider}</div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 p-4">
                     <div class="bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5 text-center">
-                        <p class="text-[10px] text-gray-500 uppercase">Raid Pts</p>
-                        <p class="text-xl font-black text-brand-primary">${match.details.stats.team1.raid_points}</p>
+                        <p class="text-[10px] text-gray-500 uppercase">${match.sport === 'Kabaddi' ? 'Raid Pts' : 'Chasers'}</p>
+                        <p class="text-xl font-black text-brand-primary">${match.details.stats.team1.raid_points || match.details.stats.team1.chasers}</p>
                     </div>
                     <div class="bg-white dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5 text-center">
-                        <p class="text-[10px] text-gray-500 uppercase">Tackle Pts</p>
-                        <p class="text-xl font-black text-brand-secondary">${match.details.stats.team1.tackle_points}</p>
+                        <p class="text-[10px] text-gray-500 uppercase">${match.sport === 'Kabaddi' ? 'Tackle Pts' : 'Defenders Out'}</p>
+                        <p class="text-xl font-black text-brand-secondary">${match.details.stats.team1.tackle_points || match.details.stats.team1.defenders_out}</p>
                     </div>
                 </div>
             </div>
-            <div id="mtab-raid-log" class="match-tab-view hidden animate-fade-in p-4">${raidHTML}</div>
+            <div id="mtab-stats" class="match-tab-view hidden animate-fade-in p-4">${raidHTML}</div>
             <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
         `;
     }
 
-    // 3. FOOTBALL LOGIC
-    else if (match.sport === 'Football') {
-        const timelineHTML = match.details.timeline.map(t => `
-            <div class="flex gap-3 mb-4">
-                <div class="w-10 text-right font-mono font-bold text-xs text-brand-primary pt-0.5">${t.time}</div>
-                <div class="w-px bg-gray-200 dark:bg-white/10 relative"><div class="absolute top-1 -left-1 w-2 h-2 rounded-full bg-brand-primary"></div></div>
-                <div class="flex-1 pb-4 border-b border-gray-50 dark:border-white/5">
-                    <p class="text-xs font-bold dark:text-white">${t.text}</p>
-                </div>
-            </div>
-        `).join('');
-
-        contentHTML += `
-            <div id="mtab-summary" class="match-tab-view animate-fade-in">
-                <div class="football-field h-48 w-full relative bg-green-600 flex items-center justify-center shadow-inner">
-                    <div class="absolute inset-0 bg-black/20"></div>
-                    <div class="z-10 text-center text-white">
-                        <div class="flex items-center gap-8">
-                            <span class="text-4xl font-black">${match.score1}</span>
-                            <span class="text-sm font-bold px-2 py-1 bg-white/20 rounded backdrop-blur">${match.time}</span>
-                            <span class="text-4xl font-black">${match.score2}</span>
-                        </div>
-                        <p class="mt-2 text-xs opacity-80">${match.team1} vs ${match.team2}</p>
-                    </div>
-                </div>
-                <div class="p-4 space-y-2">
-                    ${generateStatBar('Possession', match.details.stats.possession)}
-                    ${generateStatBar('Shots on Target', match.details.stats.onTarget)}
-                </div>
-            </div>
-            <div id="mtab-stats" class="match-tab-view hidden animate-fade-in p-4 space-y-4">
-                 <div class="grid grid-cols-2 gap-4">
-                    ${Object.entries(match.details.stats).map(([k,v]) => `<div class="bg-gray-50 dark:bg-white/5 p-3 rounded-lg"><p class="text-[10px] uppercase text-gray-500">${k}</p><p class="font-bold text-sm">${v}</p></div>`).join('')}
-                 </div>
-            </div>
-            <div id="mtab-timeline" class="match-tab-view hidden animate-fade-in p-4">${timelineHTML}</div>
-            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4 text-xs">${match.details.squads.team1.join(', ')}</div>
-        `;
-    }
-
-    // 4. CHESS LOGIC
+    // 3. CHESS LOGIC
     else if (match.sport === 'Chess') {
         const movesHTML = match.details.moves.map(m => `<span class="inline-block bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-xs font-mono m-1">${m}</span>`).join('');
         
@@ -649,15 +606,15 @@ function openMatchDetails(id) {
         `;
     }
 
-    // 5. BADMINTON / VOLLEYBALL LOGIC
-    else if (match.sport === 'Badminton' || match.sport === 'Volleyball') {
-        const setsHTML = match.details.sets.map((s, i) => `
+    // 4. BADMINTON / VOLLEYBALL / TT / CARROM LOGIC
+    else if (['Badminton', 'Volleyball', 'Table-Tennis', 'Carrom'].includes(match.sport)) {
+        const setsHTML = match.details.sets.length > 0 ? match.details.sets.map((s, i) => `
             <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-white/5 rounded-lg mb-2 ${match.details.current_set === i+1 ? 'border border-brand-primary' : ''}">
                 <span class="text-xs font-bold text-gray-500">Set ${i+1}</span>
                 <div class="font-mono font-bold text-sm">${s.s1} - ${s.s2}</div>
-                <span class="text-[10px] font-bold ${s.winner === match.team1.split(' ')[0] ? 'text-green-500' : 'text-gray-400'}">${s.winner || 'Live'}</span>
+                <span class="text-[10px] font-bold ${s.winner ? 'text-green-500' : 'text-gray-400'}">${s.winner || 'Live'}</span>
             </div>
-        `).join('');
+        `).join('') : '<p class="text-xs text-gray-500">Match has not started yet.</p>';
 
         contentHTML += `
             <div id="mtab-scoreboard" class="match-tab-view animate-fade-in">
@@ -676,29 +633,40 @@ function openMatchDetails(id) {
                  </div>
             </div>
             <div id="mtab-rally-log" class="match-tab-view hidden animate-fade-in p-4 space-y-2">
-                ${match.details.rally_history.map(r => `<p class="text-xs border-b border-gray-100 dark:border-white/5 py-2">${r}</p>`).join('')}
+                ${match.details.rally_history.length > 0 ? match.details.rally_history.map(r => `<p class="text-xs border-b border-gray-100 dark:border-white/5 py-2">${r}</p>`).join('') : '<p class="text-xs text-gray-500">No recent rallies.</p>'}
             </div>
         `;
     }
 
-     // 6. RELAY / GENERIC
+     // 5. ATHLETICS / RUNNING / RELAY / GENERIC LOGIC
     else {
         contentHTML += `
             <div id="mtab-summary" class="match-tab-view animate-fade-in p-4">
                 <div class="bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/5">
                     <h3 class="font-bold mb-4">Live Positions</h3>
-                    ${match.details?.positions ? match.details.positions.map(p => `
+                    ${match.details?.positions && match.details.positions.length > 0 ? match.details.positions.map(p => `
                         <div class="flex items-center justify-between mb-3 last:mb-0">
                             <div class="flex items-center gap-3">
                                 <span class="w-6 h-6 flex items-center justify-center bg-gray-100 dark:bg-white/10 rounded-full text-xs font-bold">${p.rank}</span>
-                                <span class="text-sm font-bold">${p.team}</span>
+                                <span class="text-sm font-bold">${p.runner || p.team}</span>
                             </div>
                             <span class="font-mono text-xs font-bold text-brand-primary">${p.split}</span>
                         </div>
-                    `).join('') : '<p>No live data</p>'}
+                    `).join('') : '<p class="text-xs text-gray-500">No live data available</p>'}
                 </div>
+                ${match.details?.stats ? `
+                    <div class="mt-4 bg-white dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/5">
+                         <h3 class="font-bold mb-2">Score Summary</h3>
+                         <div class="flex justify-between text-sm">
+                            <span>${match.team1}: ${match.score1}</span>
+                            <span>${match.team2}: ${match.score2}</span>
+                         </div>
+                    </div>
+                ` : ''}
             </div>
-            <div id="mtab-squads" class="match-tab-view hidden animate-fade-in p-4">Squad list...</div>
+            <div id="mtab-positions" class="match-tab-view hidden animate-fade-in p-4">
+                <p class="text-xs text-gray-500">Detailed splits and heat information would appear here.</p>
+            </div>
         `;
     }
 
@@ -716,7 +684,6 @@ function openMatchDetails(id) {
 
 // --- UTILITIES FOR HTML GENERATION ---
 function generateStatBar(label, valueString) {
-    // Expects valueString like "55% - 45%" or "12 - 8"
     const parts = valueString.includes('%') ? valueString.replace(/%/g,'').split('-') : valueString.split('-');
     const v1 = parseFloat(parts[0]);
     const v2 = parseFloat(parts[1]);
