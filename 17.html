@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Schedule Center | EcoCampus</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        light: { bg: '#F3F4F6', card: '#FFFFFF', text: '#111827', subtext: '#6B7280' },
+                        brand: { 
+                            primary: '#4F46E5', // Indigo-600
+                            secondary: '#DB2777', // Pink-600
+                            wood: '#F3E5AB', // Carrom Board Beige
+                            woodDark: '#8B4513' // Carrom Frame Brown
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'inner-board': 'inset 0 0 20px rgba(139, 69, 19, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #F3F4F6; color: #111827; -webkit-tap-highlight-color: transparent; }
+        
+        /* LIGHT GLASSMORPHISM */
+        .glass {
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* UTILITIES */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .active-scale:active { transform: scale(0.98); transition: transform 0.1s; }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        /* CARROM SPECIFIC VISUALS */
+        .carrom-surface {
+            background-color: #F3E5AB;
+            background-image: radial-gradient(#8B4513 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: inset 0 0 30px rgba(139, 69, 19, 0.15);
+        }
+        
+        .goti { width: 20px; height: 20px; border-radius: 50%; transition: all 0.3s ease; display: inline-block; margin: 2px; }
+        
+        /* White Piece (Wooden/Light) */
+        .goti.white { background: #fdf6e3; border: 1px solid #d4c5b0; box-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .goti.white.pocketed { opacity: 0.2; border: 1px dashed #aaa; background: transparent; box-shadow: none; }
+        
+        /* Black Piece */
+        .goti.black { background: #1a1a1a; border: 1px solid #000; box-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .goti.black.pocketed { opacity: 0.2; border: 1px dashed #000; background: transparent; box-shadow: none; }
+        
+        /* Queen */
+        .goti.queen { width: 28px; height: 28px; background: #EF4444; border: 2px solid #991B1B; }
+        .goti.queen.active { animation: pulse-red 2s infinite; }
+        .goti.queen.pocketed { opacity: 0.2; border: 2px dashed #EF4444; background: transparent; animation: none; }
+
+        /* CRICKET BALLS */
+        .cric-ball { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; border-radius: 50%; margin-right: 4px; border: 1px solid rgba(0,0,0,0.05); }
+        .b-4 { background: #3B82F6; color: white; } .b-6 { background: #10B981; color: white; } .b-w { background: #EF4444; color: white; } 
+        .b-0 { background: #E5E7EB; color: #6B7280; } .b-1 { background: #9CA3AF; color: white; }
+    </style>
+</head>
+<body class="pb-safe">
+
+    <header class="fixed top-0 w-full z-40 glass transition-colors">
+        <div class="px-5 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <button onclick="history.back()" class="p-2 rounded-full hover:bg-black/5 transition text-gray-700">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter italic text-gray-900">Schedule<span class="text-brand-primary">Center</span></h1>
+                </div>
+            </div>
+            
+            <div class="bg-gray-100 p-1 rounded-lg flex text-[10px] font-bold border border-gray-200">
+                <button onclick="toggleSchedule('upcoming')" id="sch-upcoming-btn" class="px-4 py-1.5 rounded-md bg-white text-brand-primary shadow-sm transition-all border border-gray-100">Live</button>
+                <button onclick="toggleSchedule('results')" id="sch-results-btn" class="px-4 py-1.5 rounded-md text-gray-400 hover:text-gray-600 transition-all">Results</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="h-20"></div>
+
+    <main class="px-4 min-h-screen pb-24">
+        
+        <div id="view-upcoming" class="space-y-4 animate-fade-in">
+            </div>
+
+        <div id="view-results" class="space-y-4 hidden animate-fade-in">
+            </div>
+
+    </main>
+
+    <div id="match-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeMatchModal()"></div>
+        <div class="absolute inset-x-0 bottom-0 top-14 bg-white rounded-t-3xl overflow-hidden transition-transform duration-300 translate-y-full flex flex-col shadow-2xl" id="match-content">
+            
+            <div class="p-4 flex justify-between items-center bg-white flex-shrink-0 z-10 border-b border-gray-100">
+                <button onclick="closeMatchModal()" class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-600">
+                    <i data-lucide="chevron-down" class="w-6 h-6"></i>
+                </button>
+                <div class="text-center">
+                    <h3 class="font-black text-sm uppercase tracking-widest text-brand-primary" id="modal-sport">Sport</h3>
+                    <p class="text-[10px] text-gray-500 font-bold" id="modal-type">Match Details</p>
+                </div>
+                <div class="w-8"></div>
+            </div>
+            
+            <div class="overflow-y-auto flex-1 p-0 bg-gray-50" id="match-modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA WITH 14 GAMES ---
+        const scheduleData = [
+            // 1. INDOOR - CARROM (Improved Visual Data)
+            {
+                id: 101, sport: "Carrom", type: "Men's Singles Final", status: "Live", live: true,
+                team1: "Rahul (CS)", team2: "Vivek (BA)", score1: "21", score2: "9",
+                loc: "Gymkhana Hall 1",
+                details: {
+                    current_board: 3,
+                    striker: "Rahul", // Who is currently striking
+                    pieces: {
+                        white_left: 2, // Pieces on board
+                        black_left: 5, // Pieces on board
+                        queen: "active" // active, pocketed_white, pocketed_black
+                    },
+                    history: [
+                        { board: 1, winner: "Rahul", score: "25-0" },
+                        { board: 2, winner: "Vivek", score: "0-14" }
+                    ],
+                    stats: { slams: "1 - 0", queen_covers: "1 - 0", fouls: "0 - 1" }
+                }
+            },
+            // 2. OUTDOOR - BOX CRICKET
+            {
+                id: 102, sport: "Box Cricket", type: "Finals", status: "Live", live: true,
+                team1: "CS Dept", team2: "BCOM Dept", score1: "42/2", score2: "18/1",
+                loc: "Turf A",
+                details: {
+                    overs: "3.2", target: "43", status_msg: "CS needs 1 run in 10 balls",
+                    batters: [{n:"Rohan", r:24, b:10}, {n:"Amit", r:8, b:4}],
+                    bowler: {n:"Sahil", o:0.2, w:0, r:4},
+                    balls: ["6","4","1","0","W","1"]
+                }
+            },
+            // 3. INDOOR - CHESS
+            {
+                id: 103, sport: "Chess", type: "Semi Final", status: "Live", live: true,
+                team1: "Anjali (BFM)", team2: "Priya (BMS)", score1: "0", score2: "0",
+                loc: "Library",
+                details: { timer_w: "12:40", timer_b: "09:15", turn: "White to move", captured: {w:2, b:1} }
+            },
+            // 4. OUTDOOR - KABADDI
+            {
+                id: 104, sport: "Kabaddi", type: "League", status: "Live", live: true,
+                team1: "SY BCOM", team2: "TY BAF", score1: "28", score2: "26",
+                loc: "Mat 1",
+                details: { raider: "Rohan Das", raid_no: 14, stats: { raid_pts: "14 - 12", tackle_pts: "10 - 10" } }
+            },
+            // 5. INDOOR - BADMINTON
+            {
+                id: 105, sport: "Badminton", type: "Quarter Final", status: "Live", live: true,
+                team1: "Sneha", team2: "Neha", score1: "1", score2: "1",
+                loc: "Court 2",
+                details: { sets: [{s1:21, s2:18}, {s1:15, s2:21}, {s1:10, s2:8}], server: "Sneha" }
+            },
+            // 6. OUTDOOR - RUNNING 100M
+            {
+                id: 106, sport: "Running 100m", type: "Final", status: "Finished", live: false,
+                team1: "Heat 1", team2: "Result", score1: "-", score2: "-", result: "Rohan (10.9s)",
+                loc: "Track Lane",
+                details: { positions: [{r:1, n:"Rohan", t:"10.9s"}, {r:2, n:"Amit", t:"11.2s"}, {r:3, n:"Raj", t:"11.5s"}] }
+            },
+            // 7. INDOOR - TABLE TENNIS
+            {
+                id: 107, sport: "Table-Tennis", type: "Final", status: "Upcoming", live: false,
+                team1: "Kunal", team2: "Omkar", score1: "0", score2: "0", time: "2:00 PM",
+                loc: "TT Hall",
+                details: { info: "Match starts at 2:00 PM" }
+            },
+            // 8. OUTDOOR - RELAY
+            {
+                id: 108, sport: "Relay 4*100", type: "Heats", status: "Live", live: true,
+                team1: "CS", team2: "BMS", score1: "-", score2: "-",
+                loc: "Track",
+                details: { positions: [{r:1, n:"CS Dept", t:"Leg 3"}, {r:2, n:"BMS Dept", t:"Leg 3"}] }
+            },
+            // 9. OUTDOOR - KHO KHO
+            {
+                id: 109, sport: "Kho-kho", type: "League", status: "Finished", live: false,
+                team1: "FY CS", team2: "SY IT", score1: "14", score2: "12", result: "FY CS Won",
+                loc: "Ground B",
+                details: { stats: { chasers: "9", defenders: "9" } }
+            },
+            // 10. OUTDOOR - BOX LANGADI
+            {
+                id: 110, sport: "Box Langadi", type: "Knockout", status: "Upcoming", live: false,
+                team1: "Girls A", team2: "Girls B", score1: "0", score2: "0", time: "3:30 PM",
+                loc: "Quadrangle",
+                details: { info: "Teams warming up" }
+            },
+            // 11. OUTDOOR - VOLLEYBALL
+            {
+                id: 111, sport: "Volleyball", type: "Semi Final", status: "Live", live: true,
+                team1: "Staff", team2: "Students", score1: "2", score2: "0",
+                loc: "Court A",
+                details: { sets: [{s1:25, s2:20}, {s1:25, s2:22}], status: "Match Point" }
+            },
+            // 12. OUTDOOR - SHOT PUT
+            {
+                id: 112, sport: "Shot put", type: "Finals", status: "Live", live: true,
+                team1: "All", team2: "Participants", score1: "-", score2: "-",
+                loc: "Field Corner",
+                details: { positions: [{r:1, n:"Vikram", t:"12.4m"}, {r:2, n:"Tanmay", t:"11.8m"}] }
+            },
+            // 13. OUTDOOR - 3 LEG RACE
+            {
+                id: 113, sport: "3-leg-race", type: "Fun Event", status: "Finished", live: false,
+                team1: "Heat 1", team2: "-", score1: "-", score2: "-", result: "Rohan & Amit",
+                loc: "Track",
+                details: { positions: [{r:1, n:"Rohan/Amit", t:"Winner"}] }
+            },
+            // 14. OUTDOOR - RUNNING 200M
+            {
+                id: 114, sport: "Running 200m", type: "Heats", status: "Upcoming", live: false,
+                team1: "Heat 1", team2: "Heat 2", score1: "-", score2: "-", time: "4:00 PM",
+                loc: "Track",
+                details: { info: "Marshalling area open" }
+            }
+        ];
+
+        // --- RENDER LOGIC ---
+        function renderSchedule() {
+            const upcomingContainer = document.getElementById('view-upcoming');
+            const resultsContainer = document.getElementById('view-results');
+            
+            const upcoming = scheduleData.filter(m => m.status !== 'Finished');
+            const results = scheduleData.filter(m => m.status === 'Finished');
+
+            const renderCard = (m) => `
+                <div onclick="openMatchDetails(${m.id})" class="glass p-4 rounded-2xl bg-white border-l-4 ${m.live ? 'border-brand-primary' : 'border-gray-300'} cursor-pointer active-scale shadow-soft relative overflow-hidden group">
+                    <div class="flex justify-between mb-2">
+                        ${m.live 
+                            ? `<span class="px-2 py-0.5 bg-red-50 text-red-500 text-[10px] font-bold rounded-full animate-pulse border border-red-100">LIVE NOW</span>` 
+                            : `<span class="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded">${m.time}</span>`}
+                        <span class="text-xs text-gray-400 truncate max-w-[120px] flex items-center gap-1">
+                            ${getIcon(m.sport)} ${m.loc}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-center w-1/3"><h4 class="font-black text-lg text-gray-800 truncate">${m.team1.split(' ')[0]}</h4></div>
+                        <div class="flex flex-col items-center w-1/3">
+                            <span class="text-[10px] font-bold text-gray-300">VS</span>
+                            <div class="mt-1 px-3 py-0.5 bg-gray-50 rounded-full text-[10px] font-bold uppercase tracking-wider truncate w-full text-center text-gray-500 border border-gray-100">${m.sport}</div>
+                        </div>
+                        <div class="text-center w-1/3"><h4 class="font-black text-lg text-gray-500 truncate">${m.team2.split(' ')[0]}</h4></div>
+                    </div>
+                    ${m.live ? `
+                        <div class="mt-3 pt-3 border-t border-gray-50 text-center flex justify-between items-center">
+                            <p class="text-xs font-mono text-gray-500 font-medium">Score: <span class="text-brand-primary font-black text-sm">${m.score1} - ${m.score2}</span></p>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-brand-primary transition-colors"></i>
+                        </div>` : ''}
+                </div>
+            `;
+
+            upcomingContainer.innerHTML = upcoming.map(renderCard).join('');
+            
+            resultsContainer.innerHTML = results.map(m => `
+                <div onclick="openMatchDetails(${m.id})" class="glass p-0 rounded-2xl overflow-hidden bg-white border border-gray-100 cursor-pointer active-scale shadow-sm">
+                    <div class="p-4 border-b border-gray-50 bg-gray-50/50">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase flex items-center gap-1">${getIcon(m.sport)} ${m.sport}</span>
+                            <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">FINISHED</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="font-black text-lg text-gray-800">${m.team1.split(' ')[0]}</span>
+                            <span class="font-black text-lg text-brand-secondary">${m.result}</span>
+                            <span class="font-black text-lg text-gray-400">${m.team2.split(' ')[0]}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function getIcon(sport) {
+            const icons = {
+                'Carrom': 'crosshair', 'Chess': 'crown', 'Badminton': 'wind', 'Table-Tennis': 'circle-dot',
+                'Box Cricket': 'trophy', 'Kabaddi': 'swords', 'Running': 'timer', 'Football': 'disc'
+            };
+            const iconName = Object.keys(icons).find(k => sport.includes(k)) ? icons[Object.keys(icons).find(k => sport.includes(k))] : 'activity';
+            return `<i data-lucide="${iconName}" class="w-3 h-3"></i>`;
+        }
+
+        // --- DEEP VIEW LOGIC ---
+        function openMatchDetails(id) {
+            const m = scheduleData.find(x => x.id === id);
+            document.getElementById('modal-sport').innerText = m.sport;
+            document.getElementById('modal-type').innerText = m.type;
+            
+            const body = document.getElementById('match-modal-body');
+            let html = '';
+
+            // --- 1. CARROM SPECIAL VIEW (Improved) ---
+            if(m.sport === 'Carrom') {
+                const wOn = m.details.pieces.white_left;
+                const bOn = m.details.pieces.black_left;
+                const queen = m.details.pieces.queen;
+
+                // Function to draw pieces (9 total per color)
+                const drawPieces = (count, color) => {
+                    let html = '';
+                    for (let i = 0; i < 9; i++) {
+                        // Logic: display count as "solid", rest as "pocketed"
+                        let state = i < count ? '' : 'pocketed';
+                        html += `<div class="goti ${color} ${state}"></div>`;
+                    }
+                    return html;
+                };
+
+                html = `
+                    <div class="p-5">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="text-left w-1/3">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">White</span>
+                                    <div class="text-3xl font-black text-gray-800 leading-none">${m.score1}</div>
+                                    <div class="text-xs font-bold text-brand-primary mt-1 truncate">${m.team1}</div>
+                                </div>
+                                <div class="text-center w-1/3">
+                                    <div class="inline-block px-3 py-1 bg-brand-wood/30 text-[#8B4513] rounded-full text-[10px] font-bold border border-brand-wood">
+                                        BOARD ${m.details.current_board}
+                                    </div>
+                                </div>
+                                <div class="text-right w-1/3">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mb-1">Black</span>
+                                    <div class="text-3xl font-black text-gray-800 leading-none">${m.score2}</div>
+                                    <div class="text-xs font-bold text-brand-secondary mt-1 truncate">${m.team2}</div>
+                                </div>
+                            </div>
+
+                            <div class="carrom-surface rounded-xl p-4 border-4 border-brand-woodDark relative">
+                                <div class="absolute top-2 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-2 py-0.5 rounded text-[9px] font-bold shadow-sm border border-gray-200 text-gray-600">
+                                    Striking: ${m.details.striker}
+                                </div>
+
+                                <div class="flex flex-col items-center gap-4 mt-4">
+                                    <div class="w-full">
+                                        <div class="flex justify-between text-[9px] font-bold text-[#8B4513] opacity-70 mb-1 uppercase">
+                                            <span>White Pieces</span>
+                                            <span>${wOn} On Board</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1 justify-center bg-white/20 p-2 rounded-lg border border-white/30">
+                                            ${drawPieces(wOn, 'white')}
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 relative">
+                                            <div class="goti queen ${queen === 'active' ? 'active' : 'pocketed'}"></div>
+                                            ${queen !== 'active' ? '<div class="absolute inset-0 flex items-center justify-center"><i data-lucide="check" class="w-4 h-4 text-white drop-shadow-md"></i></div>' : ''}
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full">
+                                        <div class="flex justify-between text-[9px] font-bold text-[#8B4513] opacity-70 mb-1 uppercase">
+                                            <span>Black Pieces</span>
+                                            <span>${bOn} On Board</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1 justify-center bg-white/20 p-2 rounded-lg border border-white/30">
+                                            ${drawPieces(bOn, 'black')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            ${Object.entries(m.details.stats).map(([k,v]) => `
+                                <div class="bg-white p-3 rounded-xl border border-gray-100 text-center shadow-sm">
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase">${k.replace('_',' ')}</p>
+                                    <p class="text-sm font-black text-gray-800 mt-1">${v}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // --- 2. CRICKET VIEW ---
+            else if(m.sport.includes('Cricket')) {
+                html = `
+                    <div class="bg-white p-6 pb-8 border-b border-gray-100 shadow-sm text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-50"></div>
+                        <div class="relative z-10">
+                            <h1 class="text-5xl font-black text-gray-800 tracking-tighter">${m.score1}</h1>
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1 mb-4">${m.team1} (Batting)</p>
+                            
+                            <div class="inline-block bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-6">
+                                <span class="text-[10px] text-brand-primary font-bold uppercase">${m.details.status_msg}</span>
+                            </div>
+
+                            <div class="flex justify-center">
+                                ${m.details.balls.map(b => `<div class="cric-ball ${b==='6'?'b-6':(b==='4'?'b-4':(b==='W'?'b-w':(b==='0'?'b-0':'b-1')))}">${b}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 space-y-4">
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="bg-gray-50 px-4 py-2 border-b border-gray-100 flex justify-between">
+                                <span class="text-[10px] font-bold uppercase text-gray-400">Batter</span>
+                                <span class="text-[10px] font-bold uppercase text-gray-400">R (B)</span>
+                            </div>
+                            ${m.details.batters.map(b => `
+                                <div class="px-4 py-3 flex justify-between border-b border-gray-50 last:border-0">
+                                    <span class="text-sm font-bold text-gray-800">${b.n}*</span>
+                                    <span class="text-sm font-bold text-gray-800">${b.r} <span class="text-gray-400 text-xs font-normal">(${b.b})</span></span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // --- 3. GENERIC / LIST VIEW ---
+            else {
+                html = `
+                    <div class="p-6">
+                        <div class="text-center mb-8">
+                            <div class="flex items-center justify-center gap-4">
+                                <span class="text-3xl font-black text-gray-800">${m.score1}</span>
+                                <span class="text-xs text-gray-400 font-bold uppercase bg-gray-100 px-2 py-1 rounded">VS</span>
+                                <span class="text-3xl font-black text-gray-800">${m.score2}</span>
+                            </div>
+                            <p class="text-xs font-bold text-brand-primary uppercase tracking-widest mt-3 bg-brand-primary/5 inline-block px-3 py-1 rounded-full">${m.status}</p>
+                        </div>
+
+                        ${m.details.positions ? `
+                            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+                                <div class="px-4 py-2 bg-gray-50 border-b border-gray-100"><span class="text-[10px] font-bold text-gray-400 uppercase">Live Leaderboard</span></div>
+                                ${m.details.positions.map(p => `
+                                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50 last:border-0">
+                                        <div class="flex items-center gap-3">
+                                            <span class="w-6 h-6 flex items-center justify-center bg-gray-100 rounded-full text-xs font-bold text-gray-600">${p.r}</span>
+                                            <span class="text-sm font-bold text-gray-800">${p.n}</span>
+                                        </div>
+                                        <span class="font-mono text-sm font-bold text-brand-primary">${p.t}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${m.details.sets ? `
+                             <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+                                <div class="px-4 py-2 bg-gray-50 border-b border-gray-100"><span class="text-[10px] font-bold text-gray-400 uppercase">Set Scores</span></div>
+                                ${m.details.sets.map((s,i) => `
+                                    <div class="flex justify-between px-4 py-3 border-b border-gray-50 last:border-0">
+                                        <span class="text-xs text-gray-400 font-bold">Set ${i+1}</span>
+                                        <span class="font-mono text-sm font-bold text-gray-800">${s.s1} - ${s.s2}</span>
+                                    </div>
+                                `).join('')}
+                             </div>
+                        ` : ''}
+
+                         <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 text-center">
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Match is being played at <span class="text-gray-800 font-bold">${m.loc}</span>.
+                                <br>${m.details.info || 'Live statistics updating automatically.'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            body.innerHTML = html;
+            document.getElementById('match-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('match-content').classList.remove('translate-y-full'), 10);
+        }
+
+        function closeMatchModal() {
+            document.getElementById('match-content').classList.add('translate-y-full');
+            setTimeout(() => document.getElementById('match-modal').classList.add('hidden'), 300);
+        }
+
+        function toggleSchedule(type) {
+            const upcoming = document.getElementById('view-upcoming');
+            const results = document.getElementById('view-results');
+            const btnUp = document.getElementById('sch-upcoming-btn');
+            const btnRes = document.getElementById('sch-results-btn');
+
+            if(type === 'upcoming') {
+                upcoming.classList.remove('hidden');
+                results.classList.add('hidden');
+                btnUp.classList.add('bg-white', 'text-brand-primary', 'shadow-sm');
+                btnUp.classList.remove('text-gray-400');
+                btnRes.classList.remove('bg-white', 'text-brand-primary', 'shadow-sm');
+                btnRes.classList.add('text-gray-400');
+            } else {
+                upcoming.classList.add('hidden');
+                results.classList.remove('hidden');
+                btnRes.classList.add('bg-white', 'text-brand-primary', 'shadow-sm');
+                btnRes.classList.remove('text-gray-400');
+                btnUp.classList.remove('bg-white', 'text-brand-primary', 'shadow-sm');
+                btnUp.classList.add('text-gray-400');
+            }
+        }
+
+        // INIT
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderSchedule();
+        });
+
+    </script>
+</body>
+</html>
