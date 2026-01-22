@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URJA 3.0 | Official Sports Brochure</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --secondary-dark: #1e293b;
+            --accent-gold: #fbbf24;
+            --accent-orange: #f97316;
+            --accent-cyan: #06b6d4;
+            --text-white: #f8fafc;
+            --text-gray: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- Global Reset & Typography --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-white);
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(249, 115, 22, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(251, 191, 36, 0.10) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- Header / Hero Section --- */
+        header {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), 
+                        url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            border-bottom: 4px solid var(--accent-orange);
+        }
+
+        .hero-college {
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .hero-logo-box {
+            border: 2px solid var(--accent-gold);
+            padding: 20px 40px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            animation: fadeInDown 1.5s ease;
+        }
+
+        .hero-title {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent-gold), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+        }
+
+        .hero-year {
+            font-size: 2rem;
+            color: var(--text-white);
+            margin-bottom: 15px;
+        }
+
+        .hero-slogan {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--text-gray);
+            margin-top: 20px;
+        }
+
+        /* --- Content Container --- */
+        .container {
+            max-width: 1000px;
+            margin: -50px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Sections --- */
+        section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 60px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        section:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .section-header i {
+            font-size: 2rem;
+            color: var(--accent-cyan);
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            color: var(--text-white);
+        }
+
+        /* --- About Section --- */
+        .about-text {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+        
+        .highlight {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        /* --- Rules List --- */
+        .rules-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            color: var(--text-gray);
+        }
+
+        .rules-list li::before {
+            content: "\f058"; /* Check-circle icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+
+        /* --- Warning / Alert Boxes --- */
+        .alert-box {
+            background: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid var(--accent-orange);
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        /* --- Game Grid --- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-gold));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-gold);
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            color: var(--text-white);
+        }
+
+        .game-sub {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 5px;
+        }
+
+        /* --- Points Table --- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--secondary-dark);
+            min-width: 300px;
+        }
+
+        th {
+            background: var(--accent-cyan);
+            color: var(--primary-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-gray);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.02);
+        }
+
+        tr:hover td {
+            color: var(--text-white);
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: #000;
+            color: var(--text-gray);
+            border-top: 4px solid var(--accent-gold);
+            margin-top: 80px;
+        }
+
+        .footer-slogan {
+            font-size: 2.5rem;
+            font-family: 'Oswald', sans-serif;
+            color: var(--text-white);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 4rem; }
+            section { padding: 30px 20px; }
+            .section-header h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="hero-college">B. K. BIRLA COLLEGE OF ARTS, COMMERCE & SCIENCE, KALYAN</div>
+        <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 20px;">[EMPOWERED AUTONOMOUS STATUS]</div>
+        
+        <div class="hero-logo-box">
+            <div class="hero-title">URJA 3.0</div>
+            <div class="hero-year">2025-2026</div>
+            <div style="border-top: 1px solid var(--accent-gold); width: 60px; margin: 10px auto;"></div>
+            <div style="text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem;">Annual Sports Meet</div>
+        </div>
+
+        <p class="hero-slogan">"Let's Join The Legacy of Champions"</p>
+        
+        <div style="margin-top: 40px; font-size: 0.9rem; opacity: 0.8;">Department of Physical Education and Sports</div>
+    </header>
+
+    <div class="container">
+
+        <section id="about">
+            <div class="section-header">
+                <i class="fa-solid fa-trophy"></i>
+                <h2>About The Event</h2>
+            </div>
+            <p class="about-text">
+                <span class="highlight">'URJA' Annual Sports Fest 2026</span> is here! Our alumni have carved the path towards victory with their hard work, dedication, passion, and 'URJA'.
+            </p>
+            <p class="about-text">
+                This scoring system not only recognizes individual game achievements but also promotes overall player excellence, creating a spirited and competitive atmosphere throughout the event. The rolling trophy symbolizes the winning department's prowess and contributes to a culture of healthy competition.
+            </p>
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="alert-box"><i class="fa-solid fa-gamepad"></i> 12 Games across 3 Categories</div>
+                <div class="alert-box"><i class="fa-solid fa-utensils"></i> Fun & Food Stall Area</div>
+                <div class="alert-box"><i class="fa-solid fa-users"></i> Faculty Sports Included</div>
+            </div>
+        </section>
+
+        <section id="general-rules">
+            <div class="section-header">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <h2>General Rules</h2>
+            </div>
+            <ul class="rules-list">
+                <li>All players should carry their respected ID Cards with them at all times.</li>
+                <li>Teams not arriving/reporting for their match as per scheduled time will forfeit (walkover awarded to opponent).</li>
+                <li>Arguments with the referee/committee members may result in team disqualification.</li>
+                <li>Abusive language is strictly prohibited. Violations result in point deductions.</li>
+                <li>The decision of the organizing committee & referee in all matters is final.</li>
+                <li>Changes and upgrades in rules/schedule will be informed on event day.</li>
+                <li>Specific game rules must be followed alongside general rules.</li>
+            </ul>
+        </section>
+
+        <section id="outdoor">
+            <div class="section-header">
+                <i class="fa-solid fa-person-running"></i>
+                <h2>Outdoor Games</h2>
+            </div>
+            <div class="game-grid">
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                    <div class="game-title">Athletics</div>
+                    <div class="game-sub">100m, 200m, 400m, 1500m</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-people-group"></i></div>
+                    <div class="game-title">Relay</div>
+                    <div class="game-sub">4 x 100m</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-up-long"></i></div>
+                    <div class="game-title">Long Jump</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-cricket-bat-ball"></i></div>
+                    <div class="game-title">Box Cricket</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-weight-hanging"></i></div>
+                    <div class="game-title">Shotput</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-rope"></i></div> <div class="game-title">Tug of War</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="indoor">
+            <div class="section-header">
+                <i class="fa-solid fa-chess-board"></i>
+                <h2>Indoor Games</h2>
+            </div>
+            <div class="game-grid">
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-chess-knight"></i></div>
+                    <div class="game-title">Chess</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></div>
+                    <div class="game-title">Table Tennis</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-circle-dot"></i></div>
+                    <div class="game-title">Carrom</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-shuttlecock"></i></div> <div class="game-title">Badminton</div>
+                    <div class="game-sub">Single / Duo</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="esports">
+            <div class="section-header">
+                <i class="fa-solid fa-headset"></i>
+                <h2>E-Sports</h2>
+            </div>
+            <div class="game-grid">
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div class="game-title">BGMI</div>
+                </div>
+                <div class="game-card">
+                    <div class="game-icon"><i class="fa-solid fa-fire"></i></div>
+                    <div class="game-title">Free-Fire</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <i class="fa-solid fa-book-open"></i>
+                <h2>Field Event Rules</h2>
+            </div>
+            
+            <h3 style="color: var(--accent-cyan); margin-bottom: 10px;">Running (100m - 1500m)</h3>
+            <ul class="rules-list">
+                <li>Sports shoes mandatory. No barefoot running.</li>
+                <li>False start (leaving before whistle): 1 warning, then disqualification.</li>
+                <li>Obstructing another athlete's path leads to disqualification.</li>
+            </ul>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <h3 style="color: var(--accent-cyan); margin-bottom: 10px;">Shot Put</h3>
+            <ul class="rules-list">
+                <li>Enter circle from any direction; exit from the back.</li>
+                <li>Shot must be put from close to neck/chin with a single hand.</li>
+                <li>Shot must land entirely within the sector.</li>
+            </ul>
+             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <h3 style="color: var(--accent-cyan); margin-bottom: 10px;">Long Jump</h3>
+            <ul class="rules-list">
+                <li>Sports shoes mandatory.</li>
+                <li>Take-off must be behind the foul line. Take off from one foot only.</li>
+                <li>Measurement from board to closest mark in sand.</li>
+                <li>Exit sand pit forward. Walking back is a foul.</li>
+                <li>3 attempts per athlete. Best jump counts.</li>
+            </ul>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <i class="fa-solid fa-users-rectangle"></i>
+                <h2>Team Event Rules</h2>
+            </div>
+
+            <h3 style="color: var(--accent-gold); margin-bottom: 10px;">Box Cricket</h3>
+            <ul class="rules-list">
+                <li>7 players a side. 4 Overs match.</li>
+                <li>Bowling limit: 1 bowler gets max 2 overs, others 1 over.</li>
+                <li>Hard tennis ball used. Sportswear mandatory.</li>
+                <li>Arguments with umpire = Disqualification.</li>
+            </ul>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <h3 style="color: var(--accent-gold); margin-bottom: 10px;">Tug of War</h3>
+            <ul class="rules-list">
+                <li>9 Players per team. 3 Sets.</li>
+                <li>Sports shoes compulsory.</li>
+                <li>NO accessories allowed (Rings, bracelets, kadas, etc).</li>
+            </ul>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+
+            <h3 style="color: var(--accent-gold); margin-bottom: 10px;">Relay (4x100m)</h3>
+            <ul class="rules-list">
+                <li>Team of 4 runners. Baton exchange every 100m.</li>
+                <li>Same running rules (shoes, false starts) apply.</li>
+            </ul>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <i class="fa-solid fa-puzzle-piece"></i>
+                <h2>Indoor Rules</h2>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 30px;">
+                <div>
+                    <h3 style="color: var(--accent-orange);">Badminton</h3>
+                    <div class="alert-box">Non-markable shoes compulsory.</div>
+                    <ul class="rules-list" style="margin-top: 10px;">
+                        <li><strong>Single:</strong> 3 sets of 7 points (Semi/Final 11 points).</li>
+                        <li><strong>Doubles:</strong> Diagonal service. Even score = Right box, Odd score = Left box.</li>
+                        <li><strong>Faults:</strong> Shuttle lands out, hits net, player touches net, or hits before crossing net.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent-orange);">Chess</h3>
+                    <ul class="rules-list">
+                        <li>Time: 5 min per person.</li>
+                        <li>Phone vibration = Loss. 2 Illegal moves = Loss.</li>
+                        <li>Arbiter decision final.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: var(--accent-orange);">Carrom</h3>
+                    <ul class="rules-list">
+                        <li>1 Player per team.</li>
+                        <li>3 attempts to break.</li>
+                        <li>Foul or no pocket = Turn ends.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <i class="fa-solid fa-gamepad"></i>
+                <h2>E-Sports Rules & Points</h2>
+            </div>
+
+            <div class="alert-box" style="margin-bottom: 20px;">
+                <strong>STRICT:</strong> Mobile only (No tablets). Cheating/Glitches/Teaming = Disqualification.
+            </div>
+
+            <div style="display: grid; md:grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="margin-bottom: 10px; color: var(--accent-gold);">BGMI Points</h3>
+                    <div class="table-container">
+                        <table>
+                            <tr><th>Position</th><th>Points</th></tr>
+                            <tr><td>#1</td><td>10</td></tr>
+                            <tr><td>#2</td><td>6</td></tr>
+                            <tr><td>#3</td><td>5</td></tr>
+                            <tr><td>#4</td><td>4</td></tr>
+                            <tr><td>#5</td><td>3</td></tr>
+                            <tr><td>#6</td><td>2</td></tr>
+                            <tr><td>#7</td><td>1</td></tr>
+                            <tr><td colspan="2" style="text-align:center; font-weight:bold; color:var(--text-white);">Kill = 1 Point</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 10px; color: var(--accent-orange);">Free Fire Points</h3>
+                    <div class="table-container">
+                        <table>
+                            <tr><th>Position</th><th>Points</th></tr>
+                            <tr><td>#1</td><td>12</td></tr>
+                            <tr><td>#2</td><td>9</td></tr>
+                            <tr><td>#3</td><td>8</td></tr>
+                            <tr><td>#4</td><td>7</td></tr>
+                            <tr><td>#5</td><td>6</td></tr>
+                            <tr><td>#6 - #10</td><td>5 - 1</td></tr>
+                            <tr><td colspan="2" style="text-align:center; font-weight:bold; color:var(--text-white);">Kill = 1 Point</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="footer-slogan">Let's Join The Legacy of Champions!</div>
+        <p>URJA 3.0 | 2025-2026</p>
+        [cite_start]<p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.5;">Designed based on Official Brochure [cite: 1-124]</p>
+    </footer>
+
+</body>
+</html>
