@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Native Banner Ad Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .ad-wrapper {
+            margin: 30px auto;
+            padding: 15px;
+            border: 2px dashed #b0b0b0;
+            background-color: #fafafa;
+            border-radius: 4px;
+            min-height: 150px; /* Gives the container some height before the ad loads */
+        }
+        .ad-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <h1>Ad Integration Demo</h1>
+        <p>This is a sandbox page to test if your Native Banner script is loading correctly.</p>
+        
+        <div class="ad-wrapper">
+            <div class="ad-label">Advertisement</div>
+            
+            <script async="async" data-cfasync="false" src="https://pl29486568.effectivecpmnetwork.com/5ede60c4dd95953e33b0b360df1bbd0d/invoke.js"></script>
+            <div id="container-5ede60c4dd95953e33b0b360df1bbd0d"></div>
+            
+        </div>
+        <p><em>Note: If the ad does not appear, please make sure you have disabled any AdBlockers in your browser, or check the Developer Console (F12) for network errors.</em></p>
+    </div>
+
+</body>
+</html>
